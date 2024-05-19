@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -95,7 +96,8 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password),
             ]);
             DB::commit();
-            if (!$token = auth()->attempt(request(['email', 'password']))) {
+            
+            if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode401'),
                     'status' => __('statusCode.status401'),

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIAuth;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -92,7 +93,7 @@ class AuthController extends Controller
                     'message' => $validator->errors()->first()
                 ]], __('statusCode.statusCode400'));
             }
-            if (!$token = auth()->attempt(request(['email', 'password']))) {
+            if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode401'),
                     'status' => __('statusCode.status401'),
