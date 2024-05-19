@@ -1,0 +1,836 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Ekomn API",
+        "description": "Your API Description",
+        "contact": {
+            "name": "API Support",
+            "email": "contact@example.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Sign in",
+                "description": "Login by email, password",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user1@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "PassWord12345"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged in successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": "400"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Bad Request"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": "401"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": "500"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Server Error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Server Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/me": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get authenticated user",
+                "description": "Retrieve the information of the authenticated user.",
+                "operationId": "getAuthenticatedUser",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "statusCode": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "OK"
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "john@example.com"
+                                                        },
+                                                        "email_verified_at": {
+                                                            "type": "string",
+                                                            "format": "date-time",
+                                                            "example": "2022-01-01 12:00:00"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout",
+                "description": "Logout the authenticated user.",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "statusCode": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "OK"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Logged out successfully."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Refresh token",
+                "description": "Refresh the authentication token.",
+                "operationId": "refreshToken",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "statusCode": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "OK"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Token refreshed successfully."
+                                                },
+                                                "auth": {
+                                                    "properties": {
+                                                        "access_token": {
+                                                            "type": "string",
+                                                            "example": "new_token"
+                                                        },
+                                                        "token_type": {
+                                                            "type": "string",
+                                                            "example": "bearer"
+                                                        },
+                                                        "expires_in": {
+                                                            "type": "integer",
+                                                            "example": "3600"
+                                                        },
+                                                        "user": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": "1"
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "John Doe"
+                                                                },
+                                                                "email": {
+                                                                    "type": "string",
+                                                                    "example": "john@example.com"
+                                                                },
+                                                                "email_verified_at": {
+                                                                    "type": "string",
+                                                                    "format": "date-time",
+                                                                    "example": "2022-01-01 12:00:00"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/password/reset": {
+            "post": {
+                "tags": [
+                    "Password Reset"
+                ],
+                "summary": "Send password reset link email",
+                "description": "Send a password reset link email to the user",
+                "operationId": "f0eda15ddee29a9efd1fd29b82fd4c37",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset link sent successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": [
+                                                    "The email field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "operationId": "registerUser",
+                "requestBody": {
+                    "description": "User data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "Passw0rd!"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "Passw0rd!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE1NzYyMzY1NjMsImV4cCI6MTU3NjI0MDE2MywibmJmIjoxNTc2MjM2NTYzLCJqdGkiOiJQcHJnSVZ6YXlWV1BjSXhRIn0.5BvuBxS0z6C1aOvh3y0-8b5zD8EyJexsze1zSeprAAo"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Bad Request"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The email has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "These credentials do not match our records."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 500
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Internal Server Error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred while processing your request."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/reset": {
+            "post": {
+                "tags": [
+                    "Password Reset"
+                ],
+                "summary": "Reset password",
+                "description": "Reset the user's password",
+                "operationId": "bd0f69621a5e249f61f70d56981d5b23",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "reset_token"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "new_password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "new_password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "string",
+                                            "example": "400"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Bad Request"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/resend": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Resend email verification",
+                "operationId": "resend",
+                "responses": {
+                    "200": {
+                        "description": "Email verification resent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verification resent successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 403
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email already verified."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/verify": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify a user's email",
+                "operationId": "verify",
+                "requestBody": {
+                    "description": "User verification data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "hash"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "example": 1
+                                    },
+                                    "hash": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "OK"
+                                        },
+                                        "verified": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verified successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "statusCode": {
+                                            "type": "integer",
+                                            "example": 403
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid verification data."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

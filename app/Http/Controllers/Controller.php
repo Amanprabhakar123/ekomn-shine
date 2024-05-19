@@ -6,6 +6,23 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
+/**
+ *@OA\Info(
+ *     title="Ekomn API",
+ *     version="1.0",
+ *     description="Your API Description",
+ *     @OA\Contact(
+ *         email="contact@example.com",
+ *         name="API Support"
+ *     ),
+ *  @OA\SecurityScheme(
+ *     type="http",
+ *     securityScheme="bearerAuth",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ * )
+ */
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
