@@ -487,6 +487,11 @@
                                         "format": "email",
                                         "example": "user@example.com"
                                     },
+                                    "role": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "role"
+                                    },
                                     "password": {
                                         "type": "string",
                                         "format": "password",

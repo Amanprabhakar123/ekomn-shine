@@ -37,6 +37,7 @@ class RegisterController extends Controller
      *             required={"name","email","password","password_confirmation"},
      *             @OA\Property(property="name", type="string", format="text", example="John Doe"),
      *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="role", type="string", format="text", example="role"),
      *             @OA\Property(property="password", type="string", format="password", example="Passw0rd!"),
      *             @OA\Property(property="password_confirmation", type="string", format="password", example="Passw0rd!"),
      *         ),
@@ -84,6 +85,7 @@ class RegisterController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
                 'email' => 'required|string|email|unique:users',
+                'role' => 'required|string',
                 'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
             ]);
             if ($validator->fails()) {
@@ -98,6 +100,13 @@ class RegisterController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+
+            if($request->input('role') === User::ROLE_BUYER){
+                $user->assignRole(User::ROLE_BUYER);
+            }elseif($request->input('role') === User::ROLE_SUPPLIER){
+                $user->assignRole(User::ROLE_SUPPLIER);
+            }
+
             DB::commit();
             
             if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
