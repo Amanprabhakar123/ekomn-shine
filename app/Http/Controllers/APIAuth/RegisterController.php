@@ -4,11 +4,14 @@ namespace App\Http\Controllers\APIAuth;
 
 
 use App\Models\User;
+use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
+use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -81,7 +84,7 @@ class RegisterController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
                 'email' => 'required|string|email|unique:users',
-                'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%.]).*$/|confirmed',
+                'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
             ]);
             if ($validator->fails()) {
                 return response()->json(['data' => [
@@ -90,7 +93,7 @@ class RegisterController extends Controller
                     'message' => $validator->errors()->first()
                 ]], __('statusCode.statusCode400'));
             }
-            User::create([
+           $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
@@ -104,6 +107,10 @@ class RegisterController extends Controller
                     'message' => __('auth.failed')
                 ]], __('statusCode.statusCode401'));
             }
+              // Send the welcome email
+            Mail::to(auth()->user()->email)->send(new WelcomeEmail());
+            // Trigger email verification notification
+            $user->notify(new VerifyEmail);
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
             DB::rollback();

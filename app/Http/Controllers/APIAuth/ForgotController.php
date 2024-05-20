@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
-class ForgotController extends Controller
+class   ForgotController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -19,9 +19,14 @@ class ForgotController extends Controller
     |
     */
 
+    public function __construct()
+    {
+        //
+    }
+
     /**
      * @OA\Post(
-     *     path="/api/password/reset",
+     *     path="/api/password/forget",
      *     summary="Send password reset link email",
      *     description="Send a password reset link email to the user",
      *     tags={"Password Reset"},
@@ -50,7 +55,7 @@ class ForgotController extends Controller
      */
     public function sendResetLinkEmail(Request $request)
     {
-        $this->validateEmail($request);
+        $request->validate(['email' => 'required|email']);
 
         // We will send the password reset link to this user. Once we have attempted
         // to send the link, we will examine the response then see the message we

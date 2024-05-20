@@ -388,14 +388,14 @@
                 ]
             }
         },
-        "/api/password/reset": {
+        "/api/password/forget": {
             "post": {
                 "tags": [
                     "Password Reset"
                 ],
                 "summary": "Send password reset link email",
                 "description": "Send a password reset link email to the user",
-                "operationId": "f0eda15ddee29a9efd1fd29b82fd4c37",
+                "operationId": "412c666becfcfa935f2bed1c5c35eb2b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -595,14 +595,14 @@
                 }
             }
         },
-        "/api/reset": {
+        "/api/password/reset": {
             "post": {
                 "tags": [
                     "Password Reset"
                 ],
                 "summary": "Reset password",
                 "description": "Reset the user's password",
-                "operationId": "bd0f69621a5e249f61f70d56981d5b23",
+                "operationId": "168b7b0140eaf532cf484adeb3a4f860",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -683,7 +683,7 @@
                 }
             }
         },
-        "/resend": {
+        "/api/resend": {
             "post": {
                 "tags": [
                     "Authentication"
@@ -742,7 +742,7 @@
                 }
             }
         },
-        "/verify": {
+        "/api/verify": {
             "post": {
                 "tags": [
                     "Authentication"
@@ -761,9 +761,9 @@
                                 ],
                                 "properties": {
                                     "id": {
-                                        "type": "integer",
-                                        "format": "int64",
-                                        "example": 1
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "1bfb1ee10a846b6003b057333bc7292ef3540e27"
                                     },
                                     "hash": {
                                         "type": "string",

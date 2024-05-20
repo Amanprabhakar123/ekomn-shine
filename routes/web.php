@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\APIAuth\ResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('password/reset', [ResetController::class, 'postReset'])->name('password.reset');
+Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');

@@ -42,7 +42,7 @@ class VerificationController extends Controller
     
     /**
      * @OA\Post(
-     *     path="/resend",
+     *     path="/api/resend",
      *     tags={"Authentication"},
      *     summary="Resend email verification",
      *     operationId="resend",
@@ -87,7 +87,7 @@ class VerificationController extends Controller
     
     /**
      * @OA\Post(
-     *     path="/verify",
+     *     path="/api/verify",
      *     tags={"Authentication"},
      *     summary="Verify a user's email",
      *     operationId="verify",
@@ -96,7 +96,7 @@ class VerificationController extends Controller
      *         description="User verification data",
      *         @OA\JsonContent(
      *             required={"id","hash"},
-     *             @OA\Property(property="id", type="integer", format="int64", example=1),
+     *             @OA\Property(property="id", type="string", format="text", example="1bfb1ee10a846b6003b057333bc7292ef3540e27"),
      *             @OA\Property(property="hash", type="string", format="text", example="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"),
      *         ),
      *     ),
@@ -123,12 +123,20 @@ class VerificationController extends Controller
      */
     public function verify(Request $request)
     {
-        if (! hash_equals((string) $request->id, (string) $request->user()->getKey())) {
-            throw new AuthorizationException;
+        if (! hash_equals((string) salt_decrypt($request->id), (string) $request->user()->getKey())) {
+            return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode403'),
+            'status' => __('statusCode.status403'),
+            'message' => __('auth.invalidVerificationData')
+            ]], __('statusCode.statusCode403'));
         }
-
+        
         if (! hash_equals((string) $request->hash, sha1($request->user()->getEmailForVerification()))) {
-            throw new AuthorizationException;
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode403'),
+                'status' => __('statusCode.status403'),
+                'message' => __('auth.invalidVerificationData')
+                ]], __('statusCode.statusCode403'));
         }
 
         if ($request->user()->hasVerifiedEmail()) {

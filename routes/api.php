@@ -38,7 +38,7 @@ Route::middleware('api')->group(function () {
     Route::post('password/forget', [ForgotController::class, 'sendResetLinkEmail']);
     Route::post('password/reset', [ResetController::class, 'reset']);
     Route::post('resend', [VerificationController::class, 'resend']);
-    Route::post('verify', [VerificationController::class, 'verify']);
+    Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
 });
 
 // Route group for authenticated routes

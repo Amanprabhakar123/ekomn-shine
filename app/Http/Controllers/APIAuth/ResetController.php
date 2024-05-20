@@ -26,7 +26,7 @@ class ResetController extends Controller
 
       /**
      * @OA\Post(
-     *     path="/api/reset",
+     *     path="/api/password/reset",
      *     summary="Reset password",
      *     description="Reset the user's password",
      *     tags={"Password Reset"},
@@ -73,7 +73,8 @@ class ResetController extends Controller
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
         $response = $this->broker()->reset(
-            $this->credentials($request), function ($user, $password) {
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
                 $this->resetPassword($user, $password);
             }
         );
@@ -96,8 +97,22 @@ class ResetController extends Controller
         return [
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%.]).*$/|confirmed',
+            'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
         ];
+    }
+
+    /**
+     * Reset the given user's password.
+     *
+     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param  string  $password
+     * @return void
+     */
+    protected function resetPassword($user, $password)
+    {
+        $user->password = Hash::make($password);
+
+        $user->save();
     }
 
     /**
@@ -131,6 +146,30 @@ class ResetController extends Controller
             'message' => trans($response)
         ]], __('statusCode.statusCode400'));
     }
+
+    /**
+     * Load the verify template view and get the URL request.
+     *
+     * @param  string  $token
+     * @return \Illuminate\Contracts\View\View
+     */
+    protected function showVerifyForm(Request $request)
+    {
+        $verificationUrl = route('verify', ['id' => $request->id]);
+        return view('email.verify')->with(['verificationUrl' => $verificationUrl]);
+    }
+
+    /**
+     * Get the broker to be used during password reset.
+     *
+     * @return \Illuminate\Contracts\Auth\PasswordBroker
+     */
+    public function broker()
+    {
+        return Password::broker();
+    }
+    
+
     /**
      * Where to redirect users after resetting their password.
      *
