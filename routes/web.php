@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\APIAuth\ResetController;
+use App\Http\Controllers\Auth\AuthViewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,5 +19,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('password/reset', [ResetController::class, 'postReset'])->name('password.reset');
+Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
+Route::get('supplier/login', [AuthViewController::class, 'loginFormView'])->name('supplier.login');
+Route::get('buyer/register', [AuthViewController::class, 'loginFormView'])->name('buyer.register');
+Route::get('supplier/register', [AuthViewController::class, 'loginFormView'])->name('supplier.register');
+Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->name('supplier.forget');
+Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
+Route::get('supplier/password/reset', [AuthViewController::class, 'loginFormView'])->name('supplier.reset');
+Route::get('buyer/reset', [AuthViewController::class, 'loginFormView'])->name('buyer.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
+// Route::get('password/reset', [ResetController::class, 'postReset'])->name('password.reset');
+
