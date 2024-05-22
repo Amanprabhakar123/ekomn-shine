@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Password;
 
 class   ForgotController extends Controller
@@ -57,6 +58,28 @@ class   ForgotController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
+        // check if the email belongs to a supplier or buyer
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && $user->hasAnyRole([User::ROLE_SUPPLIER, User::ROLE_BUYER])) {
+            // User exists and has the role of supplier or buyer
+            // Proceed with sending the password reset link
+            $response = Password::sendResetLink(
+                $request->only('email')
+            );
+            return $response == Password::RESET_LINK_SENT
+                ? $this->sendResetLinkResponse($request, $response)
+                : $this->sendResetLinkFailedResponse($request, $response);
+        } else {
+            // User does not exist or does not have the role of supplier or buyer
+            // Return an error response
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => trans('validation.email', ['attribute' => 'email'])
+            ]], __('statusCode.statusCode400'));
+        }
+
         // We will send the password reset link to this user. Once we have attempted
         // to send the link, we will examine the response then see the message we
         // need to show to the user. Finally, we'll send out a proper response.
@@ -85,7 +108,7 @@ class   ForgotController extends Controller
         ]], __('statusCode.statusCode200'));
     }
 
-    
+
     /**
      * Get the response for a failed password reset link.
      *
@@ -101,5 +124,4 @@ class   ForgotController extends Controller
             'message' => trans($response)
         ]], __('statusCode.statusCode400'));
     }
-
 }

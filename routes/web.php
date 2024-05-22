@@ -25,8 +25,6 @@ Route::get('buyer/register', [AuthViewController::class, 'loginFormView'])->name
 Route::get('supplier/register', [AuthViewController::class, 'loginFormView'])->name('supplier.register');
 Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->name('supplier.forget');
 Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
-Route::get('supplier/password/reset', [AuthViewController::class, 'loginFormView'])->name('supplier.reset');
-Route::get('buyer/reset', [AuthViewController::class, 'loginFormView'])->name('buyer.reset');
+Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('password.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
-// Route::get('password/reset', [ResetController::class, 'postReset'])->name('password.reset');
 

@@ -23,14 +23,8 @@
 @include('auth.supplier.forget')
 
 
-@elseif(Request::path() == 'buyer/reset')
+@elseif(Request::path() == 'reset')
 @include('auth.buyer.reset')
-
-
-@elseif(Request::path() == 'supplier/reset')
-@include('auth.supplier.reset')
-
-
 @endif
 
 <script type="text/javascript" src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
