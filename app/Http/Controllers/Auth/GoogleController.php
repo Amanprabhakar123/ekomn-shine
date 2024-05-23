@@ -42,7 +42,9 @@ class GoogleController extends Controller
                 // Generate a JWT token for the existing user
                 $token = JWTAuth::fromUser($finduser);
                 
-                Auth::login($finduser);
+                if(config('app.front_end_tech') == false){
+                    Auth::login($finduser);
+                }
 
                 return redirect()->intended('/')->with([
                     'user_details' => [
@@ -86,7 +88,9 @@ class GoogleController extends Controller
                 // Generate a JWT token for the new user
                 $token = JWTAuth::fromUser($newUser);
 
-                Auth::login($newUser);
+                if(config('app.front_end_tech') == false){
+                    Auth::login($newUser);
+                }
 
                 return redirect()->intended('/')->with([
                     'user_details' => [

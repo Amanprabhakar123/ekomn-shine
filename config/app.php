@@ -143,6 +143,19 @@ return [
         'driver' => 'file',
         // 'store' => 'redis',
     ],
+    
+    /**
+     * Configuration option for the front-end technology used in the application.
+     * 
+     * This option determines whether the application is using a front-end technology or not.
+     * By default, it is set to true, indicating that a front-end technology is being used.
+     * 
+     * You can modify this option by setting the 'FRONT_END_TECH' environment variable.
+     * If the environment variable is not set, the default value of true will be used.
+     * 
+     * @var bool
+     */
+    'front_end_tech' => env('FRONT_END_TECH', true),
 
     /*
     |--------------------------------------------------------------------------
