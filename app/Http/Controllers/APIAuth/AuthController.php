@@ -270,10 +270,12 @@ class AuthController extends Controller
                 'token_type' => 'bearer',
                 'expires_in' => auth('api')->factory()->getTTL() * 60,
                 'user' => [
-                    "id" => auth()->user()->id,
+                    "id" => salt_encrypt(auth()->user()->id),
                     "name" => auth()->user()->name,
                     "email" => auth()->user()->email,
                     "email_verified_at" => auth()->user()->email_verified_at,
+                    "picture" => auth()->user()->picture,
+
                 ]
             ],
         ]], __('statusCode.statusCode200'));

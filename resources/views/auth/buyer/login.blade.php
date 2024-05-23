@@ -5,7 +5,7 @@
             <div class="login-container">
                 <div class="loginForm">
                 @include('auth.layout.logo')
-                    <button class="btn btn-login ssologin block">Login with Google</button>
+                    <a class="btn btn-login ssologin block" href ="{{ route('auth.google.redirect') }}">Login with Google</a>
                     <div class="orline">
                         <span>Or</span>
                     </div>

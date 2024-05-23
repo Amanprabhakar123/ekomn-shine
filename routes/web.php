@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
 
@@ -27,4 +28,9 @@ Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->nam
 Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
 Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('password.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
+
+Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
+    Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
+    Route::get('/call-back', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
+});
 
