@@ -6,7 +6,6 @@
 @elseif(Request::path() == 'supplier/login')
 @include('auth.supplier.login')
 
-
 @elseif(Request::path() == 'buyer/register')
 @include('auth.buyer.register')
 
@@ -25,9 +24,9 @@
 
 @elseif(Request::path() == 'reset')
 @include('auth.buyer.reset')
+
 @endif
 
-<script type="text/javascript" src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
 @yield('custom_script')
 </body>
 </html>
