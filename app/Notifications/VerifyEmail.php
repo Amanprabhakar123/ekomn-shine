@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -36,12 +37,10 @@ class VerifyEmail extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);
+        $name = $notifiable->name;
+        return (new MailMessage)->subject(Lang::get('Verify your email address'))
+            ->view('email.verify', compact('verificationUrl', 'name'));
 
-        return (new MailMessage)
-                    ->subject('Verify your email address')
-                    ->line('Click the button below to verify your email address.')
-                    ->action('Verify Email', $verificationUrl)
-                    ->line('If you did not create an account, no further action is required.');
     
     }
 

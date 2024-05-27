@@ -2,23 +2,25 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    protected $role;
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($role)
     {
-        //
+        $this->role = $role;
     }
 
     /**
@@ -36,11 +38,11 @@ class WelcomeEmail extends Mailable
      */
     public function content(): Content
     {
-        return new Content(
-            view: 'email.welcome',
-        );
-    }
+        $content = new Content(view: 'email.welcome');
+        $content->with('role', $this->role);
 
+    return $content;
+    }
     /**
      * Get the attachments for the message.
      *

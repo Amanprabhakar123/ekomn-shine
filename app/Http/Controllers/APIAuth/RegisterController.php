@@ -116,8 +116,9 @@ class RegisterController extends Controller
                     'message' => __('auth.failed')
                 ]], __('statusCode.statusCode401'));
             }
+            
               // Send the welcome email
-            Mail::to(auth()->user()->email)->send(new WelcomeEmail());
+            Mail::to(auth()->user()->email)->send(new WelcomeEmail($request->input('role')));
             // Trigger email verification notification
             $user->notify(new VerifyEmail);
             return $this->respondWithToken($token);
@@ -126,7 +127,7 @@ class RegisterController extends Controller
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
-                'message' => $e->getMessage()
+                'message' => $e->getMessage().$e->getLine()
             ]], __('statusCode.statusCode500'));
         }
     }

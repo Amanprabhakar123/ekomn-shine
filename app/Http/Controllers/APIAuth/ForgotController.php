@@ -104,7 +104,7 @@ class   ForgotController extends Controller
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
-            'message' =>  trans($response)
+            'message' =>  trans("An email has been sent to ".$request->email.". If this email address is registered to Ekomn.com, you'll receive instructions on how to set a new password.")
         ]], __('statusCode.statusCode200'));
     }
 

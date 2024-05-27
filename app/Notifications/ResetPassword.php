@@ -62,12 +62,11 @@ class ResetPassword extends Notification
         }
 
         $role = $notifiable->hasRole(User::ROLE_SUPPLIER) ? User::ROLE_SUPPLIER : User::ROLE_BUYER;
-        return (new MailMessage)
-            ->subject(Lang::get('Reset Password Notification'))
-            ->line(Lang::get('You are receiving this email because we received a password reset request for your account.'))
-            ->action(Lang::get('Reset Password'), route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset(), 'role' => $role]))
-            ->line(Lang::get('This password reset link will expire in :count minutes.', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')]))
-            ->line(Lang::get('If you did not request a password reset, no further action is required.'));
+
+        $action  = route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset(), 'role' => $role]);
+        $expire = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
+        return (new MailMessage)->subject(Lang::get('Reset your ekomn.com password'))
+            ->view('email.reset', compact('action', 'expire'));
     }
 
     /**

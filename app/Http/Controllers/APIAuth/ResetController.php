@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\APIAuth;
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
 
 class ResetController extends Controller
 {
@@ -155,8 +156,7 @@ class ResetController extends Controller
      */
     protected function showVerifyForm(Request $request)
     {
-        $verificationUrl = route('verify', ['id' => $request->id]);
-        return view('email.verify')->with(['verificationUrl' => $verificationUrl]);
+        return view('auth.verify')->with(['id' => $request->id, 'hash' => $request->hash]);
     }
 
     /**
