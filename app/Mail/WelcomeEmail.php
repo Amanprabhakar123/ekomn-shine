@@ -14,13 +14,14 @@ class WelcomeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $role;
+    
+    protected $user;
     /**
      * Create a new message instance.
      */
-    public function __construct($role)
+    public function __construct( $user)
     {
-        $this->role = $role;
+        $this->user = $user;
     }
 
     /**
@@ -29,7 +30,7 @@ class WelcomeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome Email',
+            subject: 'Welcome to '.env('APP_NAME'),
         );
     }
 
@@ -39,7 +40,8 @@ class WelcomeEmail extends Mailable
     public function content(): Content
     {
         $content = new Content(view: 'email.welcome');
-        $content->with('role', $this->role);
+        $role = $this->user->hasRole(User::ROLE_SUPPLIER) ? User::ROLE_SUPPLIER : User::ROLE_BUYER;
+        $content->with(['role' => $role, 'user' => $this->user]);
 
     return $content;
     }

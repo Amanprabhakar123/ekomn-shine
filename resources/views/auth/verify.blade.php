@@ -11,14 +11,11 @@
           <h3 class="h3 m-0">Verify Your Email</h3>
           
           <div class="form-group mb-0">
-            <input type="hidden" id="id" name="id" class="form-control userico"  />
-            <input type="hidden" id="hash" name="hash" class="form-control userico"/>
+            <input type="hidden" id="id" name="id" value="{{ request()->get('id') }}" class="form-control userico"  />
+            <input type="hidden" id="hash" name="hash" value="{{ request()->get('hash') }}"class="form-control userico"/>
           </div>
           <button class="btn btn-login btnekomn block my-4" type="submit">Verify Email</button>
       </form>
-      <div class="d-flex justify-content-center">
-        <a href="{{ route('buyer.login') }}" class="btn btn-link a_color">Back To Login</a>
-      </div>
       </div>
     </div>
 
@@ -36,7 +33,7 @@
         </svg>
         <h1 class="thank_h1">Thank you!!</h1>
         <p id="r_m"></p>
-        <a href="{{ route('buyer.login') }}" class="a_color">Click to Login</a>
+        <a href="" id="role_s_b" class="a_color">Click to Login</a>
         </div>
     </div>
     </div>
@@ -86,6 +83,11 @@
               "display": "block"
             });
             $('#r_m').append(response.data.message);
+            var currentHref = $('#role_s_b').attr('href', response.data.redirect);
+           
+            
+            
+            
           } else {
             alert('Failed to send reset password email. Please try again.');
           }

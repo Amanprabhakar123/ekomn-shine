@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Mail;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Events\Verified;
 
 class VerificationController extends Controller
 {
@@ -35,7 +38,7 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => ['verify']]);
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
@@ -123,15 +126,18 @@ class VerificationController extends Controller
      */
     public function verify(Request $request)
     {
-        if (! hash_equals((string) salt_decrypt($request->id), (string) $request->user()->getKey())) {
+        $user = User::find(salt_decrypt($request->id));
+        $redirect = $user->hasRole(User::ROLE_SUPPLIER) ? route('supplier.login') : route('buyer.login');
+
+        if (! hash_equals((string) salt_decrypt($request->id), (string)  $user->id)) {
             return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode403'),
             'status' => __('statusCode.status403'),
             'message' => __('auth.invalidVerificationData')
             ]], __('statusCode.statusCode403'));
         }
-        
-        if (! hash_equals((string) $request->hash, sha1($request->user()->getEmailForVerification()))) {
+
+        if (! hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode403'),
                 'status' => __('statusCode.status403'),
@@ -139,21 +145,25 @@ class VerificationController extends Controller
                 ]], __('statusCode.statusCode403'));
         }
 
-        if ($request->user()->hasVerifiedEmail()) {
+        if ($user->hasVerifiedEmail()) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
+                'redirect' => $redirect,
                 'verified' => true,
                 'message' =>  __('auth.verified')
             ]], __('statusCode.statusCode200'));
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+            // Send the welcome email
+            Mail::to($user->email)->send(new WelcomeEmail($user));
         }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
+            'redirect' => $redirect,
             'verified' => true,
             'message' =>  __('auth.verifySuccess')
         ]], __('statusCode.statusCode200'));
