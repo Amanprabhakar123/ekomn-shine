@@ -46,7 +46,7 @@ class GoogleController extends Controller
                     Auth::login($finduser);
                 }
 
-                return redirect()->intended('/')->with([
+                return redirect()->intended(route('dashboard'))->with([
                     'user_details' => [
                             "id" => salt_encrypt($finduser->id),
                             "name" => $finduser->name,
@@ -72,34 +72,35 @@ class GoogleController extends Controller
                 //         ]
                 //     ],
                 // ]], __('statusCode.statusCode200'));
-            } else {
-                // If the user does not exist, create a new user with the Google information
-                $newUser = User::create([
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'google_id' => $user->id,
-                    'picture' => $user->avatar,
-                    'password' => Hash::make(Str::random(10))
-                ]);
+            } 
+            // else {
+            //     // If the user does not exist, create a new user with the Google information
+            //     $newUser = User::create([
+            //         'name' => $user->name,
+            //         'email' => $user->email,
+            //         'google_id' => $user->id,
+            //         'picture' => $user->avatar,
+            //         'password' => Hash::make(Str::random(10))
+            //     ]);
 
-                // Add supplier role to the new user
-                $newUser->assignRole(User::ROLE_SUPPLIER);
+            //     // Add supplier role to the new user
+            //     $newUser->assignRole(User::ROLE_SUPPLIER);
 
-                // Generate a JWT token for the new user
-                $token = JWTAuth::fromUser($newUser);
+            //     // Generate a JWT token for the new user
+            //     $token = JWTAuth::fromUser($newUser);
 
-                if(config('app.front_end_tech') == false){
-                    Auth::login($newUser);
-                }
+            //     if(config('app.front_end_tech') == false){
+            //         Auth::login($newUser);
+            //     }
 
-                return redirect()->intended('/')->with([
-                    'user_details' => [
-                            "id" => salt_encrypt($newUser->id),
-                            "name" => $newUser->name,
-                            "email" => $newUser->email,
-                            "email_verified_at" => $newUser->email_verified_at,
-                            "picture" => $user->avatar,
-                    ], 'token' =>  $token]);
+            //     return redirect()->intended('/')->with([
+            //         'user_details' => [
+            //                 "id" => salt_encrypt($newUser->id),
+            //                 "name" => $newUser->name,
+            //                 "email" => $newUser->email,
+            //                 "email_verified_at" => $newUser->email_verified_at,
+            //                 "picture" => $user->avatar,
+            //         ], 'token' =>  $token]);
 
                  // Return the token in the response
                 // return response()->json(['data' => [
@@ -118,7 +119,7 @@ class GoogleController extends Controller
                 //         ]
                 //     ],
                 // ]], __('statusCode.statusCode200'));
-            }
+            // }
         } catch (\Exception $e) {
             // Handle any exceptions that occur during the authentication process
             return response()->json(['error' => $e->getMessage(), '-Line'.$e->getLine()], 500);

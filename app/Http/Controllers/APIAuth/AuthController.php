@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\User;
+
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -20,7 +21,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'logout']]);
     }
 
 
@@ -99,6 +100,9 @@ class AuthController extends Controller
                     'status' => __('statusCode.status401'),
                     'message' => __('auth.failed')
                 ]], __('statusCode.statusCode401'));
+            }
+            if (config('app.front_end_tech') == false) {
+                Auth::attempt(['email' => $request->email, 'password' => $request->password]);
             }
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
@@ -197,6 +201,10 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
+        Auth::logout();
+        if (config('app.front_end_tech') == false) {
+            return redirect()->intended('/');
+        }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
@@ -261,6 +269,17 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        if (config('app.front_end_tech') == false) {
+            $redirect = route('dashboard');
+            return redirect()->intended($redirect)->with([
+                'user_details' => [
+                    "id" => salt_encrypt(auth()->user()->id),
+                    "name" => auth()->user()->name,
+                    "email" => auth()->user()->email,
+                    "email_verified_at" => auth()->user()->email_verified_at,
+                    "picture" => auth()->user()->picture,
+                ], 'token' =>  $token]);
+        }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
@@ -269,6 +288,7 @@ class AuthController extends Controller
                 'access_token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => auth('api')->factory()->getTTL() * 60,
+                'redirect' => route('home'),
                 'user' => [
                     "id" => salt_encrypt(auth()->user()->id),
                     "name" => auth()->user()->name,
