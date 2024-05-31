@@ -93,20 +93,20 @@ class RegisterController extends Controller
                     'message' => $validator->errors()->first()
                 ]], __('statusCode.statusCode400'));
             }
-           $user = User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
 
-            if($request->input('role') === User::ROLE_BUYER){
+            if ($request->input('role') === User::ROLE_BUYER) {
                 $user->assignRole(User::ROLE_BUYER);
-            }elseif($request->input('role') === User::ROLE_SUPPLIER){
+            } elseif ($request->input('role') === User::ROLE_SUPPLIER) {
                 $user->assignRole(User::ROLE_SUPPLIER);
             }
 
             DB::commit();
-            
+
             if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode401'),
@@ -139,6 +139,30 @@ class RegisterController extends Controller
      */
     protected function respondWithToken($token)
     {
+        if (config('app.front_end_tech') == false) {
+            // Get the session ID
+            $sessionId = session()->getId();
+            $sessionName = session()->getName();
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.registerSuccess'),
+                'auth' => [
+                    'access_token' => $token,
+                    'token_type' => 'bearer',
+                    'session_id' => $sessionId,
+                    'session_name' => $sessionName,
+                    'expires_in' => auth('api')->factory()->getTTL() * 60,
+                    'user' => [
+                        "id" => salt_encrypt(auth()->user()->id),
+                        "name" => auth()->user()->name,
+                        "email" => auth()->user()->email,
+                        "email_verified_at" => auth()->user()->email_verified_at,
+                        "picture" => auth()->user()->picture,
+                    ]
+                ],
+            ]], __('statusCode.statusCode200'));
+        }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),

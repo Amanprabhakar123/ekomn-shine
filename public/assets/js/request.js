@@ -9,6 +9,7 @@ const makeHeader = () => {
         "Content-Type" : "application/json",
         "X-Requested-With" : "XMLHttpRequest",
         "Accept" : "application/json",
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
     if(token){
         header['Authorization'] = 'Bearer '+token; 
@@ -23,6 +24,7 @@ const ApiRequest = (url, method="GET", body = undefined) => {
             url: baseURL + url,
             type: method,
             headers: makeHeader(),
+            dataType: 'json',
             data: body ? JSON.stringify(body) : undefined,
             success: function(response) {
                 console.log('API Hit', response);
