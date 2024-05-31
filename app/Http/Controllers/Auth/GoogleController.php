@@ -72,7 +72,9 @@ class GoogleController extends Controller
                 //         ]
                 //     ],
                 // ]], __('statusCode.statusCode200'));
-            } 
+            } else{
+                return redirect()->back()->with('error', 'User not found');
+            }
             // else {
             //     // If the user does not exist, create a new user with the Google information
             //     $newUser = User::create([
