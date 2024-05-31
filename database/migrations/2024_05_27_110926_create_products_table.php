@@ -13,27 +13,27 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('Name')->nullable();
+            $table->string('name')->nullable();
             $table->string('desc')->nullable();
-            $table->string('Sku')->nullable();
-            $table->string('L')->nullable();
-            $table->string('B')->nullable();
-            $table->string('H')->nullable();
-            $table->string('Weight')->nullable();
-            $table->string('Color')->nullable();
+            $table->string('sku')->nullable();
+            $table->string('l')->nullable();
+            $table->string('b')->nullable();
+            $table->string('h')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('color')->nullable();
             $table->string('size')->nullable();
-            $table->string('Price')->nullable();
-            $table->string('Total_price')->nullable();
-            $table->string('Tags')->nullable();
-            $table->string('Address_id')->nullable();
-            $table->string('Cgst')->nullable();
-            $table->string('Cgst_amount')->nullable();
-            $table->string('Sgst')->nullable();
-            $table->string('Sgst_percentage')->nullable();
-            $table->string('Igst_percentage')->nullable();
-            $table->string('Total_tax')->nullable();
-            $table->string('Total_tax_percentage')->nullable();
-            $table->string('Discount')->nullable();
+            $table->string('price')->nullable();
+            $table->string('total_price')->nullable();
+            $table->string('tags')->nullable();
+            $table->string('address_id')->nullable();
+            $table->string('cgst')->nullable();
+            $table->string('cgst_amount')->nullable();
+            $table->string('sgst')->nullable();
+            $table->string('sgst_percentage')->nullable();
+            $table->string('igst_percentage')->nullable();
+            $table->string('total_tax')->nullable();
+            $table->string('total_tax_percentage')->nullable();
+            $table->string('discount')->nullable();
             $table->timestamps();
         });
     }

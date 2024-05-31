@@ -2,96 +2,247 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\registerModuleApi;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Models\SupplierRegistrationTemp;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ApiRegistraionController extends Controller
 {
+    /**
+     * Handle the data setting process for supplier registration.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function setData(Request $request): JsonResponse
+    {
+        try {
+            // printR($request->all());
+            if ($request->step_1) {
+                $this->validateStep1($request);
 
-    function setData(Request $request){
-        $business_name = $request->input('business_name');
-        $gst = $request->input('gst');
-        // $validatedData = $request->validate([
-        //     'business_name' => 'required|string|max:255',
-        //     'gst' => 'required|string|max:255',
-        //     'website_url' => 'nullable|url|max:255',
-        //     'first_name' => 'required|string|max:255',
-        //     'last_name' => 'required|string|max:255',
-        //     'mobile' => 'required|string|max:255',
-        //     'designation' => 'nullable|string|max:255',
-        //     'address' => 'nullable|string|max:255',
-        //     'state' => 'nullable|string|max:255',
-        //     'city' => 'nullable|string|max:255',
-        //     'pin_code' => 'nullable|string|max:255',
-        //     // Add validation rules for other fields
-        //     'bulk_dispatch_time' => 'nullable|boolean',
-        //     'dropship_dispatch_time' => 'nullable|boolean',
-        //     'product_quality_confirm' => 'nullable|boolean',
-        //     'business_compliance_confirm' => 'nullable|boolean',
-        //     'stationery' => 'nullable|boolean',
-        //     'furniture' => 'nullable|boolean',
-        //     'food_and_bevrage' => 'nullable|boolean',
-        //     'electronics' => 'nullable|boolean',
-        //     'groceries' => 'nullable|boolean',
-        //     'baby_products' => 'nullable|boolean',
-        //     'gift_cards' => 'nullable|boolean',
-        //     'cleaining_supplies' => 'nullable|boolean',
-        //     'through_sms' => 'nullable|boolean',
-        //     'through_email' => 'nullable|boolean',
-        //     'google_search' => 'nullable|boolean',
-        //     'social_media' => 'nullable|boolean',
-        //     'referred' => 'nullable|boolean',
-        //     'others' => 'nullable|boolean',
-        //     'email' => 'required|email',
-        //     'password' => 'required|string|min:6', // Example validation rule for password, adjust as needed
-        // ]);
+                $supplier = SupplierRegistrationTemp::updateOrCreate(
+                    $this->getStep1Data($request)
+                );
 
-        registerModuleApi::updateOrCreate(['business_name' => $business_name],
-        ['business_name' => $business_name, 'gst' => $gst]);
+                return $this->successResponse($supplier->id);
+            } elseif ($request->step_2) {
+                $supplier = SupplierRegistrationTemp::find($request->input('hiddenField'));
 
-        // $tbl = new registerModuleApi();
-       
-        // $tbl->business_name = $business_name;
-        // $tbl -> gst=$request->gst;
-        // $tbl -> website_url=$request->website_url;
-        // $tbl -> first_name=$request->first_name;
-        // $tbl -> last_name=$request->last_name;
-        // $tbl -> mobile=$request->mobile;
-        // $tbl -> designation=$request->designation;
-        // $tbl -> address=$request->address;
-        // $tbl -> state=$request->state;
-        // $tbl -> city=$request->city;
-        // $tbl -> pin_code=$request->pin_code;
-        // $tbl->bulk_dispatch_time = $request->has('bulk_dispatch_time') ? 1 : 0;
-        // $tbl->dropship_dispatch_time = $request->has('dropship_dispatch_time') ? 1 : 0;
-        // $tbl->product_quality_confirm = $request->has('product_quality_confirm') ? 1 : 0;
-        // $tbl->business_compliance_confirm = $request->has('business_compliance_confirm') ? 1 : 0;
-        // $tbl->stationery = $request->has('stationery') ? 1 : 0;
-        // $tbl->furniture = $request->has('furniture') ? 1 : 0;
-        // $tbl->food_and_bevrage = $request->has('food_and_bevrage') ? 1 : 0;
-        // $tbl->electronics = $request->has('electronics') ? 1 : 0;
-        // $tbl->groceries = $request->has('groceries') ? 1 : 0;
-        // $tbl->baby_products = $request->has('baby_products') ? 1 : 0;
-        // $tbl->gift_cards = $request->has('gift_cards') ? 1 : 0;
-        // $tbl->cleaining_supplies = $request->has('cleaining_supplies') ? 1 : 0;
-        // $tbl->through_sms = $request->has('through_sms') ? 1 : 0;
-        // $tbl->through_email = $request->has('through_email') ? 1 : 0;
-        // $tbl->google_search = $request->has('google_search') ? 1 : 0;
-        // $tbl->social_media = $request->has('social_media') ? 1 : 0;
-        // $tbl->referred = $request->has('referred') ? 1 : 0;
-        // $tbl->others = $request->has('others') ? 1 : 0;
-        // $tbl -> email=$request->email;
-        // $tbl -> password=$request->password;
-        
-        
-        // $tbl->save();
-        $data=[
-            'status'=>200,
-            'msg'=> 'data inserted succesfylly'
+                if ($supplier) {
+                    $supplier->update($this->getStep2Data($request));
+                    return $this->successResponse();
+                }
+            } elseif ($request->step_3) {
+                $supplier = SupplierRegistrationTemp::find($request->input('hiddenField'));
+
+                if ($supplier) {
+                    $supplier->update($this->getStep3Data($request));
+                    return $this->successResponse();
+                }
+            } elseif ($request->step_4) {
+                $this->validateStep4($request);
+
+                $supplier = SupplierRegistrationTemp::find($request->input('hiddenField'));
+
+                if ($supplier) {
+                    $supplier->update($this->getStep4Data($request));
+                    return $this->successResponse();
+                }
+            }
+
+            return $this->errorResponse(__('auth.invalidInputData'));
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
+    /**
+     * Validate request data for step 1.
+     *
+     * @param Request $request
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException
+     */
+
+    private function validateStep1(Request $request): void
+    {
+        $validator = Validator::make($request->all(), [
+            'business_name' => 'required|string',
+            'gst' => 'required|string|max:16',
+            'website_url' => 'nullable|url|max:255',
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'nullable|string|max:50',
+            'mobile' => 'required|string|max:10',
+            'designation' => 'nullable|string|max:50',
+            'address' => 'nullable|string',
+            'state' => 'nullable|string|max:60',
+            'city' => 'nullable|string|max:60',
+            'pin_code' => 'nullable|integer|min:6',
+        ]);
+
+        // Customize the validation error messages
+        $validator->setAttributeNames([
+            'business_name' => 'Business Name',
+            'gst' => 'GST',
+            'website_url' => 'Website URL',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'mobile' => 'Mobile',
+            'designation' => 'Designation',
+            'address' => 'Address',
+            'state' => 'State',
+            'city' => 'City',
+            'pin_code' => 'Pin Code',
+        ]);
+
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            // Get the validation errors and throw the exception with modified error message
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => $errorMessage.'-'.$field]);
+            throw $message;
+        }
+    }
+
+    /**
+     * Get data array for step 1.
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function getStep1Data(Request $request): array
+    {
+        return [
+            'business_name' => $request->input('business_name'),
+            'gst' => $request->input('gst'),
+            'website_url' => $request->input('website_url'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'mobile' => $request->input('mobile'),
+            'designation' => $request->input('designation'),
+            'address' => $request->input('address'),
+            'state' => $request->input('state'),
+            'city' => $request->input('city'),
+            'pin_code' => $request->input('pin_code'),
         ];
-        return response()->json($data,200);
+    }
+
+    /**
+     * Get data array for step 2.
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function getStep2Data(Request $request): array
+    {
+        return [
+            'bulk_dispatch_time' => $request->input('bulk_dispatch_time') ? 1 : 0,
+            'dropship_dispatch_time' => $request->input('dropship_dispatch_time') ? 1 : 0,
+            'product_quality_confirm' => $request->input('product_quality_confirm') ? 1 : 0,
+            'business_compliance_confirm' => $request->input('business_compliance_confirm') ? 1 : 0,
+        ];
+    }
+
+    /**
+     * Get data array for step 3.
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function getStep3Data(Request $request): array
+    {
+        return [
+            'stationery' => $request->input('category1') ? 1 : 0,
+            'furniture' => $request->input('category2') ? 1 : 0,
+            'food_and_bevrage' => $request->input('category3') ? 1 : 0,
+            'electronics' => $request->input('category4') ? 1 : 0,
+            'groceries' => $request->input('category5') ? 1 : 0,
+            'baby_products' => $request->input('category6') ? 1 : 0,
+            'gift_cards' => $request->input('category7') ? 1 : 0,
+            'cleaining_supplies' => $request->input('category8') ? 1 : 0,
+            'through_sms' => $request->input('channel1') ? 1 : 0,
+            'through_email' => $request->input('channel2') ? 1 : 0,
+            'google_search' => $request->input('channel3') ? 1 : 0,
+            'social_media' => $request->input('channel4') ? 1 : 0,
+            'referred' => $request->input('channel5') ? 1 : 0,
+            'others' => $request->input('channel6') ? 1 : 0,
+        ];
+    }
+
+    /**
+     * Validate request data for step 4.
+     *
+     * @param Request $request
+     * @return void
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    private function validateStep4(Request $request): void
+    {
+        Validator::make($request->all(), [
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
+        ])->validate();
+    }
+
+    /**
+     * Get data array for step 4.
+     *
+     * @param Request $request
+     * @return array
+     */
+    private function getStep4Data(Request $request): array
+    {
+        return [
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->input('password')),
+        ];
+    }
+
+    /**
+     * Generate a success response.
+     *
+     * @param int|null $id
+     * @return JsonResponse
+     */
+    private function successResponse(int $id = null): JsonResponse
+    {
+        $response = [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'message' => __('auth.registerSuccess'),
+        ];
+
+        if ($id) {
+            $response['id'] = $id;
+        }
+
+        return response()->json(['data' => $response],  __('statusCode.statusCode200'));
+    }
+
+    /**
+     * Generate an error response.
+     *
+     * @param string $message
+     * @return JsonResponse
+     */
+    private function errorResponse(string $message, string $key = null): JsonResponse
+    {
+        $response = [
+            'statusCode' => __('statusCode.statusCode400'),
+            'status' => __('statusCode.status400'),
+            'message' => $message
+        ];
+        if ($key) {
+            $response['key'] = $key;
+        }
+        return response()->json(['data' => $response], __('statusCode.statusCode400'));
     }
 }
-

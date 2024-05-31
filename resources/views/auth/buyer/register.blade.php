@@ -1,4 +1,4 @@
-
+<body>
     <div class="login-wrapper">
       <div class="loginimages">
       @include('auth.layout.sidebar_slider')
@@ -268,12 +268,11 @@
               </div>
             </div>
           </div>
-          @include('auth.layout.footer')
+          <footer class="loginfooter">&copy; 2024 ekomn.com, All Rights Reserved</footer>
         </div>
       </div>
     </div>
-    
-    @section('custom_script')
+    <script type="text/javascript" src="assets/js/bootstrap.bundle.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const section_1_next = document.querySelector(".section_1_next");
@@ -324,5 +323,4 @@
         });
       });
     </script>
-    @endsection
-  
+  </body>
