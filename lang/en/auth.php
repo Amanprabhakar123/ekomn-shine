@@ -22,5 +22,6 @@ return [
     'verify'=> 'Your email verification link has been successfully sent.',
     'verifySuccess' => 'Email verify successfully.',
     'verifyFail' => 'Your email address is not verified.',
-    'invalidVerificationData' => 'Invalid verification data.'
+    'invalidVerificationData' => 'Invalid verification data.',
+    'invalidInputData' => 'Invalid Input field or something went wrong'
 ];
