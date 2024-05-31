@@ -9,6 +9,7 @@ use App\Http\Controllers\APIAuth\ForgotController;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\APIAuth\ApiRegistraionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +52,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/reset', [ResetController::class, 'reset']);
     Route::post('resend', [VerificationController::class, 'resend']);
     Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
-    // Route::post('reistraion', [ApiRegistraionController::class, 'setData']);
+    Route::post('registration', [ApiRegistraionController::class, 'setData']);
 });
 
 // Route group for authenticated routes
