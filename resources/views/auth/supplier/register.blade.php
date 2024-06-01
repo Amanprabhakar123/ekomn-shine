@@ -735,6 +735,11 @@
             $('.section_1').hide();
             $('.section_2').show().addClass('show_section_2');
           }
+          if (response.data.statusCode == 422) {
+            const field = response.data.key;
+            $(`#${field}`).addClass('is-invalid');
+            $(`#${field}Err`).text(response.data.message);
+          }
         })
         .catch(error => {
           console.error('Error222:', error);
@@ -812,6 +817,7 @@
         var email = $("#email").val();
         var password = $("#password").val();
         var confirm_password = $("#confirm_password").val();
+        const regex = /^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/;
 
         var isValid = true;
 
@@ -832,7 +838,12 @@
             $('#password').addClass('is-invalid');
             $('#passwordErr').text('Please enter your password.');
             isValid = false;
-        } 
+        }
+        if (!regex.test(password)) {
+            $('#password').addClass('is-invalid');
+            $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
+            isValid = false;
+        }
         if (!confirm_password) {
             $('#confirm_password').addClass('is-invalid');
             $('#confirm_passwordErr').text('Please enter your confirm password.');

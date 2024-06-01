@@ -51,6 +51,7 @@ class ApiRegistraionController extends Controller
 
                 if ($supplier) {
                     $supplier->update($this->getStep4Data($request));
+                    //
                     return $this->successResponse();
                 }
             }
@@ -83,21 +84,6 @@ class ApiRegistraionController extends Controller
             'state' => 'nullable|string|max:60',
             'city' => 'nullable|string|max:60',
             'pin_code' => 'nullable|integer|min:6',
-        ]);
-
-        // Customize the validation error messages
-        $validator->setAttributeNames([
-            'business_name' => 'Business Name',
-            'gst' => 'GST',
-            'website_url' => 'Website URL',
-            'first_name' => 'First Name',
-            'last_name' => 'Last Name',
-            'mobile' => 'Mobile',
-            'designation' => 'Designation',
-            'address' => 'Address',
-            'state' => 'State',
-            'city' => 'City',
-            'pin_code' => 'Pin Code',
         ]);
 
         try {
@@ -233,16 +219,22 @@ class ApiRegistraionController extends Controller
      * @param string $message
      * @return JsonResponse
      */
-    private function errorResponse(string $message, string $key = null): JsonResponse
+    private function errorResponse(string $message): JsonResponse
     {
+        $parts = explode("-", $message);
+        $key = '';
+        if(!empty($parts)){
+            $message = $parts[0];
+            $key = $parts[1] ?? null;
+        }
         $response = [
-            'statusCode' => __('statusCode.statusCode400'),
-            'status' => __('statusCode.status400'),
+            'statusCode' => __('statusCode.statusCode422'),
+            'status' => __('statusCode.status422'),
             'message' => $message
         ];
         if ($key) {
             $response['key'] = $key;
         }
-        return response()->json(['data' => $response], __('statusCode.statusCode400'));
+        return response()->json(['data' => $response], __('statusCode.statusCode200'));
     }
 }
