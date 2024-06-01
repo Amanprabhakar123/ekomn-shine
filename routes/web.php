@@ -7,9 +7,10 @@ use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\APIAuth\ForgotController;
 use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\ProfileController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\APIAuth\ApiRegistraionController;
+use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,7 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
 });
 
 Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('profile', [ProfileController::class, 'editProfile'])->name('profile');
 
 
 // Route group for API authentication routes
@@ -52,7 +54,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/reset', [ResetController::class, 'reset']);
     Route::post('resend', [VerificationController::class, 'resend']);
     Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
-    Route::post('registration', [ApiRegistraionController::class, 'setData']);
+    Route::post('registration', [SupplierRegistraionController::class, 'setData']);
 });
 
 // Route group for authenticated routes

@@ -24,4 +24,21 @@ class DashboardController extends Controller
         }
         abort('403', 'Unauthorized action.');
     }
+
+    /**
+     * Display the user's profile.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+
+    public function editProfile(){
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+            return view('dashboard.supplier.profile');
+        } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+            return view('dashboard.buyer.profile');
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+            return view('dashboard.admin.profile');
+        }
+        abort('403', 'Unauthorized action.');
+    }
 }

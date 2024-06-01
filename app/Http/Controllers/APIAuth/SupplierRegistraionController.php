@@ -10,7 +10,7 @@ use App\Models\SupplierRegistrationTemp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ApiRegistraionController extends Controller
+class SupplierRegistraionController extends Controller
 {
     /**
      * Handle the data setting process for supplier registration.
