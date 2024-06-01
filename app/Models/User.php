@@ -105,7 +105,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         $this->notify(new VerifyEmail);
     }
 
-
     /**
      * Send the password reset notification.
      *
@@ -116,5 +115,61 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         // Your your own implementation.
         $this->notify(new ResetPasswordNotification($token));
+    }
+    
+    /**
+     * Mutator for setting the name column by concatenating first_name and last_name.
+     *
+     * @param string $value
+     */
+    public function setFirstNameAttribute($value)
+    {
+        $names = explode(' ', $this->attributes['name']);
+        $lastName = isset($names[1]) ? $names[1] : '';
+        $this->attributes['name'] = $value . ' ' . $lastName;
+    }
+
+    /**
+     * Mutator for setting the name column by concatenating first_name and last_name.
+     *
+     * @param string $value
+     */
+    public function setLastNameAttribute($value)
+    {
+        $names = explode(' ', $this->attributes['name']);
+        $firstName = $names[0];
+        $this->attributes['name'] = $firstName . ' ' . $value;
+    }
+
+    /**
+     * Accessor for getting the first name.
+     *
+     * @return string
+     */
+    public function getFirstNameAttribute()
+    {
+        $names = explode(' ', $this->attributes['name']);
+        return $names[0];
+    }
+
+    /**
+     * Accessor for getting the last name.
+     *
+     * @return string
+     */
+    public function getLastNameAttribute()
+    {
+        $names = explode(' ', $this->attributes['name']);
+        return $names[1] ?? '';
+    }
+
+    /**
+     * Accessor for getting the full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->attributes['name'];
     }
 }
