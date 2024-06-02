@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('dropship_dispatch_time')->default(false);
             $table->boolean('product_quality_confirm')->default(false);
             $table->boolean('business_compliance_confirm')->default(false);
+            $table->integer('product_qty')->default(0);
             $table->enum('heard_about_ekomn', ['through_sms', 'through_email', 'google_search', 'social_media', 'referred', 'others'])->nullable()->default(null);
             $table->timestamps();
         });
