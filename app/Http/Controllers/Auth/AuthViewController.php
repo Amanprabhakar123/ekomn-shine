@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\models\ProductCategory;
 use Illuminate\Http\Request;
 
 /**
@@ -27,6 +28,7 @@ class AuthViewController extends Controller
      */
     public function loginFormView()
     {
-        return view('auth.layout.app');
+        $prouct = ProductCategory::all();
+        return view('auth.layout.app', ['product' => $prouct]);
     }
 }

@@ -138,45 +138,21 @@
                         <label class="ack_q_w" for="product_qty">How many products you have in your catalog that you wish to sell?</label>
                         <!-- this is hidden field step 1 -->
                         <input type="hidden" class="form-control" id="step_3" name="step_3" value="step_3" />
-                        <input class="qt_inp form-control" type="number" id="product_qty" placeholder="Qty." aria-label="Product Quantity" />
+                        <input class="qt_inp form-control" type="number" name="product_qty" id="product_qty" placeholder="Qty." aria-label="Product Quantity" />
                       </div>
                     </li>
                     <li>
                       <label class="ack_q_w required">Select your product categories</label>
                       <ul class="categoryList listnone">
+                        @foreach ($product as $product)
+
                         <li>
-                          <input class="form-check-input" type="checkbox" id="category1" />
-                          <label for="category1">Stationery</label>
+                          <input class="form-check-input" type="checkbox" name="product_category[]" id="{{$product->id}}" />
+                          <label for="{{$product->id}}">{{ $product->name }}</label>
                         </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category2" />
-                          <label for="category2">Furniture</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category3" />
-                          <label for="category3">Food and beverage</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category4" />
-                          <label for="category4">Electronics</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category5" />
-                          <label for="category5">Groceries</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category6" />
-                          <label for="category6">Baby products</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category7" />
-                          <label for="category7">Gift cards</label>
-                        </li>
-                        <li>
-                          <input class="form-check-input" type="checkbox" id="category8" />
-                          <label for="category8">Cleaning supplies</label>
-                        </li>
-                      </ul>
+                        @endforeach
+
+
                     </li>
                   </ul>
                   <div class="mt30">
@@ -269,6 +245,7 @@
         </section>
         <!-- hidden input feleid -->
         <input type="hidden" id="hiddenField">
+        <div id="error-message" style="color:red; display:none;"></div> <!-- rror messag show and hide -->
       </div>
       <div class="loginForm t_u_s" style="display: none;">
         <div class="brand-logo d-flex justify-content-center">
@@ -296,381 +273,6 @@
 
 @section('custom_script')
 <script>
-  /*
-  $(document).ready(function() {
-
-
-    // Function to clear error messages for email and password fields
-    function clearErrorMessages() {
-        $('#business_name').removeClass('is-invalid');
-        $('#business_nameErr').text('');
-
-        $('#gst').removeClass('is-invalid');
-        $('#gstErr').text('');
-
-        $('#first_name').removeClass('is-invalid');
-        $('#first_nameErr').text('');
-
-        $('#mobile').removeClass('is-invalid');
-        $('#mobileErr').text('');
-
-        // $('#designation').removeClass('is-invalid');
-        // $('#designationErr').text('');
-
-        $('#address').removeClass('is-invalid');
-        $('#addressErr').text('');
-
-        $('#state').removeClass('is-invalid');
-        $('#stateErr').text('');
-
-        $('#city').removeClass('is-invalid');
-        $('#cityErr').text('');
-
-        $('#pin_code').removeClass('is-invalid');
-        $('#pin_codeErr').text('');
-
-        $('#email').removeClass('is-invalid');
-        $('#emailErr').text('');
-
-        $('#password').removeClass('is-invalid');
-        $('#passwordErr').text('');
-
-        $('#confirm_password').removeClass('is-invalid');
-        $('#confirm_passwordErr').text('');
-    }
-
-    // Call clearErrorMessages function when the email input is focused
-    $('#business_name').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#gst').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#first_name').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#mobile').focus(function() {
-        clearErrorMessages();
-    });
-
-    // $('#designation').focus(function() {
-    //     clearErrorMessages();
-    // });
-
-    $('#address').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#state').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#city').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#pin_code').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#email').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#password').focus(function() {
-        clearErrorMessages();
-    });
-
-    $('#confirm_password').focus(function() {
-        clearErrorMessages();
-    });
-    $('#formStep_1').submit(function(event) {
-      event.preventDefault();
-      // Retrieve form values
-      var step_1 = $('#step_1').val(); // this is hidden field
-      var businessName = $('#business_name').val();
-      var gst = $('#gst').val();
-      var website = $('#website_url').val();
-      var firstName = $('#first_name').val();
-      var lastName = $('#last_name').val();
-      var mobile = $('#mobile').val();
-      var designation = $('#designation').val();
-      var address = $('#address').val();
-      var state = $('#state').val();
-      var city = $('#city').val();
-      var pinCode = $('#pin_code').val();
-
-      
-
-          // Show error message for empty fields
-          if (!businessName) {
-              $('#business_name').addClass('is-invalid'); // Add red border to email field
-              $('#business_nameErr').text('Please enter your email.'); // Display error message for email
-          } 
-
-          if (!gst) {
-              $('#gst').addClass('is-invalid'); // Add red border to email field
-              $('#gstErr').text('Please enter your email.'); // Display error message for email
-          } 
-          if (!firstName) {
-              $('#first_name').addClass('is-invalid'); // Add red border to password field
-              $('#first_nameErr').text('Please enter your password.'); // Display error message for password
-              
-          }
-          if (!mobile) {
-              $('#mobile').addClass('is-invalid'); // Add red border to password field
-              $('#mobileErr').text('Please enter your password.'); // Display error message for password
-          } 
-          // if (!designation) {
-          //     $('#designation').addClass('is-invalid'); // Add red border to password field
-          //     $('#designationErr').text('Please enter your password.'); // Display error message for password
-          // } 
-          if (!address) {
-              $('#address').addClass('is-invalid'); // Add red border to password field
-              $('#addressErr').text('Please enter your password.'); // Display error message for password
-          } 
-          if (!state) {
-              $('#state').addClass('is-invalid'); // Add red border to password field
-              $('#stateErr').text('Please enter your password.'); // Display error message for password
-          } 
-          if (!city) {
-              $('#city').addClass('is-invalid'); // Add red border to password field
-              $('#cityErr').text('Please enter your password.'); // Display error message for password
-          } 
-          if (!pinCode) {
-              $('#pin_code').addClass('is-invalid'); // Add red border to password field
-              $('#pin_codeErr').text('Please enter your password.'); // Display error message for password
-              return; // Exit the function if any field is empty
-          } 
-           
-          
-          
-      
-
-      // If all fields are filled, proceed with form submission
-      const formData_1 = {
-        business_name: businessName,
-        step_1: step_1,
-        gst: gst,
-        website: website,
-        first_name: firstName,
-        last_name: lastName,
-        mobile: mobile,
-        designation: designation,
-        address: address,
-        state: state,
-        city: city,
-        pin_code: pinCode
-      };
-
-      // Call APIRequest function with login endpoint and form data
-      ApiRequest('registration', 'POST', formData_1)
-        .then(response => {
-          // If login successful, store token in sessionStorage
-
-          if (response.data.statusCode = 200) {
-
-            alert('registered successful!');
-            $('#hiddenField').val(response.data.id);
-            $('.section_1').css('display', 'none')
-            $('.section_2').css('display', 'block')
-
-            setTimeout(function() {
-              $(".section_2").show().addClass("show_section_2");
-            }, 10);
-
-
-            // Redirect to dashboard or perform other actions
-          } else {
-            alert('register failed!');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Login failed!');
-        });
-    });
-
-    $('#formStep_2').submit(function(event) {
-      event.preventDefault();
-      // Retrieve form values
-
-      var step_2 = $('#step_2').val();
-      var hiddenField = $('#hiddenField').val();
-      var bulk_dispatch_time_isChecked = $("#bulk_dispatch_time").prop("checked") ? 1 : 0;
-      var dropship_dispatch_time_isChecked = $("#dropship_dispatch_time").prop("checked") ? 1 : 0;
-      var product_quality_confirm_isChecked = $("#product_quality_confirm").prop("checked") ? 1 : 0;
-      var business_compliance_confirm_isChecked = $("#business_compliance_confirm").prop("checked") ? 1 : 0;
-
-
-      const formData_2 = {
-        step_2: step_2,
-        hiddenField: hiddenField,
-        bulk_dispatch_time: bulk_dispatch_time_isChecked,
-        dropship_dispatch_time: dropship_dispatch_time_isChecked,
-        product_quality_confirm: product_quality_confirm_isChecked,
-        business_compliance_confirm: business_compliance_confirm_isChecked,
-      };
-
-
-      ApiRequest('registration', 'POST', formData_2)
-        .then(response => {
-          if (response.data.statusCode = 200) {
-            alert('registered successful!');
-            $('.section_1').css('display', 'none')
-            $('.section_2').css('display', 'none')
-            $('.section_3').css('display', 'block')
-
-            setTimeout(function() {
-              $(".section_3").show().addClass("show_section_3");
-            }, 10);
-
-
-            // Redirect to dashboard or perform other actions
-          } else {
-            alert('register failed!');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Login failed!');
-        });
-    });
-
-    // form step 3 start here
-    $('#formData_3').submit(function(event) {
-      event.preventDefault();
-
-      var step_3 = $('#step_3').val();
-      var hiddenField = $('#hiddenField').val();
-      var category1 = $("#category1").prop("checked") ? 1 : 0;
-      var category2 = $("#category2").prop("checked") ? 1 : 0;
-      var category3 = $("#category3").prop("checked") ? 1 : 0;
-      var category4 = $("#category4").prop("checked") ? 1 : 0;
-      var category5 = $("#category5").prop("checked") ? 1 : 0;
-      var category6 = $("#category6").prop("checked") ? 1 : 0;
-      var category7 = $("#category7").prop("checked") ? 1 : 0;
-      var category8 = $("#category8").prop("checked") ? 1 : 0;
-      var channel1 = $("#channel1").prop("checked") ? 1 : 0;
-      var channel2 = $("#channel2").prop("checked") ? 1 : 0;
-      var channel3 = $("#channel3").prop("checked") ? 1 : 0;
-      var channel4 = $("#channel4").prop("checked") ? 1 : 0;
-      var channel5 = $("#channel5").prop("checked") ? 1 : 0;
-      var channel6 = $("#channel6").prop("checked") ? 1 : 0;
-
-
-
-      const formData_3 = {
-        step_3: step_3,
-        hiddenField: hiddenField,
-        category1: category1,
-        category2: category2,
-        category3: category3,
-        category4: category4,
-        category5: category5,
-        category6: category6,
-        category7: category7,
-        category8: category8,
-        channel1: channel1,
-        channel2: channel2,
-        channel3: channel3,
-        channel4: channel4,
-        channel5: channel5,
-        channel6: channel6
-      };
-
-      ApiRequest('registration', 'POST', formData_3)
-        .then(response => {
-          // If login successful, store token in sessionStorage
-          // console.log(formData_2)
-          if (response.data.statusCode = 200) {
-            alert('registered successful!');
-
-            // $('.section_1').css('display', 'none')
-            $('.section_1').css('display', 'none')
-            $('.section_2').css('display', 'none')
-            $('.section_3').css('display', 'none')
-            $('.section_4').css('display', 'block')
-
-            setTimeout(function() {
-              $(".section_4").show().addClass("show_section_4");
-            }, 10);
-
-
-            // Redirect to dashboard or perform other actions
-          } else {
-            alert('register failed!');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Login failed!');
-        });
-
-    });
-    $('#formData_4').submit(function(event) {
-      event.preventDefault();
-
-      var step_4 = $('#step_4').val();
-      var hiddenField = $('#hiddenField').val();
-      var email = $("#email").val()
-      var password = $("#password").val();
-      var confirm_password = $("#confirm_password").val();
-
-      if (!email) {
-              $('#email').addClass('is-invalid'); // Add red border to password field
-              $('#emailErr').text('Please enter your email.'); // Display error message for password
-          } 
-          if (!password) {
-              $('#password').addClass('is-invalid'); // Add red border to password field
-              $('#passwordErr').text('Please enter your password.'); // Display error message for password
-          } 
-          if (!confirm_password) {
-              $('#confirm_password').addClass('is-invalid'); // Add red border to password field
-              $('#confirm_passwordErr').text('Please enter your confirm password.'); // Display error message for password
-              return;
-          } 
-          if (password !== confirm_password) {
-              $('#confirm_password').addClass('is-invalid'); // Add red border to password field
-              $('#confirm_passwordErr').text('Password does not match.'); // Display error message for password
-              return;
-          } 
-
-
-      const formData_4= {
-        step_4: step_4,
-        hiddenField: hiddenField,
-        email: email,
-        password: password,
-        confirm_password: confirm_password,
-      };
-
-      ApiRequest('registration', 'POST', formData_4)
-        .then(response => {
-         
-          if (response.data.statusCode = 200) {
-            alert('registered successful!');
-            $('.register').css('display', 'none')
-            
-            setTimeout(function() {
-              $('.t_u_s').css('display', 'block')
-            }, 10);
-          } else {
-            alert('register failed!');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Login failed!');
-        });
-
-    });
-  });
-  */
-
   $(document).ready(function() {
 
     // Function to clear error messages for all fields
@@ -750,6 +352,43 @@
     $('#formStep_2').submit(function(event) {
       event.preventDefault();
 
+      // Clear previous error messages
+      $('#error-message').hide().text('');
+
+      // Perform validation
+      let isValid = true;
+      let errorMessage = '';
+
+      if (!$('#bulk_dispatch_time').is(':checked') &&
+        !$('#dropship_dispatch_time').is(':checked') &&
+        !$('#product_quality_confirm').is(':checked') &&
+        !$('#business_compliance_confirm').is(':checked')) {
+        isValid = false;
+        errorMessage += 'All checkbox must be selected. ';
+      }
+      // Example validation: Ensure step_2 is not empty
+      else if (!$('#bulk_dispatch_time').is(":checked")) {
+        isValid = false;
+        errorMessage += 'bulk dispatch time is required. ';
+
+      } else if (!$('#dropship_dispatch_time').is(":checked")) {
+        isValid = false;
+        errorMessage += 'dropship dispatch time is required. ';
+      } else if (!$('#product_quality_confirm').is(":checked")) {
+        isValid = false;
+        errorMessage += 'product quality confirm is required. ';
+      } else if (!$('#business_compliance_confirm').is(":checked")) {
+        isValid = false;
+        errorMessage += 'business compliance confirm is required. ';
+      }
+
+      if (!isValid) {
+        $('#error-message').text(errorMessage).show();
+        return;
+      }
+
+      // If validation fails, show error message and prevent form submission
+
       const formData_2 = {
         step_2: $('#step_2').val(),
         hiddenField: $('#hiddenField').val(),
@@ -776,24 +415,48 @@
     // Form submission handler for Step 3
     $('#formData_3').submit(function(event) {
       event.preventDefault();
+      // Clear previous error messages
+      // Hide and clear any previous error message
+      $('#error-message').hide().text('');
+
+      var quantity = $('#product_qty').val();
+      if (isNaN(quantity)) {
+        $('#error-message').text('Quantity must be a number.').show();
+      } else if (quantity < 1) {
+        $('#error-message').text('At least Quantity must be 1').show();
+        return;
+      }
+
+      // Initialize variables
+      var isAnyCheckboxChecked = false;
+      var checkboxData = {};
+
+      // Loop through all checkboxes
+      $('#formData_3 input[type="checkbox"]').each(function() {
+        // Store the state of each checkbox (1 if checked, 0 if not)
+        checkboxData[$(this).attr('id')] = $(this).is(':checked') ? 1 : 0;
+        // Check if at least one checkbox is checked
+        if ($(this).is(':checked')) {
+          isAnyCheckboxChecked = true;
+        }
+      });
+      console.log(checkboxData)
+
+      // If no checkboxes are checked, show the error message
+      if (!isAnyCheckboxChecked) {
+        $('#error-message').text('At least one checkbox must be checked.').show();
+        return;
+      }
+
+      let checkedChannel = $('input[type="radio"]:checked').attr('id');
+      // Continue with the rest of your code here if needed
 
       const formData_3 = {
         step_3: $('#step_3').val(),
         hiddenField: $('#hiddenField').val(),
-        category1: $("#category1").is(":checked") ? 1 : 0,
-        category2: $("#category2").is(":checked") ? 1 : 0,
-        category3: $("#category3").is(":checked") ? 1 : 0,
-        category4: $("#category4").is(":checked") ? 1 : 0,
-        category5: $("#category5").is(":checked") ? 1 : 0,
-        category6: $("#category6").is(":checked") ? 1 : 0,
-        category7: $("#category7").is(":checked") ? 1 : 0,
-        category8: $("#category8").is(":checked") ? 1 : 0,
-        channel1: $("#channel1").is(":checked") ? 1 : 0,
-        channel2: $("#channel2").is(":checked") ? 1 : 0,
-        channel3: $("#channel3").is(":checked") ? 1 : 0,
-        channel4: $("#channel4").is(":checked") ? 1 : 0,
-        channel5: $("#channel5").is(":checked") ? 1 : 0,
-        channel6: $("#channel6").is(":checked") ? 1 : 0,
+        product_qty: $('#product_qty').val(),
+        product_category: checkboxData,
+        product_channel: checkedChannel
       };
 
       ApiRequest('registration', 'POST', formData_3)
@@ -811,78 +474,75 @@
     });
 
     $('#formData_4').submit(function(event) {
-        event.preventDefault();
+      event.preventDefault();
 
-        var hiddenField = $('#hiddenField').val();
-        var email = $("#email").val();
-        var password = $("#password").val();
-        var confirm_password = $("#confirm_password").val();
-        const regex = /^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/;
+      var hiddenField = $('#hiddenField').val();
+      var email = $("#email").val();
+      var password = $("#password").val();
+      var confirm_password = $("#confirm_password").val();
+      const regex = /^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/;
 
-        var isValid = true;
+      var isValid = true;
 
-        // Clear previous errors
-        $('#email').removeClass('is-invalid');
-        $('#emailErr').text('');
-        $('#password').removeClass('is-invalid');
-        $('#passwordErr').text('');
-        $('#confirm_password').removeClass('is-invalid');
-        $('#confirm_passwordErr').text('');
+      // Clear previous errors
+      $('#email').removeClass('is-invalid');
+      $('#emailErr').text('');
+      $('#password').removeClass('is-invalid');
+      $('#passwordErr').text('');
+      $('#confirm_password').removeClass('is-invalid');
+      $('#confirm_passwordErr').text('');
 
-        if (!email) {
-            $('#email').addClass('is-invalid');
-            $('#emailErr').text('Please enter your email.');
-            isValid = false;
-        } 
-        if (!password) {
-            $('#password').addClass('is-invalid');
-            $('#passwordErr').text('Please enter your password.');
-            isValid = false;
-        }
-        if (!regex.test(password)) {
-            $('#password').addClass('is-invalid');
-            $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
-            isValid = false;
-        }
-        if (!confirm_password) {
-            $('#confirm_password').addClass('is-invalid');
-            $('#confirm_passwordErr').text('Please enter your confirm password.');
-            isValid = false;
-        } 
-        if (password !== confirm_password) {
-            $('#confirm_password').addClass('is-invalid');
-            $('#confirm_passwordErr').text('Passwords do not match.');
-            isValid = false;
-        } 
+      if (!email) {
+        $('#email').addClass('is-invalid');
+        $('#emailErr').text('Please enter your email.');
+        isValid = false;
+      }
+      if (!password) {
+        $('#password').addClass('is-invalid');
+        $('#passwordErr').text('Please enter your password.');
+        isValid = false;
+      }
+      if (!regex.test(password)) {
+        $('#password').addClass('is-invalid');
+        $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
+        isValid = false;
+      }
+      if (!confirm_password) {
+        $('#confirm_password').addClass('is-invalid');
+        $('#confirm_passwordErr').text('Please enter your confirm password.');
+        isValid = false;
+      }
+      if (password !== confirm_password) {
+        $('#confirm_password').addClass('is-invalid');
+        $('#confirm_passwordErr').text('Passwords do not match.');
+        isValid = false;
+      }
 
-        if (isValid) {
-            const formData_4 = {
-                step_4: $('#step_4').val(),
-                hiddenField: hiddenField,
-                email: email,
-                password: password,
-                password_confirmation: confirm_password
-            };
+      if (isValid) {
+        const formData_4 = {
+          step_4: $('#step_4').val(),
+          hiddenField: hiddenField,
+          email: email,
+          password: password,
+          password_confirmation: confirm_password
+        };
 
-            ApiRequest('registration', 'POST', formData_4)
-                .then(response => {
-                    if (response.data.statusCode == 200) {
-                        $('.register').css('display', 'none');
-                        setTimeout(function() {
-                            $('.t_u_s').css('display', 'block');
-                        }, 10);
-                    } else {
-                        alert('Registration failed!');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
+        ApiRequest('registration', 'POST', formData_4)
+          .then(response => {
+            if (response.data.statusCode == 200) {
+              $('.register').css('display', 'none');
+              setTimeout(function() {
+                $('.t_u_s').css('display', 'block');
+              }, 10);
+            } else {
+              alert('Registration failed!');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
     });
   });
-
 </script>
-
-
 @endsection

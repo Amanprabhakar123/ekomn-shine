@@ -31,6 +31,7 @@ class SupplierRegistraionController extends Controller
 
                 return $this->successResponse($supplier->id);
             } elseif ($request->step_2) {
+                $this->validateStep2($request);
                 $supplier = SupplierRegistrationTemp::find($request->input('hiddenField'));
 
                 if ($supplier) {
@@ -69,7 +70,6 @@ class SupplierRegistraionController extends Controller
      * @return void
      * @throws \Illuminate\Validation\ValidationException
      */
-
     private function validateStep1(Request $request): void
     {
         $validator = Validator::make($request->all(), [
@@ -121,6 +121,33 @@ class SupplierRegistraionController extends Controller
         ];
     }
 
+
+    /**
+     * Validate request data for step 2.
+     *
+     * @param Request $request
+     * @return voidid
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    private function validateStep2(Request $request): void
+    {
+        $validator = Validator::make($request->all(), [
+            'bulk_dispatch_time' => 'required|boolean',
+            'dropship_dispatch_time' => 'required|boolean',
+            'product_quality_confirm' => 'required|boolean',
+            'business_compliance_confirm' => 'required|boolean',
+        ]);
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => $errorMessage.'-'.$field]);
+            throw $message;
+        }
+    }
+
     /**
      * Get data array for step 2.
      *
@@ -137,6 +164,8 @@ class SupplierRegistraionController extends Controller
         ];
     }
 
+
+
     /**
      * Get data array for step 3.
      *
@@ -145,21 +174,26 @@ class SupplierRegistraionController extends Controller
      */
     private function getStep3Data(Request $request): array
     {
+        $validator = Validator::make($request->all(), [
+            'product_qty' => 'required|integer',
+            'product_category' => 'required|array',
+            'product_channel' => 'string',
+        ]);
+
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => $errorMessage.'-'.$field]);
+            throw $message;
+        }
+
         return [
-            'stationery' => $request->input('category1') ? 1 : 0,
-            'furniture' => $request->input('category2') ? 1 : 0,
-            'food_and_bevrage' => $request->input('category3') ? 1 : 0,
-            'electronics' => $request->input('category4') ? 1 : 0,
-            'groceries' => $request->input('category5') ? 1 : 0,
-            'baby_products' => $request->input('category6') ? 1 : 0,
-            'gift_cards' => $request->input('category7') ? 1 : 0,
-            'cleaining_supplies' => $request->input('category8') ? 1 : 0,
-            'through_sms' => $request->input('channel1') ? 1 : 0,
-            'through_email' => $request->input('channel2') ? 1 : 0,
-            'google_search' => $request->input('channel3') ? 1 : 0,
-            'social_media' => $request->input('channel4') ? 1 : 0,
-            'referred' => $request->input('channel5') ? 1 : 0,
-            'others' => $request->input('channel6') ? 1 : 0,
+            'product_qty' => $request->input('product_qty'),
+            'product_category' => $request->input('product_category'),
+            'product_channel' => $request->input('product_channel')
         ];
     }
 
