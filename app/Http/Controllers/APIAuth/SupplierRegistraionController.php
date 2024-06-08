@@ -18,7 +18,7 @@ class SupplierRegistraionController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function setData(Request $request): JsonResponse
+    public function supplierPostData(Request $request): JsonResponse
     {
         try {
             // printR($request->all());

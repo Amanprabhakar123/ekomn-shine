@@ -11,6 +11,7 @@ use App\Http\Controllers\APIAuth\ProfileController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +55,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/reset', [ResetController::class, 'reset']);
     Route::post('resend', [VerificationController::class, 'resend']);
     Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
-    Route::post('registration', [SupplierRegistraionController::class, 'setData']);
+    Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
+    Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 });
 
 // Route group for authenticated routes
