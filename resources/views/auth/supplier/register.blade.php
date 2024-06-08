@@ -330,7 +330,7 @@
       if (!isValid) return;
 
       // Submit form data via API
-      ApiRequest('registration', 'POST', formData_1)
+      ApiRequest('supplier/register', 'POST', formData_1)
         .then(response => {
           if (response.data.statusCode == 200) {
             $('#hiddenField').val(response.data.id);
@@ -440,7 +440,6 @@
           isAnyCheckboxChecked = true;
         }
       });
-      console.log(checkboxData)
 
       // If no checkboxes are checked, show the error message
       if (!isAnyCheckboxChecked) {
