@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('sales_channel_id')->constrained('sales_channels');
             $table->foreignId('company_id')->constrained('company_details');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

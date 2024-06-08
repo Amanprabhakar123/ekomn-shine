@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('cancelled_cheque_file_path', 191)->nullable()->default(null);
             $table->string('signature_image_file_path', 191)->nullable()->default(null);
             $table->boolean('bank_account_verified')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

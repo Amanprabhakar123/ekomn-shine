@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('business_type_id')->constrained('business_types');
             $table->foreignId('company_id')->constrained('company_details');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

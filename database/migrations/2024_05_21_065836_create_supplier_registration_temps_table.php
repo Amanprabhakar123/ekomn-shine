@@ -32,7 +32,8 @@ return new class extends Migration
             $table->string('product_category')->nullable();
             $table->string('product_channel')->nullable();
             $table->string('email')->unique()->nullable();
-            $table->string('password')->nullable();    
+            $table->string('password')->nullable();
+            $table->softDeletes();    
             $table->timestamps();
         });
     }

@@ -19,8 +19,9 @@ return new class extends Migration
             $table->boolean('product_quality_confirm')->default(false);
             $table->boolean('business_compliance_confirm')->default(false);
             $table->integer('product_qty')->default(0);
-            $table->enum('heard_about_ekomn', ['through_sms', 'through_email', 'google_search', 'social_media', 'referred', 'others'])->nullable()->default(null);
+            $table->tinyInteger('heard_about')->default(0); 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

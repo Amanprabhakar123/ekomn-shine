@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('can_handles_id')->constrained('can_handles');
             $table->foreignId('company_id')->constrained('company_details');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -2,30 +2,46 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyAddressDetail extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
-     * @property string $street_address
-     * @property string $state
-     * @property string $nearby_landmark
-     * @property string $location_link
-     * @property string $type
-     * @property string $pincode
-     * @property bool $is_location_verified
-     */
+    * The constant value for billing address type.
+    */
+   const TYPE_BILLING_ADDRESS = 1;
 
-     protected $fillable = [
-        'street_address',
+   /**
+    * The constant value for shipping address type.
+    */
+   const TYPE_SHIPPING_ADDRESS = 2;
+
+   /**
+    * The constant value for delivery address type.
+    */
+   const TYPE_DELIVERY_ADDRESS = 3;
+   
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'company_id',
+        'address_line1',
+        'address_line2',
+        'city',
         'state',
-        'nearby_landmark',
-        'location_link',
-        'type',
         'pincode',
-        'is_location_verified'
+        'country',
+        'landmark',
+        'address_type',
+        'location_link',
+        'is_location_verified',
+        'is_primary'
     ];
 }

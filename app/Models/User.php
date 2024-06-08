@@ -8,6 +8,7 @@ use App\Notifications\VerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +16,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable,  HasRoles;
+    use HasApiTokens, HasFactory, Notifiable,  HasRoles, SoftDeletes;
 
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
