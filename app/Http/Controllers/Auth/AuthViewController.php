@@ -31,4 +31,9 @@ class AuthViewController extends Controller
         $prouct = Category::all();
         return view('auth.layout.app', ['product' => $prouct]);
     }
+
+    public function adminloginFormView()
+    {
+        return view('auth.admin.login');
+    }
 }

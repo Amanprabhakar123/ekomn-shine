@@ -11,12 +11,21 @@
                         <span>Or</span>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="email" name="email" class="form-control userico" placeholder="Email Address" />
-                        <div id="emailError" class="invalid-feedback"></div> <!-- Error message for email -->
+                        <input type="text" id="email" name="email" class="form-control userico @error('email') is-invalid @enderror" placeholder="Email Address" value="{{ old('email') }}" autofocus />
+                        <div id="emailError" class="invalid-feedback">
+                        @error('email')
+                        {{ $message }}
+                        @enderror
+                        </div> <!-- Error message for email -->
+                        
                     </div>
                     <div class="form-group mb-0">
-                        <input type="password" id="password" name="password" class="form-control pwdico" placeholder="Password" />
-                        <div id="passwordError" class="invalid-feedback"></div> <!-- Error message for password -->
+                        <input type="password" id="password" name="password" class="form-control pwdico  @error('password') is-invalid @enderror" placeholder="Password" />
+                        <div id="passwordError" class="invalid-feedback">
+                        @error('password')
+                        {{ $message }}
+                        @enderror
+                        </div> <!-- Error message for password -->
                     </div>
                     <div class="text-end mt-1">
                         <a href="{{ route('buyer.forget') }}" class="a_color text_u">Forgot Password?</a>

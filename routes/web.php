@@ -30,6 +30,7 @@ Route::get('/', function () {
 
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
 Route::get('supplier/login', [AuthViewController::class, 'loginFormView'])->name('supplier.login');
+Route::get('center/admin/login', [AuthViewController::class, 'adminloginFormView'])->name('admin.login');
 Route::get('buyer/register', [AuthViewController::class, 'loginFormView'])->name('buyer.register');
 Route::get('supplier/register', [AuthViewController::class, 'loginFormView'])->name('supplier.register');
 Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->name('supplier.forget');
@@ -42,9 +43,10 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/call-back', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
 });
 
-Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('profile', [ProfileController::class, 'editProfile'])->name('profile');
-
+Route::middleware(['api', 'emailverified'])->group(function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('profile', [ProfileController::class, 'editProfile'])->name('profile');
+});
 
 // Route group for API authentication routes
 Route::group(['prefix' => 'api'], function () {

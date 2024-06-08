@@ -88,6 +88,13 @@ class AuthController extends Controller
                 'password' => 'required|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/',
             ]);
             if ($validator->fails()) {
+                if (config('app.front_end_tech') == false) {
+                     // Get the first validation error key
+                    $firstErrorKey = $validator->errors()->keys()[0];
+                    return redirect()->back()->withInput()->withErrors([
+                        $firstErrorKey => $validator->errors()->first(),
+                    ]);
+                }
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
@@ -95,6 +102,9 @@ class AuthController extends Controller
                 ]], __('statusCode.statusCode400'));
             }
             if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                if (config('app.front_end_tech') == false) {
+                    return redirect()->back()->withInput()->withErrors(['password' => __('auth.failed')]);
+                }
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode401'),
                     'status' => __('statusCode.status401'),
