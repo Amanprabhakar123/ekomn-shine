@@ -25,6 +25,12 @@
 @elseif(Request::path() == 'reset')
 @include('auth.buyer.reset')
 
+@elseif(Request::path() == 'thankyou')
+@include('auth.buyer.thankyou')
+
+
+@elseif(Request::path() == 'payment-failed')
+@include('auth.buyer.payment-failed')
 @endif
 
 @yield('custom_script')

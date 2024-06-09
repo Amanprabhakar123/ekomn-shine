@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CompanyDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,4 +45,22 @@ class CompanyAddressDetail extends Model
         'is_location_verified',
         'is_primary'
     ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_location_verified' => 'boolean',
+        'is_primary' => 'boolean'
+    ];
+
+    /**
+     * Get the company that owns the address.
+     */
+    public function company()
+    {
+        return $this->belongsTo(CompanyDetail::class);
+    }
 }
