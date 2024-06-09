@@ -104,6 +104,11 @@ class SupplierRegistrationTemp extends Model
         ]);   
     }
 
+    $company->operation()->create([
+        'company_id' => $company->id,
+        'product_channel' => $data['product_channel'],
+    ]);
+
     }
 
 }
