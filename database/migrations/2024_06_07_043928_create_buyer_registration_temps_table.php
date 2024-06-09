@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('pin_code', 7)->nullable();
             $table->string('business_name')->default(false); 
-            $table->string('gst')->default(false); 
-            $table->string('pan')->default(false); 
+            $table->string('gst')->nullable(); 
+            $table->string('pan')->nullable(); 
             $table->string('email')->nullable();
             $table->string('password')->nullable(); 
             $table->string('product_channel')->nullable();

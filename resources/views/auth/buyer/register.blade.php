@@ -78,13 +78,13 @@
                   <span class="chooseone">or</span>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="gst" name="gst" placeholder="GST ID" value="123456789"/>
+                      <input type="text" class="form-control" id="gst" name="gst" placeholder="GST ID" value=""/>
                       <div id="gstErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="pan" name="pan" placeholder="PAN" value="1234567890"/>
+                      <input type="text" class="form-control" id="pan" name="pan" placeholder="PAN" value=""/>
                       <div id="panErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -540,7 +540,8 @@ $(document).ready(function () {
 
     // Clear previous error messages
     // clearErrorMessages();
-
+    var gst = $('#gst').val();
+    var pan = $('#pan').val();
     // Retrieve form values
     const formData_1 = {
       step_1: $('#step_1').val(),
@@ -559,7 +560,7 @@ $(document).ready(function () {
 
     // Validate form fields and show error messages
     let isValid = true;
-    const requiredFields = ['first_name', 'mobile', 'address', 'state', 'city', 'pin_code', 'business_name', 'gst', 'pan'];
+    const requiredFields = ['first_name', 'mobile', 'address', 'state', 'city', 'pin_code', 'business_name',];
     requiredFields.forEach(field => {
       if (!formData_1[field]) {
         $(`#${field}`).addClass('is-invalid');
@@ -567,6 +568,13 @@ $(document).ready(function () {
         isValid = false;
       }
     });
+
+    if(!pan && !gst){
+      $('#gst').addClass('is-invalid')
+      $('#pan').addClass('is-invalid')
+      $('#gstErr').text('Please enter your GST ID or PAN.');
+      isValid = false;
+    }
 
     // If form is not valid, exit function
     if (!isValid) return;
