@@ -66,11 +66,17 @@ class BuyerRegistrationController extends Controller
                 'state' => 'nullable|string|max:60',
                 'city' => 'nullable|string|max:60',
                 'pin_code' => 'nullable|integer|min:6',
-                'gst' => 'required|string|max:16',
+                'gst' => 'nullable|string|max:16',
                 'pan' => 'nullable|min:10|max:10',
             ]);
-    
             try {
+                $validator->after(function ($validator) use ($request) {
+                    $data = $request->all();
+                    if (empty($data['gst']) && empty($data['pan'])) {
+                        $validator->errors()->add('gst', 'Please enter either a GST ID or PAN.');
+                        $validator->errors()->add('pan', 'Please enter either a GST ID or PAN.');
+                    }
+                });
                 $validator->validate();
             } catch (ValidationException $e) {
                 // Get the validation errors and throw the exception with modified error message
