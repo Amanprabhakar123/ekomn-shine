@@ -52,7 +52,8 @@ class SupplierRegistraionController extends Controller
 
                 if ($supplier) {
                     $supplier->update($this->getStep4Data($request));
-                    //
+                    $supplier->refresh();
+                    (new SupplierRegistrationTemp())->makeNewSupplierRegisteration($supplier->toArray());
                     return $this->successResponse();
                 }
             }
@@ -62,6 +63,8 @@ class SupplierRegistraionController extends Controller
             return $this->errorResponse($e->getMessage());
         }
     }
+
+   // private function 
 
     /**
      * Validate request data for step 1.

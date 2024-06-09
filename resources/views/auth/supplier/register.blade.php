@@ -398,7 +398,7 @@
         business_compliance_confirm: $("#business_compliance_confirm").is(":checked") ? 1 : 0,
       };
 
-      ApiRequest('registration', 'POST', formData_2)
+      ApiRequest('supplier/register', 'POST', formData_2)
         .then(response => {
           if (response.data.statusCode == 200) {
             $('.section_2').hide();
@@ -458,7 +458,7 @@
         product_channel: checkedChannel
       };
 
-      ApiRequest('registration', 'POST', formData_3)
+      ApiRequest('supplier/register', 'POST', formData_3)
         .then(response => {
           if (response.data.statusCode == 200) {
             $('.section_3').hide();
@@ -526,7 +526,7 @@
           password_confirmation: confirm_password
         };
 
-        ApiRequest('registration', 'POST', formData_4)
+        ApiRequest('supplier/register', 'POST', formData_4)
           .then(response => {
             if (response.data.statusCode == 200) {
               $('.register').css('display', 'none');

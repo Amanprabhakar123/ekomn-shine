@@ -24,6 +24,8 @@ class CompanyAddressDetail extends Model
     * The constant value for delivery address type.
     */
    const TYPE_DELIVERY_ADDRESS = 3;
+   const TYPE_PICKUP_ADDRESS = 4;
+
    
     /**
      * The attributes that are mass assignable.

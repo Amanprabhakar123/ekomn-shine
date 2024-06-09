@@ -1,4 +1,6 @@
 <?php
+use App\Models\CompanyDetail;
+use Illuminate\Support\Str;
 /**
  * Encrypts a string using a salt key.
  *
@@ -68,3 +70,24 @@ if (!function_exists('printR')) {
 
 
 
+if (!function_exists('generateUniqueCompanyUsername')) {
+    function generateUniqueCompanyUsername($companyName)
+    {
+        // Extract the initials
+        $username = '';
+        $words = explode(' ', $companyName);
+        foreach ($words as $word) {
+            $username .= strtoupper($word[0]);
+        }
+        $counter = 1;
+        $originalUsername = $username;
+
+        // Ensure the username is unique
+        while (CompanyDetail::where('display_name', $username)->exists()) {
+            $username = $originalUsername . $counter;
+            $counter++;
+        }
+
+        return $username;
+    }
+}
