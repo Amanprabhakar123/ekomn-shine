@@ -32,8 +32,14 @@ class AuthViewController extends Controller
         return view('auth.layout.app', ['product' => $prouct]);
     }
 
+    /**
+     * Display the admin login form view.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function adminloginFormView()
     {
         return view('auth.admin.login');
     }
+
 }

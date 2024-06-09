@@ -16,12 +16,18 @@ return new class extends Migration
             $table->string('transaction_id');
             $table->uuid('purchase_id'); // unique system id made by us
             $table->unsignedBigInteger('plan_id');
+            $table->unsignedBigInteger('receipt_id');
+            $table->unsignedBigInteger('company_id')->default(0);
+            $table->boolean('is_trial_plan')->default(0);
             $table->string('currency', 20);
-            $table->string('user_email',100);
-            $table->string('mobile_no', 20);
+            $table->string('email',100)->nullable();
+            $table->string('mobile', 20)->nullable();
+            $table->unsignedBigInteger('buyer_id')->default(0); // buyer_id is the user_id of the buyer temp table or buyer table
             $table->decimal('amount', 10, 2);
             $table->string('payment_status', 30);
             $table->longText('json_response');
+            $table->string('razorpay_payment_id')->nullable();
+            $table->string('razorpay_signature')->nullable();
             $table->timestamps();
 
             // Assuming you have a foreign key to the plans table

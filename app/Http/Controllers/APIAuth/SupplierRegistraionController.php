@@ -206,10 +206,20 @@ class SupplierRegistraionController extends Controller
      */
     private function validateStep4(Request $request): void
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
-        ])->validate();
+            'product_channel' => 'string'
+        ]);
+        try {
+            $validator->validate();
+        } catch (ValidationException $e) {
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => $errorMessage.'-'.$field]);
+            throw $message;
+        }
     }
 
     /**

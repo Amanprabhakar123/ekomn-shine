@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CompanyDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,4 +35,12 @@ class CompanyOperation extends Model
         'product_qty',
         'heard_about',
     ];
+
+    /**
+     * Get the company that owns the operation.
+     */
+    public function company()
+    {
+        return $this->belongsTo(CompanyDetail::class);
+    }
 }

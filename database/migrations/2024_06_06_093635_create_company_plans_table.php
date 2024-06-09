@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('plan_id');
             $table->date('subscription_start_date');
             $table->date('subscription_end_date');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            
             $table->timestamps();
 
             // Assuming you have foreign keys to companies and plans tables

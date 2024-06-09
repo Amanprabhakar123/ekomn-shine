@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Database\Seeders\PlanSeeder;
 use Database\Seeders\CanHandleSeeder;
 use Database\Seeders\BusinessTypeSeeder;
 use Database\Seeders\SalesChannelSeeder;
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CanHandleSeeder::class);
         $this->call(BusinessTypeSeeder::class);
         $this->call(SalesChannelSeeder::class);
+        $this->call(PlanSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([

@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class PlanPayment extends Model
 {
     use HasFactory;
+
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+    const STATUS_EXPIRED = 2;
+    
+    const PAYMENT_STATUS_PENDING = 'pending';
+    const PAYMENT_STATUS_SUCCESS = 'success';
+    const PAYMENT_STATUS_FAILED = 'failed';
+    
     protected $fillable = [
         'company_id',
         'plan_id',
