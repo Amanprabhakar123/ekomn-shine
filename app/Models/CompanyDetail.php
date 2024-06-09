@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\CompanyPlan;
+use App\Models\CompanyAddressDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,8 +37,10 @@ class CompanyDetail extends Model
      * @property bool $bank_account_verified
      */
     protected $fillable = [
+        'user_id', // 'user_id' is the id of the user table
         'business_name',
         'display_name',
+        'designation',
         'first_name',
         'last_name',
         'email',
@@ -58,4 +62,33 @@ class CompanyDetail extends Model
         'signature_image_file_path',
         'bank_account_verified',
     ];
+    /**
+     * Get the addresses associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function address()
+    {
+        return $this->hasMany(CompanyAddressDetail::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the operations associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function operation()
+    {
+        return $this->hasMany(CompanyOperation::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the subscriptions associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subscription()
+    {
+        return $this->hasMany(CompanyPlan::class, 'company_id', 'id');
+    }
 }

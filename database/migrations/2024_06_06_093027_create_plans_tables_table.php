@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('is_trial_plan')->default(0);
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('duration', 30)->nullable();

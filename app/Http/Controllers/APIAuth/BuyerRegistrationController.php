@@ -33,7 +33,7 @@ class BuyerRegistrationController extends Controller
                     return $this->successResponse($buyer->id);
                 } elseif ($request->step_2) {
                     $this->validateStep2($request);
-                    $buyer = BuyerRegistrationTemp::find($request->input('hiddenField'));
+                    $buyer = BuyerRegistrationTemp::find(salt_decrypt($request->input('hiddenField')));
     
                     if ($buyer) {
                         $buyer->update($this->getStep2Data($request));
@@ -114,12 +114,20 @@ class BuyerRegistrationController extends Controller
          */
         private function validateStep2(Request $request): void
         {
-            // dd($request->all());
-            Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [
                 'email' => 'required|string|email|unique:users',
                 'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
                 'product_channel' => 'string'
-            ])->validate();
+            ]);
+            try {
+                $validator->validate();
+            } catch (ValidationException $e) {
+                $errors = $validator->errors();
+                $field = $errors->keys()[0]; // Get the first field that failed validation
+                $errorMessage = $errors->first($field);
+                $message = ValidationException::withMessages([$field => $errorMessage.'-'.$field]);
+                throw $message;
+            }
         }
     
         /**
@@ -152,7 +160,7 @@ class BuyerRegistrationController extends Controller
             ];
     
             if ($id) {
-                $response['id'] = $id;
+                $response['id'] = salt_encrypt($id);
             }
     
             return response()->json(['data' => $response],  __('statusCode.statusCode200'));

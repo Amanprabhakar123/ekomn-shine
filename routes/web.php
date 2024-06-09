@@ -7,11 +7,12 @@ use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\APIAuth\ForgotController;
 use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProfileController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,8 @@ Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->nam
 Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
 Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('password.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
+Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
+Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
@@ -59,6 +62,10 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
+
+    // Razorpay payment gateway routes
+    Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
+    Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
 });
 
 // Route group for authenticated routes
@@ -66,3 +73,4 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 });
+

@@ -23,5 +23,8 @@ return [
     'verifySuccess' => 'Email verify successfully.',
     'verifyFail' => 'Your email address is not verified.',
     'invalidVerificationData' => 'Invalid verification data.',
-    'invalidInputData' => 'Invalid Input field or something went wrong'
+    'invalidInputData' => 'Invalid Input field or something went wrong',
+    'paymentOrder' => 'Payment order created successfully.',
+    'paymentSuccess' => 'Payment successfully done.',
+    'paymentFailed' => 'Payment failed.', 
 ];

@@ -404,7 +404,7 @@
             $('.section_2').hide();
             $('.section_3').show().addClass('show_section_3');
           } else {
-            alert('Acknowledgement failed!');
+            // alert('Acknowledgement failed!');
           }
         })
         .catch(error => {
@@ -464,7 +464,7 @@
             $('.section_3').hide();
             $('.section_4').show().addClass('show_section_4');
           } else {
-            alert('Submission failed!');
+            // alert('Submission failed!');
           }
         })
         .catch(error => {
@@ -533,9 +533,12 @@
               setTimeout(function() {
                 $('.t_u_s').css('display', 'block');
               }, 10);
-            } else {
-              alert('Registration failed!');
-            }
+            } 
+           else if (response.data.statusCode == 422) {
+            const field = response.data.key;
+            $(`#${field}`).addClass('is-invalid');
+            $(`#${field}Err`).text(response.data.message);
+          }
           })
           .catch(error => {
             console.error('Error:', error);

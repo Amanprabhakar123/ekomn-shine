@@ -25,8 +25,8 @@ class AuthUserLoginSeeder extends Seeder
 
         $suppleir = User::create([
             'id' => 2, // If your table uses auto-increment for ID, you can omit this field
-            'name' => 'suppleir',
-            'email' => 'suppleir@gmail.com',
+            'name' => 'supplier',
+            'email' => 'supplier@gmail.com',
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('Test@123'), // Change to a hashed password
         ]);
