@@ -1,6 +1,7 @@
 <?php
-
 use App\Models\CompanyDetail;
+use Illuminate\Support\Str;
+
 /**
  * Encrypts a string using a salt key.
  *
@@ -89,6 +90,3 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         return $username;
     }
 }
-
-
-
