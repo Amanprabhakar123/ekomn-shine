@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\APIAuth;
 
+use Carbon\Carbon;
 use App\Models\Plan;
+use App\Models\User;
 use Razorpay\Api\Api;
 use App\Models\Receipt;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
 use App\Models\CompanyPlanPayment;
+use App\Notifications\VerifyEmail;
 use App\Traits\ReceiptIdGenerator;
 use App\Http\Controllers\Controller;
-use App\Models\BuyerRegistrationTemp;
 use App\Models\CompanyAddressDetail;
-use App\Models\CompanyDetail;
-use App\Models\User;
-use Carbon\Carbon;
+use App\Models\BuyerRegistrationTemp;
 
 class PaymentController extends Controller
 {
@@ -257,6 +258,8 @@ class PaymentController extends Controller
             ]);
     
             if (config('app.front_end_tech') == false) {
+                // Trigger email verification notification
+                $buyer->notify(new VerifyEmail);
                 return redirect()->route('thankyou');
             }
             return response()->json(['data' => [
