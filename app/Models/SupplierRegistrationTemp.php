@@ -10,6 +10,7 @@ use App\Models\CompanyDetail;
 use App\Models\CompanyAddressDetail;
 use App\Models\CompanyOperation;
 use App\Models\CompanyProductCategory;
+use Carbon\Carbon;
 
 class SupplierRegistrationTemp extends Model
 {
@@ -49,7 +50,9 @@ class SupplierRegistrationTemp extends Model
     }
 
     private function createNewSupplierAndAttachRole($data){
-        $supplier=  User::create([
+        $supplier=  User::updateOrCreate(
+            ['email' => $data['email']],
+            [
             'name' => trim($data['first_name'].' '.$data['last_name']),
             'email' => $data['email'],
             'password' => $data['password'],
@@ -61,7 +64,10 @@ class SupplierRegistrationTemp extends Model
     }
     private function createSupplierCompany($supplier_id, $data){
         $business_name = trim($data['business_name']);
-      $company =  CompanyDetail::create([
+      $company =  CompanyDetail::updateOrCreate(
+        [            'email' => $data['email'],
+    ],  
+        [
             'user_id' => $supplier_id,
             'business_name' =>  $business_name,
             'display_name' => generateUniqueCompanyUsername($business_name),
@@ -75,7 +81,9 @@ class SupplierRegistrationTemp extends Model
         ]);
 
         
-    CompanyAddressDetail::create([
+    CompanyAddressDetail::updateOrCreate(
+        ['company_id' => $company->id,'address_type' => CompanyAddressDetail::TYPE_PICKUP_ADDRESS,'is_primary' => 1],
+        [
         'company_id' => $company->id,
         'address_line1' => $data['address'],
         'city' => $data['city'],
@@ -86,28 +94,33 @@ class SupplierRegistrationTemp extends Model
         'is_primary' => 1
     ]);
 
-    CompanyOperation::create([
-        'company_id' =>$company->id,
+    CompanyOperation::updateOrCreate(
+        ['company_id' =>$company->id],
+       [ 'company_id' =>$company->id,
         'bulk_dispatch_time' => $data['bulk_dispatch_time'],
         'dropship_dispatch_time' => $data['dropship_dispatch_time'],
         'product_quality_confirm' => $data['product_quality_confirm'],
         'business_compliance_confirm' => $data['business_compliance_confirm'],
-        'product_qty' => $data['product_qty']
-    ]);
+        'product_qty' => $data['product_qty']]
+    );
+    $data['product_category'] = json_decode($data['product_category'], true) ?? [];
+
+    if(count($data['product_category']) > 0){
     foreach ($data['product_category'] as $key => $value) {
         if($value == 0){
             continue;
         }
-        CompanyProductCategory::create([
+        CompanyProductCategory::updateOrCreate(
+            [
+                'product_category_id' => $key,
+                'company_id' => $company->id
+            ],
+            [
             'product_category_id' => $key,
             'company_id' => $company->id
         ]);   
     }
-
-    $company->operation()->create([
-        'company_id' => $company->id,
-        'product_channel' => $data['product_channel'],
-    ]);
+}
 
     }
 
