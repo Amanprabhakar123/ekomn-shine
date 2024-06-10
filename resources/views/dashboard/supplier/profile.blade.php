@@ -12,7 +12,7 @@
                             <div class="ek_group">
                                 <label class="eklabel req">Business name:</label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" placeholder="Your business name" value="{{ auth()->user()->companyDetails->business_name }}" />
+                                    <input type="text" class="form-control" placeholder="Your business name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
                                     <span class="text-danger hide">errr message</span>
                                 </div>
                             </div>
@@ -21,7 +21,7 @@
                                 <div class="ek_f_input">
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" placeholder="First name" value="{{ auth()->user()->companyDetails->first_name }}" />
+                                            <input type="text" class="form-control" placeholder="First name" name="first_name" value="{{ auth()->user()->companyDetails->first_name }}" />
                                         </div>
                                         <div class="col">
                                             <input type="text" class="form-control" placeholder="Last name" value="{{ auth()->user()->companyDetails->last_name }}" />
@@ -32,14 +32,14 @@
                             <div class="ek_group">
                                 <label class="eklabel">Email address:</label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" placeholder="Email address" value="{{ auth()->user()->companyDetails->email}}" />
+                                    <input type="text" class="form-control" placeholder="Email address" name="last_name" value="{{ auth()->user()->companyDetails->email}}" />
                                     <span class="text-danger hide">errr message</span>
                                 </div>
                             </div>
                             <div class="ek_group">
                                 <label class="eklabel">Phone number:</label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" placeholder="Phone number" value="{{auth()->user()->companyDetails->mobile_no}}" />
+                                    <input type="text" class="form-control" placeholder="Phone number" name="mobile_no" value="{{auth()->user()->companyDetails->mobile_no}}" />
                                     <span class="text-danger hide">errr message</span>
                                 </div>
                             </div>
@@ -48,7 +48,7 @@
                                 <div class="ek_f_input">
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" placeholder="PAN number" />
+                                            <input type="text" class="form-control" placeholder="PAN number" name="pan_no" value="{{auth()->user()->companyDetails->pan_no}}"/>
                                             <span class="text-danger hide">errr message</span>
                                         </div>
                                         <div class="col">
@@ -69,7 +69,7 @@
                                 <div class="ek_f_input">
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" placeholder="GST number" value="{{auth()->user()->companyDetails->gst_no}}" />
+                                            <input type="text" class="form-control" placeholder="GST number" name="gst_no" value="{{auth()->user()->companyDetails->gst_no}}" />
                                             <span class="text-danger hide">errr message</span>
                                         </div>
                                         <div class="col">
@@ -90,7 +90,7 @@
                             <h3 class="line_h">Shipping Address<span class="line"></span></h3>
                             <div class="form-group">
                                 <label>Street address<span class="r_color">*</span></label>
-                                <input type="text" class="form-control" placeholder="Enter street address" value="{{ isset($shipping_address) ? $shipping_address->address_line1 : '' }}"/>
+                                <input type="text" class="form-control" placeholder="Enter street address" name="shipping_address" value="{{ isset($shipping_address) ? $shipping_address->address_line1 : '' }}" />
                             </div>
                             {{--
                                 <div class="row">
@@ -132,33 +132,33 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">State</label>
-                                        <input type="text" class="form-control" placeholder="Enter state" value="{{ isset($shipping_address) ? $shipping_address->state : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter state" name="state" value="{{ isset($shipping_address) ? $shipping_address->state : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">city</label>
-                                        <input type="text" class="form-control" placeholder="Enter city" value="{{ isset($shipping_address) ? $shipping_address->city : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter city" name="city" value="{{ isset($shipping_address) ? $shipping_address->city : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label>Pin code<span class="r_color">*</span></label>
-                                        <input type="text" class="form-control" placeholder="Pin code" value="{{ isset($shipping_address) ? $shipping_address->pincode : '' }}">
+                                        <input type="text" class="form-control" placeholder="Pin code" name="pincode" value="{{ isset($shipping_address) ? $shipping_address->pincode : '' }}">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Location link</label>
-                                <input type="text" class="form-control" placeholder="Enter shippinig location link" value="{{ isset($shipping_address) ? $shipping_address->location_link : '' }}"/>
+                                <input type="text" class="form-control" placeholder="Enter shippinig location link" name="location_link" value="{{ isset($shipping_address) ? $shipping_address->location_link : '' }}" />
                             </div>
                         </div>
                         <div class="profilesection">
                             <h3 class="line_h">Billing Address<span class="line"></span></h3>
                             <div class="form-group">
                                 <label>Street address<span class="r_color">*</span></label>
-                                <input type="text" class="form-control" placeholder="Enter street address" value="{{ isset($billing_address) ? $billing_address->address_line1 : '' }}"/>
+                                <input type="text" class="form-control" placeholder="Enter street address" name="address_line1" value="{{ isset($billing_address) ? $billing_address->address_line1 : '' }}" />
                             </div>
                             {{--<div class="row">
                                 <div class="col-sm-12 col-md-4">
@@ -198,19 +198,19 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">State</label>
-                                        <input type="text" class="form-control" placeholder="Enter state" value="{{ isset($billing_address) ? $billing_address->state : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter state" name="state" value="{{ isset($billing_address) ? $billing_address->state : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">city</label>
-                                        <input type="text" class="form-control" placeholder="Enter city" value="{{ isset($billing_address) ? $billing_address->city : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter city" name="city" value="{{ isset($billing_address) ? $billing_address->city : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label>Pin code<span class="r_color">*</span></label>
-                                        <input type="text" class="form-control" placeholder="Pin code" value="{{ isset($billing_address) ? $billing_address->pincode : '' }}">
+                                        <input type="text" class="form-control" placeholder="Pin code" name="pincode" value="{{ isset($billing_address) ? $billing_address->pincode : '' }}">
                                     </div>
                                 </div>
                             </div>
@@ -218,6 +218,14 @@
                         <div class="profilesection">
                             <label class="bold">Business type</label>
                             <ul class="categoryList listnone">
+                                @foreach ($business_type as $business_type)
+                                <li>
+                                    <input class="form-check-input" type="checkbox" id="bt_{{$business_type->id}}" name="product_category[]" {{(in_array($business_type->id, $selected_business_type) ? 'checked' : '')}} />
+                                    <label for="bt_{{$business_type->id}}">{{$business_type->name}}</label>
+                                </li>
+                                @endforeach
+                            </ul>
+                            {{--<ul class="categoryList listnone">
                                 <li>
                                     <input class="form-check-input" type="checkbox" id="Manufacturer" />
                                     <label for="Manufacturer">Manufacturer</label>
@@ -242,11 +250,22 @@
                                     <input class="form-check-input" type="checkbox" id="Wholesaler" />
                                     <label for="Wholesaler">Wholesaler</label>
                                 </li>
-                            </ul>
+                            </ul>--}}
                         </div>
                         <div class="profilesection">
                             <label class="bold">Product categories</label>
                             <ul class="categoryList listnone">
+                                @foreach ($product_category as $product_category)
+                                <li>
+
+                                    <input class="form-check-input" type="checkbox" name="product_category[]" value="{{$product_category->id}}" id="pc_{{$product_category->id}}" {{(in_array($product_category->id, $selected_product_category) ? 'checked' : '')}} />
+                                    <label for="pc_{{$product_category->id}}">{{ $product_category->name }}</label>
+
+
+                                </li>
+                                @endforeach
+                            </ul>
+                            {{--<ul class="categoryList listnone">
                                 <li>
                                     <input class="form-check-input" type="checkbox" id="category1" />
                                     <label for="category1">Stationery</label>
@@ -279,11 +298,20 @@
                                     <input class="form-check-input" type="checkbox" id="category8" />
                                     <label for="category8">Cleaning supplies</label>
                                 </li>
-                            </ul>
+                            </ul>--}}
                         </div>
                         <div class="profilesection">
                             <label class="bold">Can handle</label>
                             <ul class="categoryList listnone">
+                           
+                                @foreach($can_handle as $can_handle)
+                                <li>
+                                    <input class="form-check-input" type="checkbox" id="ch_{{$can_handle->id}}"   {{(in_array($product_category->id, $selected_can_handle) ? 'checked' : '')}}/>
+                                    <label for="ch_{{$can_handle->id}}">{{$can_handle->name}}</label>
+                                </li>
+                                @endforeach
+                            </ul>
+                            {{--<ul class="categoryList listnone">
                                 <li>
                                     <input class="form-check-input" type="checkbox" id="FBALabeling" />
                                     <label for="FBALabeling">FBA Labeling</label>
@@ -304,7 +332,7 @@
                                     <input class="form-check-input" type="checkbox" id="ProductCustomization" />
                                     <label for="ProductCustomization">Product Customization</label>
                                 </li>
-                            </ul>
+                            </ul>--}}
                         </div>
                         <div class="profilesection mt-4">
                             <h3 class="line_h">Alternate Business Contact<span class="line"></span></h3>
@@ -312,32 +340,32 @@
                                 <label class="">Business Performance & Critical events:</label>
                                 <div class="row">
                                     <div class="col">
-                                        <input type="text" class="form-control" placeholder="Full name" />
+                                        <input type="text" class="form-control" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductListings->name : ''}}" />
                                     </div>
                                     <div class="col">
-                                        <input type="text" class="form-control" placeholder="Mobile number" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="">Business Performance & Critical events:</label>
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="text" class="form-control" placeholder="Full name" />
-                                    </div>
-                                    <div class="col">
-                                        <input type="text" class="form-control" placeholder="Mobile number" />
+                                        <input type="text" class="form-control" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductListings->mobile_no : ''}}" />
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="">Business Performance & Critical events:</label>
+                                <label class="">Product Listings:</label>
                                 <div class="row">
                                     <div class="col">
-                                        <input type="text" class="form-control" placeholder="Full name" />
+                                        <input type="text" class="form-control" placeholder="Full name" value="{{!empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->name : ''}}"/>
                                     </div>
                                     <div class="col">
-                                        <input type="text" class="form-control" placeholder="Mobile number" />
+                                        <input type="text" class="form-control" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->mobile_no : ''}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="">Order Delivery Enquiry:</label>
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="text" class="form-control" placeholder="Full name" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->OrderDeliveryEnquiry->name : ''}}"/>
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" class="form-control" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->OrderDeliveryEnquiry->mobile_no : ''}}"/>
                                     </div>
                                 </div>
                             </div>
@@ -350,35 +378,35 @@
                         <div class="ek_group">
                             <label class="eklabel">Bank name:</label>
                             <div class="ek_f_input">
-                                <input type="text" class="form-control" placeholder="Your bank name" />
+                                <input type="text" class="form-control" placeholder="Your bank name" name="bank_name" value="{{ auth()->user()->companyDetails->bank_name }}"/>
                                 <span class="text-danger hide">errr message</span>
                             </div>
                         </div>
                         <div class="ek_group">
                             <label class="eklabel">Account number:</label>
                             <div class="ek_f_input">
-                                <input type="text" class="form-control" placeholder="Your account number" />
+                                <input type="text" class="form-control" placeholder="Your account number" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}"/>
                                 <span class="text-danger hide">errr message</span>
                             </div>
                         </div>
                         <div class="ek_group">
                             <label class="eklabel">Re-enter account number:</label>
                             <div class="ek_f_input">
-                                <input type="text" class="form-control" placeholder="Re-enter your account number" />
+                                <input type="text" class="form-control" placeholder="Re-enter your account number" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}"/>
                                 <span class="text-danger hide">errr message</span>
                             </div>
                         </div>
                         <div class="ek_group">
                             <label class="eklabel">IFSC code:</label>
                             <div class="ek_f_input">
-                                <input type="text" class="form-control" placeholder="eg: SBIN0050232" />
+                                <input type="text" class="form-control" placeholder="eg: SBIN0050232" name="ifsc_code" value="{{ auth()->user()->companyDetails->ifsc_code }}"/>
                                 <span class="text-danger hide">errr message</span>
                             </div>
                         </div>
                         <div class="ek_group">
                             <label class="eklabel">SWIFT Code:</label>
                             <div class="ek_f_input">
-                                <input type="text" class="form-control" placeholder="e.g. SBIN0050232" />
+                                <input type="text" class="form-control" placeholder="e.g. SBIN0050232" name="swift_code" value="{{ auth()->user()->companyDetails->swift_code }}" />
                                 <span class="text-danger hide">errr message</span>
                             </div>
                         </div>
@@ -401,84 +429,26 @@
                         <h3 class="line_h">Language Preferences<span class="line"></span></h3>
                         <div class="form-group mt-3">
                             <label class="bold">I can read</label>
+                           
                             <ul class="categoryList listnone">
+                            @foreach($languages as $language)
                                 <li>
-                                    <input class="form-check-input" type="checkbox" id="English" />
-                                    <label for="English">English</label>
+                                    <input class="form-check-input" type="checkbox" name="language" id="l_{{$language}}" />
+                                    <label for="English">{{$language}}</label>
                                 </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Hindi" />
-                                    <label for="Hindi">Hindi</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Bengali" />
-                                    <label for="Bengali">Bengali</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Telugu" />
-                                    <label for="Telugu">Telugu</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Marathi" />
-                                    <label for="Marathi">Marathi</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Tamil" />
-                                    <label for="Tamil">Tamil</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Gujarati" />
-                                    <label for="Gujarati">Gujarati</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Malayalam" />
-                                    <label for="Malayalam">Malayalam</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="Kannada" />
-                                    <label for="Kannada">Kannada</label>
-                                </li>
+                                @endforeach
+                                
                             </ul>
                         </div>
                         <div class="form-group">
                             <label class="bold">I can understand</label>
                             <ul class="categoryList listnone">
+                            @foreach($languages as $language)
                                 <li>
-                                    <input class="form-check-input" type="checkbox" id="u_English" />
-                                    <label for="u_English">English</label>
+                                    <input class="form-check-input" type="checkbox" name="language" id="l_{{$language}}" />
+                                    <label for="English">{{$language}}</label>
                                 </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Hindi" />
-                                    <label for="u_Hindi">Hindi</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Bengali" />
-                                    <label for="u_Bengali">Bengali</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Telugu" />
-                                    <label for="u_Telugu">Telugu</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Marathi" />
-                                    <label for="u_Marathi">Marathi</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Tamil" />
-                                    <label for="u_Tamil">Tamil</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Gujarati" />
-                                    <label for="u_Gujarati">Gujarati</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Malayalam" />
-                                    <label for="u_Malayalam">Malayalam</label>
-                                </li>
-                                <li>
-                                    <input class="form-check-input" type="checkbox" id="u_Kannada" />
-                                    <label for="u_Kannada">Kannada</label>
-                                </li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
