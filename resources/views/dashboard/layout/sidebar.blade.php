@@ -1,4 +1,8 @@
-<div class="sidebar-menu">
+<div class="ek_nav">
+  <div class="sidebar-header">
+    <img src="assets/images/Logo.svg" alt="logo" height="40px" />
+  </div>
+  <div class="sidebar-menu">
     <ul class="navbar-nav" id="exampleAccordion">
       <li class="nav-item">
         <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#collapseComponents" data-bs-parent="#exampleAccordion" id="components">
@@ -74,3 +78,4 @@
       </li>
     </ul>
   </div>
+</div>

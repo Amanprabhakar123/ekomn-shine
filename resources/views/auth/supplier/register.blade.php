@@ -335,7 +335,11 @@
           if (response.data.statusCode == 200) {
             $('#hiddenField').val(response.data.id);
             $('.section_1').hide();
-            $('.section_2').show().addClass('show_section_2');
+            $('.section_2').css('display', 'block');
+            setTimeout(function() {
+              $('.section_2').show().addClass('show_section_2');
+            }, 10);
+            
           }
           if (response.data.statusCode == 422) {
             const field = response.data.key;

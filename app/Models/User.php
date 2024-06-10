@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\CompanyDetail;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\VerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
@@ -172,5 +173,15 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function getFullNameAttribute()
     {
         return $this->attributes['name'];
+    }
+
+    /**
+     * Define a one-to-one relationship with the CompanyDetails model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function companyDetails()
+    {
+        return $this->hasOne(CompanyDetail::class);
     }
 }

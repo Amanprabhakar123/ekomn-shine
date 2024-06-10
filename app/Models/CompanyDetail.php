@@ -91,4 +91,14 @@ class CompanyDetail extends Model
     {
         return $this->hasMany(CompanyPlan::class, 'company_id', 'id');
     }
+
+    /**
+     * Get the product categories associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function productCategory()
+    {
+        return $this->hasMany(CompanyProductCategory::class, 'company_id', 'id');
+    }
 }
