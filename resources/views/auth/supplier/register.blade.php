@@ -162,7 +162,7 @@
                         <ul class="categoryList listnone">
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel1" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel1" value="1" />
                               <label class="form-check-label" for="channel1">
                                 Through SMS
                               </label>
@@ -170,7 +170,7 @@
                           </li>
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel2" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel2" value="2" />
                               <label class="form-check-label" for="channel2">
                                 Through eMail
                               </label>
@@ -178,7 +178,7 @@
                           </li>
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel3" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel3" value="3" />
                               <label class="form-check-label" for="channel3">
                                 Google Search
                               </label>
@@ -186,7 +186,7 @@
                           </li>
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel4" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel4" value="4" />
                               <label class="form-check-label" for="channel4">
                                 Social Media
                               </label>
@@ -194,7 +194,7 @@
                           </li>
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel5" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel5" value="5" />
                               <label class="form-check-label" for="channel5">
                                 Referred
                               </label>
@@ -202,7 +202,7 @@
                           </li>
                           <li>
                             <div class="form-check">
-                              <input class="form-check-input" type="radio" name="channel" id="channel6" />
+                              <input class="form-check-input" type="radio" name="product_channel" id="channel6" value="6" />
                               <label class="form-check-label" for="channel6">
                                 Others
                               </label>
@@ -335,7 +335,11 @@
           if (response.data.statusCode == 200) {
             $('#hiddenField').val(response.data.id);
             $('.section_1').hide();
-            $('.section_2').show().addClass('show_section_2');
+            $('.section_2').css('display', 'block');
+            setTimeout(function() {
+              $('.section_2').show().addClass('show_section_2');
+            }, 10);
+            
           }
           if (response.data.statusCode == 422) {
             const field = response.data.key;
@@ -447,7 +451,7 @@
         return;
       }
 
-      let checkedChannel = $('input[type="radio"]:checked').attr('id');
+      let checkedChannel = $('input[type="radio"][name="product_channel"]:checked').val();
       // Continue with the rest of your code here if needed
 
       const formData_3 = {

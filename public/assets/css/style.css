@@ -21,8 +21,11 @@ input,select{
   -moz-border-radius:3px!important;
   -ms-border-radius:3px!important;
   -o-border-radius:3px!important;
-  height: 38px;
+  /* height: 34px; */
 }
+/* .loginForm input,.loginForm select{
+  height: 38px;
+} */
 .form-switch .form-check-input{
    border-radius:2em!important; -webkit-border-radius:2em!important; -moz-border-radius:2em!important; -ms-border-radius:2em!important; -o-border-radius:2em!important; 
    width: 2.8em!important;
@@ -45,7 +48,8 @@ input:hover,input:focus,select:focus,select:hover{border-color: #FECA40!importan
   border-radius: 50% !important;
 }
 .form-select{
-  color: #999!important;
+  /* color: #999!important; */
+  padding-top: 2px;
 }
 .form-check-input:checked {
   background-color: #FECA40!important;
@@ -61,6 +65,7 @@ input:hover,input:focus,select:focus,select:hover{border-color: #FECA40!importan
   -o-border-radius: 3px!important;
 }
 .form-group{margin-bottom: 20px;}
+/* .form-group{margin-bottom: 15px;} */
 ::-webkit-input-placeholder {color:#ccc!important;}
 ::-moz-placeholder {color:#ccc!important;}
 ::-ms-input-placeholder {color:#ccc!important;}
@@ -782,7 +787,26 @@ body {
   background-color: #fff;
   border-bottom: 1px solid rgba(224, 224, 224, 0.7);
 }
-.ek_dashboard{padding: 73px 15px 15px 265px;}
+.ek_dashboard{
+  padding: 73px 15px 15px 265px;
+  min-height: calc(100vh - 40px);
+  box-sizing: border-box;
+  position: relative;
+}
+.ek_dashboard .ek_db_footer{
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  position: absolute;
+  width: 100%;
+  left: 0px;
+  bottom: -40px;
+  padding-left: 250px;
+  text-align: center;
+  font-size: 0.85rem;
+}
 .profile {
   position: relative;
   display: flex;
@@ -960,6 +984,142 @@ body {
   font-size: 15px;
   font-weight: normal;
 }
+/* ----------------- */
+.ekcard {
+  border: 1px solid #e8e8e8;
+  border-radius: 4px !important;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+.pa {
+  padding: 24px;
+}
+.line_h {
+  display: flex;
+  align-items: baseline;
+  position: relative;
+  padding: 0px;
+  margin: 0px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.line_h .line {
+  flex-grow: 1;
+  height: 2px;
+  border-bottom: 2px dotted #ddd;
+  margin-left: 2px;
+}
+.pro_box_r {
+  padding-right: 50px;
+}
+
+.ek_group {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+.eklabel {
+  width: 130px;
+  line-height: 20px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+.ek_f_input {
+  flex: 1;
+}
+.hide {
+  display: none;
+}
+.t_d_none {
+  text-decoration: none;
+}
+.fs-11 {
+  font-size: 11px !important;
+}
+.uploadlabel {
+  position: relative;
+  left: -15px;
+  opacity: 0.5;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 34px;
+}
+.uploadlabel:hover {
+  opacity: 0.75;
+}
+.uploadlabel .fileName {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0px 3px;
+}
+
+
+.bankcontainer {
+  background-color: #FCFCFC;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding-bottom: 5px;
+  margin-bottom: 30px;
+}
+.w_100 {
+  width: 100px;
+}
+.mb10 {
+  margin-bottom: 10px !important;
+}
+label {
+  margin-bottom: 3px !important;
+}
+
+.picture {
+display: block;
+cursor: pointer;
+border: 1px dotted #ccc;
+width: 100%;
+height: 168px;
+text-align: center;
+background-color: #FCFCFC;
+border-radius: 5px;
+overflow: hidden;
+box-sizing: border-box;
+padding: 2px;
+}
+.picture__img {width: 100%;height: 100%;}
+.picture__image_signature .picture__img{ object-fit: contain;}
+.uploadText{
+padding: 25px;
+margin-top: 10px;
+}
+.uploadText i{font-size: 22px;color: #c0c0c0;}
+.uploadText h4{
+padding: 7px 0px 5px 0px;
+margin: 0px;
+font-size: 16px;
+font-weight: bold;
+}
+.uploadText p{
+font-size: 15px;
+opacity: 0.5;
+}
+.r_color{color: indianred;}
+.profilesection{padding-bottom: 20px;}
+.profilesectionRight{padding-bottom: 30px;}
+.saveform_footer{
+border-top: 2px dashed #ddd;
+padding-top: 25px;
+padding-bottom: 5px;
+}
+.saveform_footer .card_f_btn{
+float: right;
+}
+/* ------------------------ */
 @media(max-width:1080px){
   .ek_nav{left: -250px;height: calc(100% - 57px); top: 57px;transition: 300ms;}
   .ek_dashboard{padding-left: 15px;}

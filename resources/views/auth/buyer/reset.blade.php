@@ -101,8 +101,6 @@
                     // If login successful, store token in sessionStorage
                     console.log(response);
                     if (response.data.statusCode == 200) {
-                        
-                        alert('password reset successful!');
                         // Redirect to dashboard or perform other actions
                         if(role == "buyer"){
                             window.location.href = 'buyer/login';
@@ -110,8 +108,6 @@
                             window.location.href = 'supplier/login';
                         }
                         
-                    } else {
-                        alert('password failed!');
                     }
                 })
                 .catch(error => {
