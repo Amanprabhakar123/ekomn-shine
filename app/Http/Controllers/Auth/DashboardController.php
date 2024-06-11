@@ -9,7 +9,7 @@ use App\Models\BusinessType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
-
+use App\Services\CompanyService;
 class DashboardController extends Controller
 {
     // public function __construct()
@@ -62,6 +62,7 @@ class DashboardController extends Controller
         $languages =  ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
         $shipping_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_PICKUP_ADDRESS)->first();
         $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+        //
         // dd(get_defined_vars());
         // dd(auth()->user()->companyDetails->productCategory->toArray());
 // dd(get_defined_vars());
@@ -74,5 +75,12 @@ class DashboardController extends Controller
             return view('dashboard.admin.profile');
         }
         abort('403', 'Unauthorized action.');
+    }
+
+
+    public function updateCompanyDetails(Request $request)
+    {
+        $response = (new CompanyService())->updateCompanyDetails($request);
+        return response()->json($response);
     }
 }
