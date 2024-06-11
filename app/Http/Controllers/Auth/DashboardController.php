@@ -68,7 +68,12 @@ class DashboardController extends Controller
         abort('403', 'Unauthorized action.');
     }
 
-
+    /**
+     * Update the user's profile.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateCompanyDetails(Request $request)
     {
         $response = (new CompanyService())->updateCompanyDetails($request);
