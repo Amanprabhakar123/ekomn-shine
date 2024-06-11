@@ -27,9 +27,9 @@ return new class extends Migration
             $table->string('gst_no_file_path', 191)->nullable();
             $table->boolean('pan_verified')->default(false);
             $table->boolean('gst_verified')->default(false);
-            $table->string('language_i_can_read', 191)->nullable()->default(null);
-            $table->string('language_i_can_understand', 191)->nullable()->default(null);
-            $table->json('alternate_business_contact')->nullable()->default(null);
+            $table->string('language_i_can_read', 191)->nullable();
+            $table->string('language_i_can_understand', 191)->nullable();
+            $table->json('alternate_business_contact')->nullable();
             $table->string('bank_name', 191)->nullable();
             $table->string('bank_account_no', 50)->nullable();
             $table->string('ifsc_code', 20)->nullable();

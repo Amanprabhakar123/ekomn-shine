@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use App\Models\CompanyPlan;
+use App\Models\CompanyCanHandle;
+use App\Models\CompanyOperation;
+use App\Models\CompanyBusinessType;
+use App\Models\CompanySalesChannel;
 use App\Models\CompanyAddressDetail;
+use App\Models\CompanyProductCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,5 +105,33 @@ class CompanyDetail extends Model
     public function productCategory()
     {
         return $this->hasMany(CompanyProductCategory::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the business types associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function businessType()
+    {
+        return $this->hasMany(CompanyBusinessType::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the company that owns the company detail.
+     */
+    public function canHandle()
+    {
+        return $this->hasMany(CompanyCanHandle::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the sales channels associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function salesChannel()
+    {
+        return $this->hasMany(CompanySalesChannel::class, 'company_id', 'id');
     }
 }

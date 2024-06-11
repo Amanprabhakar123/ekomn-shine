@@ -19,7 +19,7 @@ class CompanyAddressDetail extends Model
    /**
     * The constant value for shipping address type.
     */
-    //const TYPE_SHIPPING_ADDRESS = 2;
+    const TYPE_SHIPPING_ADDRESS = 2;
 
    /**
     * The constant value for delivery address type.

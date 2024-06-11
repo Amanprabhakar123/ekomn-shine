@@ -36,6 +36,7 @@ Route::get('buyer/register', [AuthViewController::class, 'loginFormView'])->name
 Route::get('supplier/register', [AuthViewController::class, 'loginFormView'])->name('supplier.register');
 Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->name('supplier.forget');
 Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
+Route::get('verify/show/email', [ResetController::class, 'showVerifyEmailForm'])->name('verification.email.verify');
 Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('password.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
@@ -46,7 +47,7 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/call-back', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
 });
 
-Route::middleware(['api', 'emailverified'])->group(function () {
+Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
     Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
@@ -61,6 +62,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/reset', [ResetController::class, 'reset']);
     Route::post('resend', [VerificationController::class, 'resend']);
     Route::post('verify', [VerificationController::class, 'verify'])->name('verify');
+    Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 
