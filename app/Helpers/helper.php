@@ -64,7 +64,9 @@ if (!function_exists('salt_decrypt')) {
 if (!function_exists('printR')) {
     function printR($string)
     {
+        echo '<pre>';
         print_r($string);
+        echo '</pre>';
         exit;
     }
 }

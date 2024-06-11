@@ -204,7 +204,7 @@ class VerificationController extends Controller
      */
     public function sendEmailLink(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(salt_decrypt($request->id));
         $redirect = $user->hasRole(User::ROLE_SUPPLIER) ? route('supplier.login') : route('buyer.login');
         // Trigger email verification notification
         $user->notify(new VerifyEmail);

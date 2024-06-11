@@ -1,5 +1,4 @@
 @include('auth.layout.header')
-
 <body>
   <div class="login-wrapper">
     <div class="loginimages">
@@ -15,6 +14,7 @@
                 <input type="hidden" id="id" name="id" value="{{ request()->get('id') }}" class="form-control userico" />
                 <input type="hidden" id="hash" name="hash" value="{{ request()->get('hash') }}" class="form-control userico" />
               </div> --}}
+              <input type="hidden" id="id" name="id" value="{{ salt_encrypt(auth()->user()->id) }}" class="form-control userico" />
               <button class="btn btn-login btnekomn block my-4" type="submit">Send Email Link</button>
           </form>
         </div>
@@ -59,18 +59,17 @@
       $('#loginForm').submit(function(event) {
         event.preventDefault(); // Prevent form submission
         // // Retrieve form values
-        // const id = $('#id').val();
+        const id = $('#id').val();
         // const hash = $('#hash').val();
 
         // // If all fields are filled, proceed with form submission
-        // const formData = {
-        //   id: id,
-        //   hash: hash
-        // };
+        const formData = {
+          id: id,
+        };
         // var element = document.getElementById("myElement");
 
         // Call APIRequest function with login endpoint and form data
-        ApiRequest('send-email-link', 'POST', '')
+        ApiRequest('send-email-link', 'POST', formData)
           .then(response => {
             // If login successful, store token in sessionStorage
             if (response.data.statusCode == 200) {
