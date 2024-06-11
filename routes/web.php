@@ -50,6 +50,7 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+    Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
 });
 
 // Route group for API authentication routes

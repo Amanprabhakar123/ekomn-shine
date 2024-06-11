@@ -10,7 +10,7 @@ use App\Models\SalesChannel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
-
+use App\Services\CompanyService;
 class DashboardController extends Controller
 {
     // public function __construct()
@@ -66,5 +66,12 @@ class DashboardController extends Controller
             return view('dashboard.admin.profile', get_defined_vars());
         }
         abort('403', 'Unauthorized action.');
+    }
+
+
+    public function updateCompanyDetails(Request $request)
+    {
+        $response = (new CompanyService())->updateCompanyDetails($request);
+        return response()->json($response);
     }
 }
