@@ -160,6 +160,18 @@ class ResetController extends Controller
     }
 
     /**
+     * Load the verify template view and get the URL request.
+     *
+     * @param  string  $token
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function showVerifyEmailForm()
+    {
+        return view('auth.verify-link');
+    }
+    
+
+    /**
      * Get the broker to be used during password reset.
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker

@@ -6,6 +6,7 @@ use App\Models\CompanyPlan;
 use App\Models\CompanyCanHandle;
 use App\Models\CompanyOperation;
 use App\Models\CompanyBusinessType;
+use App\Models\CompanySalesChannel;
 use App\Models\CompanyAddressDetail;
 use App\Models\CompanyProductCategory;
 use Illuminate\Database\Eloquent\Model;
@@ -122,5 +123,15 @@ class CompanyDetail extends Model
     public function canHandle()
     {
         return $this->hasMany(CompanyCanHandle::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the sales channels associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function salesChannel()
+    {
+        return $this->hasMany(CompanySalesChannel::class, 'company_id', 'id');
     }
 }

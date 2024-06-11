@@ -13,7 +13,7 @@ class BusinessTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $businessTypes = [
+        $businessTypesSupplier = [
             'Manufacturer',
             'Supplier',
             'Distributor',
@@ -27,9 +27,26 @@ class BusinessTypeSeeder extends Seeder
             'Online Store',
         ];
 
-        foreach ($businessTypes as $type) {
+        $businessTypesBuyer = [
+            'Retailer',
+            'Online Brand',
+            'Online Seller',
+            'Reseller',
+            'Online Store',
+        ];
+
+        foreach ($businessTypesSupplier as $type) {
             BusinessType::create([
                 'name' => $type,
+                'type' => BusinessType::TYPE_SUPPLIER,
+                'is_active' => true,
+            ]);
+        }
+
+        foreach ($businessTypesBuyer as $type) {
+            BusinessType::create([
+                'name' => $type,
+                'type' => BusinessType::TYPE_BUYER,
                 'is_active' => true,
             ]);
         }

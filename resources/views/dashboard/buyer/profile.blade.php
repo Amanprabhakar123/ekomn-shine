@@ -87,10 +87,10 @@
                             </div>
                         </div>
                         <div class="profilesection">
-                            <h3 class="line_h">Shipping Address<span class="line"></span></h3>
+                            <h3 class="line_h">Delivery Address<span class="line"></span></h3>
                             <div class="form-group">
                                 <label>Street address<span class="r_color">*</span></label>
-                                <input type="text" class="form-control" placeholder="Enter street address" name="shipping_address" value="{{ isset($shipping_address) ? $shipping_address->address_line1 : '' }}" />
+                                <input type="text" class="form-control" placeholder="Enter street address" name="delivery_address" value="{{ isset($delivery_address) ? $delivery_address->address_line1 : '' }}" />
                             </div>
                             {{--
                                 <div class="row">
@@ -132,26 +132,26 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">State</label>
-                                        <input type="text" class="form-control" placeholder="Enter state" name="state" value="{{ isset($shipping_address) ? $shipping_address->state : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter state" name="state" value="{{ isset($delivery_address) ? $delivery_address->state : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label class="line_h">city</label>
-                                        <input type="text" class="form-control" placeholder="Enter city" name="city" value="{{ isset($shipping_address) ? $shipping_address->city : '' }}" />
+                                        <input type="text" class="form-control" placeholder="Enter city" name="city" value="{{ isset($delivery_address) ? $delivery_address->city : '' }}" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
                                     <div class="form-group">
                                         <label>Pin code<span class="r_color">*</span></label>
-                                        <input type="text" class="form-control" placeholder="Pin code" name="pincode" value="{{ isset($shipping_address) ? $shipping_address->pincode : '' }}">
+                                        <input type="text" class="form-control" placeholder="Pin code" name="pincode" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label>Location link</label>
-                                <input type="text" class="form-control" placeholder="Enter shippinig location link" name="location_link" value="{{ isset($shipping_address) ? $shipping_address->location_link : '' }}" />
+                                <input type="text" class="form-control" placeholder="Enter shippinig location link" name="location_link" value="{{ isset($delivery_address) ? $delivery_address->location_link : '' }}" />
                             </div>
                         </div>
                         <div class="profilesection">
@@ -301,13 +301,13 @@
                             </ul>--}}
                         </div>
                         <div class="profilesection">
-                            <label class="bold">Can handle</label>
+                            <label class="bold">Sales Channel</label>
                             <ul class="categoryList listnone">
                            
-                                @foreach($can_handle as $can_handle)
+                                @foreach($sales as $sales)
                                 <li>
-                                    <input class="form-check-input" type="checkbox" id="ch_{{$can_handle->id}}"   {{(in_array($product_category->id, $selected_can_handle) ? 'checked' : '')}}/>
-                                    <label for="ch_{{$can_handle->id}}">{{$can_handle->name}}</label>
+                                    <input class="form-check-input" type="checkbox" id="ch_{{$sales->id}}"   {{(in_array($product_category->id, $selected_sales) ? 'checked' : '')}}/>
+                                    <label for="ch_{{$sales->id}}">{{$sales->name}}</label>
                                 </li>
                                 @endforeach
                             </ul>

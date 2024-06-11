@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\CompanyDetail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanySalesChannel extends Model
 {
@@ -19,4 +20,11 @@ class CompanySalesChannel extends Model
         'sales_channel_id',
     ];
 
+    /**
+     * Get the company details associated with the product category.
+     */
+    public function companyDetails()
+    {
+        return $this->belongsTo(CompanyDetail::class, 'company_id', 'id');
+    }
 }
