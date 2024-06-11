@@ -52,8 +52,10 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
 });
 
-Route::middleware(['auth', 'api', 'emailverified'])->group(['prefix' => 'api'], function () {
-    Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
+Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
+    Route::prefix('api')->group(function () {
+        Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
+    });
 });
 
 // Route group for API authentication routes
