@@ -157,16 +157,16 @@ class CompanyService
             CompanyProductCategory::where('company_id', $company_id)->forceDelete();
         } else {
             $categoriesArray = explode(",", $categories);
-            CompanyProductCategory::where('company_id', $company_id)->whereNotIn('business_type_id', $categoriesArray)->forceDelete();
+            CompanyProductCategory::where('company_id', $company_id)->whereNotIn('product_category_id', $categoriesArray)->forceDelete();
             foreach ($categoriesArray as $key => $value) {
                 CompanyProductCategory::updateOrCreate(
                     [
                         'company_id' => $company_id,
-                        'business_type_id' => $value
+                        'product_category_id' => $value
                     ],
                     [
                     'company_id' => $company_id,
-                    'business_type_id' => $value
+                    'product_category_id' => $value
                 ]);
             }
         }
@@ -339,7 +339,11 @@ class CompanyService
 
     private function handleAddressOnUpdate($company_id, $address, $address_type){
         if(!empty($address['id'])){
-            CompanyAddressDetail::create($address);
+            CompanyAddressDetail::updateOrCreate([
+                'id' => $address['id']
+            ], $address
+                
+        );
         } else {
             CompanyAddressDetail::updateOrCreate([
                 'company_id' => $company_id,
