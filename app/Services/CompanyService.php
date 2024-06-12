@@ -107,7 +107,7 @@ class CompanyService
 
         $paths = $this->storeFiles($request, $companyId);
 
-        $data = $this->extractAlternateBusinessContactData($validatedData);
+        $data = $this->extractAlternateBusinessContactData($validatedData, 'buyer');
 
         $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data);
         // dd($companyDetails);
@@ -223,10 +223,10 @@ class CompanyService
             'swift_code' => 'nullable|string|regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/',
             'alternate_business_contact.BusinessPerformanceAndCriticalEvents.name' => 'nullable|string|max:255',
             'alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no' => 'nullable|string|max:15',
-            'alternate_business_contact.OrderDeliveryEnquiry.name' => 'nullable|string|max:255',
-            'alternate_business_contact.OrderDeliveryEnquiry.mobile_no' => 'nullable|string|max:15',
-            'alternate_business_contact.ProductListings.name' => 'nullable|string|max:255',
-            'alternate_business_contact.ProductListings.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.ProductSourcingAlert.name' => 'nullable|string|max:255',
+            'alternate_business_contact.ProductSourcingAlert.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.BulkOrderContact.name' => 'nullable|string|max:255',
+            'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:15',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
             'pan_file' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
@@ -268,22 +268,40 @@ class CompanyService
      * @param array $validatedData
      * @return array
      */
-    private function extractAlternateBusinessContactData(array $validatedData): array
+    private function extractAlternateBusinessContactData(array $validatedData, $type = 'supplier'): array
     {
-        return ['alternate_business_contact' => [
-            'BusinessPerformanceAndCriticalEvents' => [
-                'name' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['name'] ?? '',
-                'mobile_no' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['mobile_no'] ?? '',
-            ],
-            'ProductListings' => [
-                'name' => $validatedData['alternate_business_contact']['ProductListings']['name'] ?? '',
-                'mobile_no' => $validatedData['alternate_business_contact']['ProductListings']['mobile_no'] ?? '',
-            ],
-            'OrderDeliveryEnquiry' => [
-                'name' => $validatedData['alternate_business_contact']['OrderDeliveryEnquiry']['name'] ?? '',
-                'mobile_no' => $validatedData['alternate_business_contact']['OrderDeliveryEnquiry']['mobile_no'] ?? '',
-            ],
-        ]];
+        if($type == 'supplier'){
+            return ['alternate_business_contact' => [
+                'BusinessPerformanceAndCriticalEvents' => [
+                    'name' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['mobile_no'] ?? '',
+                ],
+                'ProductListings' => [
+                    'name' => $validatedData['alternate_business_contact']['ProductListings']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['ProductListings']['mobile_no'] ?? '',
+                ],
+                'OrderDeliveryEnquiry' => [
+                    'name' => $validatedData['alternate_business_contact']['OrderDeliveryEnquiry']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['OrderDeliveryEnquiry']['mobile_no'] ?? '',
+                ],
+            ]];
+        } else {
+            return ['alternate_business_contact' => [
+                'BusinessPerformanceAndCriticalEvents' => [
+                    'name' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['mobile_no'] ?? '',
+                ],
+                'ProductSourcingAlert' => [
+                    'name' => $validatedData['alternate_business_contact']['ProductSourcingAlert']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['ProductSourcingAlert']['mobile_no'] ?? '',
+                ],
+                'BulkOrderContact' => [
+                    'name' => $validatedData['alternate_business_contact']['BulkOrderContact']['name'] ?? '',
+                    'mobile_no' => $validatedData['alternate_business_contact']['BulkOrderContact']['mobile_no'] ?? '',
+                ],
+            ]];
+        }
+
     }
 
     /**
