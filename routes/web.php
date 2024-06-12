@@ -25,10 +25,12 @@ use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 |
 */
 
+// Define the root route that returns the welcome view
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Define routes for buyer, supplier, and admin login and registration forms
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
 Route::get('supplier/login', [AuthViewController::class, 'loginFormView'])->name('supplier.login');
 Route::get('center/admin/login', [AuthViewController::class, 'adminloginFormView'])->name('admin.login');
@@ -42,6 +44,7 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 
+// Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
     Route::get('/call-back', [GoogleController::class, 'handleGoogleCallback'])->name('callback');
@@ -76,7 +79,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
 });
 
-// Route group for authenticated routes
+// Define routes for authenticated API routes
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
