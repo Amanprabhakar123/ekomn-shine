@@ -2,7 +2,7 @@
     <div class="menutoggle"><i class="fas fa-bars"></i></div>
     <div class="d-flex justify-content-between align-items-center">
         <div class="logo_brand">
-            <a href="#" class="brandLogo_d"><img src="assets/images/Logo.svg" alt="Logo" height="40" /></a>
+            <a href="{{route('dashboard')}}" class="brandLogo_d"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" height="40" /></a>
         </div>
         <div class="dropdown">
             <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">

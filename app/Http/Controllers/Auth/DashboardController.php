@@ -45,8 +45,10 @@ class DashboardController extends Controller
         $selected_product_category = auth()->user()->companyDetails->productCategory->pluck('product_category_id')->toArray();
         $alternate_business_contact = json_decode(auth()->user()->companyDetails->alternate_business_contact);
         $languages =  ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
+        $read_selected_languages = json_decode(auth()->user()->companyDetails->language_i_can_read, true);
+        $understand_selected_languages = json_decode(auth()->user()->companyDetails->language_i_can_understand, true);
         $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
-
+        
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             $shipping_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_PICKUP_ADDRESS)->first();
             $business_type = BusinessType::where('type', BusinessType::TYPE_SUPPLIER)->get();
@@ -68,9 +70,15 @@ class DashboardController extends Controller
         abort('403', 'Unauthorized action.');
     }
 
-
+    /**
+     * Update the user's profile.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateCompanyDetails(Request $request)
     {
+        // dd($request->all());
         $response = (new CompanyService())->updateCompanyDetails($request);
         return response()->json($response);
     }

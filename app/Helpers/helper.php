@@ -64,7 +64,9 @@ if (!function_exists('salt_decrypt')) {
 if (!function_exists('printR')) {
     function printR($string)
     {
+        echo '<pre>';
         print_r($string);
+        echo '</pre>';
         exit;
     }
 }
@@ -88,5 +90,29 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         }
 
         return $username;
+    }
+
+
+
+    // Function to convert an image to a Base64-encoded string
+    function convertImageToBase64($imagePath)
+    {
+        // Check if the file exists
+        if (file_exists($imagePath)) {
+            // Get the image content
+            $imageData = file_get_contents($imagePath);
+            
+            // Encode the image content in Base64
+            $base64Image = base64_encode($imageData);
+            
+            // Get the image type
+            $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
+            
+            // Return the Base64 encoded image with the appropriate data URL prefix
+            return 'data:image/' . $imageType . ';base64,' . $base64Image;
+        } else {
+            // Handle the error if the file does not exist
+            return null;
+        }
     }
 }

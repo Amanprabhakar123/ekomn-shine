@@ -71,7 +71,7 @@
         </tr>
         <tr>
             <td colspan="2" style="padding: 20px;">
-                <h1 style="font-size: 18px; color: #333;">Dear &lt;User Name&gt;,</h1>
+                <h1 style="font-size: 18px; color: #333;">Dear {{$user->name}},</h1>
                 <p>Welcome to <strong>eKomn</strong>.</p>
                 <p>We are thrilled to have you as a part of our growing community of savvy business professionals. Our platform is designed to revolutionize the way you source products at wholesale rates across a wide range of categories, helping you to optimize and expand your online business effortlessly.</p>
                 <h2 style="font-size: 16px; color: #333;">What We Offer:</h2>
