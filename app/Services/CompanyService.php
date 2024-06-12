@@ -16,6 +16,7 @@ use App\Models\CompanyProductCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
+use App\Models\CompanySalesChannel;
 
 class CompanyService
 {
