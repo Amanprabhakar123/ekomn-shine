@@ -1,5 +1,8 @@
 @extends('dashboard.layout.app')
 @section('content')
+@section('title')
+Supplier Profile
+@endsection
 <div class="ek_dashboard">
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
@@ -35,7 +38,7 @@
                                 <div class="ek_group">
                                     <label class="eklabel">Email address:</label>
                                     <div class="ek_f_input">
-                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="last_name" value="{{ auth()->user()->companyDetails->email}}" />
+                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="email" value="{{ auth()->user()->companyDetails->email}}" />
                                         <div id="emailErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -345,9 +348,9 @@ $(document).ready(function() {
     // Function to clear error messages for all fields
     function clearErrorMessages() {
         const fields = [
-            'business_name', 'first_name', 'mobile', 'email', 'mobile_no', 'pan_no', 'gst_no', 's_address_line1',
+            'business_name', 'first_name', 'last_name', 'email', 'mobile_no', 'pan_no', 'gst_no', 's_address_line1',
             's_state', 's_city', 's_pincode', 'location_link', 'b_address_line1', 'b_state', 'b_city', 'b_pincode', 'bank_name',
-            'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image'
+            'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image','pan_file', 'gst_file'
         ];
         fields.forEach(field => {
             $(`#${field}`).removeClass('is-invalid');
@@ -383,6 +386,7 @@ $(document).ready(function() {
         const editprofile = {
             business_name: $('#business_name').val(),
             first_name: $('#first_name').val(),
+            last_name: $('#last_name').val(),
             email: $('#email').val(),
             mobile_no: $('#mobile_no').val(),
             s_address_line1: $('#s_address_line1').val(),
@@ -390,12 +394,11 @@ $(document).ready(function() {
             s_city: $('#s_city').val(),
             s_pincode: $('#s_pincode').val(),
             b_state: $('#b_state').val(),
-            bank_account_no: $('#state').val(),
             b_city: $('#b_city').val(),
             b_pincode: $('#b_pincode').val(),
+            b_address_line1: $('#b_address_line1').val(),
             bank_name: $('#bank_name').val(),
             bank_account_no: $('#bank_account_no').val(),
-            b_address_line1: $('#b_address_line1').val(),
             re_bank_account_no: $('#re_bank_account_no').val(),
             ifsc_code: $('#ifsc_code').val(),
             swift_code: $('#swift_code').val(),
@@ -470,13 +473,9 @@ $(document).ready(function() {
         const formData = new FormData();
         formData.append('business_name', $('#business_name').val());
         formData.append('first_name', $('#first_name').val());
+        formData.append('last_name', $('#last_name').val());
         formData.append('email', $('#email').val());
         formData.append('mobile_no', $('#mobile_no').val());
-        for (const key in shipping_address) {
-            if (shipping_address.hasOwnProperty(key)) {
-                formData.append(`shipping_address[${key}]`, shipping_address[key]);
-            }
-        }
         for (const key in shipping_address) {
             if (shipping_address.hasOwnProperty(key)) {
                 formData.append(`shipping_address[${key}]`, shipping_address[key]);
@@ -530,15 +529,10 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(response) {
-                if (response.data.statusCode === 200) {
-                    $('#hiddenField').val(response.data.id);
-                    $('.section_1').hide();
-                    $('.section_2').css('display', 'block');
-                    setTimeout(function() {
-                        $('.section_2').show().addClass('show_section_2');
-                    }, 10);
+                if (response.data.statusCode == 200) {
+                    alert('Profile updated successfully');
                 }
-                if (response.data.statusCode === 422) {
+                if (response.data.statusCode == 422) {
                     const field = response.data.key;
                     $(`#${field}`).addClass('is-invalid');
                     $(`#${field}Err`).text(response.data.message);

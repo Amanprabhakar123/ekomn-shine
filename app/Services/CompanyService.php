@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
 use App\Models\CompanyCanHandle;
 use App\Models\CompanyBusinessType;
+use App\Models\CompanySalesChannel;
 use Illuminate\Support\Facades\Log;
 use App\Models\CompanyAddressDetail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CompanyProductCategory;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
-use App\Models\CompanySalesChannel;
+use Illuminate\Validation\ValidationException;
 
 class CompanyService
 {
@@ -201,16 +201,16 @@ class CompanyService
             'gst_no' => 'nullable|string|max:15',
            // 'pan_verified' => 'boolean',
            // 'gst_verified' => 'boolean',
-            'delivery_address.company_id' => 'required|integer',
+            'delivery_address.id' => 'nullable|integer',
             'delivery_address.address_line1' => 'required|string|max:255',
             'delivery_address.city' => 'required|string|max:255',
             'delivery_address.state' => 'required|string|max:255',
             'delivery_address.pincode' => 'required|string|max:10',
             'delivery_address.address_type' => 'required|string|max:50',
             'delivery_address.is_primary' => 'boolean',
-            'delivery_address.landmark' => 'required|string|max:150',
+            'delivery_address.landmark' => 'nullable|string|max:150',
             'delivery_address.location_link' => 'required|string|max:190',
-            'billing_address.company_id' => 'required|integer',
+            'billing_address.id' => 'nullable|integer',
             'billing_address.address_line1' => 'required|string|max:255',
             'billing_address.city' => 'required|string|max:255',
             'billing_address.state' => 'required|string|max:255',
@@ -229,10 +229,10 @@ class CompanyService
             'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:15',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
-            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
-            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
-            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+            'pan_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'gst_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'cancelled_cheque_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'signature_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'sales_channel' => 'nullable|string'
