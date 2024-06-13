@@ -1,6 +1,6 @@
 
 /** Set Base url */
-const baseURL = 'http://127.0.0.1:8083/api/';
+const baseURL = 'http://ekomn.com/api/';
 
 /** Set Header Values */
 const makeHeader = () => {
