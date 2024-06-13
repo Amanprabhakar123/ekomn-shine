@@ -18,20 +18,43 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Create permissions
-        // Permission::create(['name' => 'edit articles']);
-        // Permission::create(['name' => 'delete articles']);
-        // Permission::create(['name' => 'publish articles']);
-        // Permission::create(['name' => 'unpublish articles']);
+        // Revoke permissions from all users
+        foreach (Permission::all() as $permission) {
+            $permission->users()->detach();
+            $permission->roles()->detach();
+        }
+        // Delete all permissions
+        Permission::query()->delete();
 
-        // Create roles and assign existing permissions
+        // Revoke roles from all users
+        foreach (Role::all() as $role) {
+            $role->users()->detach();
+            $role->permissions()->detach();
+        }
+        // Delete all roles
+        Role::query()->delete();
+        
+        // Create permissions
+        Permission::create(['name' => 'add_product_details']);
+        Permission::create(['name' => 'edit_product_details']);
+        Permission::create(['name' => 'add_connection']);
+        Permission::create(['name' => 'edit_connection']);
+        Permission::create(['name' => 'add_new_order']);
+        Permission::create(['name' => 'edit_order']);
+        Permission::create(['name' => 'add_new_return']);
+
+
+        // Create role  s and assign existing permissions
         $role = Role::create(['name' => 'buyer']);
-        // $role->givePermissionTo('edit articles');
-        // $role->givePermissionTo('delete articles');
+        $role->givePermissionTo('add_connection');
+        $role->givePermissionTo('edit_connection');
+        $role->givePermissionTo('add_new_order');
+        $role->givePermissionTo('edit_order');
+        $role->givePermissionTo('add_new_return');
 
         $role = Role::create(['name' => 'supplier']);
-        // $role->givePermissionTo('publish articles');
-        // $role->givePermissionTo('unpublish articles');
+        $role->givePermissionTo('add_product_details');
+        $role->givePermissionTo('edit_connection');
 
         $role = Role::create(['name' => 'super-admin']);
         $role->givePermissionTo(Permission::all());

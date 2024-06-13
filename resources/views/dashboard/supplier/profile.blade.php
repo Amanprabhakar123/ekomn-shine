@@ -88,7 +88,7 @@ Supplier Profile
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <label for="gst_file" class="uploadlabel">
                                                         <i class="fas fa-cloud-upload-alt"></i>
-                                                        <span id="gstfilename" class="fileName {{ auth()->user()->companyDetails->gst_no_file_path ? 'text-success' : 'text-danger' }}">{{auth()->user()->companyDetails->gst_no_file_path ? 'Gst Uploaded ': 'No file uploaded' }}</span>
+                                                        <span id="gstfilename" class="fileName {{ auth()->user()->companyDetails->gst_no_file_path ? 'text-success' : '' }}">{{auth()->user()->companyDetails->gst_no_file_path ? 'Gst Uploaded ': 'No file uploaded' }}</span>
                                                     </label>
                                                     <input type="file" id="gst_file" name="gst_no_file_path" style="display: none;" />
                                                     <div id="gst_fileErr" class="invalid-feedback"></div>
@@ -267,7 +267,7 @@ Supplier Profile
                             <div class="ek_group">
                                 <label class="eklabel">Re-enter account number:</label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" placeholder="Re-enter your account number" id="re_bank_account_no" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}" />
+                                    <input type="password" class="form-control" placeholder="Re-enter your account number" id="re_bank_account_no" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}" />
                                     <div id="re_bank_account_noErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -384,6 +384,8 @@ $(document).ready(function() {
             'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code',
         ];
 
+         
+
         const editprofile = {
             business_name: $('#business_name').val(),
             first_name: $('#first_name').val(),
@@ -468,6 +470,8 @@ $(document).ready(function() {
                 $(`#${field}Err`).text('');
             }
         });
+
+      
 
         // If form is not valid, exit function
         if (!isValid) return;

@@ -17,26 +17,26 @@
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
                       <input type="hidden" class="form-control" id="step_1" name="step_1" value="step_1" />
-                      <input type="text" class="form-control" id="first_name" name="first_name" placeholder="*First Name"  value="JUNED"/>
+                      <input type="text" class="form-control" id="first_name" name="first_name" placeholder="*First Name"  value=""/>
                       <div id="last_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" value="Khan" />
+                      <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" value="" />
                       <div id="last_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="input-group form-group">
                       <span class="input-group-text text-muted">+91</span>
-                      <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Mobile Number" value="8445452656" />
+                      <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="Mobile Number" value="" />
                       <div id="mobileErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="designation" name="designation" placeholder="Designation" value="IT" />
+                      <input type="text" class="form-control" id="designation" name="designation" placeholder="Designation" value="" />
                       <div id="designationErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -45,31 +45,31 @@
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="address" name="address" placeholder="*Street Address" value="Kheriya Mode " />
+                      <input type="text" class="form-control" id="address" name="address" placeholder="*Street Address" value="" />
                       <div id="addressErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="state" name="state" placeholder="*State"  value="Uttar Pradesh"/>
+                      <input type="text" class="form-control" id="state" name="state" placeholder="*State"  value=""/>
                       <div id="stateErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="city" name="city" placeholder="*City" value="Agra" />
+                      <input type="text" class="form-control" id="city" name="city" placeholder="*City" value="" />
                       <div id="cityErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="pin_code" name="pin_code" placeholder="*Pin Code" value="282001" />
+                      <input type="text" class="form-control" id="pin_code" name="pin_code" placeholder="*Pin Code" value="" />
                       <div id="pin_codeErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name"  value="Trignoweb"/>
+                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name"  value=""/>
                       <div id="business_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>

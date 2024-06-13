@@ -268,7 +268,7 @@ Buyer Profile
                             <div class="ek_group">
                                 <label class="eklabel">Re-enter account number:</label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" placeholder="Re-enter your account number" id="re_bank_account_no" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}" />
+                                    <input type="password" class="form-control" placeholder="Re-enter your account number" id="re_bank_account_no" name="bank_account_no" value="{{ auth()->user()->companyDetails->bank_account_no }}" />
                                     <div id="re_bank_account_noErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -384,6 +384,7 @@ $(document).ready(function() {
             'd_state', 'd_city', 'd_pincode', 'location_link', 'b_address_line1', 'b_state', 'b_city', 'b_pincode', 'bank_name',
             'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code',
         ];
+
 
         const editprofile = {
             business_name: $('#business_name').val(),
