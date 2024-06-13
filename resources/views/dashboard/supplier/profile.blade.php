@@ -65,7 +65,7 @@ Supplier Profile
                                                     </label>
                                                     <input type="file" id="pan_file" name="pan_file" style="display: none;" />
                                                     <div id="pan_fileErr" class="invalid-feedback"></div>
-
+                                                    <input type="hidden" name="pan_verified" value="{{auth()->user()->companyDetails->pan_verified ?? 0}}" id="pan_verified">
                                                     @if(auth()->user()->companyDetails->pan_verified)
                                                     <span class="btn-link text-success t_d_none px-0 text-nowrap"><i class="fas fa-certificate fs-11"></i> verified</span>
                                                     @else
@@ -92,6 +92,7 @@ Supplier Profile
                                                     </label>
                                                     <input type="file" id="gst_file" name="gst_no_file_path" style="display: none;" />
                                                     <div id="gst_fileErr" class="invalid-feedback"></div>
+                                                    <input type="hidden" name="gst_verified" value="{{auth()->user()->companyDetails->gst_verified ?? 0}}" id="gst_verified">
                                                     @if(auth()->user()->companyDetails->gst_verified)
                                                     <span class="btn-link text-success t_d_none px-0 text-nowrap"><i class="fas fa-certificate fs-11"></i> verified</span>
                                                     @else
@@ -404,7 +405,9 @@ $(document).ready(function() {
             swift_code: $('#swift_code').val(),
             location_link: $('#location_link').val(),
             gst_no: $('#gst_no').val(),
-            pan_no: $('#pan_no').val()
+            pan_no: $('#pan_no').val(),
+            gst_verified: $('#gst_verified').val(),
+            pan_verified: $('#pan_verified').val()
         };
 
         const shipping_address = {
@@ -504,6 +507,8 @@ $(document).ready(function() {
         
         formData.append('gst_no', $('#gst_no').val());
         formData.append('pan_no', $('#pan_no').val());
+        formData.append('gst_verified', $('#gst_verified').val());
+        formData.append('pan_verified', $('#pan_verified').val());
         formData.append('business_type', JSON.stringify(getSelectedValues('businessTypeSection')));
         formData.append('product_categories', JSON.stringify(getSelectedValues('productCategorySection')));
         formData.append('can_handle', JSON.stringify(getSelectedValues('canHandleSection')));
@@ -525,10 +530,11 @@ $(document).ready(function() {
             url: '{{route("company-profile.update")}}',
             type: 'POST',
             data: formData,
-            dataType: 'application/json',
+            dataType: 'json',
             processData: false,
             contentType: false,
             success: function(response) {
+                // console.log('Response:', response);
                 if (response.data.statusCode == 200) {
                     alert('Profile updated successfully');
                 }
@@ -549,10 +555,12 @@ $(document).ready(function() {
     <script>
       document.getElementById("pan_file").addEventListener("change", function () {
         var fileName = this.files[0].name;
+        document.getElementById("pan_verified").value = 0;
         document.getElementById("panfilename").innerHTML = fileName;
       });
       document.getElementById("gst_file").addEventListener("change", function () {
         var fileName = this.files[0].name;
+        document.getElementById("gst_verified").value = 0;
         document.getElementById("gstfilename").innerHTML = fileName;
       });
     </script>

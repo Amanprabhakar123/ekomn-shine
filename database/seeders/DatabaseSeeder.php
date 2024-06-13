@@ -8,8 +8,10 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\CanHandleSeeder;
 use Database\Seeders\BusinessTypeSeeder;
+use Database\Seeders\CompanyBuyerSeeder;
 use Database\Seeders\SalesChannelSeeder;
 use Database\Seeders\AuthUserLoginSeeder;
+use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -27,6 +29,8 @@ class DatabaseSeeder extends Seeder
         $this->call(BusinessTypeSeeder::class);
         $this->call(SalesChannelSeeder::class);
         $this->call(PlanSeeder::class);
+        $this->call(CompanySupplierSeeder::class);
+        $this->call(CompanyBuyerSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
