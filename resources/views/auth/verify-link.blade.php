@@ -1,5 +1,4 @@
 @include('auth.layout.header')
-
 <body>
   <div class="login-wrapper">
     <div class="loginimages">
@@ -9,13 +8,14 @@
           <form id="loginForm" action="#" method="POST">
             <div class="loginForm">
               @include('auth.layout.logo')
-              <h3 class="h3 m-0">Verify Your Email</h3>
+              <h3 class="h3 m-0">Please Verify Your Email</h3>
 
-              <div class="form-group mb-0">
+              {{--<div class="form-group mb-0">
                 <input type="hidden" id="id" name="id" value="{{ request()->get('id') }}" class="form-control userico" />
                 <input type="hidden" id="hash" name="hash" value="{{ request()->get('hash') }}" class="form-control userico" />
-              </div>
-              <button class="btn btn-login btnekomn block my-4" type="submit">Verify Email</button>
+              </div> --}}
+              <input type="hidden" id="id" name="id" value="{{ salt_encrypt(auth()->user()->id) }}" class="form-control userico" />
+              <button class="btn btn-login btnekomn block my-4" type="submit">Send Email Link</button>
           </form>
         </div>
       </div>
@@ -34,7 +34,7 @@
             </svg>
             <h1 class="thank_h1">Thank you!!</h1>
             <p id="r_m"></p>
-            <a href="" id="role_s_b" class="a_color">Click to Login</a>
+            <!-- <a href="" id="role_s_b" class="a_color">Click to Login</a> -->
           </div>
         </div>
       </div>
@@ -58,19 +58,18 @@
 
       $('#loginForm').submit(function(event) {
         event.preventDefault(); // Prevent form submission
-        // Retrieve form values
+        // // Retrieve form values
         const id = $('#id').val();
-        const hash = $('#hash').val();
+        // const hash = $('#hash').val();
 
-        // If all fields are filled, proceed with form submission
+        // // If all fields are filled, proceed with form submission
         const formData = {
           id: id,
-          hash: hash
         };
         // var element = document.getElementById("myElement");
 
         // Call APIRequest function with login endpoint and form data
-        ApiRequest('verify', 'POST', formData)
+        ApiRequest('send-email-link', 'POST', formData)
           .then(response => {
             // If login successful, store token in sessionStorage
             if (response.data.statusCode == 200) {
@@ -83,7 +82,7 @@
               });
               $('#r_m').append(response.data.message);
               $('#role_s_b').attr('href', response.data.redirect);
-              $('#role_s_b').text(response.data.text);
+              // $('#role_s_b').text(response.data.text);
             } else {
               console.log(response.data);
               // alert('Failed to send reset password email. Please try again.');

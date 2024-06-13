@@ -9,6 +9,9 @@ class BusinessType extends Model
 {
     use HasFactory;
 
+    const TYPE_SUPPLIER = 0; // Supplier
+    const TYPE_BUYER = 1; // Buyer
+
     /**
      * The attributes that are mass assignable.
      *

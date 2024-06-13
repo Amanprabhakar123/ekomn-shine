@@ -1,6 +1,8 @@
 <?php
-use App\Models\CompanyDetail;
+
 use Illuminate\Support\Str;
+use App\Models\CompanyDetail;
+use Illuminate\Http\JsonResponse;
 
 /**
  * Encrypts a string using a salt key.
@@ -64,7 +66,9 @@ if (!function_exists('salt_decrypt')) {
 if (!function_exists('printR')) {
     function printR($string)
     {
+        echo '<pre>';
         print_r($string);
+        echo '</pre>';
         exit;
     }
 }
@@ -88,5 +92,78 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         }
 
         return $username;
+    }
+
+
+
+    // Function to convert an image to a Base64-encoded string
+    function convertImageToBase64($imagePath)
+    {
+        // Check if the file exists
+        if (file_exists($imagePath)) {
+            // Get the image content
+            $imageData = file_get_contents($imagePath);
+
+            // Encode the image content in Base64
+            $base64Image = base64_encode($imageData);
+
+            // Get the image type
+            $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
+
+            // Return the Base64 encoded image with the appropriate data URL prefix
+            return 'data:image/' . $imageType . ';base64,' . $base64Image;
+        } else {
+            // Handle the error if the file does not exist
+            return null;
+        }
+    }
+
+    /**
+     * Generate an error response.
+     *
+     * @param string $message
+     * @return JsonResponse
+     */
+    function errorResponse(string $message): JsonResponse
+    {
+        $parts = explode("-", $message);
+        $key = '';
+        if (!empty($parts)) {
+            $message = $parts[0];
+            $key = $parts[1] ?? null;
+        }
+        $response = [
+            'statusCode' => __('statusCode.statusCode422'),
+            'status' => __('statusCode.status422'),
+            'message' => $message
+        ];
+        if ($key) {
+            $response['key'] = trim($key);
+        }
+        return response()->json(['data' => $response], __('statusCode.statusCode200'));
+    }
+
+    /**
+     * Generate a success response.
+     *
+     * @param int|null $id
+     * @return JsonResponse
+     */
+    function successResponse(int $id = null, array $data = null): JsonResponse
+    {
+        $response = [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'message' => __('auth.registerSuccess'),
+        ];
+
+        if ($id) {
+            $response['id'] = $id;
+        }
+        if ($data) {
+            $response['data'] = $data;
+        }
+
+        return response()->json(['data' => $response],  __('statusCode.statusCode200'));
     }
 }

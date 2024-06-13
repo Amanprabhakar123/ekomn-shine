@@ -41,5 +41,4 @@ class AuthViewController extends Controller
     {
         return view('auth.admin.login');
     }
-
 }

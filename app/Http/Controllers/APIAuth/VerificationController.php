@@ -5,8 +5,10 @@ namespace App\Http\Controllers\APIAuth;
 use App\Models\User;
 use App\Mail\WelcomeEmail;
 use Illuminate\Http\Request;
+use App\Notifications\VerifyEmail;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -38,7 +40,7 @@ class VerificationController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['verify']]);
+        $this->middleware('auth:api', ['except' => ['verify', 'sendEmailLink']]);
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
 
@@ -151,6 +153,7 @@ class VerificationController extends Controller
                 'status' => __('statusCode.status200'),
                 'redirect' => $redirect,
                 'verified' => true,
+                'text'  => __('auth.clickToLogin'),
                 'message' =>  __('auth.verified')
             ]], __('statusCode.statusCode200'));
         }
@@ -160,12 +163,56 @@ class VerificationController extends Controller
             // Send the welcome email
             Mail::to($user->email)->send(new WelcomeEmail($user));
         }
+        if (Auth::check() && (config('app.front_end_tech') == false)) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'redirect' => route('dashboard'),
+                'verified' => true,
+                'text'  => __('auth.gotoDashboard'),
+                'message' =>  __('auth.verifySuccess')
+            ]], __('statusCode.statusCode200'));
+        }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
             'redirect' => $redirect,
             'verified' => true,
+            'text'  => __('auth.clickToLogin'),
             'message' =>  __('auth.verifySuccess')
+        ]], __('statusCode.statusCode200'));
+    }
+
+    
+     /**
+     * @OA\Post(
+     *     path="/api/send-email-link",
+     *     tags={"Authentication"},
+     *     summary="Send email verification link",
+     *     operationId="sendEmailLink",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Email verification link sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="statusCode", type="integer", example=200),
+     *             @OA\Property(property="status", type="string", example="OK"),
+     *             @OA\Property(property="redirect", type="string", example="/login"),
+     *             @OA\Property(property="message", type="string", example="Email verification link sent successfully."),
+     *         )
+     *     ),
+     * )
+     */
+    public function sendEmailLink(Request $request)
+    {
+        $user = User::find(salt_decrypt($request->id));
+        $redirect = $user->hasRole(User::ROLE_SUPPLIER) ? route('supplier.login') : route('buyer.login');
+        // Trigger email verification notification
+        $user->notify(new VerifyEmail);
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'redirect' => $redirect,
+            'message' => __('auth.verify')
         ]], __('statusCode.statusCode200'));
     }
 }

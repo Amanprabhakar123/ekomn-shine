@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('business_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->tinyInteger('type')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
