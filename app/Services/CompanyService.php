@@ -17,6 +17,8 @@ use App\Models\CompanyProductCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+
 
 class CompanyService
 {
@@ -52,7 +54,7 @@ class CompanyService
      */
     private function updateSupplierCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getSupplierValidationRules());
+        $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -62,14 +64,13 @@ class CompanyService
             throw $message;
         }
         $validatedData = $validator->validated();
-
-        $paths = $this->storeFiles($request, $companyId);
+        $company = CompanyDetail::find($companyId);
+        $paths = $this->storeFiles($request, $companyId, $company);
 
         $data = $this->extractAlternateBusinessContactData($validatedData);
 
         $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data);
 
-        $company = CompanyDetail::find($companyId);
         $company->update($companyDetails);
 
         $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
@@ -94,7 +95,7 @@ class CompanyService
      */
     private function updateBuyerCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getBuyerValidationRules());
+        $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -105,13 +106,13 @@ class CompanyService
         }
         $validatedData = $validator->validated();
 
-        $paths = $this->storeFiles($request, $companyId);
+        $company = CompanyDetail::find($companyId);
+        $paths = $this->storeFiles($request, $companyId, $company);
 
         $data = $this->extractAlternateBusinessContactData($validatedData, 'buyer');
 
         $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data);
         // dd($companyDetails);
-        $company = CompanyDetail::find($companyId);
         $company->update($companyDetails);
 
         $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
@@ -132,7 +133,7 @@ class CompanyService
      *
      * @return array
      */
-    private function getSupplierValidationRules(): array
+    private function getSupplierValidationRules($companyId): array
     {
         return [
             'business_name' => 'required|string|max:255',
@@ -142,7 +143,13 @@ class CompanyService
             'email' => 'required|email|max:255',
             'mobile_no' => 'required|string|max:15',
             'pan_no' => 'required|string|max:15',
-            'gst_no' => 'required|string|max:15',
+            'gst_no' => [
+                'required',
+                'string',
+                'max:15',
+                'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+                Rule::unique('company_details')->ignore($companyId),
+            ],
             'pan_verified' => 'boolean',
             'gst_verified' => 'boolean',
             'shipping_address.id' => 'integer|nullable',
@@ -188,7 +195,7 @@ class CompanyService
      *
      * @return array
      */
-    private function getBuyerValidationRules(): array
+    private function getBuyerValidationRules($companyId): array
     {
         return [
             'business_name' => 'required|string|max:255',
@@ -198,7 +205,13 @@ class CompanyService
             'email' => 'required|email|max:255',
             'mobile_no' => 'required|string|max:15',
             'pan_no' => 'required|string|max:15',
-            'gst_no' => 'nullable|string|max:15',
+            'gst_no' => [
+                'nullable',
+                'string',
+                'max:15',
+                'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+                Rule::unique('company_details')->ignore($companyId),
+            ],
             'pan_verified' => 'boolean',
             'gst_verified' => 'boolean',
             'delivery_address.id' => 'nullable|integer',
@@ -246,19 +259,22 @@ class CompanyService
      * @param int $companyId
      * @return array
      */
-    private function storeFiles(Request $request, int $companyId): array
+    private function storeFiles(Request $request, int $companyId, $company): array
     {
         $paths = [];
 
         foreach (['pan_file', 'signature_image', 'gst_file', 'cancelled_cheque_image'] as $fileField) {
             if ($request->hasFile($fileField)) {
-                $paths[$fileField] = $request->file($fileField)->storeAs(
-                    "public/company_{$companyId}/documents",
-                    md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension()
-                );
+                $filename = md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension();        
+                // Get the file contents
+                $fileContents = $request->file($fileField)->get();
+                // Define the path
+                $path = "company_{$company->id}/documents/{$filename}";                
+                // Store the file
+                Storage::disk('public')->put($path, $fileContents);
+
             }
         }
-
         return $paths;
     }
 
