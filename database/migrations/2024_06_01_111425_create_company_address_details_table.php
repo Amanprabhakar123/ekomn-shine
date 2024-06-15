@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('company_address_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('company_details');
-            $table->string('address_line1');
+            $table->string('address_line1')->nullable();
             $table->string('address_line2')->nullable();
             $table->string('city', 50);
             $table->string('state', 50);
