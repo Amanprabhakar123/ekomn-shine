@@ -18,7 +18,7 @@
                     <div class="form-group">
                       <input type="hidden" class="form-control" id="step_1" name="step_1" value="step_1" />
                       <input type="text" class="form-control" id="first_name" name="first_name" placeholder="*First Name"  value=""/>
-                      <div id="last_nameErr" class="invalid-feedback"></div>
+                      <div id="first_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
@@ -69,7 +69,7 @@
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name"  value=""/>
+                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Business name as for GST"  value=""/>
                       <div id="business_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -101,15 +101,15 @@
                     <label class="ack_q_w mt10"><strong>Create Login Details</strong></label>
                     <div class="form-group mt-1">
                       <input type="hidden" class="form-control" id="step_2" name="step_2" value="step_2" />
-                      <input type="email" class="form-control" id="email" name="email" placeholder="*Email Address" value="khanjunaid046@gmail.com"/>
+                      <input type="email" class="form-control" id="email" name="email" placeholder="*Email Address" value=""/>
                       <div id="emailErr" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control" id="password" name="password" placeholder="*Password" value="Test@123"/>
+                      <input type="password" class="form-control" id="password" name="password" placeholder="*Password" value=""/>
                       <div id="passwordErr" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="*Confirm Password" value="Test@123"/>
+                      <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="*Confirm Password" value=""/>
                       <div id="confirm_passwordErr" class="invalid-feedback"></div>
                     </div>
                     <div class="mt40">
@@ -559,25 +559,194 @@ $(document).ready(function () {
     };
 
     // Validate form fields and show error messages
-    let isValid = true;
-    const requiredFields = ['first_name', 'mobile', 'address', 'state', 'city', 'pin_code', 'business_name',];
-    requiredFields.forEach(field => {
-      if (!formData_1[field]) {
-        $(`#${field}`).addClass('is-invalid');
-        $(`#${field}Err`).text(`Please enter your ${field.replace('_', ' ')}.`);
+    // let isValid = true;
+    // const requiredFields = ['first_name', 'mobile', 'address', 'state', 'city', 'pin_code', 'business_name',];
+    // requiredFields.forEach(field => {
+    //   if (!formData_1[field]) {
+    //     $(`#${field}`).addClass('is-invalid');
+    //     $(`#${field}Err`).text(`Please enter your ${field.replace('_', ' ')}.`);
+    //     isValid = false;
+    //   }
+    // });
+
+    const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
+      const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+      const nameRegex = /^[a-zA-Z\s\-']+$/;
+      const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
+      const pinCodeRegex = /^[0-9]{6}$/;
+      const mobileRegex = /^[6-9]\d{9}$/;
+      let isValid = true;
+
+    // first nmae validation
+    if (!formData_1.first_name) {
+      $('#first_name').addClass('is-invalid');
+      $('#first_nameErr').text('Please enter your first name.');
+      isValid = false;
+    }else if (formData_1.first_name.length < 3) {
+      $('#first_name').addClass('is-invalid');
+      $('#first_nameErr').text('First name must be at least 3 characters long.');
+      isValid = false;
+    }else if (!nameRegex.test(formData_1.first_name)) {
+      $('#first_name').addClass('is-invalid');
+      $('#first_nameErr').text('First name must contain only letters.');
+      isValid = false;
+    };
+
+    if (formData_1.last_name) {
+      if (formData_1.last_name.length < 2) {
+        $('#last_name').addClass('is-invalid');
+        $('#last_nameErr').text('Last name must be at least 2 characters long.');
         isValid = false;
       }
-    });
+      else if (!nameRegex.test(formData_1.last_name)) {
+        $('#last_name').addClass('is-invalid');
+        $('#last_nameErr').text('Last name must contain only letters.');
+        isValid = false;
+      }
+    }
 
-    if(!pan && !gst){
-      $('#gst').addClass('is-invalid')
-      $('#pan').addClass('is-invalid')
-      $('#gstErr').text('Please enter your GST ID or PAN.');
+    // mobile validation
+    if (!formData_1.mobile) {
+      $('#mobile').addClass('is-invalid');
+      $('#mobileErr').text('Please enter your mobile number.');
+      isValid = false;
+    }else if (formData_1.mobile.length !== 10) {
+      $('#mobile').addClass('is-invalid');
+      $('#mobileErr').text('Mobile number must be 10 digits long.');
+      isValid = false;
+    }else if (!mobileRegex.test(formData_1.mobile)) {
+      $('#mobile').addClass('is-invalid');
+      $('#mobileErr').text('Mobile number must contain only numbers.');
+      isValid = false;
+    };
+
+    if (formData_1.designation) {
+      if (formData_1.designation.length < 2) {
+      $('#designation').addClass('is-invalid');
+      $('#designationErr').text('Designation must be at least 2  characters long.');  
+      isValid = false;
+    }else if (!nameRegex.test(formData_1.designation)) {
+      $('#designation').addClass('is-invalid');
+      $('#designationErr').text('Designation must contain only letters.');
+      isValid = false;
+    } 
+  }
+  
+  
+
+    // address validation
+    if (!formData_1.address) {
+      $('#address').addClass('is-invalid');
+      $('#addressErr').text('Please enter your address.');
+      isValid = false;
+    }
+   else if (formData_1.address.length < 10) {
+      $('#address').addClass('is-invalid');
+      $('#addressErr').text('Address must be at least 10 characters long.');
       isValid = false;
     }
 
+    // state validation
+    if (!formData_1.state) {
+      $('#state').addClass('is-invalid');
+      $('#stateErr').text('Please enter your state.');
+      isValid = false;
+    }
+    else if (formData_1.state.length < 2) {
+      $('#state').addClass('is-invalid');
+      $('#stateErr').text('State must be at least 2 characters long.');
+      isValid = false;
+    }
+    else if (!nameRegex.test(formData_1.state)) {
+      $('#state').addClass('is-invalid');
+      $('#stateErr').text('State must contain only letters.');
+      isValid = false;
+    }
+
+    // city validation
+    if (!formData_1.city) {
+      $('#city').addClass('is-invalid');
+      $('#cityErr').text('Please enter your city.');
+      isValid = false;
+    }
+   else if (formData_1.city.length < 2) {
+      $('#city').addClass('is-invalid');
+      $('#cityErr').text('City must be at least 2 characters long.');
+      isValid = false;
+    }
+   else if (!nameRegex.test(formData_1.city)) {
+      $('#city').addClass('is-invalid');
+      $('#cityErr').text('City must contain only letters.');
+      isValid = false;
+    }
+
+    // pin code validation
+    if (!formData_1.pin_code) {
+      $('#pin_code').addClass('is-invalid');
+      $('#pin_codeErr').text('Please enter your pin code.');
+      isValid = false;
+    }
+    else if (formData_1.pin_code.length !== 6) {
+      $('#pin_code').addClass('is-invalid');
+      $('#pin_codeErr').text('Pin code must be 6 digits long.');
+      isValid = false;
+    }
+    else if (!pinCodeRegex.test(formData_1.pin_code)) {
+      $('#pin_code').addClass('is-invalid');
+      $('#pin_codeErr').text('Pin code must contain only numbers.');
+      isValid = false;
+    }
+
+    // business name validation
+    if (formData_1.business_name) {
+    if (formData_1.business_name.length < 3) {
+      $('#business_name').addClass('is-invalid');
+      $('#business_nameErr').text('Business name must be at least 3 characters long.');
+      isValid = false;
+    }
+    else if (!nameRegex.test(formData_1.business_name)) {
+      $('#business_name').addClass('is-invalid');
+      $('#business_nameErr').text('Business name must contain only letters, numbers, and special characters.');
+      isValid = false;
+    }
+  }
+    // GST and Pan validation
+    if(formData_1.gst || formData_1.pan){
+      if(formData_1.gst){
+        if(formData_1.gst.length !== 15){
+        $('#gst').addClass('is-invalid');
+        $('#gstErr').text('GST number must be 15 characters long.');
+        isValid = false;
+      }
+      else if (!gstRegex.test(formData_1.gst)) {
+        $('#gst').addClass('is-invalid');
+        $('#gstErr').text('Please enter a valid GST number.');
+        isValid = false;
+      }
+    }
+      if(formData_1.pan){
+        const panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+        if(formData_1.pan.length !== 10){
+          $('#pan').addClass('is-invalid');
+          $('#panErr').text('PAN number must be 10 characters long.');
+          isValid = false;
+        }
+        else if (!panRegex.test(formData_1.pan)) {
+          $('#pan').addClass('is-invalid');
+          $('#panErr').text('Please enter a valid PAN number.');
+          isValid = false;
+        } 
+      }
+     
+    }else{
+      $('#gst').addClass('is-invalid');
+      $('#gstErr').text('Please enter your GST number Or PAN number.');
+      isValid = false;
+    }
+   
+
     // If form is not valid, exit function
-    if (!isValid) return;
+  if (!isValid) return;
 
     // Submit form data via API
     ApiRequest('buyer/register', 'POST', formData_1)
@@ -631,7 +800,7 @@ $(document).ready(function () {
       $('#passwordErr').text('Please enter your password.');
       isValid = false;
     }
-    if (!regex.test(password)) {
+   else if (!regex.test(password)) {
       $('#password').addClass('is-invalid');
       $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
       isValid = false;
@@ -641,7 +810,7 @@ $(document).ready(function () {
       $('#confirm_passwordErr').text('Please enter your confirm password.');
       isValid = false;
     }
-    if (password !== confirm_password) {
+    else if(password !== confirm_password) {
       $('#confirm_password').addClass('is-invalid');
       $('#confirm_passwordErr').text('Passwords do not match.');
       isValid = false;
