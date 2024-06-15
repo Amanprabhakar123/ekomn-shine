@@ -230,6 +230,9 @@ class PaymentController extends Controller
             ]);
             $payment->company_id = $company_detail->id;
             $payment->save();
+
+            $company_detail->company_serial_id = generateCompanySerialId($company_detail->id, 'B');   
+            $company_detail->save();
     
             $plan_details = Plan::where(['id' => $payment->plan_id, 'status' => Plan::STATUS_ACTIVE])->first();
             // Register Company Subscription Details 

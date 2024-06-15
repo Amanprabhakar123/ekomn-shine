@@ -51,6 +51,9 @@ class CompanyBuyerSeeder extends Seeder
             // Create a new CompanyDetail instance
             $company = CompanyDetail::create($data);
 
+            $company->company_serial_id = generateCompanySerialId($company->id, 'B');   
+            $company->save();
+
             // Example product categories
             $this->handleCompanyProductCategories($company->id, [5, 6, 7]);
 
