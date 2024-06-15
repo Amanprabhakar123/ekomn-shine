@@ -351,7 +351,8 @@ Supplier Profile
             const fields = [
                 'business_name', 'first_name', 'last_name', 'email', 'mobile_no', 'pan_no', 'gst_no', 's_address_line1',
                 's_state', 's_city', 's_pincode', 'location_link', 'b_address_line1', 'b_state', 'b_city', 'b_pincode', 'bank_name',
-                'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image', 'pan_file', 'gst_file'
+                'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image', 'pan_file', 'gst_file',
+                'business_performance_name', 'business_performance_mobile', 'product_listings_name', 'product_listings_mobile', 'order_delivery_enquiry_name', 'order_delivery_enquiry_mobile'
             ];
             fields.forEach(field => {
                 $(`#${field}`).removeClass('is-invalid');
@@ -413,6 +414,22 @@ Supplier Profile
             };
 
 
+              // Alternate business contact data
+              const alternate_business_contact = {
+                BusinessPerformanceAndCriticalEvents: {
+                    name: $('#business_performance_name').val(),
+                    mobile_no: $('#business_performance_mobile').val()
+                },
+                OrderDeliveryEnquiry: {
+                    name: $('#order_delivery_enquiry_name').val(),
+                    mobile_no: $('#order_delivery_enquiry_mobile').val()
+                },
+                ProductListings: {
+                    name: $('#product_listings_name').val(),
+                    mobile_no: $('#product_listings_mobile').val()
+                }
+            };
+
             // Business name validation regex
             const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -431,7 +448,7 @@ Supplier Profile
                 $('#business_name').addClass('is-invalid');
                 $('#business_nameErr').text('Business name must be at least 3 characters.');
                 isValid = false;
-            } else if (!businessNameRegex.test(editprofile.business_name)) {
+            } else if (!nameRegex.test(editprofile.business_name)) {
                 $('#business_name').addClass('is-invalid');
                 $('#business_nameErr').text('Invalid business name.');
                 isValid = false;
@@ -697,7 +714,7 @@ Supplier Profile
                 }
             }
 
-            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no) {
+            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.name) {
                 if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Mobile number must be at least 10 characters.');
@@ -709,50 +726,50 @@ Supplier Profile
                 }
             }
 
-            if (alternate_business_contact.ProductSourcingAlert.name) {
-                if (alternate_business_contact.ProductSourcingAlert.name.length < 2) {
+            if (alternate_business_contact.ProductListings.name) {
+                if (alternate_business_contact.ProductListings.name.length < 2) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Name must be at least 2 characters.');
-                    isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.ProductSourcingAlert.name)) {
+                    isValid = false;    
+                } else if (!nameRegex.test(alternate_business_contact.ProductListings.name)) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.ProductSourcingAlert.mobile_no) {
-                if (alternate_business_contact.ProductSourcingAlert.mobile_no.length < 10) {
+            if (alternate_business_contact.ProductListings.mobile_no) {
+                if (alternate_business_contact.ProductListings.mobile_no.length < 10) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
                 } else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductSourcingAlert.mobile_no)) {
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductListings.mobile_no)) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Invalid mobile number.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.BulkOrderContact.name) {
-                if (alternate_business_contact.BulkOrderContact.name.length < 2) {
+            if (alternate_business_contact.OrderDeliveryEnquiry.name) {
+                if (alternate_business_contact.OrderDeliveryEnquiry.name.length < 2) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Name must be at least 2 characters.');
                     isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.BulkOrderContact.name)) {
+                } else if (!nameRegex.test(alternate_business_contact.OrderDeliveryEnquiry.name)) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.BulkOrderContact.mobile_no) {
-                if (alternate_business_contact.BulkOrderContact.mobile_no.length < 10) {
+            if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no) {
+                if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no.length < 10) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
                 } else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.BulkOrderContact.mobile_no)) {
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.OrderDeliveryEnquiry.mobile_no)) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Invalid mobile number.');
                     isValid = false;
@@ -783,26 +800,10 @@ Supplier Profile
                 location_link: $('#location_link').val(),
             };
 
-            // Alternate business contact data
-            const alternate_business_contact = {
-                BusinessPerformanceAndCriticalEvents: {
-                    name: $('#business_performance_name').val(),
-                    mobile_no: $('#business_performance_mobile').val()
-                },
-                OrderDeliveryEnquiry: {
-                    name: $('#order_delivery_enquiry_name').val(),
-                    mobile_no: $('#order_delivery_enquiry_mobile').val()
-                },
-                ProductListings: {
-                    name: $('#product_listings_name').val(),
-                    mobile_no: $('#product_listings_mobile').val()
-                }
-            };
+          
 
 
 
-            // If form is not valid, exit function
-            if (!isValid) return;
 
             // Prepare form data for submission
             const formData = new FormData();

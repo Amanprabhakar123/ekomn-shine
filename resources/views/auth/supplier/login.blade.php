@@ -69,17 +69,11 @@
                 if (!email) {
                     $('#email').addClass('is-invalid');
                     $('#emailError').text('Please enter your email.');
-                } else {
-                    $('#email').removeClass('is-invalid');
-                    $('#emailError').text('');
-                }
+                } 
                 if (!password) {
                     $('#password').addClass('is-invalid');
                     $('#passwordError').text('Please enter your password.');
-                } else {
-                    $('#password').removeClass('is-invalid');
-                    $('#passwordError').text('');
-                }
+                } 
                 return false; // Prevent form submission if any field is empty
             }
 

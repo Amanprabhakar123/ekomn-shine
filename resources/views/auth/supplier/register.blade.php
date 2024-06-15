@@ -280,7 +280,7 @@
     // Function to clear error messages for all fields
     function clearErrorMessages() {
       const fields = [
-        'business_name', 'gst', 'first_name', 'last_name', 'mobile', 'address',
+        'business_name', 'gst', 'first_name', 'last_name', 'designation', 'mobile', 'address',
         'state', 'city', 'pin_code', 'email', 'password', 'confirm_password'
       ];
       fields.forEach(field => {
@@ -338,6 +338,7 @@
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
             const pinCodeRegex = /^[0-9]{6}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const mobileRegex = /^[6-9]\d{9}$/;
       let isValid = true;
       const requiredFields = ['mobile'];
       requiredFields.forEach(field => {
@@ -353,7 +354,7 @@
      
       var business_name = $('#business_name').val();
       // Validate business name
-      if (business_name === '') {
+      if (!business_name) {
         $('#business_name').addClass('is-invalid  ');
         $('#business_nameErr').text('Please enter your business name.');
         isValid = false;
@@ -363,7 +364,7 @@
         $('#business_nameErr').text('Business name must be at least 3 characters.');
         isValid = false;
 
-      } else if (!businessNameRegex.test(business_name)) {
+      } else if (!nameRegex.test(business_name)) {
         $('#business_name').addClass('is-invalid');
         $('#business_nameErr').text('Invalid business name.');
         isValid = false;
@@ -420,6 +421,22 @@
           isValid = false;
         }
       }
+
+      if (!mobile) {
+        $('#mobile').addClass('is-invalid');
+        $('#mobileErr').text('Please enter your mobile number.');
+        isValid = false;
+      } else if (mobile.length !== 10) {
+        $('#mobile').addClass('is-invalid');
+        $('#mobileErr').text('Mobile number must be at least 10 characters.');
+        isValid = false;
+      }
+      else if (!mobileRegex.test(mobile)) {
+        $('#mobile').addClass('is-invalid');  
+        $('#mobileErr').text('Invalid mobile number.');
+        isValid = false;
+      }
+
       var designation = $('#designation').val();
       if (designation) {
         if (!nameRegex.test(designation)) {
@@ -453,15 +470,17 @@
         $('#state').addClass('is-invalid');
         $('#stateErr').text('Please enter your State.');
         isValid = false;
-      } else if (!addressRegex.test(state)) {
-        $('#state').addClass('is-invalid');
-        $('#stateErr').text('Invalid state.');
-        isValid = false;
-      } else if (state.length < 2) {
+      }else if (state.length < 2) {
         $('#state').addClass('is-invalid');
         $('#stateErr').text('State must be at least 2 characters.');
         isValid = false;
-      }
+        
+      } else if (!nameRegex.test(state)) {
+        $('#state').addClass('is-invalid');
+        $('#stateErr').text('Invalid state.');
+        isValid = false;
+      } 
+      
 
       // Validate city
 
@@ -470,7 +489,7 @@
         $('#city').addClass('is-invalid');
         $('#cityErr').text('Please enter your city.');
         isValid = false;
-      } else if (!addressRegex.test(city)) {
+      } else if (!nameRegex.test(city)) {
         $('#city').addClass('is-invalid');
         $('#cityErr').text('Invalid city.');
         isValid = false;
@@ -677,17 +696,17 @@
         $('#passwordErr').text('Please enter your password.');
         isValid = false;
       }
-      if (!regex.test(password)) {
+      else if (!regex.test(password)) {
         $('#password').addClass('is-invalid');
         $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
         isValid = false;
       }
-      if (!confirm_password) {
+      else if (!confirm_password) {
         $('#confirm_password').addClass('is-invalid');
         $('#confirm_passwordErr').text('Please enter your confirm password.');
         isValid = false;
       }
-      if (password !== confirm_password) {
+      else if (password !== confirm_password) {
         $('#confirm_password').addClass('is-invalid');
         $('#confirm_passwordErr').text('Passwords do not match.');
         isValid = false;

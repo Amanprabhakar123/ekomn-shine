@@ -53,7 +53,6 @@ class CompanySupplierSeeder extends Seeder
             $company->company_serial_id = generateCompanySerialId($company->id, 'S');   
             $company->save();
 
-            dd($company->id);
             // Example product categories
             $this->handleCompanyProductCategories($company->id, [1, 3, 6]);
 

@@ -479,8 +479,7 @@ Buyer Profile
                 $('#first_name').addClass('is-invalid');
                 $('#first_nameErr').text('Please enter your first name.');
                 isValid = false;
-            }
-                else if (editprofile.first_name.length < 2) {
+            } else if (editprofile.first_name.length < 2) {
                 $('#first_name').addClass('is-invalid');
                 $('#first_nameErr').text('First name must be at least 2 characters.');
                 isValid = false;
@@ -488,23 +487,23 @@ Buyer Profile
                 $('#first_name').addClass('is-invalid');
                 $('#first_nameErr').text('Invalid first name.');
                 isValid = false;
-            } 
-            
+            }
+
 
             // // Last name validation
             if (editprofile.last_name) {
-                 if (editprofile.last_name.length < 2) {
+                if (editprofile.last_name.length < 2) {
                     $('#last_name').addClass('is-invalid');
                     $('#last_nameErr').text('Last name must be at least 2 characters.');
                     isValid = false;
-                }else if (!nameRegex.test(editprofile.last_name)) {
+                } else if (!nameRegex.test(editprofile.last_name)) {
                     $('#last_name').addClass('is-invalid');
                     $('#last_nameErr').text('Invalid last name.');
                     isValid = false;
                 }
             }
 
-          
+
 
             // Email validation
             if (!editprofile.email) {
@@ -526,46 +525,43 @@ Buyer Profile
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
-            }
-            else if (!/^[6-9]\d{9}$/.test(editprofile.mobile_no)) {
+            } else if (!/^[6-9]\d{9}$/.test(editprofile.mobile_no)) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Invalid mobile number.');
                 isValid = false;
             }
 
-             // GST and Pan validation
-    if(editprofile.gst_no || editprofile.pan_no){
-      if(editprofile.gst_no){
-        if(editprofile.gst_no.length !== 15){
-        $('#gst_no').addClass('is-invalid');
-        $('#gst_noErr').text('GST number must be 15 characters long.');
-        isValid = false;
-      }
-      else if (!gstRegex.test(editprofile.gst_no)) {
-        $('#gst_no').addClass('is-invalid');
-        $('#gst_noErr').text('Please enter a valid GST number.');
-        isValid = false;
-      }
-    }
-      if(editprofile.pan_no){
-        const panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
-        if(editprofile.pan_no.length !== 10){
-          $('#pan_no').addClass('is-invalid');
-          $('#pan_noErr').text('PAN number must be 10 characters long.');
-          isValid = false;
-        }
-        else if (!panRegex.test(editprofile.pan_no)) {
-          $('#pan_no').addClass('is-invalid');
-          $('#pan_noErr').text('Please enter a valid PAN number.');
-          isValid = false;
-        } 
-      }
-     
-    }else{
-      $('#gst_no').addClass('is-invalid');
-      $('#gst_noErr').text('Please enter your GST number Or PAN number.');
-      isValid = false;
-    }
+            // GST and Pan validation
+            if (editprofile.gst_no || editprofile.pan_no) {
+                if (editprofile.gst_no) {
+                    if (editprofile.gst_no.length !== 15) {
+                        $('#gst_no').addClass('is-invalid');
+                        $('#gst_noErr').text('GST number must be 15 characters long.');
+                        isValid = false;
+                    } else if (!gstRegex.test(editprofile.gst_no)) {
+                        $('#gst_no').addClass('is-invalid');
+                        $('#gst_noErr').text('Please enter a valid GST number.');
+                        isValid = false;
+                    }
+                }
+                if (editprofile.pan_no) {
+                    const panRegex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+                    if (editprofile.pan_no.length !== 10) {
+                        $('#pan_no').addClass('is-invalid');
+                        $('#pan_noErr').text('PAN number must be 10 characters long.');
+                        isValid = false;
+                    } else if (!panRegex.test(editprofile.pan_no)) {
+                        $('#pan_no').addClass('is-invalid');
+                        $('#pan_noErr').text('Please enter a valid PAN number.');
+                        isValid = false;
+                    }
+                }
+
+            } else {
+                $('#gst_no').addClass('is-invalid');
+                $('#gst_noErr').text('Please enter your GST number Or PAN number.');
+                isValid = false;
+            }
 
 
             // Shipping address validation
@@ -593,8 +589,7 @@ Buyer Profile
                 $('#d_state').addClass('is-invalid');
                 $('#d_stateErr').text('State must be at least 2 characters.');
                 isValid = false;
-            }
-            else if (!nameRegex.test(editprofile.d_state)) {
+            } else if (!nameRegex.test(editprofile.d_state)) {
                 $('#d_state').addClass('is-invalid');
                 $('#d_stateErr').text('Invalid state.');
                 isValid = false;
@@ -735,69 +730,69 @@ Buyer Profile
                 }
             }
 
-            if(alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no){
-                if(alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10){
+            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.name) {
+                if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
-                }else if (!/^[6-9]\d{9}$/.test(alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no)) {
+                } else if (!/^[6-9]\d{9}$/.test(alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no)) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Invalid mobile number.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.ProductSourcingAlert.name) {
-                if (alternate_business_contact.ProductSourcingAlert.name.length < 2) {
+            if (alternate_business_contact.ProductListings.name) {
+                if (alternate_business_contact.ProductListings.name.length < 2) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Name must be at least 2 characters.');
                     isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.ProductSourcingAlert.name)) {
+                } else if (!nameRegex.test(alternate_business_contact.ProductListings.name)) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if(alternate_business_contact.ProductSourcingAlert.mobile_no){
-                if(alternate_business_contact.ProductSourcingAlert.mobile_no.length < 10){
+            if (alternate_business_contact.ProductListings.mobile_no) {
+                if (alternate_business_contact.ProductListings.mobile_no.length < 10) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
-                }else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductSourcingAlert.mobile_no)) {
+                } else
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductListings.mobile_no)) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Invalid mobile number.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.BulkOrderContact.name) {
-                if (alternate_business_contact.BulkOrderContact.name.length < 2) {
+            if (alternate_business_contact.OrderDeliveryEnquiry.name) {
+                if (alternate_business_contact.OrderDeliveryEnquiry.name.length < 2) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Name must be at least 2 characters.');
                     isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.BulkOrderContact.name)) {
+                } else if (!nameRegex.test(alternate_business_contact.OrderDeliveryEnquiry.name)) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if(alternate_business_contact.BulkOrderContact.mobile_no){
-                if(alternate_business_contact.BulkOrderContact.mobile_no.length < 10){
+            if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no) {
+                if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no.length < 10) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
-                }else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.BulkOrderContact.mobile_no)) {
+                } else
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.OrderDeliveryEnquiry.mobile_no)) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Invalid mobile number.');
                     isValid = false;
                 }
             }
 
-            
+
 
             // requiredFields.forEach(field => {
             //     if (!editprofile[field]) {
@@ -943,22 +938,22 @@ Buyer Profile
                 pictureImage.innerHTML = defaultHtml;
             }
         });
-      }
-    
-     
-      @if(auth()->user()->companyDetails->cancelled_cheque_file_path)
-    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque", 
-    `<img src="{{asset(auth()->user()->companyDetails->cancelled_cheque_file_path)}}" class="picture__img">`);
+    }
+
+
+    @if(auth() - > user() - > companyDetails - > cancelled_cheque_file_path)
+    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque",
+        `<img src="{{asset(auth()->user()->companyDetails->cancelled_cheque_file_path)}}" class="picture__img">`);
     @else
-    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque",`<div class="uploadText">
+    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque", `<div class="uploadText">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h4>Upload Cheque</h4>
                 <p class="m-0">Upload a copy of cancelled cheque for above bank account</p>
             </div>`);
     @endif
-    @if(auth()->user()->companyDetails->signature_image_file_path)
-    handleFileSelect("#signature_image", ".signature_image", 
-    `<img src="{{asset(auth()->user()->companyDetails->signature_image_file_path)}}" class="picture__img">`);
+    @if(auth() - > user() - > companyDetails - > signature_image_file_path)
+    handleFileSelect("#signature_image", ".signature_image",
+        `<img src="{{asset(auth()->user()->companyDetails->signature_image_file_path)}}" class="picture__img">`);
     @else
     handleFileSelect("#signature_image", ".signature_image", `<div class="uploadText">
                 <i class="fas fa-cloud-upload-alt"></i>
@@ -966,5 +961,5 @@ Buyer Profile
                 <p class="m-0">Sign on a blank page, take a picture and upload a high resolution copy here</p>
             </div>`);
     @endif
-
+</script>
 @endsection
