@@ -14,7 +14,7 @@
                   <div class="form-group">
                     <!-- this is hidden field step 1 -->
                     <input type="hidden" class="form-control" id="step_1" name="step_1" value="step_1" />
-                    <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name" aria-label="Business name" />
+                    <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name as for GST" aria-label="Business name" />
                     <div id="business_nameErr" class="invalid-feedback"></div>
                   </div>
                 </div>
@@ -275,10 +275,12 @@
 <script>
   $(document).ready(function() {
 
+
+
     // Function to clear error messages for all fields
     function clearErrorMessages() {
       const fields = [
-        'business_name', 'gst', 'first_name', 'mobile', 'address',
+        'business_name', 'gst', 'first_name', 'last_name', 'designation', 'mobile', 'address',
         'state', 'city', 'pin_code', 'email', 'password', 'confirm_password'
       ];
       fields.forEach(field => {
@@ -300,6 +302,19 @@
       clearErrorMessages();
 
       // Retrieve form values
+
+      
+     
+      var website_url = $('#website_url').val();
+      var first_name = $('#first_name').val();
+      // This will be included but not validated
+      var mobile = $('#mobile').val();
+      // This will be included but not validated
+
+      var city = $('#city').val();
+      var pin_code = $('#pin_code').val();
+
+      // Retrieve form values
       const formData_1 = {
         step_1: $('#step_1').val(),
         business_name: $('#business_name').val(),
@@ -316,15 +331,191 @@
       };
 
       // Validate form fields and show error messages
+
+      const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
+            const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            const nameRegex = /^[a-zA-Z\s\-']+$/;
+            const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
+            const pinCodeRegex = /^[0-9]{6}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const mobileRegex = /^[6-9]\d{9}$/;
       let isValid = true;
-      const requiredFields = ['business_name', 'gst', 'first_name', 'mobile', 'address', 'state', 'city', 'pin_code'];
+      const requiredFields = ['mobile'];
       requiredFields.forEach(field => {
         if (!formData_1[field]) {
           $(`#${field}`).addClass('is-invalid');
           $(`#${field}Err`).text(`Please enter your ${field.replace('_', ' ')}.`);
           isValid = false;
-        }
+        } else {}
+
       });
+
+      // Business name validation regex
+     
+      var business_name = $('#business_name').val();
+      // Validate business name
+      if (!business_name) {
+        $('#business_name').addClass('is-invalid  ');
+        $('#business_nameErr').text('Please enter your business name.');
+        isValid = false;
+
+      } else if (business_name.length < 3) {
+        $('#business_name').addClass('is-invalid');
+        $('#business_nameErr').text('Business name must be at least 3 characters.');
+        isValid = false;
+
+      } else if (!nameRegex.test(business_name)) {
+        $('#business_name').addClass('is-invalid');
+        $('#business_nameErr').text('Invalid business name.');
+        isValid = false;
+     
+      }
+
+      // gst validation 
+
+     
+      // Validate GST number
+      var gst = $('#gst').val();
+      if (gst === '') {
+        $('#gst').addClass('is-invalid');
+        $('#gstErr').text('Please enter your GST number.');
+        isValid = false;
+      } else if (gst.length !== 15) {
+        $('#gst').addClass('is-invalid');
+        $('#gstErr').text('GST number must be at least 15 characters.');
+        isValid = false;
+      } else if (!gstRegex.test(gst)) {
+        $('#gst').addClass('is-invalid');
+        $('#gstErr').text('Invalid GST number.');
+        isValid = false;
+      }
+
+      // Name validation regex
+   
+      var first_name = $('#first_name').val();
+      // Validate name
+      if (!first_name) {
+        $('#first_name').addClass('is-invalid');
+        $('#first_nameErr').text('Please enter your name.');
+        isValid = false;
+      } else if (first_name.length < 2 ) {
+        $('#first_name').addClass('is-invalid');
+        $('#first_nameErr').text('Name must be at least 2 characters.');
+        isValid = false;
+      } else if (!nameRegex.test(first_name)) {
+        $('#first_name').addClass('is-invalid');
+        $('#first_nameErr').text('Invalid name.');
+        isValid = false;
+   
+      }
+
+      var last_name = $('#last_name').val();
+      if (last_name) {
+        if (!nameRegex.test(last_name)) {
+          $('#last_name').addClass('is-invalid');
+          $('#last_nameErr').text('Invalid Last Name.');
+          isValid = false;
+        } else if (last_name.length < 2) {
+          $('#last_name').addClass('is-invalid');
+          $('#last_nameErr').text('Last Name  must be at least 2 characters.');
+          isValid = false;
+        }
+      }
+
+      if (!mobile) {
+        $('#mobile').addClass('is-invalid');
+        $('#mobileErr').text('Please enter your mobile number.');
+        isValid = false;
+      } else if (mobile.length !== 10) {
+        $('#mobile').addClass('is-invalid');
+        $('#mobileErr').text('Mobile number must be at least 10 characters.');
+        isValid = false;
+      }
+      else if (!mobileRegex.test(mobile)) {
+        $('#mobile').addClass('is-invalid');  
+        $('#mobileErr').text('Invalid mobile number.');
+        isValid = false;
+      }
+
+      var designation = $('#designation').val();
+      if (designation) {
+        if (!nameRegex.test(designation)) {
+          $('#designation').addClass('is-invalid');
+          $('#designationErr').text('Invalid Designation.');
+          isValid = false;
+        } else if (designation.length < 2) {
+          $('#designation').addClass('is-invalid');
+          $('#designationErr').text('Designation must be at least 2 characters.');
+          isValid = false;
+        }
+      }
+
+      // Validate address
+     
+      var address = $('#address').val();
+      if (!address) {
+        $('#address').addClass('is-invalid');
+        $('#addressErr').text('Please enter your address.');
+        isValid = false;
+      } else if (address.length < 5) {
+        $('#address').addClass('is-invalid');
+        $('#addressErr').text('Address must be at least 5 characters.');
+        isValid = false;
+      }
+
+      // Validate state
+
+      var state = $('#state').val();
+      if (!state) {
+        $('#state').addClass('is-invalid');
+        $('#stateErr').text('Please enter your State.');
+        isValid = false;
+      }else if (state.length < 2) {
+        $('#state').addClass('is-invalid');
+        $('#stateErr').text('State must be at least 2 characters.');
+        isValid = false;
+        
+      } else if (!nameRegex.test(state)) {
+        $('#state').addClass('is-invalid');
+        $('#stateErr').text('Invalid state.');
+        isValid = false;
+      } 
+      
+
+      // Validate city
+
+      var city = $('#city').val();
+      if (!city) {
+        $('#city').addClass('is-invalid');
+        $('#cityErr').text('Please enter your city.');
+        isValid = false;
+      } else if (!nameRegex.test(city)) {
+        $('#city').addClass('is-invalid');
+        $('#cityErr').text('Invalid city.');
+        isValid = false;
+      } else if (city.length < 2) {
+        $('#city').addClass('is-invalid');
+        $('#cityErr').text('City must be at least 2 characters.');
+        isValid = false;
+      }
+
+      // Pin Code validation regex
+   
+      var pin_code = $('#pin_code').val();
+      // Validate pin code
+      if (!pin_code) {
+        $('#pin_code').addClass('is-invalid');
+        $('#pinCodeErr').text('Please enter your pin code.');
+        isValid = false;
+      } else if (pin_code.length !== 6) {
+        $('#pin_code').addClass('is-invalid');
+        $('#pin_codeErr').text('Pin code must be at least 6 characters.');
+        isValid = false;
+      } else if (!pinCodeRegex.test(pin_code)) {
+        $('#pin_code').addClass('is-invalid');
+        $('#pin_codeErr').text('Invalid pin code.');
+        isValid = false;
+      }
 
       // If form is not valid, exit function
       if (!isValid) return;
@@ -339,7 +530,7 @@
             setTimeout(function() {
               $('.section_2').show().addClass('show_section_2');
             }, 10);
-            
+
           }
           if (response.data.statusCode == 422) {
             const field = response.data.key;
@@ -505,17 +696,17 @@
         $('#passwordErr').text('Please enter your password.');
         isValid = false;
       }
-      if (!regex.test(password)) {
+      else if (!regex.test(password)) {
         $('#password').addClass('is-invalid');
         $('#passwordErr').text('Password must be at least 8 characters long, include letters, numbers, and special characters.');
         isValid = false;
       }
-      if (!confirm_password) {
+      else if (!confirm_password) {
         $('#confirm_password').addClass('is-invalid');
         $('#confirm_passwordErr').text('Please enter your confirm password.');
         isValid = false;
       }
-      if (password !== confirm_password) {
+      else if (password !== confirm_password) {
         $('#confirm_password').addClass('is-invalid');
         $('#confirm_passwordErr').text('Passwords do not match.');
         isValid = false;
@@ -537,12 +728,11 @@
               setTimeout(function() {
                 $('.t_u_s').css('display', 'block');
               }, 10);
-            } 
-           else if (response.data.statusCode == 422) {
-            const field = response.data.key;
-            $(`#${field}`).addClass('is-invalid');
-            $(`#${field}Err`).text(response.data.message);
-          }
+            } else if (response.data.statusCode == 422) {
+              const field = response.data.key;
+              $(`#${field}`).addClass('is-invalid');
+              $(`#${field}Err`).text(response.data.message);
+            }
           })
           .catch(error => {
             console.error('Error:', error);

@@ -79,9 +79,14 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         // Extract the initials
         $username = '';
         $words = explode(' ', $companyName);
-        foreach ($words as $word) {
-            $username .= strtoupper($word[0]);
+        if(count($words)== 1){
+            $username = strtoupper($words[0]);
+        } else {
+            foreach ($words as $word) {
+                $username .= strtoupper($word[0]);
+            }
         }
+
         $counter = 1;
         $originalUsername = $username;
 
@@ -138,6 +143,10 @@ if (!function_exists('generateUniqueCompanyUsername')) {
             'message' => $message
         ];
         if ($key) {
+            if (strpos($key, '.') !== false) {
+                $a = explode('.', trim($key));
+                $key = $a[0][0].'_'.$a[1];
+            }
             $response['key'] = trim($key);
         }
         return response()->json(['data' => $response], __('statusCode.statusCode200'));
@@ -165,5 +174,18 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         }
 
         return response()->json(['data' => $response],  __('statusCode.statusCode200'));
+    }
+
+    /**
+     * Generate a company serial ID based on the given ID and type.
+     *
+     * @param int $id The ID of the company.
+     * @param string $type The type of the company.
+     * @return string The generated company serial ID.
+     */
+    function generateCompanySerialId($id, $type)
+    {
+        // Format the new supplier ID with leading zeros and 's' prefix
+        return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
     }
 }

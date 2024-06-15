@@ -17,6 +17,8 @@ use App\Models\CompanyProductCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+
 
 class CompanyService
 {
@@ -52,7 +54,7 @@ class CompanyService
      */
     private function updateSupplierCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getSupplierValidationRules());
+        $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -62,14 +64,13 @@ class CompanyService
             throw $message;
         }
         $validatedData = $validator->validated();
-
-        $paths = $this->storeFiles($request, $companyId);
+        $company = auth()->user()->companyDetails;
+        $paths = $this->storeFiles($request, $companyId, $company);
 
         $data = $this->extractAlternateBusinessContactData($validatedData);
 
-        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data);
+        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
 
-        $company = CompanyDetail::find($companyId);
         $company->update($companyDetails);
 
         $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
@@ -94,7 +95,7 @@ class CompanyService
      */
     private function updateBuyerCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getBuyerValidationRules());
+        $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -105,13 +106,13 @@ class CompanyService
         }
         $validatedData = $validator->validated();
 
-        $paths = $this->storeFiles($request, $companyId);
+        $company = auth()->user()->companyDetails;
+        $paths = $this->storeFiles($request, $companyId, $company);
 
         $data = $this->extractAlternateBusinessContactData($validatedData, 'buyer');
 
-        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data);
+        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
         // dd($companyDetails);
-        $company = CompanyDetail::find($companyId);
         $company->update($companyDetails);
 
         $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
@@ -132,7 +133,7 @@ class CompanyService
      *
      * @return array
      */
-    private function getSupplierValidationRules(): array
+    private function getSupplierValidationRules($companyId): array
     {
         return [
             'business_name' => 'required|string|max:255',
@@ -140,43 +141,50 @@ class CompanyService
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
-            'mobile_no' => 'required|string|max:15',
+            'mobile_no' => 'required|string|max:10|min:10',
             'pan_no' => 'required|string|max:15',
-            'gst_no' => 'required|string|max:15',
+            'gst_no' => [
+                'required',
+                'string',
+                'max:15',
+                'min:15',
+                'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+                Rule::unique('company_details')->ignore($companyId),
+            ],
             'pan_verified' => 'boolean',
             'gst_verified' => 'boolean',
             'shipping_address.id' => 'integer|nullable',
             'shipping_address.address_line1' => 'required|string|max:255',
             'shipping_address.state' => 'required|string|max:255',
             'shipping_address.city' => 'required|string|max:255',
-            'shipping_address.pincode' => 'required|string|max:10',
+            'shipping_address.pincode' => 'required|string|max:6|min:6',
             'shipping_address.address_type' => 'required|string|max:50',
             'shipping_address.is_primary' => 'boolean',
-            'shipping_address.location_link' => 'required|string|max:190',
+            'shipping_address.location_link' => 'nullable|string|max:190',
             'billing_address.id' => 'integer|nullable',
-            'billing_address.address_line1' => 'required|string|max:255',
-            'billing_address.city' => 'required|string|max:255',
-            'billing_address.state' => 'required|string|max:255',
-            'billing_address.pincode' => 'required|string|max:10',
-            'billing_address.address_type' => 'required|string|max:50',
+            'billing_address.address_line1' => 'nullable|string|max:255',
+            'billing_address.city' => 'nullable|string|max:255',
+            'billing_address.state' => 'nullable|string|max:255',
+            'billing_address.pincode' => 'nullable|string|max:6|min:6',
+            'billing_address.address_type' => 'nullable|string|max:50',
             'billing_address.is_primary' => 'boolean',
-            'billing_address.location_link' => 'required|string|max:190',
-            'bank_name' => 'required|string|max:255',
-            'bank_account_no' => 'required|string|max:20|confirmed',
-            'ifsc_code' => 'required|string|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
-            'swift_code' => 'required|string|regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/',
+            'billing_address.location_link' => 'nullable|string|max:190',
+            'bank_name' => 'nullable|string|max:255',
+            'bank_account_no' => 'nullable|string|max:20|confirmed',
+            'ifsc_code' => 'nullable|string|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
+            'swift_code' => 'nullable|string|regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/',
             'alternate_business_contact.BusinessPerformanceAndCriticalEvents.name' => 'nullable|string|max:255',
-            'alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no' => 'nullable|string|max:10|min:10',
             'alternate_business_contact.OrderDeliveryEnquiry.name' => 'nullable|string|max:255',
-            'alternate_business_contact.OrderDeliveryEnquiry.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.OrderDeliveryEnquiry.mobile_no' => 'nullable|string|max:10|min:10',
             'alternate_business_contact.ProductListings.name' => 'nullable|string|max:255',
-            'alternate_business_contact.ProductListings.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.ProductListings.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'gst_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'cancelled_cheque_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'signature_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'can_handle' => 'nullable|string'
@@ -188,51 +196,58 @@ class CompanyService
      *
      * @return array
      */
-    private function getBuyerValidationRules(): array
+    private function getBuyerValidationRules($companyId): array
     {
         return [
-            'business_name' => 'required|string|max:255',
+            'business_name' => 'nullable|string|max:255',
             'display_name' => 'nullable|string|max:255',
             'first_name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
-            'mobile_no' => 'required|string|max:15',
-            'pan_no' => 'required|string|max:15',
-            'gst_no' => 'nullable|string|max:15',
+            'mobile_no' => 'required|string|max:10|min:10',
+            'pan_no' => 'nullable|string|max:15',
+            'gst_no' => [
+                'nullable',
+                'string',
+                'max:15',
+                'min:15',
+                'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/',
+                Rule::unique('company_details')->ignore($companyId),
+            ],
             'pan_verified' => 'boolean',
             'gst_verified' => 'boolean',
             'delivery_address.id' => 'nullable|integer',
             'delivery_address.address_line1' => 'required|string|max:255',
             'delivery_address.city' => 'required|string|max:255',
             'delivery_address.state' => 'required|string|max:255',
-            'delivery_address.pincode' => 'required|string|max:10',
+            'delivery_address.pincode' => 'required|string|max:6|min:6',
             'delivery_address.address_type' => 'required|string|max:50',
             'delivery_address.is_primary' => 'boolean',
             'delivery_address.landmark' => 'nullable|string|max:150',
-            'delivery_address.location_link' => 'required|string|max:190',
+            'delivery_address.location_link' => 'nullable|string|max:190',
             'billing_address.id' => 'nullable|integer',
-            'billing_address.address_line1' => 'required|string|max:255',
-            'billing_address.city' => 'required|string|max:255',
-            'billing_address.state' => 'required|string|max:255',
-            'billing_address.pincode' => 'required|string|max:10',
-            'billing_address.address_type' => 'required|string|max:50',
+            'billing_address.address_line1' => 'nullable|string|max:255',
+            'billing_address.city' => 'nullable|string|max:255',
+            'billing_address.state' => 'nullable|string|max:255',
+            'billing_address.pincode' => 'nullable|string|max:6|min:6',
+            'billing_address.address_type' => 'nullable|string|max:50',
             'billing_address.is_primary' => 'boolean',
             'bank_name' => 'nullable|string|max:255',
             'bank_account_no' => 'nullable|string|max:20|confirmed',
             'ifsc_code' => 'nullable|string|regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
             'swift_code' => 'nullable|string|regex:/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/',
             'alternate_business_contact.BusinessPerformanceAndCriticalEvents.name' => 'nullable|string|max:255',
-            'alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no' => 'nullable|string|max:10|min:10',
             'alternate_business_contact.ProductSourcingAlert.name' => 'nullable|string|max:255',
-            'alternate_business_contact.ProductSourcingAlert.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.ProductSourcingAlert.mobile_no' => 'nullable|string|max:10|min:10',
             'alternate_business_contact.BulkOrderContact.name' => 'nullable|string|max:255',
-            'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:15',
+            'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'gst_file' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'cancelled_cheque_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'signature_image' => 'required|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'sales_channel' => 'nullable|string'
@@ -246,19 +261,22 @@ class CompanyService
      * @param int $companyId
      * @return array
      */
-    private function storeFiles(Request $request, int $companyId): array
+    private function storeFiles(Request $request, int $companyId, $company): array
     {
         $paths = [];
 
         foreach (['pan_file', 'signature_image', 'gst_file', 'cancelled_cheque_image'] as $fileField) {
             if ($request->hasFile($fileField)) {
-                $paths[$fileField] = $request->file($fileField)->storeAs(
-                    "public/company_{$companyId}/documents",
-                    md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension()
-                );
+                $filename = md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension();        
+                // Get the file contents
+                $fileContents = $request->file($fileField)->get();
+                // Define the path
+                $path = "company_{$company->id}/documents/{$filename}"; 
+                $paths[$fileField] = $path;             
+                // Store the file
+                Storage::disk('public')->put($path, $fileContents);
             }
         }
-
         return $paths;
     }
 
@@ -313,7 +331,7 @@ class CompanyService
      * @param array $data
      * @return array
      */
-    private function buildCompanyDetailsArray(array $validatedData, int $companyId, array $paths, array $data): array
+    private function buildCompanyDetailsArray(array $validatedData, int $companyId, array $paths, array $data, $company): array
     {
         return [
             'id' => $companyId,
@@ -334,10 +352,10 @@ class CompanyService
             'alternate_business_contact' => json_encode($data),
             'language_i_can_read' => $validatedData['language_i_can_read'] ?? null,
             'language_i_can_understand' => $validatedData['language_i_can_understand'] ?? null,
-            'pan_no_file_path' => isset($paths['pan_file']) ? Storage::url($paths['pan_file']) : null,
-            'gst_no_file_path' => isset($paths['gst_file']) ? Storage::url($paths['gst_file']) : null,
-            'cancelled_cheque_file_path' => isset($paths['cancelled_cheque_image']) ? Storage::url($paths['cancelled_cheque_image']) : null,
-            'signature_image_file_path' => isset($paths['signature_image']) ? Storage::url($paths['signature_image']) : null,
+            'pan_no_file_path' => isset($paths['pan_file']) ? Storage::url($paths['pan_file']) : ($company->pan_no_file_path ?? null),
+            'gst_no_file_path' => isset($paths['gst_file']) ? Storage::url($paths['gst_file']) : ($company->gst_no_file_path ?? null),
+            'cancelled_cheque_file_path' => isset($paths['cancelled_cheque_image']) ? Storage::url($paths['cancelled_cheque_image']) : ($company->cancelled_cheque_file_path ?? null),
+            'signature_image_file_path' => isset($paths['signature_image']) ? Storage::url($paths['signature_image']) : ($company->signature_image_file_path ?? null),
         ];
     }
 
