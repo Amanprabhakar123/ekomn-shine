@@ -261,8 +261,8 @@
               </g>
             </svg>
             <h1 class="thank_h1">Thank you!!</h1>
-            <p>Your responses have earned you an immediate Onboarding Approval on eKomn.</p>
-            <a href="{{ route('buyer.login') }}" class="a_color">Click to Login</a>
+            <p>Thank your for registration. A confirmation email has been sent your email. Please verify your email by clicking the link in the email.</p>
+            {{--<a href="{{ route('buyer.login') }}" class="a_color">Click to Login</a>--}}
           </div>
         </div>
       </div>

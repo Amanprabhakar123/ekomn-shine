@@ -154,7 +154,7 @@ class CompanyService
             'pan_verified' => 'boolean',
             'gst_verified' => 'boolean',
             'shipping_address.id' => 'integer|nullable',
-            'shipping_address.address_line1' => 'required|string|max:255',
+            'shipping_address.address_line1' => 'nullable|string|max:255',
             'shipping_address.state' => 'required|string|max:255',
             'shipping_address.city' => 'required|string|max:255',
             'shipping_address.pincode' => 'required|string|max:6|min:6',
