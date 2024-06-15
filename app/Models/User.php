@@ -22,6 +22,15 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
     const ROLE_ADMIN = 'super-admin';
+    const ROLE_ADD_PRODUCT = 'add-product';
+    const ROLE_EDIT_PRODUCT_DETAILS = 'edit-product-details';
+    const ROLE_ADD_CONNCETION = 'add-connection';
+    const ROLE_ADD_EDIT_CONNCETION = 'add-edit-connection';
+    const ROLE_ADD_NEW_ORDER = 'add-new-order';
+    const ROLE_ADD_EDIT_ORDER = 'add-edit-order';
+    const ROLE_ADD_NEW_RETURN = 'add-new-return';
+
+    
 
     /**
      * The attributes that are mass assignable.
