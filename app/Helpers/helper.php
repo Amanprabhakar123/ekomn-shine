@@ -79,9 +79,14 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         // Extract the initials
         $username = '';
         $words = explode(' ', $companyName);
-        foreach ($words as $word) {
-            $username .= strtoupper($word[0]);
+        if(count($words)== 1){
+            $username = strtoupper($words[0]);
+        } else {
+            foreach ($words as $word) {
+                $username .= strtoupper($word[0]);
+            }
         }
+
         $counter = 1;
         $originalUsername = $username;
 
