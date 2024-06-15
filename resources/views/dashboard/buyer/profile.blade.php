@@ -17,8 +17,14 @@ Buyer Profile
                                     <label class="eklabel req">Business name:</label>
                                     <div class="ek_f_input">
                                         <input type="text" class="form-control" placeholder="Your business name" id="business_name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
-                                        <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display name" name="" value="{{ auth()->user()->companyDetails->display_name }}" disabled />
                                         <div id="business_nameErr" class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                                <div class="ek_group">
+                                    <label class="eklabel req">Display name:</label>
+                                    <div class="ek_f_input">
+                                        <div id="business_nameErr" class="invalid-feedback"></div>
+                                        <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display_name" name="" value="{{ auth()->user()->companyDetails->display_name }}" disabled />
                                     </div>
                                 </div>
                                 <div class="ek_group">
