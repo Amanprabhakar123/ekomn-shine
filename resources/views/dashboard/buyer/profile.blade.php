@@ -941,7 +941,7 @@ Buyer Profile
     }
 
 
-    @if(auth() - > user() - > companyDetails - > cancelled_cheque_file_path)
+    @if(auth()->user()->companyDetails->cancelled_cheque_file_path)
     handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque",
         `<img src="{{asset(auth()->user()->companyDetails->cancelled_cheque_file_path)}}" class="picture__img">`);
     @else
@@ -951,7 +951,7 @@ Buyer Profile
                 <p class="m-0">Upload a copy of cancelled cheque for above bank account</p>
             </div>`);
     @endif
-    @if(auth() - > user() - > companyDetails - > signature_image_file_path)
+    @if(auth()->user()->companyDetails->signature_image_file_path)
     handleFileSelect("#signature_image", ".signature_image",
         `<img src="{{asset(auth()->user()->companyDetails->signature_image_file_path)}}" class="picture__img">`);
     @else
