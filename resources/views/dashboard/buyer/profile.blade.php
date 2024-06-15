@@ -296,10 +296,6 @@ Buyer Profile
                             <label>Upload cancelled cheque<span class="r_color">*</span></label>
                             <label class="picture" for="cancelled_cheque_image" tabIndex="0">
                                 <span class="picture__image_cheque">
-                                    @if(isset(auth()->user()->companyDetails->gst_no_file_path))
-                                    <img src="{{asset(auth()->user()->companyDetails->gst_no_file_path)}}" class="picture__img">
-                                    @else
-                                    @endif
                                 </span>
                             </label>
                             <input type="file" name="cancelled_cheque_image" id="cancelled_cheque_image" style="display: none;">
@@ -947,18 +943,28 @@ Buyer Profile
                 pictureImage.innerHTML = defaultHtml;
             }
         });
-    }
-
-    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque", ` <div class="uploadText">
+      }
+    
+     
+      @if(auth()->user()->companyDetails->cancelled_cheque_file_path)
+    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque", 
+    `<img src="{{asset(auth()->user()->companyDetails->cancelled_cheque_file_path)}}" class="picture__img">`);
+    @else
+    handleFileSelect("#cancelled_cheque_image", ".picture__image_cheque",`<div class="uploadText">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h4>Upload Cheque</h4>
                 <p class="m-0">Upload a copy of cancelled cheque for above bank account</p>
             </div>`);
+    @endif
+    @if(auth()->user()->companyDetails->signature_image_file_path)
+    handleFileSelect("#signature_image", ".signature_image", 
+    `<img src="{{asset(auth()->user()->companyDetails->signature_image_file_path)}}" class="picture__img">`);
+    @else
     handleFileSelect("#signature_image", ".signature_image", `<div class="uploadText">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h4>Upload Signature</h4>
                 <p class="m-0">Sign on a blank page, take a picture and upload a high resolution copy here</p>
             </div>`);
-</script>
+    @endif
 
 @endsection

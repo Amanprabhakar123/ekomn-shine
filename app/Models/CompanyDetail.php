@@ -43,6 +43,7 @@ class CompanyDetail extends Model
      */
     protected $fillable = [
         'user_id', // 'user_id' is the id of the user table
+        'company_serial_id', // 'company_serial_id' is the id of the company table
         'business_name',
         'display_name',
         'designation',

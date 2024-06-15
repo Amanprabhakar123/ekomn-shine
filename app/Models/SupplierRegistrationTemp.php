@@ -106,6 +106,8 @@ class SupplierRegistrationTemp extends Model
                 'updated_at' => $data['updated_at']
             ]
         );
+        $company->company_serial_id = generateCompanySerialId($company->id, 'S');   
+        $company->save();
 
         CompanyAddressDetail::updateOrCreate(
             ['company_id' => $company->id, 'address_type' => CompanyAddressDetail::TYPE_PICKUP_ADDRESS, 'is_primary' => 1],
