@@ -754,50 +754,50 @@ Buyer Profile
                 }
             }
 
-            if (alternate_business_contact.ProductListings.name) {
-                if (alternate_business_contact.ProductListings.name.length < 2) {
+            if (alternate_business_contact.BulkOrderContact.name) {
+                if (alternate_business_contact.BulkOrderContact.name.length < 2) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Name must be at least 2 characters.');
                     isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.ProductListings.name)) {
+                } else if (!nameRegex.test(alternate_business_contact.BulkOrderContact.name)) {
                     $('#product_listings_name').addClass('is-invalid');
                     $('#product_listings_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.ProductListings.mobile_no) {
-                if (alternate_business_contact.ProductListings.mobile_no.length < 10) {
+            if (alternate_business_contact.BulkOrderContact.mobile_no) {
+                if (alternate_business_contact.BulkOrderContact.mobile_no.length < 10) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
                 } else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductListings.mobile_no)) {
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.BulkOrderContact.mobile_no)) {
                     $('#product_listings_mobile').addClass('is-invalid');
                     $('#product_listings_mobileErr').text('Invalid mobile number.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.OrderDeliveryEnquiry.name) {
-                if (alternate_business_contact.OrderDeliveryEnquiry.name.length < 2) {
+            if (alternate_business_contact.ProductSourcingAlert.name) {
+                if (alternate_business_contact.ProductSourcingAlert.name.length < 2) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Name must be at least 2 characters.');
                     isValid = false;
-                } else if (!nameRegex.test(alternate_business_contact.OrderDeliveryEnquiry.name)) {
+                } else if (!nameRegex.test(alternate_business_contact.ProductSourcingAlert.name)) {
                     $('#order_delivery_enquiry_name').addClass('is-invalid');
                     $('#order_delivery_enquiry_nameErr').text('Invalid name.');
                     isValid = false;
                 }
             }
 
-            if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no) {
-                if (alternate_business_contact.OrderDeliveryEnquiry.mobile_no.length < 10) {
+            if (alternate_business_contact.ProductSourcingAlert.mobile_no) {
+                if (alternate_business_contact.ProductSourcingAlert.mobile_no.length < 10) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
                 } else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.OrderDeliveryEnquiry.mobile_no)) {
+                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.ProductSourcingAlert.mobile_no)) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Invalid mobile number.');
                     isValid = false;
