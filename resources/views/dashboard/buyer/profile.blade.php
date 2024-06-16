@@ -713,7 +713,12 @@ Buyer Profile
                     $('#bank_account_no').addClass('is-invalid');
                     $('#bank_account_noErr').text('Bank account number must be at least 8 characters.');
                     isValid = false;
-                } else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
+                }else if(!editprofile.re_bank_account_no){
+                    $('#re_bank_account_no').addClass('is-invalid');
+                    $('#re_bank_account_noErr').text('Please re-enter your bank account number.');
+                    isValid = false;
+                }   
+                 else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
                     $('#re_bank_account_no').addClass('is-invalid');
                     $('#re_bank_account_noErr').text('Bank account numbers do not match.');
                     isValid = false;
@@ -736,7 +741,7 @@ Buyer Profile
                 }
             }
 
-            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.name) {
+            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no) {
                 if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Mobile number must be at least 10 characters.');
