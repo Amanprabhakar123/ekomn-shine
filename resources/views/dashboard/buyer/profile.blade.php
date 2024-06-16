@@ -460,7 +460,7 @@ Buyer Profile
             // Business name validation regex
             const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-            const nameRegex = /^[a-zA-Z\s\-']+$/;
+            const nameRegex = /^[a-zA-Z\s\-\.']+$/;
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
             const pinCodeRegex = /^[0-9]{6}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -713,7 +713,12 @@ Buyer Profile
                     $('#bank_account_no').addClass('is-invalid');
                     $('#bank_account_noErr').text('Bank account number must be at least 8 characters.');
                     isValid = false;
-                } else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
+                }else if(!editprofile.re_bank_account_no){
+                    $('#re_bank_account_no').addClass('is-invalid');
+                    $('#re_bank_account_noErr').text('Please re-enter your bank account number.');
+                    isValid = false;
+                }   
+                 else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
                     $('#re_bank_account_no').addClass('is-invalid');
                     $('#re_bank_account_noErr').text('Bank account numbers do not match.');
                     isValid = false;
@@ -736,7 +741,7 @@ Buyer Profile
                 }
             }
 
-            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.name) {
+            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no) {
                 if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Mobile number must be at least 10 characters.');
