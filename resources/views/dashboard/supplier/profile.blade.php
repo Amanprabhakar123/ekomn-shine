@@ -691,6 +691,11 @@ Supplier Profile
                     $('#bank_account_no').addClass('is-invalid');
                     $('#bank_account_noErr').text('Bank account number must be at least 8 characters.');
                     isValid = false;
+                }else if(!editprofile.re_bank_account_no){
+                    $('#re_bank_account_no').addClass('is-invalid');
+                    $('#re_bank_account_noErr').text('Please re-enter your bank account number.');
+                    isValid = false;
+                
                 } else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
                     $('#re_bank_account_no').addClass('is-invalid');
                     $('#re_bank_account_noErr').text('Bank account numbers do not match.');
@@ -714,7 +719,7 @@ Supplier Profile
                 }
             }
 
-            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.name) {
+            if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no) {
                 if (alternate_business_contact.BusinessPerformanceAndCriticalEvents.mobile_no.length < 10) {
                     $('#business_performance_mobile').addClass('is-invalid');
                     $('#business_performance_mobileErr').text('Mobile number must be at least 10 characters.');
@@ -768,8 +773,7 @@ Supplier Profile
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Mobile number must be at least 10 characters.');
                     isValid = false;
-                } else
-                if (!/^[6-9]\d{9}$/.test(alternate_business_contact.OrderDeliveryEnquiry.mobile_no)) {
+                } else if (!/^[6-9]\d{9}$/.test(alternate_business_contact.OrderDeliveryEnquiry.mobile_no)) {
                     $('#order_delivery_enquiry_mobile').addClass('is-invalid');
                     $('#order_delivery_enquiry_mobileErr').text('Invalid mobile number.');
                     isValid = false;
