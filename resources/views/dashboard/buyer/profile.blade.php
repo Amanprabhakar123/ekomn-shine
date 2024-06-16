@@ -359,7 +359,8 @@ Buyer Profile
             const fields = [
                 'business_name', 'first_name', 'last_name', 'email', 'mobile_no', 'pan_no', 'gst_no', 'd_address_line1',
                 'd_state', 'd_city', 'd_pincode', 'location_link', 'b_address_line1', 'b_state', 'b_city', 'b_pincode', 'bank_name',
-                'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image', 'pan_file', 'gst_file'
+                'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code', 'cancelled_cheque_image', 'signature_image', 'pan_file', 'gst_file',
+                'business_performance_name', 'business_performance_mobile', 'product_listings_name', 'product_listings_mobile', 'order_delivery_enquiry_name', 'order_delivery_enquiry_mobile'
             ];
             fields.forEach(field => {
                 $(`#${field}`).removeClass('is-invalid');
