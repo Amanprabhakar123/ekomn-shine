@@ -16,17 +16,17 @@ Buyer Profile
                                 <div class="ek_group">
                                     <label class="eklabel req">Business name:</label>
                                     <div class="ek_f_input">
-                                        <input type="text" class="form-control" placeholder="Your business name" id="business_name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
+                                        <input type="text" class="form-control" placeholder="Your business name as per GST" id="business_name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="ek_group">
+                                    {{--<div class="ek_group">
                                     <label class="eklabel req">Display name:</label>
                                     <div class="ek_f_input">
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                         <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display_name" name="" value="{{ auth()->user()->companyDetails->display_name }}" disabled />
                                     </div>
-                                </div>
+                                </div>--}}
                                 <div class="ek_group">
                                     <label class="eklabel">Business owner name:</label>
                                     <div class="ek_f_input">
@@ -462,6 +462,8 @@ Buyer Profile
             const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
             const nameRegex = /^[a-zA-Z\s\-\.']+$/;
+            const mapLinkPattern = /^(https:\/\/maps\.google\.com\/|https:\/\/www\.google\.com\/maps\/|https:\/\/maps\.app\.goo\.gl\/|https:\/\/www\.mapquest\.com\/|https:\/\/www\.bing\.com\/maps\/)/;
+            
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
             const pinCodeRegex = /^[0-9]{6}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -528,7 +530,7 @@ Buyer Profile
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Please enter your mobile number.');
                 isValid = false;
-            } else if (editprofile.mobile_no.length < 10) {
+            } else if (editprofile.mobile_no.length !== 10) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
@@ -634,6 +636,14 @@ Buyer Profile
                 $('#d_pincodeErr').text('Invalid pincode.');
                 isValid = false;
             }
+
+            // Location link validation
+                            
+                if (!mapLinkPattern.test(editprofile.location_link)) {
+                    $('#location_link').addClass('is-invalid');
+                    $('#location_linkErr').text('invalid location link. Please enter a valid location link.');
+                isValid = false;
+                } 
 
             // Billing address validation
             if (editprofile.b_address_line1) {

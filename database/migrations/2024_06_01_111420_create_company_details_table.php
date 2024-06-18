@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('company_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string('business_name', 191)->default(null);
-            $table->string('display_name', 191)->default(null);
+            $table->string('business_name', 191)->nullable();
+            $table->string('display_name', 191)->nullable();
             $table->string('company_serial_id', 191)->nullable();
             $table->string('designation', 191)->nullable();
             $table->string('first_name', 191)->default(null);
