@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('product_keywords', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('company_id');
+            $table->foreign('company_id')->references('id')->on('company_details');
+            $table->foreign('product_id')->references('id')->on('product_inventories');
+            $table->string('keyword', 191);
             $table->timestamps();
         });
     }

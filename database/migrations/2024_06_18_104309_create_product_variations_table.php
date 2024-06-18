@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('product_inventory');
+            $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('company_id');
             $table->string('sku', 100)->unique();
             $table->string('size', 50)->nullable();
@@ -39,6 +39,9 @@ return new class extends Migration
             $table->json('tier_rate')->nullable();
             $table->json('tier_shipping_rate')->nullable();
             $table->timestamps();
+
+            $table->foreign('company_id')->references('id')->on('company_details');
+            $table->foreign('product_id')->references('id')->on('product_inventories');
         });
     }
 

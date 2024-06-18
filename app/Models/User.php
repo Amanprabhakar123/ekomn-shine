@@ -193,4 +193,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->hasOne(CompanyDetail::class);
     }
+    /**
+     * Define a one-to-many relationship with the ProductInventory model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function productInventories()
+    {
+        return $this->hasMany(ProductInventory::class)->withPivot('product_id', 'id');
+    }
 }

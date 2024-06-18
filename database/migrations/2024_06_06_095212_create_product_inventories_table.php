@@ -13,13 +13,13 @@ return new class extends Migration
     {
        
         Schema::create('product_inventories', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id('id');
             $table->string('title', 255);
             $table->text('description')->nullable();
             $table->string('product_category')->nullable();
             $table->string('product_subcategory')->nullable();
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('supplier_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable()->comment('Supplier id');
             $table->string('model', 255)->nullable();
             $table->string('sku', 100)->unique();
             $table->string('hsn', 100)->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Assuming you have foreign keys to companies and suppliers tables
-            $table->foreign('company_id')->references('id')->on('company_details')->onDelete('cascade');
+            $table->foreign('company_id')->references('id')->on('company_details');
             // $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
         });
     }
