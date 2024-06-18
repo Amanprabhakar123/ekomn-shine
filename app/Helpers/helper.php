@@ -76,7 +76,8 @@ if (!function_exists('printR')) {
 if (!function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName)
     {
-        // Extract the initials
+        if($companyName){
+              // Extract the initials
         $username = '';
         $words = explode(' ', $companyName);
         if(count($words)== 1){
@@ -97,6 +98,8 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         }
 
         return $username;
+        }
+      
     }
 
 

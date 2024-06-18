@@ -14,7 +14,7 @@
                   <div class="form-group">
                     <!-- this is hidden field step 1 -->
                     <input type="hidden" class="form-control" id="step_1" name="step_1" value="step_1" />
-                    <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name as for GST" aria-label="Business name" />
+                    <input type="text" class="form-control" id="business_name" name="business_name" placeholder="*Business name as per GST" aria-label="Business name" />
                     <div id="business_nameErr" class="invalid-feedback"></div>
                   </div>
                 </div>

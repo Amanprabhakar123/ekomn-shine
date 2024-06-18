@@ -69,7 +69,7 @@
                   </div>
                   <div class="col-sm-12 col-md-6">
                     <div class="form-group">
-                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Business name as for GST"  value=""/>
+                      <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Business name as per GST"  value=""/>
                       <div id="business_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -616,7 +616,7 @@ $(document).ready(function () {
       isValid = false;
     }else if (!mobileRegex.test(formData_1.mobile)) {
       $('#mobile').addClass('is-invalid');
-      $('#mobileErr').text('Mobile number must contain only numbers.');
+      $('#mobileErr').text('Invalid mobile number.');
       isValid = false;
     };
 
@@ -706,7 +706,7 @@ $(document).ready(function () {
     }
     else if (!nameRegex.test(formData_1.business_name)) {
       $('#business_name').addClass('is-invalid');
-      $('#business_nameErr').text('Business name must contain only letters, numbers, and special characters.');
+      $('#business_nameErr').text('Business name must be contain only ');
       isValid = false;
     }
   }

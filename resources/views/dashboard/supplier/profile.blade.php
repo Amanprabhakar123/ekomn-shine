@@ -16,7 +16,7 @@ Supplier Profile
                                 <div class="ek_group">
                                     <label class="eklabel req">Business name:</label>
                                     <div class="ek_f_input">
-                                        <input type="text" class="form-control" placeholder="Your business name" id="business_name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
+                                        <input type="text" class="form-control" placeholder="Your business name as per GST" id="business_name" name="business_name" value="{{ auth()->user()->companyDetails->business_name }}" />
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -439,7 +439,9 @@ Supplier Profile
             // Business name validation regex
             const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            const mapLinkPattern = /^(https:\/\/maps\.google\.com\/|https:\/\/www\.google\.com\/maps\/|https:\/\/maps\.app\.goo\.gl\/|https:\/\/www\.mapquest\.com\/|https:\/\/www\.bing\.com\/maps\/)/;
             const nameRegex =/^[a-zA-Z\s\-\.']+$/;
+            const mobileRegex = /^[6-9]\d{9}$/;
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
             const pinCodeRegex = /^[0-9]{6}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -494,6 +496,8 @@ Supplier Profile
                 }
 
             }
+
+
             // pan number validation
             if (!editprofile.pan_no) {
                 $('#pan_no').addClass('is-invalid');
@@ -541,14 +545,14 @@ Supplier Profile
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Please enter your mobile number.');
                 isValid = false;
-            } else if (editprofile.mobile_no.length < 10) {
+            } else if (editprofile.mobile_no.length !== 10) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
             
-            }else if (!/^[0-9]+$/.test(editprofile.mobile_no)) {
+            }else if (mobileRegex.test(editprofile.mobile_no)) {
                 $('#mobile_no').addClass('is-invalid');
-                $('#mobile_noErr').text('Invalid mobile number. pleae type only numbers.');
+                $('#mobile_noErr').text('Invalid mobile number.');
                 isValid = false;
             };
 
@@ -617,6 +621,12 @@ Supplier Profile
                 $('#s_pincodeErr').text('Invalid pincode.');
                 isValid = false;
             }
+
+            if (!mapLinkPattern.test(editprofile.location_link)) {
+                    $('#location_link').addClass('is-invalid');
+                    $('#location_linkErr').text('invalid location link. Please enter a valid location link.');
+                isValid = false;
+                } 
 
             // Billing address validation
             if (editprofile.b_address_line1) {
