@@ -17,6 +17,8 @@ class Category extends Model
         'is_active',
         'meta_title',
         'meta_description',
-        'parent_id'
+        'parent_id',
+        'depth',
+        'root_parent_id'
     ];
 }

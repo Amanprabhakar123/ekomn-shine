@@ -26,11 +26,15 @@ class ProductCategorySeeder extends Seeder
         foreach ($categories as $category) {
             $slug = strtolower(str_replace(' ', '-', $category));
             // Use ProductCategory model to insert data
-            Category::create([
+          $categoryData =  Category::create([
                 'name' => $category,
                 'slug' => $slug,
                 'is_active' => true,
+                'depth' => 0
             ]);
+
+            $categoryData->root_parent_id = $categoryData->id;
+            $categoryData->save();
         }
     }
 }
