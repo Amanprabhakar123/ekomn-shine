@@ -25,7 +25,7 @@ class CompanyBuyerSeeder extends Seeder
             $data =  [
                 'user_id' => 1, // 'user_id' is the id of the user table
                 'business_name' => $faker->company,
-                'display_name' => generateUniqueCompanyUsername($faker->company),
+                'display_name' => generateUniqueCompanyUsername(),
                 'designation' => $faker->jobTitle,
                 'first_name' => $faker->firstName,
                 'last_name' => $faker->lastName,

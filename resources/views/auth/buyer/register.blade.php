@@ -706,7 +706,7 @@ $(document).ready(function () {
     }
     else if (!nameRegex.test(formData_1.business_name)) {
       $('#business_name').addClass('is-invalid');
-      $('#business_nameErr').text('Business name must be contain only ');
+      $('#business_nameErr').text('Business name must be only characters. ');
       isValid = false;
     }
   }

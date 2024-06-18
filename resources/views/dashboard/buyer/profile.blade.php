@@ -20,13 +20,13 @@ Buyer Profile
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
-                                <div class="ek_group">
+                                    {{--<div class="ek_group">
                                     <label class="eklabel req">Display name:</label>
                                     <div class="ek_f_input">
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                         <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display_name" name="" value="{{ auth()->user()->companyDetails->display_name }}" disabled />
                                     </div>
-                                </div>
+                                </div>--}}
                                 <div class="ek_group">
                                     <label class="eklabel">Business owner name:</label>
                                     <div class="ek_f_input">
@@ -530,7 +530,7 @@ Buyer Profile
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Please enter your mobile number.');
                 isValid = false;
-            } else if (editprofile.mobile_no.length) {
+            } else if (editprofile.mobile_no.length !== 10) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
