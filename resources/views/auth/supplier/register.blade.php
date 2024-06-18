@@ -332,7 +332,7 @@
 
       // Validate form fields and show error messages
 
-      const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
+      const businessNameRegex = /^[a-zA-Z0-9 ,.\\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
             const nameRegex = /^[a-zA-Z\s\-\.']+$/;
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
@@ -364,7 +364,7 @@
         $('#business_nameErr').text('Business name must be at least 3 characters.');
         isValid = false;
 
-      } else if (!nameRegex.test(business_name)) {
+      } else if (!businessNameRegex.test(business_name)) {
         $('#business_name').addClass('is-invalid');
         $('#business_nameErr').text('Invalid business name.');
         isValid = false;

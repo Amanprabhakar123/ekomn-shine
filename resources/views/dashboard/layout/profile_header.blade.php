@@ -8,7 +8,7 @@
             <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="user">
                     <h4>{{auth()->user()->name}}</h4>
-                    <p class="m-0">Retailer ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
+                    <p class="m-0">User ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
                 </div>
                 <div class="img-box">
                     <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="some user image" />
