@@ -225,10 +225,10 @@ if (!function_exists('generateUniqueCompanyUsername')) {
 
         $sku = $namePart . $categoryPart . $timePart . $randomPart;
 
-     /*   while (ProductVariation::where('sku', $sku)->exists()) {
+        while (ProductVariation::where('sku', $sku)->exists()) {
             $randomPart = mt_rand(1000, 9999);
             $sku = $namePart . $categoryPart . $timePart . $randomPart;
-        }*/
+        }
 
         return substr($sku, 0, 12);
     }
