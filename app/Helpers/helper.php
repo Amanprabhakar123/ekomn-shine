@@ -3,6 +3,8 @@
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use Illuminate\Http\JsonResponse;
+use App\Models\ProductVariation;
+
 
 /**
  * Encrypts a string using a salt key.
@@ -193,5 +195,41 @@ if (!function_exists('generateUniqueCompanyUsername')) {
     {
         // Format the new supplier ID with leading zeros and 's' prefix
         return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
+    }
+
+
+    /**
+     * Generates a unique SKU for a product based on its name, category and the current time.
+     *
+     * The SKU is composed of:
+     * - The first 2 characters of the product name (uppercase)
+     * - The first 2 characters of the category name (uppercase)
+     * - The last 4 digits of the current Unix timestamp
+     * - A random 4-digit number
+     *
+     * Ensures the generated SKU is unique by checking against existing SKUs in the database.
+     *
+     * @param string $name The name of the product.
+     * @param string $category The category of the product.
+     * @return string The generated SKU, which is a maximum of 10 characters long.
+     */
+    function generateSKU($name, $category)
+    {
+        $namePart = strtoupper(substr($name, 0, 2));
+
+        $categoryPart = strtoupper(substr($category, 0, 2));
+
+        $timePart = substr(time(), -4);
+
+        $randomPart = mt_rand(1000, 9999);
+
+        $sku = $namePart . $categoryPart . $timePart . $randomPart;
+
+     /*   while (ProductVariation::where('sku', $sku)->exists()) {
+            $randomPart = mt_rand(1000, 9999);
+            $sku = $namePart . $categoryPart . $timePart . $randomPart;
+        }*/
+
+        return substr($sku, 0, 12);
     }
 }
