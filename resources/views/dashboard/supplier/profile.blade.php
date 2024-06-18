@@ -437,7 +437,7 @@ Supplier Profile
             };
 
             // Business name validation regex
-            const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
+            const businessNameRegex = /^[a-zA-Z0-9 ,.\\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
             const mapLinkPattern = /^(https:\/\/maps\.google\.com\/|https:\/\/www\.google\.com\/maps\/|https:\/\/maps\.app\.goo\.gl\/|https:\/\/www\.mapquest\.com\/|https:\/\/www\.bing\.com\/maps\/)/;
             const nameRegex =/^[a-zA-Z\s\-\.']+$/;
@@ -456,7 +456,7 @@ Supplier Profile
                 $('#business_name').addClass('is-invalid');
                 $('#business_nameErr').text('Business name must be at least 3 characters.');
                 isValid = false;
-            } else if (!nameRegex.test(editprofile.business_name)) {
+            } else if (!businessNameRegex.test(editprofile.business_name)) {
                 $('#business_name').addClass('is-invalid');
                 $('#business_nameErr').text('Invalid business name.');
                 isValid = false;
@@ -550,7 +550,7 @@ Supplier Profile
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
             
-            }else if (mobileRegex.test(editprofile.mobile_no)) {
+            }else if (!mobileRegex.test(editprofile.mobile_no)) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Invalid mobile number.');
                 isValid = false;
@@ -622,11 +622,14 @@ Supplier Profile
                 isValid = false;
             }
 
-            if (!mapLinkPattern.test(editprofile.location_link)) {
+             // Location link validation
+             if (editprofile.location_link) {
+                if (!mapLinkPattern.test(editprofile.location_link)) {
                     $('#location_link').addClass('is-invalid');
                     $('#location_linkErr').text('invalid location link. Please enter a valid location link.');
-                isValid = false;
-                } 
+                    isValid = false;
+                }
+            }
 
             // Billing address validation
             if (editprofile.b_address_line1) {
