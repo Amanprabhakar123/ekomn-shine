@@ -20,13 +20,13 @@ Buyer Profile
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
-                                    {{--<div class="ek_group">
+                               {{--<div class="ek_group">
                                     <label class="eklabel req">Display name:</label>
                                     <div class="ek_f_input">
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                         <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display_name" name="" value="{{ auth()->user()->companyDetails->display_name }}" disabled />
                                     </div>
-                                </div>--}}
+                                </div> --}}
                                 <div class="ek_group">
                                     <label class="eklabel">Business owner name:</label>
                                     <div class="ek_f_input">
@@ -383,16 +383,8 @@ Buyer Profile
         // Form submission handler for Step 1
         $('#edit_profile').submit(function(event) {
             event.preventDefault();
-
-
             // Validate form fields and show error messages
             let isValid = true;
-            // const requiredFields = [
-            //     'business_name', 'first_name', 'email', 'mobile_no', 'pan_no', 'gst_no', 'd_address_line1',
-            //     'd_state', 'd_city', 'd_pincode', 'location_link', 'b_address_line1', 'b_state', 'b_city', 'b_pincode', 'bank_name',
-            //     'bank_account_no', 're_bank_account_no', 'ifsc_code', 'swift_code',
-            // ];
-
 
             const editprofile = {
                 business_name: $('#business_name').val(),
@@ -459,11 +451,11 @@ Buyer Profile
             };
 
             // Business name validation regex
-            const businessNameRegex = /^[a-zA-Z0-9\s&.\-]+$/;
+            const businessNameRegex = /^[a-zA-Z0-9 ,.\\-]+$/;
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
             const nameRegex = /^[a-zA-Z\s\-\.']+$/;
             const mapLinkPattern = /^(https:\/\/maps\.google\.com\/|https:\/\/www\.google\.com\/maps\/|https:\/\/maps\.app\.goo\.gl\/|https:\/\/www\.mapquest\.com\/|https:\/\/www\.bing\.com\/maps\/)/;
-            
+            const mobileRegex = /^[6-9]\d{9}$/;
             const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
             const pinCodeRegex = /^[0-9]{6}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -471,17 +463,15 @@ Buyer Profile
 
             // Business name validation
             if (!editprofile.business_name) {
-                $('#business_name').addClass('is-invalid');
-                $('#business_nameErr').text('Please enter your business name.');
-                isValid = false;
-            } else if (!nameRegex.test(editprofile.business_name)) {
-                $('#business_name').addClass('is-invalid');
-                $('#business_nameErr').text('Invalid business name.');
-                isValid = false;
-            } else if (editprofile.business_name.length < 3) {
-                $('#business_name').addClass('is-invalid');
-                $('#business_nameErr').text('Business name must be at least 3 characters.');
-                isValid = false;
+                if (!businessNameRegex.test(editprofile.business_name)) {
+                    $('#business_name').addClass('is-invalid');
+                    $('#business_nameErr').text('Invalid business name.');
+                    isValid = false;
+                } else if (editprofile.business_name.length < 3) {
+                    $('#business_name').addClass('is-invalid');
+                    $('#business_nameErr').text('Business name must be at least 3 characters.');
+                    isValid = false;
+                }
             }
             // First name validation
             if (!editprofile.first_name) {
@@ -534,7 +524,7 @@ Buyer Profile
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Mobile number must be at least 10 characters.');
                 isValid = false;
-            } else if (!/^[6-9]\d{9}$/.test(editprofile.mobile_no)) {
+            } else if (!mobileRegex.test(editprofile.mobile_no)) {
                 $('#mobile_no').addClass('is-invalid');
                 $('#mobile_noErr').text('Invalid mobile number.');
                 isValid = false;
@@ -638,12 +628,14 @@ Buyer Profile
             }
 
             // Location link validation
-                            
+            if (editprofile.location_link) {
                 if (!mapLinkPattern.test(editprofile.location_link)) {
                     $('#location_link').addClass('is-invalid');
                     $('#location_linkErr').text('invalid location link. Please enter a valid location link.');
-                isValid = false;
-                } 
+                    isValid = false;
+                }
+            }
+
 
             // Billing address validation
             if (editprofile.b_address_line1) {
@@ -724,12 +716,11 @@ Buyer Profile
                     $('#bank_account_no').addClass('is-invalid');
                     $('#bank_account_noErr').text('Bank account number must be at least 8 characters.');
                     isValid = false;
-                }else if(!editprofile.re_bank_account_no){
+                } else if (!editprofile.re_bank_account_no) {
                     $('#re_bank_account_no').addClass('is-invalid');
                     $('#re_bank_account_noErr').text('Please re-enter your bank account number.');
                     isValid = false;
-                }   
-                 else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
+                } else if (editprofile.bank_account_no !== editprofile.re_bank_account_no) {
                     $('#re_bank_account_no').addClass('is-invalid');
                     $('#re_bank_account_noErr').text('Bank account numbers do not match.');
                     isValid = false;
