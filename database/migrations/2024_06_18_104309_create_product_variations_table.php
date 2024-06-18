@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('product_inventory');
+            $table->unsignedBigInteger('company_id');
             $table->string('sku', 100)->unique();
             $table->string('size', 50)->nullable();
             $table->string('color', 50)->nullable();
