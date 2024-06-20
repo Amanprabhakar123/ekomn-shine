@@ -31,6 +31,7 @@ class ProductVariation extends Model
         'package_weight_class',
         'price_before_tax',
         'price_after_tax',
+        'stock',    
         'status',
         'dropship_rate',
         'potential_mrp',

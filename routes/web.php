@@ -12,7 +12,10 @@ use App\Http\Controllers\APIAuth\ProfileController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\ProductInventory;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use Razorpay\Api\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +46,7 @@ Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('passwor
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
+Route::get('inventory', [ProductInvetoryController::class, 'index']);
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {

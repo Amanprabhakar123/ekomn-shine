@@ -31,7 +31,7 @@ class ProductInventory extends Model
      */
     public function variations()
     {
-        return $this->hasMany(ProductVariation::class, 'product_inventory_id', 'id');
+        return $this->hasMany(ProductVariation::class, 'product_id', 'id');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProductInventory extends Model
      */
     public function features()
     {
-        return $this->hasMany(ProductFeature::class, 'product_inventory_id', 'id');
+        return $this->hasMany(ProductFeature::class, 'product_id', 'id');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductInventory extends Model
      */
     public function keywords()
     {
-        return $this->hasMany(ProductKeyword::class, 'product_inventory_id', 'id');
+        return $this->hasMany(ProductKeyword::class, 'product_id', 'id');
     }
 
     /**
