@@ -21,7 +21,6 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('user_id')->nullable()->comment('Supplier id');
             $table->string('model', 255)->nullable();
-            $table->string('sku', 100)->unique();
             $table->string('hsn', 100)->nullable();
             $table->decimal('gst_percentage', 5, 2)->nullable();
             $table->string('upc', 100)->nullable();

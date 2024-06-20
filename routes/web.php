@@ -46,7 +46,6 @@ Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('passwor
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
-Route::get('inventory', [ProductInvetoryController::class, 'index']);
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -62,6 +61,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
+        Route::get('/product/inventory', [ProductInvetoryController::class, 'index']);
     });
 });
 

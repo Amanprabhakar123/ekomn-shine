@@ -14,27 +14,85 @@ class ProductCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            'Stationery',
-            'Furniture',
-            'Food and beverage',
-            'Electronics',
-            'Groceries',
-            'Baby products',
-            'Gift cards',
-            'Cleaning supplies'
+            'Stationery' => [
+                'Pens',
+                'Notebooks',
+                'Markers',
+                'Staplers',
+            ],
+            'Furniture' => [
+                'Chairs',
+                'Tables',
+                'Cabinets',
+                'Sofas',
+            ],
+            'Food and beverage' => [
+                'Snacks',
+                'Beverages',
+                'Canned goods',
+                'Dairy products',
+            ],
+            'Electronics' => [
+                'Computers',
+                'Smartphones',
+                'Televisions',
+                'Cameras',
+            ],
+            'Groceries' => [
+                'Fruits',
+                'Vegetables',
+                'Meat',
+                'Bakery',
+            ],
+            'Baby products' => [
+                'Diapers',
+                'Baby food',
+                'Toys',
+                'Clothing',
+            ],
+            'Gift cards' => [
+                'Amazon',
+                'eBay',
+                'Walmart',
+                'Target',
+            ],
+            'Cleaning supplies' => [
+                'Detergents',
+                'Disinfectants',
+                'Brooms',
+                'Mops',
+            ],
         ];
-        foreach ($categories as $category) {
-            $slug = strtolower(str_replace(' ', '-', $category));
-            // Use ProductCategory model to insert data
-          $categoryData =  Category::create([
-                'name' => $category,
-                'slug' => $slug,
+
+        foreach ($categories as $mainCategory => $subCategories) {
+            $mainCategorySlug = strtolower(str_replace(' ', '-', $mainCategory));
+            // Use Category model to insert main category data
+            $mainCategoryData = Category::create([
+                'name' => $mainCategory,
+                'slug' => $mainCategorySlug,
                 'is_active' => true,
-                'depth' => 0
+                'depth' => 0,
             ]);
 
-            $categoryData->root_parent_id = $categoryData->id;
-            $categoryData->save();
+            $mainCategoryId = $mainCategoryData->id;
+
+            foreach ($subCategories as $subCategory) {
+                $subCategorySlug = strtolower(str_replace(' ', '-', $subCategory));
+                // Use Category model to insert sub category data
+                $subCategoryData = Category::create([
+                    'name' => $subCategory,
+                    'slug' => $subCategorySlug,
+                    'is_active' => true,
+                    'depth' => 1,
+                    'parent_id' => $mainCategoryId,
+                ]);
+
+                $subCategoryId = $subCategoryData->id;
+
+                // Update the root parent id of the sub category
+                $subCategoryData->root_parent_id = $mainCategoryId;
+                $subCategoryData->save();
+            }
         }
     }
 }
