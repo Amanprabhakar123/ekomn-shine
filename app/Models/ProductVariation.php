@@ -11,8 +11,18 @@ class ProductVariation extends Model
 {
     use HasFactory;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
+    const STATUS_OUT_OF_STOCK = 3;
+    const STATUS_DRAFT = 4;
+
+    const TILL_STOCK_LAST = 1;
+    const REGULAR_AVAILABLE = 2;
+
     protected $fillable = [
         'product_id',
+        'title',
+        'description',
         'sku',
         'size',
         'color',
@@ -33,6 +43,7 @@ class ProductVariation extends Model
         'price_after_tax',
         'stock',    
         'status',
+        'availability_status',
         'dropship_rate',
         'potential_mrp',
         'tier_rate',

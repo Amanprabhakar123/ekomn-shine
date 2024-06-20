@@ -9,19 +9,27 @@ class ProductInventory extends Model
 {
     use HasFactory;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
+    const STATUS_OUT_OF_STOCK = 3;
+    const STATUS_DRAFT = 4;
+
+    const TILL_STOCK_LAST = 1;
+    const REGULAR_AVAILABLE = 2;
+
     protected $fillable = [
-        'title',
+        'title', // Product title copy this product variation title
         'company_id',
         'user_id', // User ID of the user who created the product or supplier ID
-        'description',
+        'description', // copy this information product variation description
         'model',
         'gst_percentage',
         'hsn',
         'upc',
         'isbn',
         'mpin',
-        'availability_status',
-        'status',
+        'availability_status', // copy this information product variation availability status
+        'status', // Status of the product listed or not default 0 and 1 means listed
         'product_category',
         'product_subcategory'
     ];

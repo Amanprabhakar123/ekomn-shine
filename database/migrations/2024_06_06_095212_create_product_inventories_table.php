@@ -27,8 +27,8 @@ return new class extends Migration
             $table->string('upc', 100)->nullable();
             $table->string('isbn', 100)->nullable();
             $table->string('mpin', 100)->nullable();
-            $table->enum('availability_status', ['till_stock_last', 'regular'])->nullable();
-            $table->enum('status', ['active', 'inactive'])->nullable();
+            $table->tinyInteger('availability_status')->default(2);
+            $table->tinyInteger('status')->default(1);  
             $table->softDeletes();
             $table->timestamps();
 
