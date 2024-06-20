@@ -5,23 +5,29 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract
 {
-    public function transform(ProductInventory $user)
+    /**
+     * Transform the given ProductInventory model into a formatted array.
+     *
+     * @param  ProductInventory  $product
+     * @return array
+     */
+    public function transform(ProductInventory $product)
     {
         return [
-            'id' => (int) $user->id,
-            'select' => (int) $user->select,
-            'product_image' => (int) $user->product_image,
-            'title' => $user->title,
-            'sku' => $user->sku,
-            'product_id' => $user->product_id,
-            'stock' => $user->stock,
-            'selling_price' => $user->selling_price,
-            'product_category' => $user->product_category,
-            'availability_status' => $user->availability_status,
-            'status' => $user->status,
-            'action' => $user->action,
-            'created_at' => $user->created_at->toIso8601String(),
-            'updated_at' => $user->updated_at->toIso8601String(),
+            'id' => (int) $product->id,
+            'select' => (int) $product->select,
+            'product_image' => (int) $product->product_image,
+            'title' => $product->title,
+            'sku' => $product->sku,
+            'product_id' => $product->product_id,
+            'stock' => $product->stock,
+            'selling_price' => $product->selling_price,
+            'product_category' => $product->product_category,
+            'availability_status' => $product->availability_status,
+            'status' => $product->status,
+            'action' => $product->action,
+            'created_at' => $product->created_at->toDateTimeString(),
+            'updated_at' => $product->updated_at->toDateTimeString(),
         ];
     }
 }

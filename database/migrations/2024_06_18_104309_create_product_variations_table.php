@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('package_weight_class', 10)->nullable();
             $table->decimal('price_before_tax', 10, 2)->nullable();
             $table->decimal('price_after_tax', 10, 2)->nullable();
-            $table->integer('stock')->nullable();
+            $table->integer('stock')->default(0);
             $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->decimal('dropship_rate', 10, 2)->nullable();
             $table->decimal('potential_mrp', 10, 2)->nullable();
