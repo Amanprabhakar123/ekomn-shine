@@ -15,10 +15,11 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $productInventory = ProductInventory::factory(10)->create();
+        $productInventories = ProductInventory::factory(10)->create();
 
-        foreach ($productInventory as $product) {
-            ProductVariation::factory(5)->create($product);
+         // For each ProductInventory, create 5 ProductVariations
+         foreach ($productInventories as $productInventory) {
+            ProductVariation::factory(5)->create($productInventory);
         }
     }
 }

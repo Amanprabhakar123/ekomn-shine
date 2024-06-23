@@ -70,4 +70,10 @@ class ProductVariation extends Model
     {
         return $this->belongsTo(CompanyDetail::class);
     }
+
+    // Add inverse relationship to inventory
+    public function inventory()
+    {
+        return $this->belongsTo(ProductInventory::class, 'product_id');
+    }
 }
