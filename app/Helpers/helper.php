@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
-use Illuminate\Http\JsonResponse;
+use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use Illuminate\Http\JsonResponse;
 
 
 /**
@@ -231,5 +232,81 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         }
 
         return substr($sku, 0, 12);
+    }
+
+
+    /**
+     * Print the SQL query along with the parameter bindings for debugging purposes.
+     *
+     * This function takes a query builder instance as input, retrieves the SQL query string,
+     * and the parameter bindings from the query. It then combines them to create a complete
+     * SQL query with actual parameter values for display and debugging purposes.
+     *
+     * @param \Illuminate\Database\Query\Builder $query The query builder instance to print.
+     *
+     * @return string The combined SQL query with actual parameter values.
+     *
+     *
+     * @example
+     * $query = DB::table('users')
+     *            ->where('name', 'John')
+     *            ->orWhere('age', '>', 30);
+     *
+     * $combinedQuery = printQueryWithParameters($query);
+     * echo $combinedQuery;
+     *
+     * // Output:
+     * // select * from `users` where `name` = 'John' or `age` > 30
+     */
+    function printQueryWithParameters($query)
+    {
+        // Get the SQL query string
+        $sql = $query->toSql();
+
+        // Get the parameter bindings
+        $bindings = $query->getBindings();
+
+        // Combine them for display
+        return vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
+    }
+
+    /**
+     * Get the string representation of a status based on its type value.
+     *
+     * @param int $type The type value of the status.
+     * @return string The string representation of the status.
+     */
+    function getStatusName($type)
+    {
+        switch ($type) {
+            case ProductInventory::STATUS_ACTIVE:
+                return 'Active';
+            case ProductInventory::STATUS_INACTIVE:
+                return 'Inactive';
+            case ProductInventory::STATUS_OUT_OF_STOCK:
+                return 'Out of Stock';
+            case ProductInventory::STATUS_DRAFT:
+                return 'Draft';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    /**
+     * Get the string representation of an availability status based on its type value.
+     *
+     * @param int $type The type value of the availability status.
+     * @return string The string representation of the availability status.
+     */
+    function getAvailablityStatusName($type)
+    {
+        switch ($type) {
+            case ProductInventory::TILL_STOCK_LAST:
+                return 'Till Stock Last';
+            case ProductInventory::REGULAR_AVAILABLE:
+                return 'Regular Available';
+            default:
+                return 'Unknown';
+        }
     }
 }

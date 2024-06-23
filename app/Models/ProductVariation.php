@@ -60,7 +60,7 @@ class ProductVariation extends Model
      */
     public function product()
     {
-        return $this->belongsTo(ProductInventory::class);
+        return $this->belongsTo(ProductInventory::class, 'product_id', 'id');
     }
 
     /**
@@ -71,9 +71,16 @@ class ProductVariation extends Model
         return $this->belongsTo(CompanyDetail::class);
     }
 
-    // Add inverse relationship to inventory
-    public function inventory()
+    /**
+     * Get the ProductVariation's Media.
+     */
+    public function media()
     {
-        return $this->belongsTo(ProductInventory::class, 'product_id');
+        return $this->hasMany(ProductVariationMedia::class, 'product_variation_id', 'id');
+        // ->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE)
+        // ->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)
+        // ->where('is_active', ProductVariationMedia::IS_ACTIVE_TRUE)
+        // ->orderBy('id', 'asc')
+        // ->limit(1);
     }
 }

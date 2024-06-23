@@ -9,11 +9,14 @@ class ProductVariationMedia extends Model
 {
     use HasFactory;
 
-    const MEDIA_TYPE_IMAGE = 'image';
-    const MEDIA_TYPE_VIDEO = 'video';
+    const MEDIA_TYPE_IMAGE = 1;
+    const MEDIA_TYPE_VIDEO = 2;
 
-    const IS_MASTER_TRUE = true;
-    const IS_MASTER_FALSE = false;
+    const IS_MASTER_TRUE = 1;
+    const IS_MASTER_FALSE = 0;
+
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 0;
 
     protected $fillable = [
         'product_id',

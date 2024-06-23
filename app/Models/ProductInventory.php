@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\CompanyDetail;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductInventory extends Model
 {
@@ -72,5 +76,12 @@ class ProductInventory extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the product category that owns the product.
+     */
+    public function category(){
+        return $this->belongsTo(Category::class, 'product_category', 'id');
     }
 }

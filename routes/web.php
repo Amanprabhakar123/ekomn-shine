@@ -58,10 +58,19 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
 });
 
+// If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
-        Route::get('/product/inventory', [ProductInvetoryController::class, 'index']);
+    });
+});
+
+// If we use json post and get data that time we will use this route
+Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
+    Route::prefix('api')->group(function () {
+        Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
+        Route::post('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
+        Route::post('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
     });
 });
 
