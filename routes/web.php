@@ -56,6 +56,8 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+    Route::get('myInventory', [DashboardController::class, 'myInventory'])->name('my.inventory');
+    Route::get('addInventory', [DashboardController::class, 'addInventory'])->name('add.inventory');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route

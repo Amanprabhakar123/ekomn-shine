@@ -89,4 +89,24 @@ class DashboardController extends Controller
             return errorResponse($e->getMessage());
         }
     }
+
+    /**
+     * Display the user's inventory.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function myInventory()
+    {
+        return view('dashboard.supplier.inventory');
+    }
+
+    /**
+     * Display the form to add a new product to the inventory.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function addInventory()
+    {
+        return view('dashboard.supplier.add_inventory');
+    }
 }

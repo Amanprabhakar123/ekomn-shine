@@ -350,7 +350,7 @@ Buyer Profile
 
 
 </div>
-<div class="ek_db_footer">&copy; 2024 ekomn.com, All Rights Reserved</div>
+@include('dashboard.layout.copyright')
 </div>
 <script>
     $(document).ready(function() {
