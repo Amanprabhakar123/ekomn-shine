@@ -234,6 +234,39 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         return substr($sku, 0, 12);
     }
 
+    /**
+     * Generates a slug from the given product name.
+     *
+     * @param string $name The product name.
+     * @return string The generated slug.
+     */
+    function generateSlug($name, $p_id) {
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
+        $p_id = strtolower($p_id);
+        return $slug.'-'.$p_id;
+    }
+
+    /**
+     * Generate a unique product ID based on the given title and next number.
+     *
+     * @param string $title The title of the product.
+     * @param int $nextNumber The next number to be appended to the product ID.
+     * @return string The generated product ID.
+     */
+    function generateProductID($title, $nextNumber) {
+        // Extract and sanitize the first 4 letters of the product title
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 3));
+
+        // Ensure the prefix is exactly 4 characters, padding with 'X' if needed
+        $prefix = str_pad($prefix, 3, 'X');
+
+        // Format the next number as a zero-padded string, ensuring it's 6 digits
+        $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // Combine prefix and numeric part to form the ProductID
+        return $prefix . $numericPart;
+    }
+
 
     /**
      * Print the SQL query along with the parameter bindings for debugging purposes.

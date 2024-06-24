@@ -27,9 +27,12 @@ const ApiRequest = (url, method="GET", body = undefined) => {
             dataType: 'json',
             data: body ? JSON.stringify(body) : undefined,
             success: function(response) {
+                // console.log('Response:', response);
                 if(response.data && (response.data.statusCode === "200" || response.data.statusCode === "400" || response.data.statusCode === "201" || response.data.statusCode === "422")){
                     resolve(response);
-                } else {
+                }else if(response.data && response.meta){
+                    resolve(response);
+                }else {
                     reject('API Error');
                 }
             },

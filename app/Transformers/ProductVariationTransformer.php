@@ -16,10 +16,10 @@ class ProductVariationTransformer extends TransformerAbstract
         try {
             return [
                 'id' => salt_encrypt($product->id),
-                'product_image' => $product->media->first() ? $product->media->first()->file_path : null,
+                'product_image' => $product->media->first() ? $product->media->first()->file_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at',
                 'title' => $product->title,
                 'sku' => $product->sku,
-                'product_id' => $product->product_id,
+                'product_id' => $product->product_slug_id,
                 'stock' => $product->stock,
                 'selling_price' => $product->price_after_tax,
                 'product_category' => $product->product->category->name,

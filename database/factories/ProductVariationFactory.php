@@ -32,13 +32,17 @@ class ProductVariationFactory extends Factory
         $status = [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_INACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_DRAFT];
         $availability_status = [ProductVariation::TILL_STOCK_LAST, ProductVariation::REGULAR_AVAILABLE];
 
-
+        $product_id = $this->productInventory ? $this->productInventory->id : 1;
+        $title = $this->faker->name();
+        $p_id = generateProductID($title, $product_id);
         return [
-            'product_id' => $this->productInventory ? $this->productInventory->id : 1,
+            'product_id' => $product_id,
+            'product_slug_id' => $p_id,
+            'slug' => generateSlug($title, $p_id),
             'company_id' => 1,
-            'title' =>  $this->faker->sentence,
+            'title' => $title,
             'description' =>  $this->faker->paragraph,
-            'sku' => generateSKU($this->faker->name(), $this->faker->name()),
+            'sku' => generateSKU($title, $this->faker->name()),
             'length' => 10,
             'width' => 10,
             'height' => 10,
