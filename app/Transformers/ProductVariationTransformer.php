@@ -1,5 +1,6 @@
 <?php
 namespace App\Transformers;
+use App\Models\User;
 use App\Models\ProductVariation;
 use League\Fractal\TransformerAbstract;
 
@@ -14,7 +15,7 @@ class ProductVariationTransformer extends TransformerAbstract
     public function transform(ProductVariation $product)
     {
         try {
-            return [
+            $data = [
                 'id' => salt_encrypt($product->id),
                 'product_image' => $product->media->first() ? $product->media->first()->file_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at',
                 'title' => $product->title,
@@ -29,6 +30,11 @@ class ProductVariationTransformer extends TransformerAbstract
                 'created_at' => $product->created_at->toDateTimeString(),
                 'updated_at' => $product->updated_at->toDateTimeString(),
             ];
+
+            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                $data['supplier_id'] = $product->product->company->company_serial_id;
+            }
+            return $data;
         } catch (\Exception $e) {
             // Handle the exception here
             // You can log the error, return a default value, or throw a custom exception

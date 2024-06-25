@@ -37,6 +37,7 @@
                                 </span>
                             </th>
                             <th>Product ID</th>
+                            <th>Supplier ID</th>
                             <th>Stock
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
@@ -62,7 +63,94 @@
                         </tr>
                     </thead>
                     <tbody id="dataContainer">
-                        <!-- Data will be displayed here -->
+                        {{-- <tr>
+                            <td>
+                                <div class="productImg_t">
+                                    <img src="assets/images/product/product_1.jpg" alt="Product Image">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="productTitle_t">
+                                    Cushion covers
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sku_t">KS93528TUT</div>
+                            </td>
+                            <td>
+                                EK501IND
+                            </td>
+                            <td>
+                                EK501IND
+                            </td>
+                            <td>
+                                <input type="text" class="stock_t" value="200">
+                            </td>
+                            <td>
+                                <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
+                            </td>
+                            <td>
+                                <div>Home Decor</div>
+                            </td>
+                            <td>
+                                <div>Till Stock Lasts</div>
+                            </td>
+                            <td>
+                                <select class="changeStatus_t form-select">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Out of Stock" selected>Out of Stock</option>
+                                    <option value="Draft">Draft</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-link btn-sm">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="productImg_t">
+                                    <img src="assets/images/product/product_5.jpg" alt="Product Image">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="productTitle_t">
+                                    Dell WM126 Wireless Mouse
+                                </div>
+                            </td>
+                            <td>
+                                <div class="sku_t">KS93528TUT</div>
+                            </td>
+                            <td>
+                                EK502IND
+                            </td>
+                            <td>
+                                EK501IND
+                            </td>
+                            <td>
+                                <input type="text" class="stock_t" value="200">
+                            </td>
+                            <td>
+                                <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
+                            </td>
+                            <td>
+                                <div>Home Decor</div>
+                            </td>
+                            <td>
+                                <div>Regular Available</div>
+                            </td>
+                            <td>
+                                <select class="changeStatus_t form-select">
+                                    <option value="Active" selected>Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Out of Stock">Out of Stock</option>
+                                    <option value="Draft">Draft</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-link btn-sm">Edit</button>
+                            </td>
+                        </tr> --}}
                     </tbody>
                 </table>
             </div>
@@ -121,21 +209,12 @@
         sortByStatus.addEventListener("change", () => {
             fetchData();
         });
-
-
-        const sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-        const sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-        // const selling_price_sort = document.getElementById("selling_price_sort");
-        // selling_price_sort.addEventListener("click", () => {
-        //     alert('asdd');
-        //     sortField = "price_after_tax";
-        //     sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-        //     // alert(sortOrder);
-        //     fetchData();
-        // });
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
+            const sortField = ""; // Set the sort field here
+            const sortOrder = ""; // Set the sort order here
+
             let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`;
 
             if (sortField && sortOrder) {
@@ -278,6 +357,9 @@
             </td>
             <td>
                 ${item.product_id}
+            </td>
+                    <td>
+                ${item.supplier_id}
             </td>
             <td>
                 <input type="text" class="stock_t" value="${item.stock}">

@@ -210,8 +210,12 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        Auth::logout();
-        JWTAuth::parseToken()->invalidate();
+        try{
+            Auth::logout();
+            JWTAuth::parseToken()->invalidate();
+        }catch(\Exception $e){
+            return redirect()->intended('/');
+        }
         if (config('app.front_end_tech') == false) {
             return redirect()->intended('/');
         }

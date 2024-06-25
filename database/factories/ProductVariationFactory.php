@@ -34,7 +34,7 @@ class ProductVariationFactory extends Factory
 
         $product_id = $this->productInventory ? $this->productInventory->id : 1;
         $title = $this->faker->name();
-        $p_id = generateProductID($title, $product_id);
+        $p_id = generateProductID($title, $this->faker->unique()->randomNumber());
         return [
             'product_id' => $product_id,
             'product_slug_id' => $p_id,

@@ -120,7 +120,7 @@ class ProductInvetoryController extends Controller
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
             $sortOrder = $request->input('order', 'asc'); // Default sort direction 'asc'
-
+            $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock'];
@@ -128,16 +128,21 @@ class ProductInvetoryController extends Controller
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+
                 // Eager load product variations with product inventory that matches user_id
                 $variations = ProductVariation::whereHas('product', function ($query) use ($userId) {
                     $query->where('user_id', $userId);
+                });
+                if ($sort_by_status != 0) {
+                    $variations = $variations->where('status', $sort_by_status);
+                }
+                $variations = $variations->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('title', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%');
+                    });
                 })
-                    ->when($searchTerm, function ($query) use ($searchTerm) {
-                        $query->where(function ($query) use ($searchTerm) {
-                            $query->where('title', 'like', '%' . $searchTerm . '%')
-                                ->orWhere('sku', 'like', '%' . $searchTerm . '%');
-                        });
-                    })
                     ->with([
                         'media',
                         'product',
@@ -152,13 +157,18 @@ class ProductInvetoryController extends Controller
                 $variations = ProductVariation::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
                         $query->where('title', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('sku', 'like', '%' . $searchTerm . '%');
+                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%');
                     });
-                })
-                    ->with([
+                });
+                if ($sort_by_status != 0) {
+                    $variations = $variations->where('status', $sort_by_status);
+                }
+                $variations = $variations->with([
                         'media',
                         'product',
-                        'product.category'
+                        'product.category',
+                        'product.company'
                     ]) // Eager load the product and category relationships
                     ->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results

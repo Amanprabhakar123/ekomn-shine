@@ -43,7 +43,11 @@ class DashboardController extends Controller
 
     public function editProfile()
     {
-        $product_category = Category::all();
+        $product_category = Category::where([
+            'parent_id' => 0,
+            'is_active' => true,
+            'depth' => 0
+        ])->get();
         $selected_product_category = auth()->user()->companyDetails->productCategory->pluck('product_category_id')->toArray();
         $alternate_business_contact = json_decode(auth()->user()->companyDetails->alternate_business_contact);
         $languages =  ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
@@ -97,7 +101,14 @@ class DashboardController extends Controller
      */
     public function myInventory()
     {
-        return view('dashboard.supplier.inventory');
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+            return view('dashboard.supplier.inventory');
+        } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+            return view('dashboard.buyer.inventory');
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+            return view('dashboard.admin.inventory');
+        }
+        abort('403', 'Unauthorized action.');
     }
 
     /**
