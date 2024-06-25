@@ -9,7 +9,7 @@
                 <a class="btn btnekomn btn-sm" href="{{route('add.inventory')}}"><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
             </div>
             <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
+                <input type="text" class="form-control w_350_f searchicon" id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
                 <div class="filter">
                     <div class="ek_group m-0">
                         <label class="eklabel w_50_f">Sort by:</label>
@@ -90,6 +90,7 @@
 </div>
 @endsection
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
@@ -111,10 +112,8 @@
         });
 
         // Event listener for clicking outside the search input field
-        document.addEventListener("click", (e) => {
-            if (e.target !== searchQuery) {
-                fetchData();
-            }
+        searchQuery.addEventListener("blur", (e) => {
+            fetchData();
         });
 
         const sortByStatus = document.getElementById("sort_by_status");
@@ -139,32 +138,32 @@
             let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`;
 
             if (sortField && sortOrder) {
-            apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
+                apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
             }
 
             if (searchQuery) {
-            apiUrl += `&query=${searchQuery.value}`;
+                apiUrl += `&query=${searchQuery.value}`;
             }
 
             if (sortByStatus) {
-            apiUrl += `&sort_by_status=${sortByStatus.value}`;
+                apiUrl += `&sort_by_status=${sortByStatus.value}`;
             }
 
             ApiRequest(apiUrl, 'GET')
-            .then(response => {
-                const data = (response.data);
-                if(data.length === 0) {
-                dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
-                }else{
-                response = (response.meta.pagination);
-                totalRows = response.total;
-                updatePagination();
-                displayData(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+                .then(response => {
+                    const data = (response.data);
+                    if (data.length === 0) {
+                        dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                    } else {
+                        response = (response.meta.pagination);
+                        totalRows = response.total;
+                        updatePagination();
+                        displayData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
 
         // Function to update the pagination UI
@@ -280,7 +279,7 @@
                 ${item.product_id}
             </td>
             <td>
-                <input type="text" class="stock_t" value="${item.stock}">
+                <input type="text" class="stock_t" value="${item.stock}" onfocusout="handleInput('${item.id}', '${item.product_id}', 1, this)">
             </td>
             <td>
                 <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${item.selling_price}</div>
@@ -292,11 +291,11 @@
                 <div>${item.availability_status}</div>
             </td>
             <td>
-                <select class="changeStatus_t form-select">
-                    <option value="Active" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="Inactive" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="Out of Stock" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="Draft" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)">
+                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
                 </select>
             </td>
             <td>
@@ -305,5 +304,60 @@
         </tr>
     `;
     }
+
+
+
+    function handleInput(itemId, productId, type, element) {
+        if (type === 1) {
+            updateStock(itemId, productId, element.value);
+        } else if (type === 2) {
+            updateStatus(itemId, productId, element.value);
+        }
+    }
+    /**
+     * Updates the stock of a product.
+     *
+     * @param {number} productId - The ID of the product.
+     */
+    function updateStock(itemId, productId, newStock) {
+        // Make an API request to update the stock of the product
+        ApiRequest(`product/updateStock/${itemId}`, 'PATCH', {
+                stock: newStock,
+                product_id: productId
+            })
+            .then(response => {
+                Swal.fire({
+                    title: "Good job!",
+                    text: response.data.message,
+                    icon: "success"
+                });
+            })
+            .catch(error => {
+                console.error('Error updating stock:', error);
+            });
+    }
+
+    /**
+     * Updates the status of a product.
+     *
+     * @param {number} productId - The ID of the product.
+     */
+    function updateStatus(itemId, productId, newStatus) {
+        // Make an API request to update the status of the product
+        ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
+                status: newStatus,
+                product_id: productId
+            })
+            .then(response => {
+                Swal.fire({
+                    title: "Good job!",
+                    text: response.data.message,
+                    icon: "success"
+                });
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+            });
+        }
 </script>
 @endsection

@@ -260,6 +260,7 @@ class ProductInvetoryController extends Controller
     public function updateStock(Request $request, $variation_id)
     {
         try {
+            // dd($request->all());
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
@@ -276,7 +277,7 @@ class ProductInvetoryController extends Controller
             }
 
             // Find the product variation
-            $variation = ProductVariation::findOrFail($variation_id);
+            $variation = ProductVariation::where(['id' => $variation_id, 'product_slug_id' => $request->input('product_id')])->firstOrFail();
 
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                 // Check if the product variation belongs to the authenticated user
@@ -398,7 +399,7 @@ class ProductInvetoryController extends Controller
                 ]], __('statusCode.statusCode400'));
             }
             // Find the product variation
-            $variation = ProductVariation::findOrFail($variation_id);
+            $variation = ProductVariation::where(['id' => $variation_id, 'product_slug_id' => $request->input('product_id')])->firstOrFail();
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                 // Check if the product variation belongs to the authenticated user
                 if ($variation->product->user_id !== auth()->user()->id) {

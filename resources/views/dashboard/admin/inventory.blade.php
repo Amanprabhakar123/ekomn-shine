@@ -178,6 +178,7 @@
 </div>
 @endsection
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
@@ -199,10 +200,8 @@
         });
 
         // Event listener for clicking outside the search input field
-        document.addEventListener("click", (e) => {
-            if (e.target !== searchQuery) {
-                fetchData();
-            }
+        searchQuery.addEventListener("blur", (e) => {
+            fetchData();
         });
 
         const sortByStatus = document.getElementById("sort_by_status");
@@ -361,8 +360,8 @@
                     <td>
                 ${item.supplier_id}
             </td>
-            <td>
-                <input type="text" class="stock_t" value="${item.stock}">
+             <td>
+                <input type="text" class="stock_t" value="${item.stock}" onfocusout="handleInput('${item.id}', '${item.product_id}', 1, this)">
             </td>
             <td>
                 <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${item.selling_price}</div>
@@ -373,12 +372,12 @@
             <td>
                 <div>${item.availability_status}</div>
             </td>
-            <td>
-                <select class="changeStatus_t form-select">
-                    <option value="Active" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="Inactive" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="Out of Stock" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="Draft" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+             <td>
+                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)">
+                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
                 </select>
             </td>
             <td>
@@ -387,5 +386,60 @@
         </tr>
     `;
     }
+
+
+
+    function handleInput(itemId, productId, type, element) {
+        if (type === 1) {
+            updateStock(itemId, productId, element.value);
+        } else if (type === 2) {
+            updateStatus(itemId, productId, element.value);
+        }
+    }
+    /**
+     * Updates the stock of a product.
+     *
+     * @param {number} productId - The ID of the product.
+     */
+    function updateStock(itemId, productId, newStock) {
+        // Make an API request to update the stock of the product
+        ApiRequest(`product/updateStock/${itemId}`, 'PATCH', {
+                stock: newStock,
+                product_id: productId
+            })
+            .then(response => {
+                Swal.fire({
+                    title: "Good job!",
+                    text: response.data.message,
+                    icon: "success"
+                });
+            })
+            .catch(error => {
+                console.error('Error updating stock:', error);
+            });
+    }
+
+    /**
+     * Updates the status of a product.
+     *
+     * @param {number} productId - The ID of the product.
+     */
+    function updateStatus(itemId, productId, newStatus) {
+        // Make an API request to update the status of the product
+        ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
+                status: newStatus,
+                product_id: productId
+            })
+            .then(response => {
+                Swal.fire({
+                    title: "Good job!",
+                    text: response.data.message,
+                    icon: "success"
+                });
+            })
+            .catch(error => {
+                console.error('Error updating status:', error);
+            });
+        }
 </script>
 @endsection
