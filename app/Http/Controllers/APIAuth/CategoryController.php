@@ -18,8 +18,10 @@ class CategoryController extends Controller
     {
         // Get the comma-separated tags from input
         $tags = explode(',', $request->input('tags'));
-        $tags = array_map('trim', $tags); // Trim whitespace from each tag
-
+        if(!empty($tags)){
+            $tags = array_map('trim', $tags); // Trim whitespace from each tag
+            $tags = array_map('strtolower', $tags); // Convert tags to lowercase
+        }
         $categoryDetails = $this->searchCategory($tags);
 
         return response()->json(['data' => $categoryDetails]);
@@ -51,7 +53,9 @@ class CategoryController extends Controller
                     $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
 
                     $mainCategoryName = $mainCategory->name ?? $tag1;
+                    $mainCategoryId = $mainCategory->id ?? 0;
                     $subCategoryName = $subCategory->name ?? $tag2;
+                    $subCategoryId = $subCategory->id ?? 0;
 
                     // If sub category is "unknown", use main category name
                     if ($subCategoryName === 'unknown') {
@@ -60,7 +64,9 @@ class CategoryController extends Controller
 
                     $data = [
                         'main_category' => $mainCategoryName,
-                        'sub_category' => $subCategoryName
+                        'main_category_id' => $mainCategoryId,
+                        'sub_category' => $subCategoryName,
+                        'sub_category_id' => $subCategoryId,
                     ];
 
                     return [
@@ -74,21 +80,26 @@ class CategoryController extends Controller
 
         // Check if the any one  tag has a matching main category
         foreach ($tags as $firstTag) {
-            $firstTagCategory = Category::where('name', 'LIKE', "%$firstTag%")->first();
+            if(!empty($firstTag)){
+                $firstTagCategory = Category::where('name', 'LIKE', "%$firstTag%")->first();
 
-            if ($firstTagCategory) {
-                $mainCategoryName = $firstTagCategory->name ?? 'unknown';
+                if ($firstTagCategory) {
+                    $mainCategoryName = $firstTagCategory->name ?? 'unknown';
+                    $mainCategoryId = $firstTagCategory->id ?? 0;
 
-                $data = [
-                    'main_category' => $mainCategoryName,
-                    'sub_category' => $mainCategoryName // Use main category name if sub category is unknown
-                ];
+                    $data = [
+                        'main_category' => $mainCategoryName,
+                        'main_category_id' => $mainCategoryId,
+                        'sub_category' => $mainCategoryName, // Use main category name if sub category is unknown
+                        'sub_category_id' => $mainCategoryId
+                    ];
 
-                return [
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => true,
-                    'result' => $data
-                ];
+                    return [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => true,
+                        'result' => $data
+                    ];
+                }
             }
         }
 
