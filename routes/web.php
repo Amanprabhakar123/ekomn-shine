@@ -1,21 +1,22 @@
 <?php
 
+use Razorpay\Api\Product;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
 use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\ProductInventory;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProfileController;
+use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
-use App\Http\Controllers\APIAuth\ProductInventory;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use Razorpay\Api\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +74,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
+        Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
     });
 });
 

@@ -29,7 +29,7 @@ class AuthViewController extends Controller
     public function loginFormView()
     {
         $product = Category::where([
-            'parent_id' => 0,
+            'root_parent_id' => 0,
             'is_active' => true,
             'depth' => 0
         ])->get();

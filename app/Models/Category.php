@@ -21,4 +21,17 @@ class Category extends Model
         'depth',
         'root_parent_id'
     ];
+
+
+    // Define the relationship with the parent category
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    // Define the relationship with the root parent category
+    public function rootParent()
+    {
+        return $this->belongsTo(Category::class, 'root_parent_id');
+    }
 }
