@@ -22,7 +22,7 @@ class CategoryController extends Controller
 
         $categoryDetails = $this->searchCategory($tags);
 
-        return response()->json($categoryDetails);
+        return response()->json(['data' => $categoryDetails]);
     }
 
 
@@ -34,56 +34,72 @@ class CategoryController extends Controller
      */
     private function searchCategory(array $tags)
     {
-       // Generate all combinations of tags
-       $combinations = $this->generateCombinations($tags);
+        // Generate all combinations of tags
+        $combinations = $this->generateCombinations($tags);
 
-       foreach ($combinations as $combination) {
-           list($tag1, $tag2) = $combination;
+        foreach ($combinations as $combination) {
+            list($tag1, $tag2) = $combination;
 
-           // Search in the database using LIKE query for these tags
-           $category1 = Category::where('name', 'LIKE', "%$tag1%")->first();
-           $category2 = Category::where('name', 'LIKE', "%$tag2%")->first();
+            // Search in the database using LIKE query for these tags
+            $category1 = Category::where('name', 'LIKE', "%$tag1%")->first();
+            $category2 = Category::where('name', 'LIKE', "%$tag2%")->first();
 
-           if ($category1 && $category2) {
-               // Check if they share the same root parent category
-               if ($category1->root_parent_id == $category2->root_parent_id) {
-                   $mainCategory = Category::where('id', $category1->root_parent_id)->first();
-                   $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
+            if ($category1 && $category2) {
+                // Check if they share the same root parent category
+                if ($category1->root_parent_id == $category2->root_parent_id) {
+                    $mainCategory = Category::where('id', $category1->root_parent_id)->first();
+                    $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
 
-                   $mainCategoryName = $mainCategory->name ?? $tag1;
-                   $subCategoryName = $subCategory->name ?? $tag2;
+                    $mainCategoryName = $mainCategory->name ?? $tag1;
+                    $subCategoryName = $subCategory->name ?? $tag2;
 
-                   // If sub category is "unknown", use main category name
-                   if ($subCategoryName === 'unknown') {
-                       $subCategoryName = $mainCategoryName;
-                   }
+                    // If sub category is "unknown", use main category name
+                    if ($subCategoryName === 'unknown') {
+                        $subCategoryName = $mainCategoryName;
+                    }
 
-                   return [
-                       'main_category' => $mainCategoryName,
-                       'sub_category' => $subCategoryName
-                   ];
-               }
-           }
-       }
+                    $data = [
+                        'main_category' => $mainCategoryName,
+                        'sub_category' => $subCategoryName
+                    ];
 
-       // Check if the any one  tag has a matching main category
-       foreach($tags as $firstTag){
+                    return [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => true,
+                        'result' => $data
+                    ];
+                }
+            }
+        }
+
+        // Check if the any one  tag has a matching main category
+        foreach ($tags as $firstTag) {
             $firstTagCategory = Category::where('name', 'LIKE', "%$firstTag%")->first();
 
             if ($firstTagCategory) {
                 $mainCategoryName = $firstTagCategory->name ?? 'unknown';
 
-                return [
+                $data = [
                     'main_category' => $mainCategoryName,
                     'sub_category' => $mainCategoryName // Use main category name if sub category is unknown
+                ];
+
+                return [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => true,
+                    'result' => $data
                 ];
             }
         }
 
-       // Return "no data found" if no matches found
-       return [
-           'message' => 'no data found'
-       ];
+        // Return "no data found" if no matches found
+
+
+        return [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => false,
+            'result' => ['message' => 'no data found']
+        ];
     }
 
     /**
@@ -105,5 +121,4 @@ class CategoryController extends Controller
 
         return $combinations;
     }
-
 }
