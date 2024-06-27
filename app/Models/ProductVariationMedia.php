@@ -23,9 +23,11 @@ class ProductVariationMedia extends Model
         'product_variation_id',
         'media_type',
         'file_path',
+        'thumbnail_path',
         'is_master',
         'desc',
-        'is_active'
+        'is_active',
+        'is_compressed',
     ];
 
 
