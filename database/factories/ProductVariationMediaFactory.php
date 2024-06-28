@@ -29,6 +29,7 @@ class ProductVariationMediaFactory extends Factory
             'product_variation_id' => $this->faker->numberBetween(1, 10),
             'media_type' => $this->faker->randomElement([0, 1]),
             'file_path' => $this->faker->imageUrl(),
+            'thumbnail_path' => $this->faker->imageUrl(),
             'is_master' => $this->faker->boolean(),
             'desc' => $this->faker->sentence(),
             'is_active' => $this->faker->boolean(),
