@@ -17,7 +17,7 @@ class ProductVariationTransformer extends TransformerAbstract
         try {
             $data = [
                 'id' => salt_encrypt($product->id),
-                'product_image' => $product->media->first() ? $product->media->first()->thumbnail_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at'.$product->id,
+                'product_image' => $product->media->first() ? $product->media->first()->thumbnail_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at',
                 'title' => $product->title,
                 'sku' => $product->sku,
                 'product_id' => $product->product_slug_id,
