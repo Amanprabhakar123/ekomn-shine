@@ -2,6 +2,7 @@
 
 use Razorpay\Api\Product;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
 use App\Http\Controllers\APIAuth\ResetController;
@@ -101,4 +102,3 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 });
-

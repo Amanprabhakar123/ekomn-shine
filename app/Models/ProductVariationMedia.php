@@ -18,6 +18,9 @@ class ProductVariationMedia extends Model
     const IS_ACTIVE_TRUE = 1;
     const IS_ACTIVE_FALSE = 0;
 
+    const IS_COMPRESSED_TRUE = 1;
+    const IS_COMPRESSED_FALSE = 0;
+
     protected $fillable = [
         'product_id',
         'product_variation_id',
