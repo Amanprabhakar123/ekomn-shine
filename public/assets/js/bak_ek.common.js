@@ -1,8 +1,8 @@
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   // dashboard side-bar menu
   function setActive(elements, currentElement) {
-    elements.forEach(function (element) {
+    elements.forEach(function(element) {
       element.classList.remove('active');
     });
     currentElement.classList.add('active');
@@ -11,31 +11,31 @@ document.addEventListener('DOMContentLoaded', function () {
   var subLinks = document.querySelectorAll('.sidenav-second-level .nav-link');
   var menutoggle = document.querySelector('.menutoggle');
   var ek_nav = document.querySelector('.ek_nav');
-  links.forEach(function (link) {
-    link.addEventListener('click', function (event) {
+  links.forEach(function(link) {
+    link.addEventListener('click', function(event) {
       // event.preventDefault();
       setActive(links, this);
     });
   });
-  subLinks.forEach(function (subLink) {
-    subLink.addEventListener('click', function (event) {
+  subLinks.forEach(function(subLink) {
+    subLink.addEventListener('click', function(event) {
       // event.preventDefault();
       setActive(links, this.closest('.sidenav-second-level').previousElementSibling);
       setActive(subLinks, this);
     });
   });
-  if (menutoggle && ek_nav) {
-    menutoggle.addEventListener('click', function () {
-      ek_nav.classList.toggle('active');
-    });
-    document.addEventListener('click', function (event) {
-      if (!ek_nav.contains(event.target) && !menutoggle.contains(event.target)) {
-        ek_nav.classList.remove('active');
-      }
+  if(menutoggle && ek_nav) {
+      menutoggle.addEventListener('click', function() {
+        ek_nav.classList.toggle('active');
+      });
+      document.addEventListener('click', function(event) {
+        if (!ek_nav.contains(event.target) && !menutoggle.contains(event.target)) {
+          ek_nav.classList.remove('active');
+        }
     });
   }
   // end side-bar menu
-
+  
 
   // registration
   var sections = document.querySelectorAll('.sup_section');
@@ -43,10 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var sup_formSubmit = document.querySelector('.sup_formSubmit');
   var register = document.querySelector('.register');
   var t_u_s = document.querySelector('.t_u_s');
-  nextButtons.forEach(function (button, index) {
-    button.addEventListener('click', function (event) {
+  nextButtons.forEach(function(button, index) {
+    button.addEventListener('click', function(event) {
       event.preventDefault();
-      sections.forEach(function (section) {
+      sections.forEach(function(section) {
         section.style.display = 'none';
       });
       if (sections[index + 1]) {
@@ -58,17 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
   if (sup_formSubmit) {
-    sup_formSubmit.addEventListener('click', function (event) {
+    sup_formSubmit.addEventListener('click', function(event) {
       event.preventDefault();
-      sections.forEach(function (section) {
+      sections.forEach(function(section) {
         section.style.display = 'none';
       });
       register.style.display = 'none';
       t_u_s.style.display = 'block';
     });
   }
+  // end
 
-// end
 
   // form footer button
   const footers = document.querySelectorAll('.saveform_footer');
@@ -162,7 +162,16 @@ document.addEventListener('DOMContentLoaded', function () {
     quantityuptoInput.type = 'text';
     quantityuptoInput.className = 'smallInput_n';
     quantityuptoInput.placeholder = 'Qty. Upto';
+    // const toText = document.createElement('span');
+    // toText.className = 'totext';
+    // toText.textContent = 'To';
+    // const quantityuptoInput_2 = document.createElement('input');
+    // quantityuptoInput_2.type = 'text';
+    // quantityuptoInput_2.className = 'smallInput_n w_40';
+    // quantityuptoInput_2.placeholder = '0';
     quantityuptoCell.appendChild(quantityuptoInput);
+    // quantityuptoCell.appendChild(toText);
+    // quantityuptoCell.appendChild(quantityuptoInput_2);
 
     const localPrice = document.createElement('td');
     const localPriceInput = document.createElement('input');
@@ -205,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   document.querySelectorAll('.deleteShippingRow').forEach(button => {
     button.addEventListener('click', function () {
+      console.log('hiiii')
       button.closest('#shippingRateTable tr').remove();
     });
   });
@@ -251,23 +261,26 @@ document.addEventListener('DOMContentLoaded', function () {
   const noRadio = document.getElementById('no');
   const yesBlock = document.querySelector('.yesblock');
   const noBlock = document.querySelector('.noblock');
+  // Function to show yesblock and hide noblock
   function showYesBlock() {
     yesBlock.style.display = 'block';
     noBlock.style.display = 'none';
   }
+  // Function to show noblock and hide yesblock
   function showNoBlock() {
     yesBlock.style.display = 'none';
     noBlock.style.display = 'block';
   }
+  // Initially, show/hide blocks based on default checked state
   if (noRadio.checked) {
     showNoBlock();
   } else if (yesRadio.checked) {
     showYesBlock();
   }
+  // Event listeners for radio buttons
   yesRadio.addEventListener('change', showYesBlock);
   noRadio.addEventListener('change', showNoBlock);
   // ####### end radio check ######
-  
 
   // ########## Create Product Feature List ############
   document.getElementById('add-feature').addEventListener('click', function() {
@@ -314,7 +327,4 @@ document.addEventListener('DOMContentLoaded', function () {
   //########## End Product Feature List ############
 
 });
-
-
-
 
