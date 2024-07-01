@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // end
 
   // Add or Remove Bulk Rate Row
-  document.getElementById('addNewRowButton').addEventListener('click', function () {
+ /* document.getElementById('addNewRowButton').addEventListener('click', function () {
     const tableBody = document.querySelector('#bulkRateTable tbody');
     const newRow = document.createElement('tr');
     const quantityCell = document.createElement('td');
@@ -149,9 +149,9 @@ document.addEventListener('DOMContentLoaded', function () {
       button.closest('#bulkRateTable tr').remove();
     });
   });
-  // end
+  // end*/
 
-
+/*
   // Add or Remove Shipping Rate Row
   const addShippingDetails = document.getElementById('addShippingRow')
   addShippingDetails.addEventListener('click', function () {
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
   // end
-
+*/
   // add product keywords
   const tagContainer = document.querySelector(".tag-container");
   const input = document.querySelector("#tag-input");

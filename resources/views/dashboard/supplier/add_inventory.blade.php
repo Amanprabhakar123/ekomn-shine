@@ -30,15 +30,15 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Product Name & Title" />
-                      <span class="text-danger hide">errr message</span>
+                      <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required/>
+                      <div id="product_nameErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="ek_group">
                     <label class="eklabel req"><span>Description:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <textarea class="form-control" placeholder="Product Description"></textarea>
-                      <span class="text-danger hide">errr message</span>
+                      <textarea class="form-control" placeholder="Product Description" name="product_description" id="product_description" required></textarea>
+                      <div id="product_descriptionErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="ek_group">
@@ -46,21 +46,21 @@
                     <div class="ek_f_input">
                       <div class="tag-container">
                         <div class="tag-input">
-                            <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control">
+                            <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords"  required>
                         </div>
                       </div>
-                      <span class="text-danger hide">errr message</span>
+                      <div id="product_keywordsErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product Features:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
+                      <textarea name="product_features" id="product_features" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
                       <div class="clearfix">
                         <span class="fs-14 opacity-25">You can only add up to 7 features</span> 
                         <button id="add-feature" type="button" class="btn addNewRow px-4">Add</button>
                       </div>
-                      <span id="error-message" class="text-danger hide">errr message</span>
+                      <div id="product_featuresErr" class="invalid-feedback"></div>
                       <ol id="features-list" class="featureslisting"></ol>
                     </div>
                   </div>
@@ -70,20 +70,20 @@
                       <div class="row">
                         <div class="mb10 col-sm-12 col-md-3">
                           <label style="font-size: 13px;opacity: 0.6;">Main Category</label>
-                          <input type="text" class="form-control" placeholder="Product Category" readonly />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" name="product_category" id="product_category" class="form-control" placeholder="Product Category"  />
+                          <div id="product_categoryErr" class="invalid-feedback"></div>
                         </div>
                         <div class="form-group col-sm-12 col-md-3">
                           <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
-                          <input type="text" class="form-control" placeholder="Product Sub Category" readonly />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" name="product_sub_category" id="product_sub_category" class="form-control" placeholder="Product Sub Category"  />
+                          <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div class="saveform_footer text-right">
-                  <button type="button" class="btn btn-login btnekomn card_f_btn next_Tab">Save & Next</button>
+                  <button type="button" class="btn btn-login btnekomn card_f_btn" id="generaltab">Save & Next</button>
                 </div>
               </form>
             </div>
@@ -95,8 +95,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Single Piece / Dropship Rate:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Enter Dropship Rate" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Enter Dropship Rate" name="dropship_rate" id="dropship_rate"  required/>
+                          <div id="dropship_rateErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -104,8 +104,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Potential MRP:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Enter Potential MRP" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Enter Potential MRP"  name="potential_mrp" id="potential_mrp"  required />
+                          <div id="potential_mrpErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -124,17 +124,18 @@
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Qty. Upto">
+                                    <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00">
+                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
+
                                   </td>
                                 </tr>
                               </tbody>
                             </table>
-                            <button class="addNewRow" id="addNewRowButton" type="button">Add More</button>
+                            <button class="" id="addNewRowButton" type="button">Add More</button>
                           </div>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="bulk_rateErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                       <div class="ek_group">
@@ -154,24 +155,24 @@
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Qty. Upto">
+                                    <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00">
+                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][local]" id="shipping[0][local]" required>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00">
+                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][regional]" id="shipping[0][regional]" required>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00">
+                                    <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][national]"  id="shipping[0][national]" required>
                                   </td>
                                   <td></td>
                                 </tr>
                               </tbody>
                             </table>
-                            <button class="addNewRow" id="addShippingRow" type="button">Add More</button>
+                            <button class="" id="addShippingRow" type="button">Add More</button>
                           </div>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="shipping_rateErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -179,7 +180,7 @@
                 </div>
                 <div class="saveform_footer">
                   <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
-                  <button type="button" class="btn btn-login btnekomn card_f_btn next_Tab">Save & Next</button>
+                  <button type="button" class="btn btn-login btnekomn card_f_btn" id="shippingTab">Save & Next</button>
                 </div>
               </form>
             </div>
@@ -192,8 +193,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Enter Modal Number" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Enter Modal Number" name="model" id="model" required/>
+                          <div id="modelErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -201,8 +202,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Product HSN:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Enter HSN Code" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Enter HSN Code"  name="product_hsn" id="product_hsn" required/>
+                          <div id="product_hsnErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -210,14 +211,14 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select" name="gst_bracket" id="gst_bracket" required>
                             <option value="0">0%</option>
                             <option value="5" selected>5%</option>
                             <option value="12">12%</option>
                             <option value="18">18%</option>
                             <option value="28">28%</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="gst_bracketErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -225,11 +226,11 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select" name="availability" id="availability" required>
                             <option value="till">Till Stock Lasts</option>
                             <option value="available" selected>Regular Available</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="availabilityErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -237,8 +238,8 @@
                       <div class="ek_group">
                         <label class="eklabel req">UPC:</label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Universal Product Code" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Universal Product Code" name="upc" id="upc" />
+                          <div id="upcErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -246,8 +247,8 @@
                       <div class="ek_group">
                         <label class="eklabel req">ISBN:</label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="International Standard Book Number" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="International Standard Book Number" name="isbn" id="isbn" />
+                          <div id="isbnErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -255,8 +256,8 @@
                       <div class="ek_group">
                         <label class="eklabel req">MPN:</label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="Manufacturer Port Number" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="Manufacturer Port Number" name="mpn" id="mpn"/>
+                          <div id="mpnErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -267,8 +268,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Length:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100" name="length" id="length" required/>
+                          <div id="lengthErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -276,8 +277,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Width:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100" name="width" id="width" required/>
+                          <div id="widthErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -285,8 +286,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Height:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100" name="height" id="height" required/>
+                          <div id="heightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -294,12 +295,12 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select"  name="dimension_class" id="dimension_class" required>
                             <option value="mm">mm</option>
-                            <option value="CM">cm</option>
+                            <option value="cm">cm</option>
                             <option value="inch">inch</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="dimension_classErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -307,8 +308,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Weight:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100"  name="weight" id="weight" required/>
+                          <div id="weightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -316,14 +317,14 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select"  name="weight_class" id="weight_class" required>
                             <option value="mg">mg</option>
                             <option value="gm">gm</option>
                             <option value="kg">kg</option>
                             <option value="ml">ml</option>
                             <option value="ltr">ltr</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="weight_classErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -331,8 +332,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="L*W*H/5000" readonly/>
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="volumetric_weight" id="volumetric_weight" readonly/>
+                          <div id="volumetric_weightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -343,8 +344,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Length:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100"  name="package_length" id="package_length" required />
+                          <div id="package_lengthErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -352,8 +353,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Width:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100"   name="package_width" id="package_width" required/>
+                          <div id="package_widthErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -361,8 +362,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Height:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100"   name="package_height" id="package_height" required />
+                          <div id="package_heightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -370,12 +371,12 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select"  name="dimension_class" id="dimension_class" required>
                             <option value="mm">mm</option>
-                            <option value="CM">cm</option>
+                            <option value="cm">cm</option>
                             <option value="inch">inch</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="dimension_classErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -383,8 +384,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Weight:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="100" />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="100" name="package_weight" id="package_weight" required/>
+                          <div id="package_weightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -392,14 +393,14 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <select class="form-select">
+                          <select class="form-select"   name="package_weight_class" id="package_weight_class" required>
                             <option value="mg">mg</option>
                             <option value="gm">gm</option>
                             <option value="kg">kg</option>
                             <option value="ml">ml</option>
                             <option value="ltr">lt</option>
                           </select>
-                          <span class="text-danger hide">errr message</span>
+                          <div id="package_weight_classErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -407,8 +408,8 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" placeholder="L*W*H/5000" readonly />
-                          <span class="text-danger hide">errr message</span>
+                          <input type="text" class="form-control" placeholder="L*W*H/5000" readonly   name="package_volumetric_weight" id="package_volumetric_weight" required/>
+                          <div id="package_volumetric_weightErr" class="invalid-feedback"></div>
                         </div>
                       </div>
                     </div>
@@ -416,7 +417,7 @@
                 </div>
                 <div class="saveform_footer">
                   <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
-                  <button type="button" class="btn btn-login btnekomn card_f_btn next_Tab">Save & Next</button>
+                  <button type="button" class="btn btn-login btnekomn card_f_btn" id="dataAndDimesionTab">Save & Next</button>
                 </div>
               </form>
             </div>
@@ -1038,5 +1039,245 @@
     newContainer.appendChild(multiRowContainer);
     containers.appendChild(newContainer);
   }
+
+      
+
+      /*  $('#addFeature').click(function () {
+          const maxFeatures = 7;
+          var features = [];
+            const featureInput = $('#productFeature');
+            const featureValue = featureInput.val().trim();
+
+            if (featureValue && features.length < maxFeatures) {
+                features.push(featureValue);
+                $('#featureList').append(`<div class="feature-item">${featureValue}</div>`);
+                featureInput.val('');
+            } else if (features.length >= maxFeatures) {
+                alert('You can only add up to 7 features.');
+            }
+        });*/
+
+        $('#generaltab').click(function () {
+            let isValid = true;
+
+            const productName = $('#product_name').val();
+            const productDescription = $('#product_description').val();
+            const productKeywords = $('#product_keywords').val();
+            const mainCategory = $('#product_category').val();
+            const subCategory = $('#product_sub_category').val();
+            console.log(productName);
+
+            $('.error').text('');
+
+            if (!productName) {
+              $('#product_name').addClass('is-invalid ');
+              $('#product_nameErr').text('Product Name is required.');
+                isValid = false;
+            }
+            if (!productDescription) {
+              $('#product_description').addClass('is-invalid ');
+                $('#product_descriptionErr').text('Product Description is required.');
+                isValid = false;
+            }
+           /* if (!productKeywords) {
+                $('#product_keywords').addClass('is-invalid ');
+                $('#product_keywordsErr').text('Product Keywords are required.');
+                isValid = false;
+            }*/
+          /*  if (features.length === 0) {
+              $('#product_features').addClass('is-invalid ');
+                $('#product_featuresErr').text('At least one Product Feature is required.');
+                isValid = false;
+            }*/
+            if (!mainCategory) {
+                $('#product_category').addClass('is-invalid ');
+                $('#product_categoryErr').text('Main Category is required.');
+                isValid = false;
+            }
+            if (!subCategory) {
+                $('#product_sub_category').addClass('is-invalid ');
+                $('#product_sub_categoryErr').text('Sub Category is required.');
+                isValid = false;
+            }
+
+            if (isValid) {
+              console.log("hi");
+                // Proceed to next step
+                document.querySelector('a[data-bs-target="#shipping"]').click();
+            }
+        });
+
+
+    $('#dataAndDimesionTab').click(function () {
+    let isValid = true;
+
+    // Clear previous errors
+    $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').text('');
+
+    // Validate each field
+    const fieldsToValidate = [
+        { id: '#model', errorId: '#modelErr', errorMessage: 'Model is required.' },
+        { id: '#product_hsn', errorId: '#product_hsnErr', errorMessage: 'Product HSN is required.' },
+        { id: '#gst_bracket', errorId: '#gst_bracketErr', errorMessage: 'GST Bracket is required.' },
+        { id: '#availability', errorId: '#availabilityErr', errorMessage: 'Availability is required.' },
+        { id: '#length', errorId: '#lengthErr', errorMessage: 'Length is required.' },
+        { id: '#width', errorId: '#widthErr', errorMessage: 'Width is required.' },
+        { id: '#height', errorId: '#heightErr', errorMessage: 'Height is required.' },
+        { id: '#dimension_class', errorId: '#dimension_classErr', errorMessage: 'Dimension Class is required.' },
+        { id: '#weight', errorId: '#weightErr', errorMessage: 'Weight is required.' },
+        { id: '#weight_class', errorId: '#weight_classErr', errorMessage: 'Weight Class is required.' },
+        { id: '#package_length', errorId: '#package_lengthErr', errorMessage: 'Package Length is required.' },
+        { id: '#package_width', errorId: '#package_widthErr', errorMessage: 'Package Width is required.' },
+        { id: '#package_height', errorId: '#package_heightErr', errorMessage: 'Package Height is required.' },
+        { id: '#package_weight', errorId: '#package_weightErr', errorMessage: 'Package Weight is required.' },
+        { id: '#package_weight_class', errorId: '#package_weight_classErr', errorMessage: 'Package Weight Class is required.' },
+        { id: '#package_volumetric_weight', errorId: '#package_volumetric_weightErr', errorMessage: 'Package Volumetric Weight is required.' },
+        { id: '#volumetric_weight', errorId: '#volumetric_weightErr', errorMessage: 'Volumetric Weight is required.' }
+    ];
+
+    fieldsToValidate.forEach(field => {
+        const value = $(field.id).val();
+        if (!value) {
+            $(field.id).addClass('is-invalid');
+            $(field.errorId).text(field.errorMessage);
+            isValid = false;
+        }
+    });
+
+    if (isValid) {
+        // Proceed to next step
+        document.querySelector('a[data-bs-target="#images"]').click();
+    }
+});
+
+
+
+$('#shippingTab').click(function () {
+    let isValid = true;
+
+// Clear previous errors
+$('.is-invalid').removeClass('is-invalid');
+$('.invalid-feedback').text('');
+
+// Validate Single Piece / Dropship Rate
+const dropshipRate = $('#dropship_rate').val();
+if (!dropshipRate) {
+    $('#dropship_rate').addClass('is-invalid');
+    $('#dropship_rateErr').text('Dropship Rate is required.');
+    isValid = false;
+}
+
+// Validate Potential MRP
+const potentialMrp = $('#potential_mrp').val();
+if (!potentialMrp) {
+    $('#potential_mrp').addClass('is-invalid');
+    $('#potential_mrpErr').text('Potential MRP is required.');
+    isValid = false;
+}
+
+
+    // Validate Bulk Rate table rows
+    $('#bulkRateTable tbody tr').each(function () {
+        const quantity = $(this).find('input[name^="bulk"][name$="[quantity]"]').val();
+        const price = $(this).find('input[name^="bulk"][name$="[price]"]').val();
+        if (!quantity) {
+            $(this).find('input[name^="bulk"][name$="[quantity]"]').addClass('is-invalid');
+            isValid = false;
+        }
+        if (!price) {
+            $(this).find('input[name^="bulk"][name$="[price]"]').addClass('is-invalid');
+            isValid = false;
+        }
+    });
+
+    // Validate Shipping Rate table rows
+    $('#shippingRateTable tbody tr').each(function () {
+        const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
+        const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
+        const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
+        const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
+        if (!quantity) {
+            $(this).find('input[name^="shipping"][name$="[quantity]"]').addClass('is-invalid');
+            isValid = false;
+        }
+        if (!local) {
+            $(this).find('input[name^="shipping"][name$="[local]"]').addClass('is-invalid');
+            isValid = false;
+        }
+        if (!regional) {
+            $(this).find('input[name^="shipping"][name$="[regional]"]').addClass('is-invalid');
+            isValid = false;
+        }
+        if (!national) {
+            $(this).find('input[name^="shipping"][name$="[national]"]').addClass('is-invalid');
+            isValid = false;
+        }
+    });
+
+    if (isValid) {
+        // Proceed to next tab
+        document.querySelector('a[data-bs-target="#data"]').click();
+
+    }
+});
+$('#addNewRowButton').click(function () {
+    let index = $('#bulkRateTable tbody tr').length;
+
+    const newRow = `
+        <tr>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Qty. Upto" name="bulk[${index}][quantity]" required>
+            </td>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="bulk[${index}][price]" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger deleteRow"><i class="far fa-trash-alt"></i></button>
+            </td>
+        </tr>
+    `;
+
+    $('#bulkRateTable tbody').append(newRow);
+});
+
+// Event delegation for dynamically created delete buttons
+$('#bulkRateTable').on('click', '.deleteRow', function () {
+    $(this).closest('tr').remove();
+});
+
+// Add Row Functionality for Shipping Rate Table
+$('#addShippingRow').click(function () {
+    let index = $('#shippingRateTable tbody tr').length;
+
+    const newRow = `
+        <tr>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Qty. Upto" name="shipping[${index}][quantity]" required>
+            </td>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][local]" required>
+            </td>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][regional]" required>
+            </td>
+            <td>
+                <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][national]" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger deleteShippingRow"><i class="far fa-trash-alt"></i></button>
+            </td>
+        </tr>
+    `;
+
+    $('#shippingRateTable tbody').append(newRow);
+});
+$('#shippingRateTable').on('click', '.deleteShippingRow', function () {
+    $(this).closest('tr').remove();
+});
+
+
+
+        
 </script>
 @endsection
