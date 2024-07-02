@@ -46,21 +46,21 @@
                     <div class="ek_f_input">
                       <div class="tag-container">
                         <div class="tag-input">
-                            <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords"  required>
+                            <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords"  required />
+                            <div id="tag-inputErr" class="invalid-feedback"></div>
                         </div>
                       </div>
-                      <div id="product_keywordsErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product Features:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <textarea name="product_features" id="product_features" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
+                      <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
+                      <span id="features-error" class="text-danger hide">At least one product feature is required.</span>
                       <div class="clearfix">
                         <span class="fs-14 opacity-25">You can only add up to 7 features</span> 
                         <button id="add-feature" type="button" class="btn addNewRow px-4">Add</button>
                       </div>
-                      <div id="product_featuresErr" class="invalid-feedback"></div>
                       <ol id="features-list" class="featureslisting"></ol>
                     </div>
                   </div>
@@ -119,6 +119,7 @@
                                 <tr>
                                   <th>Quantity upto</th>
                                   <th>Price / Per Piece</th>
+                                  <th style="width: 20px;"></th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -133,7 +134,7 @@
                                 </tr>
                               </tbody>
                             </table>
-                            <button class="" id="addNewRowButton" type="button">Add More</button>
+                            <button class="addNewRow" id="addNewRowButton" type="button">Add More</button>
                           </div>
                           <div id="bulk_rateErr" class="invalid-feedback"></div>
                         </div>
@@ -170,7 +171,7 @@
                                 </tr>
                               </tbody>
                             </table>
-                            <button class="" id="addShippingRow" type="button">Add More</button>
+                            <button class="addNewRow" id="addShippingRow" type="button">Add More</button>
                           </div>
                           <div id="shipping_rateErr" class="invalid-feedback"></div>
                         </div>
@@ -1057,55 +1058,118 @@
             }
         });*/
 
-        $('#generaltab').click(function () {
-            let isValid = true;
 
-            const productName = $('#product_name').val();
-            const productDescription = $('#product_description').val();
-            const productKeywords = $('#product_keywords').val();
-            const mainCategory = $('#product_category').val();
-            const subCategory = $('#product_sub_category').val();
-            console.log(productName);
+        $('#generaltab').click(function() {
+        
+        $('#add-feature').on('click', function() {
+          const $textarea = $('#product-description');
+          const $featureList = $('#features-list');
 
-            $('.error').text('');
+          if ($textarea.val().trim() === '') {
+            return;
+          }
+          const newFeature = $('<li>');
+          newFeature.html(`
+            <div class="featurescontent">
+              ${$textarea.val().replace(/\n/g, '<br>')}
+              <div class="f_btn f_btn_rightSide">
+                <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
+                <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          `);
+          $featureList.append(newFeature);
+          $textarea.val('');
 
-            if (!productName) {
-              $('#product_name').addClass('is-invalid ');
-              $('#product_nameErr').text('Product Name is required.');
-                isValid = false;
-            }
-            if (!productDescription) {
-              $('#product_description').addClass('is-invalid ');
-                $('#product_descriptionErr').text('Product Description is required.');
-                isValid = false;
-            }
-           /* if (!productKeywords) {
-                $('#product_keywords').addClass('is-invalid ');
-                $('#product_keywordsErr').text('Product Keywords are required.');
-                isValid = false;
-            }*/
-          /*  if (features.length === 0) {
-              $('#product_features').addClass('is-invalid ');
-                $('#product_featuresErr').text('At least one Product Feature is required.');
-                isValid = false;
-            }*/
-            if (!mainCategory) {
-                $('#product_category').addClass('is-invalid ');
-                $('#product_categoryErr').text('Main Category is required.');
-                isValid = false;
-            }
-            if (!subCategory) {
-                $('#product_sub_category').addClass('is-invalid ');
-                $('#product_sub_categoryErr').text('Sub Category is required.');
-                isValid = false;
-            }
+          if ($featureList.children().length >= 7) {
+            $('#add-feature').prop('disabled', true);
+          }
 
-            if (isValid) {
-              console.log("hi");
-                // Proceed to next step
-                document.querySelector('a[data-bs-target="#shipping"]').click();
+          newFeature.find('.delete-feature').on('click', function() {
+            newFeature.remove();
+            if ($featureList.children().length < 7) {
+              $('#add-feature').prop('disabled', false);
             }
+          });
+
+          newFeature.find('.edit-feature').on('click', function() {
+            const content = newFeature.find('.featurescontent').html().split('<div')[0].trim().replace(/<br>/g, '\n');
+            $textarea.val(content);
+            newFeature.remove();
+            if ($featureList.children().length < 7) {
+              $('#add-feature').prop('disabled', false);
+            }
+          });
         });
+
+        let isValid = true;
+
+        const productName = $('#product_name').val();
+        const productDescription = $('#product_description').val();
+        // const productKeywords = $('#tag-input').val();
+        const mainCategory = $('#product_category').val();
+        const subCategory = $('#product_sub_category').val();
+        const features = $('#features-list').children().length;
+
+        // Validate Product Keywords
+        const tagInputValue = $('#tag-input').val().trim();
+        const tagCount = $('.tag-container .tag').length;
+
+        $('.error').text('');
+
+        if (!productName) {
+          $('#product_name').addClass('is-invalid');
+          $('#product_nameErr').text('Product Name is required.');
+          isValid = false;
+        }else {
+          $('#product_name').removeClass('is-invalid');
+          $('#product_nameErr').text('');
+        }
+        if (!productDescription) {
+          $('#product_description').addClass('is-invalid');
+          $('#product_descriptionErr').text('Product Description is required.');
+          isValid = false;
+        }else {
+          $('#product_description').removeClass('is-invalid');
+          $('#product_descriptionErr').text('');
+        }
+        if (tagCount === 0) {
+          $('#tag-input').addClass('is-invalid');
+          $('#tag-inputErr').text('Product Keywords are required.');
+          isValid = false;
+        } else {
+          $('#tag-input').removeClass('is-invalid');
+          $('#tag-inputErr').text('');
+        }
+        if (features === 0) {
+          $('#features-error').removeClass('hide');
+          isValid = false;
+        } else {
+          $('#features-error').addClass('hide');
+        }
+        if (!mainCategory) {
+          $('#product_category').addClass('is-invalid');
+          $('#product_categoryErr').text('Main Category is required.');
+          isValid = false;
+        }else {
+          $('#product_category').removeClass('is-invalid');
+          $('#product_categoryErr').text('');
+        }
+        if (!subCategory) {
+          $('#product_sub_category').addClass('is-invalid');
+          $('#product_sub_categoryErr').text('Sub Category is required.');
+          isValid = false;
+        } else {
+          $('#product_sub_category').removeClass('is-invalid');
+          $('#product_sub_categoryErr').text('');
+        }
+
+        if (isValid) {
+          console.log("hi");
+          // Proceed to next step
+          document.querySelector('a[data-bs-target="#shipping"]').click();
+        }
+      });
 
 
     $('#dataAndDimesionTab').click(function () {
@@ -1142,7 +1206,18 @@
             $(field.id).addClass('is-invalid');
             $(field.errorId).text(field.errorMessage);
             isValid = false;
+        }else {
+            $(field.id).removeClass('is-invalid');
+            $(field.errorId).text('');
         }
+
+        // Add event listener to handle input change
+        $(field.id).on('input', function() {
+            if ($(this).val().trim() !== '') {
+                $(this).removeClass('is-invalid');
+                $(field.errorId).text('');
+            }
+        });
     });
 
     if (isValid) {
@@ -1177,49 +1252,72 @@ if (!potentialMrp) {
 }
 
 
-    // Validate Bulk Rate table rows
-    $('#bulkRateTable tbody tr').each(function () {
-        const quantity = $(this).find('input[name^="bulk"][name$="[quantity]"]').val();
-        const price = $(this).find('input[name^="bulk"][name$="[price]"]').val();
-        if (!quantity) {
-            $(this).find('input[name^="bulk"][name$="[quantity]"]').addClass('is-invalid');
-            isValid = false;
-        }
-        if (!price) {
-            $(this).find('input[name^="bulk"][name$="[price]"]').addClass('is-invalid');
-            isValid = false;
-        }
-    });
+ // Validate Bulk Rate table rows
+$('#bulkRateTable tbody tr').each(function () {
+    const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
+    const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
+    const quantity = quantityInput.val();
+    const price = priceInput.val();
 
-    // Validate Shipping Rate table rows
-    $('#shippingRateTable tbody tr').each(function () {
-        const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
-        const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
-        const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
-        const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
-        if (!quantity) {
-            $(this).find('input[name^="shipping"][name$="[quantity]"]').addClass('is-invalid');
-            isValid = false;
-        }
-        if (!local) {
-            $(this).find('input[name^="shipping"][name$="[local]"]').addClass('is-invalid');
-            isValid = false;
-        }
-        if (!regional) {
-            $(this).find('input[name^="shipping"][name$="[regional]"]').addClass('is-invalid');
-            isValid = false;
-        }
-        if (!national) {
-            $(this).find('input[name^="shipping"][name$="[national]"]').addClass('is-invalid');
-            isValid = false;
-        }
-    });
-
-    if (isValid) {
-        // Proceed to next tab
-        document.querySelector('a[data-bs-target="#data"]').click();
-
+    if (!quantity) {
+        quantityInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        quantityInput.removeClass('is-invalid form-control');
     }
+
+    if (!price) {
+        priceInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        priceInput.removeClass('is-invalid form-control');
+    }
+});
+
+// Validate Shipping Rate table rows
+$('#shippingRateTable tbody tr').each(function () {
+    const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
+    const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
+    const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
+    const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
+    const quantity = quantityInput.val();
+    const local = localInput.val();
+    const regional = regionalInput.val();
+    const national = nationalInput.val();
+
+    if (!quantity) {
+        quantityInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        quantityInput.removeClass('is-invalid form-control');
+    }
+
+    if (!local) {
+        localInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        localInput.removeClass('is-invalid form-control');
+    }
+
+    if (!regional) {
+        regionalInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        regionalInput.removeClass('is-invalid form-control');
+    }
+
+    if (!national) {
+        nationalInput.addClass('is-invalid form-control');
+        isValid = false;
+    } else {
+        nationalInput.removeClass('is-invalid form-control');
+    }
+});
+
+if (isValid) {
+    // Proceed to next tab
+    document.querySelector('a[data-bs-target="#data"]').click();
+}
 });
 $('#addNewRowButton').click(function () {
     let index = $('#bulkRateTable tbody tr').length;
@@ -1227,14 +1325,16 @@ $('#addNewRowButton').click(function () {
     const newRow = `
         <tr>
             <td>
-                <input type="text" class="smallInput_n form-control" placeholder="Qty. Upto" name="bulk[${index}][quantity]" required>
+                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[${index}][quantity]" required>
             </td>
             <td>
-                <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="bulk[${index}][price]" required>
+                <input type="text" class="smallInput_n " placeholder="Rs. 0.00" name="bulk[${index}][price]" required>
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-danger deleteRow"><i class="far fa-trash-alt"></i></button>
+                 <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
             </td>
+           
+        
         </tr>
     `;
 
@@ -1265,7 +1365,7 @@ $('#addShippingRow').click(function () {
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][national]" required>
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-danger deleteShippingRow"><i class="far fa-trash-alt"></i></button>
+                <button type="button" class="deleteRow deleteShippingRow"><i class="far fa-trash-alt"></i></button>
             </td>
         </tr>
     `;

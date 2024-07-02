@@ -1682,4 +1682,7 @@ video {
   width: 100px;
 }
 .btnekomn.next_Tab{min-width: 140px;}
+.form-control.is-invalid, .was-validated .form-control:invalid{
+  background-image: none;
+}
 /* end */
