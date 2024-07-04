@@ -24,9 +24,10 @@
             </li>
           </ul>
           <div class="tab-content" id="pills-tabContent">
+            <form id="addInventoryForm" enctype="multipart/form-data">
+
             <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
-              <form action="">
-                <div class="addProductForm">
+              <div class="addProductForm">
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
@@ -85,11 +86,9 @@
                 <div class="saveform_footer text-right">
                   <button type="button" class="btn btn-login btnekomn card_f_btn" id="generaltab">Save & Next</button>
                 </div>
-              </form>
             </div>
             <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab" tabindex="0">
-              <form action="">
-                <div class="addProductForm">
+              <div class="addProductForm">
                   <div class="row">
                     <div class="col-sm-12 col-md-4">
                       <div class="ek_group">
@@ -183,11 +182,9 @@
                   <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
                   <button type="button" class="btn btn-login btnekomn card_f_btn" id="shippingTab">Save & Next</button>
                 </div>
-              </form>
             </div>
             <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab" tabindex="0">
-              <form action="">
-                <div class="addProductForm">
+              <div class="addProductForm">
                   <h4 class="subheading">Product Details</h4>
                   <div class="row">
                     <div class="col-sm-12 col-md-3">
@@ -420,18 +417,16 @@
                   <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
                   <button type="button" class="btn btn-login btnekomn card_f_btn" id="dataAndDimesionTab">Save & Next</button>
                 </div>
-              </form>
             </div>
             <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
-              <form action="">
-                <div class="addProductForm eklabel_wm">
+              <div class="addProductForm eklabel_wm">
                   <h6>Do you have variants of this product?</h6>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="variant" id="yes" />
+                    <input class="form-check-input" type="radio" name="variant" id="yes" id="yesVariants"/>
                     <label class="form-check-label" for="yes">Yes</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="variant" id="no" checked />
+                    <input class="form-check-input" type="radio" name="variant" id="no" checked  id="noVariants"/>
                     <label class="form-check-label" for="no">No</label>
                   </div>
                   <div class="noblock mt15">
@@ -439,14 +434,14 @@
                       <div class="singlebox">
                         <div class="mb10">
                           <label for="">Color<span class="req_star">*</span></label>
-                          <select class="form-select">
-                            <option value="black">Black</option>
+                          <select class="form-select" id="variant[0]['color']" name="variant[0]['color']" required>
+                            <option value="black">Black1</option>
                             <option value="red">Red</option>
                             <option value="blue">Blue</option>
                           </select>
                         </div>
                         <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
-                          <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" />
+                          <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" name="variant[0]['image'][1]"  />
                           <img id="img-box-1" src="" alt="Image" style="display: none;" />
                           <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')">&#10006;</div>
                           <div class="placeholdertext">
@@ -466,10 +461,10 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size">
+                                <input type="text" class="smallInput_n" placeholder="Size" name="variant[0]['size'][0]" required>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0">
+                                <input type="text" class="smallInput_n" placeholder="0" name="variant[0]['stock'][0]" required>
                               </td>
                             </tr>
                           </tbody>
@@ -478,7 +473,7 @@
                     </div>
                     <div class="multi-row">
                       <div class="image-upload-box" id="box-2" onclick="triggerUpload('box-2')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-2')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-2')" name="variant[0]['image'][2]" />
                         <img id="img-box-2" src="#" alt="Image 2" style="display: none;" />
                         <div class="delete-icon" id="delete-box-2" onclick="deleteImage(event, 'box-2')">&#10006;</div>
                         <div class="placeholdertext">
@@ -487,7 +482,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-3" onclick="triggerUpload('box-3')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-3')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-3')" name="variant[0]['image'][3]" />
                         <img id="img-box-3" src="#" alt="Image 3" style="display: none;" />
                         <div class="delete-icon" id="delete-box-3" onclick="deleteImage(event, 'box-3')">&#10006;</div>
                         <div class="placeholdertext">
@@ -496,7 +491,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-4" onclick="triggerUpload('box-4')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-4')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-4')"name="variant[0]['image'][4]"  />
                         <img id="img-box-4" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box-4" onclick="deleteImage(event, 'box-4')">&#10006;</div>
                         <div class="placeholdertext">
@@ -505,7 +500,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-5" onclick="triggerUpload('box-5')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-5')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-5')" name="variant[0]['image'][5]" />
                         <img id="img-box-5" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box-5" onclick="deleteImage(event, 'box-5')">&#10006;</div>
                         <div class="placeholdertext">
@@ -514,7 +509,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-6" onclick="triggerUpload('box-6')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-6')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-6')" name="variant[0]['image'][6]"/>
                         <img id="img-box-6" src="#" alt="Image 6" style="display: none;" />
                         <div class="delete-icon" id="delete-box-6" onclick="deleteImage(event, 'box-6')">&#10006;</div>
                         <div class="placeholdertext">
@@ -523,7 +518,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-7" onclick="triggerUpload('box-7')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-7')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-7')" name="variant[0]['image'][7]"/>
                         <img id="img-box-7" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box-7" onclick="deleteImage(event, 'box-7')">&#10006;</div>
                         <div class="placeholdertext">
@@ -532,7 +527,7 @@
                         </div>
                       </div>
                       <div class="image-upload-box" id="box-8" onclick="triggerUpload('box-8')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-8')" />
+                        <input type="file" accept="image/*" onchange="previewImage(event, 'box-8')" name="variant[0]['image'][8]"/>
                         <img id="img-box-8" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box-8" onclick="deleteImage(event, 'box-8')">&#10006;</div>
                         <div class="placeholdertext">
@@ -540,7 +535,7 @@
                           <h6>Upload Image</h6>
                         </div>
                       </div>
-                      <div class="image-upload-box" id="box-9" onclick="triggerUpload('box-9')">
+                      <div class="image-upload-box" id="box-9" onclick="triggerUpload('box-9')" name="variant[0]['image'][9]">
                         <input type="file" accept="image/*" onchange="previewImage(event, 'box-9')" />
                         <img id="img-box-9" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box-9" onclick="deleteImage(event, 'box-9')">&#10006;</div>
@@ -569,7 +564,7 @@
                           </svg>
                         </div>
                         <div class="delete-icon">&#10006;</div>
-                        <input type="file" class="file-input" accept="video/*">
+                        <input type="file" class="file-input" accept="video/*" name="variant[0]['video'][1]">
                       </div>
                     </div>
                   </div>
@@ -580,14 +575,14 @@
                           <div class="singlebox">
                             <div class="mb10">
                               <label for="">Color<span class="req_star">*</span></label>
-                              <select class="form-select">
+                              <select class="form-select" id="image0Color" name="variant[0]['color']" required>
                                 <option value="black">Black</option>
                                 <option value="red">Red</option>
                                 <option value="blue">Blue</option>
                               </select>
                             </div>
                             <div class="image-upload-box" id="box1-1" onclick="triggerUpload('box1-1')">
-                              <input type="file" accept="image/*" onchange="previewImage(event, 'box1-1')" />
+                              <input type="file" accept="image/*" onchange="previewImage(event, 'box1-1')" name="variant[0]['image'][1]" required/>
                               <img id="img-box1-1" src="" alt="Image 1" style="display: none;" />
                               <div class="delete-icon" id="delete-box1-1" onclick="deleteImage(event, 'box1-1')">&#10006;</div>
                               <div class="placeholdertext">
@@ -608,10 +603,10 @@
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size">
+                                    <input type="text" class="smallInput_n" placeholder="Size" name="variant[0]['size'][0]" required>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0">
+                                    <input type="text" class="smallInput_n" placeholder="0" name="variant[0]['stock'][0]" required>
                                   </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -624,7 +619,7 @@
                         </div>
                         <div class="multi-row">
                           <div class="image-upload-box" id="box1-2" onclick="triggerUpload('box1-2')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-2')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-2')" name="variant[0]['image'][2]" required/>
                             <img id="img-box1-2" src="#" alt="Image 2" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-2" onclick="deleteImage(event, 'box1-2')">&#10006;</div>
                             <div class="placeholdertext">
@@ -633,7 +628,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-3" onclick="triggerUpload('box1-3')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-3')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-3')" name="variant[0]['image'][3]" required />
                             <img id="img-box1-3" src="#" alt="Image 3" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-3" onclick="deleteImage(event, 'box1-3')">&#10006;</div>
                             <div class="placeholdertext">
@@ -642,7 +637,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-4" onclick="triggerUpload('box1-4')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-4')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-4')" name="variant[0]['image'][4]" required/>
                             <img id="img-box1-4" src="#" alt="Image 4" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-4" onclick="deleteImage(event, 'box1-4')">&#10006;</div>
                             <div class="placeholdertext">
@@ -651,7 +646,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-5" onclick="triggerUpload('box1-5')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-5')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-5')" name="variant[0]['image'][5]" required/>
                             <img id="img-box1-5" src="#" alt="Image 5" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-5" onclick="deleteImage(event, 'box1-5')">&#10006;</div>
                             <div class="placeholdertext">
@@ -660,7 +655,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-6" onclick="triggerUpload('box1-6')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-6')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-6')" name="variant[0]['image'][6]" required/>
                             <img id="img-box1-6" src="#" alt="Image 6" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-6" onclick="deleteImage(event, 'box1-6')">&#10006;</div>
                             <div class="placeholdertext">
@@ -669,7 +664,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-7" onclick="triggerUpload('box1-7')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-7')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-7')" name="variant[0]['image'][7]" required/>
                             <img id="img-box1-7" src="#" alt="Image" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-7" onclick="deleteImage(event, 'box1-7')">&#10006;</div>
                             <div class="placeholdertext">
@@ -678,7 +673,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-8" onclick="triggerUpload('box1-8')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-8')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-8')" name="variant[0]['image'][8]" required />
                             <img id="img-box1-8" src="#" alt="Image" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-8" onclick="deleteImage(event, 'box1-8')">&#10006;</div>
                             <div class="placeholdertext">
@@ -687,7 +682,7 @@
                             </div>
                           </div>
                           <div class="image-upload-box" id="box1-9" onclick="triggerUpload('box1-9')">
-                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-9')" />
+                            <input type="file" accept="image/*" onchange="previewImage(event, 'box1-9')" name="variant[0]['image'][9]" required/>
                             <img id="img-box1-9" src="#" alt="Image" style="display: none;" />
                             <div class="delete-icon" id="delete-box1-9" onclick="deleteImage(event, 'box1-9')">&#10006;</div>
                             <div class="placeholdertext">
@@ -715,7 +710,7 @@
                               </svg>
                             </div>
                             <div class="delete-icon">&#10006;</div>
-                            <input type="file" class="file-input" accept="video/*">
+                            <input type="file" class="file-input" accept="video/*" name="variant[0]['video'][1]" required>
                           </div>
                         </div>
                       </div>
@@ -727,18 +722,18 @@
                 </div>
                 <div class="form-group mt15">
                   <label>Product Listing Status</label>
-                  <select name="" id="" class="form-select w_200_f">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Draft">Draft</option>
+                  <select name="variant['product_listing_status']" id="variant['product_listing_status']" class="form-select w_200_f" required>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="draft">Draft</option>
                   </select>
                 </div>
                 <div class="saveform_footer">
                   <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
-                  <button type="button" class="btn btn-login btnekomn card_f_btn">Submit</button>
+                  <button type="button" class="btn btn-login btnekomn card_f_btn" id="submitInventoryForm">Submit</button>
                 </div>
-              </form>
             </div>
+            </form>
           </div>
         </div> 
       </div>
@@ -1061,7 +1056,7 @@
 
         $('#generaltab').click(function() {
         
-        $('#add-feature').on('click', function() {
+      /*  $('#add-feature').on('click', function() {
           const $textarea = $('#product-description');
           const $featureList = $('#features-list');
 
@@ -1100,7 +1095,7 @@
               $('#add-feature').prop('disabled', false);
             }
           });
-        });
+        });*/
 
         let isValid = true;
 
@@ -1165,7 +1160,6 @@
         }
 
         if (isValid) {
-          console.log("hi");
           // Proceed to next step
           document.querySelector('a[data-bs-target="#shipping"]').click();
         }
@@ -1222,7 +1216,7 @@
 
     if (isValid) {
         // Proceed to next step
-        document.querySelector('a[data-bs-target="#images"]').click();
+        $('#image-tab').click();
     }
 });
 
@@ -1376,7 +1370,50 @@ $('#shippingRateTable').on('click', '.deleteShippingRow', function () {
     $(this).closest('tr').remove();
 });
 
+$('#submitInventoryForm').on('click', function() {
+      // Create a FormData object
+      let product_features = [];
 
+$('#features-list li .featurescontent').each(function() {
+    // Extract the text content of the feature
+    let featureText = $(this).clone().children().remove().end().text().trim();
+    product_features.push(featureText);
+});
+
+let tags = [];
+
+$('.tag-container .tag span:first-child').each(function() {
+    // Extract the text content of the tag
+    let tagText = $(this).text().trim();
+    tags.push(tagText);
+});
+      var formData = new FormData($('#addInventoryForm')[0]);
+      formData.append('product_features', JSON.stringify(product_features));
+      formData.append('product_keywords', JSON.stringify(tags));
+      console.log(formData);
+      $.ajax({
+                url: '{{route("inventory.store")}}',
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    //   console.log(response);
+                    if (response.data.statusCode == 200) {
+                        alert('Inventory added successfully');
+                    }
+                    if (response.data.statusCode == 422) {
+                        const field = response.data.key;
+                        $(`#${field}`).addClass('is-invalid');
+                        $(`#${field}Err`).text(response.data.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+    });
 
         
 </script>

@@ -67,6 +67,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
+        Route::post('/add-inventory', [DashboardController::class, 'store'])->name('inventory.store');
     });
 });
 
