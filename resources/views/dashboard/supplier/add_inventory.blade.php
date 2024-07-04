@@ -9,20 +9,20 @@
         <a href="{{route('bulk-upload')}}" class="btn btnekomn btn-sm">Bulk Upload<i class="fas fa-cloud-upload-alt ms-2"></i></a>
       </div>
       <div>
-        <ul class="nav nav-underline ekom_tab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</button>
-          </li>
-        </ul>
+      <ul class="nav nav-underline ekom_tab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+            </li>
+          </ul>
         <div class="tab-content" id="pills-tabContent">
           <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
 
@@ -85,7 +85,7 @@
                 </div>
               </div>
             </div>
-            <div class="saveform_footer text-right">
+            <div class="saveform_footer text-right single-button">
               <button type="button" class="btn btn-login btnekomn card_f_btn" id="generaltab">Save & Next</button>
             </div>
           </div>
@@ -424,11 +424,11 @@
             <div class="addProductForm eklabel_wm">
               <h6>Do you have variants of this product?</h6>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="variant" id="yes" id="yesVariants" />
+                <input class="form-check-input" type="radio" name="variant" id="yes" />
                 <label class="form-check-label" for="yes">Yes</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="variant" id="no" checked id="noVariants" />
+                <input class="form-check-input" type="radio" name="variant" id="no" checked />
                 <label class="form-check-label" for="no">No</label>
               </div>
               <div class="noblock mt15">
@@ -835,7 +835,6 @@
     // Validate Product Keywords
     const tagInputValue = $('#tag-input').val().trim();
     const tagCount = $('.tag-container .tag').length;
-    console.log(tagCount, '< tagCount');
 
     $('.error').text('');
 
