@@ -369,12 +369,12 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <select class="form-select" name="dimension_class" id="dimension_class" required>
+                      <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                         <option value="mm">mm</option>
                         <option value="cm">cm</option>
                         <option value="inch">inch</option>
                       </select>
-                      <div id="dimension_classErr" class="invalid-feedback"></div>
+                      <div id="package_dimension_classErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -992,10 +992,8 @@
         formData.append(`shipping[${index}][national]`, national);
       });
 
-      console.log(formData);
-
       // Proceed to next tab
-      // document.querySelector('a[data-bs-target="#data"]').click();
+      document.querySelector('a[data-bs-target="#data"]').click();
     }
   });
   $('#addNewRowButton').click(function() {
@@ -1101,6 +1099,8 @@
         errorId: '#dimension_classErr',
         errorMessage: 'Dimension Class is required.'
       },
+
+      
       {
         id: '#weight',
         errorId: '#weightErr',
@@ -1126,6 +1126,12 @@
         errorId: '#package_heightErr',
         errorMessage: 'Package Height is required.'
       },
+
+      {
+        id: '#package_dimension_class',
+        errorId: '#package_dimension_classErr',
+        errorMessage: 'Package Dimension Class is required.'
+      },
       {
         id: '#package_weight',
         errorId: '#package_weightErr',
@@ -1136,18 +1142,38 @@
         errorId: '#package_weight_classErr',
         errorMessage: 'Package Weight Class is required.'
       },
+      // {
+      //   id: '#package_volumetric_weight',
+      //   // errorId: '#package_volumetric_weightErr',
+      //   // errorMessage: 'Package Volumetric Weight is required.'
+      // },
+      // {
+      //   id: '#volumetric_weight',
+      //   // errorId: '#volumetric_weightErr',
+      //   // errorMessage: 'Volumetric Weight is required.'
+      // }
+    ];
+
+    const fieldsToUnrequire = [
+      {
+        id: '#upc',
+      },
+      {
+        id: '#isbn',
+      },
+      {
+        id: '#mpn',
+      },
+     
       {
         id: '#package_volumetric_weight',
-        errorId: '#package_volumetric_weightErr',
-        errorMessage: 'Package Volumetric Weight is required.'
       },
       {
         id: '#volumetric_weight',
-        errorId: '#volumetric_weightErr',
-        errorMessage: 'Volumetric Weight is required.'
       }
     ];
 
+    // Validate each field
     fieldsToValidate.forEach(field => {
       const value = $(field.id).val();
       if (!value) {
@@ -1169,6 +1195,14 @@
     });
 
     if (isValid) {
+      // Add each field to FormData
+
+      const allFields = [...fieldsToUnrequire, ...fieldsToValidate];
+
+      allFields.forEach(field => {
+        formData.append(field.id.replace('#', ''), $(field.id).val());
+      });
+          
       // Proceed to next step
       document.querySelector('a[data-bs-target="#images"]').click();
     }
@@ -1485,26 +1519,6 @@
 
   // Start code Submit Inventory Form
   $('#submitInventoryForm').on('click', function() {
-    // Create a FormData object
-    let product_features = [];
-
-    $('#features-list li .featurescontent').each(function() {
-      // Extract the text content of the feature
-      let featureText = $(this).clone().children().remove().end().text().trim();
-      product_features.push(featureText);
-    });
-
-    let tags = [];
-
-    $('.tag-container .tag span:first-child').each(function() {
-      // Extract the text content of the tag
-      let tagText = $(this).text().trim();
-      tags.push(tagText);
-    });
-
-    // var formData = new FormData($('#addInventoryForm')[0]);
-    formData.append('product_features', JSON.stringify(product_features));
-    formData.append('product_keywords', JSON.stringify(tags));
     console.log(formData);
     $.ajax({
       url: '{{route("inventory.store")}}',
