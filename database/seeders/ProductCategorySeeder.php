@@ -15,6 +15,7 @@ class ProductCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
+            "Unknown" => [],
             "Home, Kitchen & Tools" => [
                 "Furniture" => [
                     "Bedroom Furniture",
@@ -664,7 +665,7 @@ class ProductCategorySeeder extends Seeder
 
         foreach ($categories as $mainCategory => $subCategories) {
             $mainCategorySlug = strtolower(str_replace(' ', '-', $mainCategory));
-
+        
             // Create main category
             $mainCategoryData = Category::create([
                 'name' => $mainCategory,
@@ -674,38 +675,45 @@ class ProductCategorySeeder extends Seeder
                 'parent_id' => 0,
                 'root_parent_id' => 0,
             ]);
-
+        
             $mainCategoryId = $mainCategoryData->id;
-
-            foreach ($subCategories as $subCategoryName => $childCategories) {
-                $subCategorySlug = strtolower(str_replace(' ', '-', $subCategoryName));
-
-                // Create subcategory
-                $subCategoryData = Category::create([
-                    'name' => $subCategoryName,
-                    'slug' => $subCategorySlug,
-                    'is_active' => true,
-                    'depth' => 1,
-                    'parent_id' => $mainCategoryId,
-                    'root_parent_id' => $mainCategoryId,
-                ]);
-
-                $subCategoryId = $subCategoryData->id;
-
-                foreach ($childCategories as $childCategory) {
-                    $childCategorySlug = strtolower(str_replace(' ', '-', $childCategory));
-
-                    // Create child category
-                    Category::create([
-                        'name' => $childCategory,
-                        'slug' => $childCategorySlug,
+        
+            // Check if subcategories exist
+            if (!empty($subCategories) && is_array($subCategories)) {
+                foreach ($subCategories as $subCategoryName => $childCategories) {
+                    $subCategorySlug = strtolower(str_replace(' ', '-', $subCategoryName));
+        
+                    // Create subcategory
+                    $subCategoryData = Category::create([
+                        'name' => $subCategoryName,
+                        'slug' => $subCategorySlug,
                         'is_active' => true,
-                        'depth' => 2,
-                        'parent_id' => $subCategoryId,
+                        'depth' => 1,
+                        'parent_id' => $mainCategoryId,
                         'root_parent_id' => $mainCategoryId,
                     ]);
+        
+                    $subCategoryId = $subCategoryData->id;
+        
+                    // Check if child categories exist
+                    if (!empty($childCategories) && is_array($childCategories)) {
+                        foreach ($childCategories as $childCategory) {
+                            $childCategorySlug = strtolower(str_replace(' ', '-', $childCategory));
+        
+                            // Create child category
+                            Category::create([
+                                'name' => $childCategory,
+                                'slug' => $childCategorySlug,
+                                'is_active' => true,
+                                'depth' => 2,
+                                'parent_id' => $subCategoryId,
+                                'root_parent_id' => $mainCategoryId,
+                            ]);
+                        }
+                    }
                 }
             }
         }
+        
     }
 }

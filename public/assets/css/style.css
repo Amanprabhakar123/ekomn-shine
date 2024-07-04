@@ -1468,6 +1468,14 @@ select.smallInput_n{text-align: left;}
   right: -3px;
   top: -1px;
 }
+
+.remove-tag::after {
+  content: '\00d7'; /* Unicode for '×' */
+  font-size: 16px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+}
 .tag .remove-tag:hover{color: indianred;}
 .tag-input input {
   border: none;
