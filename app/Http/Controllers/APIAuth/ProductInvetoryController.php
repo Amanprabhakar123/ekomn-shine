@@ -193,6 +193,16 @@ class ProductInvetoryController extends Controller
     }
 
     /**
+     * Add inventory to the product.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function addInventory(Request $request){
+        dd($request->all());
+    }
+
+    /**
      * Update the stock of a product variation.
      *
      * @param \Illuminate\Http\Request $request

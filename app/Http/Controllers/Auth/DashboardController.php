@@ -35,10 +35,6 @@ class DashboardController extends Controller
         abort('403', 'Unauthorized action.');
     }
 
-    public function store(Request $request){
-        dd($request->all());
-    }
-
     /**
      * Display the user's profile.
      *

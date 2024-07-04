@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
 
   // ########## Create Product Feature List ############
+  /*
   document.getElementById('add-feature').addEventListener('click', function() {
     const textarea = document.getElementById('product-description');
     const featureList = document.getElementById('features-list');
@@ -311,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+  */
   //########## End Product Feature List ############
 
 });
