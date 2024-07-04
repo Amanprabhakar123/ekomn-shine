@@ -39,41 +39,43 @@ class CategoryController extends Controller
         // Generate all combinations of tags
         $combinations = $this->generateCombinations($tags);
 
-        foreach ($combinations as $combination) {
-            list($tag1, $tag2) = $combination;
+        if(!empty($combinations)){
+            foreach ($combinations as $combination) {
+                list($tag1, $tag2) = $combination;
 
-            // Search in the database using LIKE query for these tags
-            $category1 = Category::where('name', 'LIKE', "%$tag1%")->first();
-            $category2 = Category::where('name', 'LIKE', "%$tag2%")->first();
+                // Search in the database using LIKE query for these tags
+                $category1 = Category::where('slug', 'LIKE', "%$tag1%")->first();
+                $category2 = Category::where('slug', 'LIKE', "%$tag2%")->first();
 
-            if ($category1 && $category2) {
-                // Check if they share the same root parent category
-                if ($category1->root_parent_id == $category2->root_parent_id) {
-                    $mainCategory = Category::where('id', $category1->root_parent_id)->first();
-                    $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
+                if ($category1 && $category2) {
+                    // Check if they share the same root parent category
+                    if ($category1->root_parent_id == $category2->root_parent_id) {
+                        $mainCategory = Category::where('id', $category1->root_parent_id)->first();
+                        $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
 
-                    $mainCategoryName = $mainCategory->name ?? $tag1;
-                    $mainCategoryId = $mainCategory->id ?? 0;
-                    $subCategoryName = $subCategory->name ?? $tag2;
-                    $subCategoryId = $subCategory->id ?? 0;
+                        $mainCategoryName = $mainCategory->name ?? $tag1;
+                        $mainCategoryId = $mainCategory->id ?? 0;
+                        $subCategoryName = $subCategory->name ?? $tag2;
+                        $subCategoryId = $subCategory->id ?? 0;
 
-                    // If sub category is "unknown", use main category name
-                    if ($subCategoryName === 'unknown') {
-                        $subCategoryName = $mainCategoryName;
+                        // If sub category is "unknown", use main category name
+                        if ($subCategoryName === 'unknown') {
+                            $subCategoryName = $mainCategoryName;
+                        }
+
+                        $data = [
+                            'main_category' => $mainCategoryName,
+                            'main_category_id' => salt_encrypt($mainCategoryId),
+                            'sub_category' => $subCategoryName,
+                            'sub_category_id' => salt_encrypt($subCategoryId),
+                        ];
+
+                        return [
+                            'statusCode' => __('statusCode.statusCode200'),
+                            'status' => true,
+                            'result' => $data
+                        ];
                     }
-
-                    $data = [
-                        'main_category' => $mainCategoryName,
-                        'main_category_id' => $mainCategoryId,
-                        'sub_category' => $subCategoryName,
-                        'sub_category_id' => $subCategoryId,
-                    ];
-
-                    return [
-                        'statusCode' => __('statusCode.statusCode200'),
-                        'status' => true,
-                        'result' => $data
-                    ];
                 }
             }
         }
@@ -81,19 +83,26 @@ class CategoryController extends Controller
         // Check if the any one  tag has a matching main category
         foreach ($tags as $firstTag) {
             if(!empty($firstTag)){
-                $firstTagCategory = Category::where('name', 'LIKE', "%$firstTag%")->first();
-
+                $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
                 if ($firstTagCategory) {
-                    $mainCategoryName = $firstTagCategory->name ?? 'unknown';
-                    $mainCategoryId = $firstTagCategory->id ?? 0;
-
+                    if ($firstTagCategory->root_parent_id) {
+                        $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
+                        $mainCategoryName = $rootParentCategory->name ?? 'unknown';
+                        $mainCategoryId = $rootParentCategory->id ?? 0;
+                        $subCategoryName = $firstTagCategory->name ?? 'unknown';
+                        $subCategoryId = $firstTagCategory->id ?? 0;
+                    } else {
+                        $mainCategoryName = $firstTagCategory->name ?? 'unknown';
+                        $mainCategoryId = $firstTagCategory->id ?? 0;
+                        $subCategoryName = $mainCategoryName;
+                        $subCategoryId = $mainCategoryId;
+                    }
                     $data = [
                         'main_category' => $mainCategoryName,
-                        'main_category_id' => $mainCategoryId,
-                        'sub_category' => $mainCategoryName, // Use main category name if sub category is unknown
-                        'sub_category_id' => $mainCategoryId
+                        'main_category_id' => salt_encrypt($mainCategoryId),
+                        'sub_category' => $subCategoryName,
+                        'sub_category_id' => salt_encrypt($subCategoryId),
                     ];
-
                     return [
                         'statusCode' => __('statusCode.statusCode200'),
                         'status' => true,
@@ -105,12 +114,25 @@ class CategoryController extends Controller
 
         // Return "no data found" if no matches found
 
+        $firstUnknownCategory = Category::where('id', 1)->first();
 
-        return [
-            'statusCode' => __('statusCode.statusCode200'),
-            'status' => false,
-            'result' => ['message' => 'no data found']
-        ];
+        if ($firstUnknownCategory) {
+            $mainCategoryName = $firstUnknownCategory->name ?? 'unknown';
+            $mainCategoryId = $firstUnknownCategory->id ?? 0;
+
+            $data = [
+                'main_category' => $mainCategoryName,
+                'main_category_id' => salt_encrypt($mainCategoryId),
+                'sub_category' => $mainCategoryName, // Use main category name if sub category is unknown
+                'sub_category_id' => salt_encrypt($mainCategoryId),
+            ];
+
+            return [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => true,
+                'result' => $data
+            ];
+        }
     }
 
     /**

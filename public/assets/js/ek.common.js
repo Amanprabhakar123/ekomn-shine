@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
     span.innerHTML = label.trim();
     div.appendChild(span);
     const closeIcon = document.createElement("span");
-    closeIcon.innerHTML = "x";
+    closeIcon.innerHTML = "";
     closeIcon.setAttribute("class", "remove-tag");
     closeIcon.onclick = function () {
       tagContainer.removeChild(div);

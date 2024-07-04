@@ -71,12 +71,14 @@
                   <div class="row">
                     <div class="mb10 col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Main Category</label>
-                      <input type="text" name="product_category" id="product_category" class="form-control" placeholder="Product Category" />
+                      <input type="text" name="product_category" id="product_category" class="form-control" placeholder="Product Category" readonly />
+                      <input type="hidden" name="product_category_id" id="product_category_id" />
                       <div id="product_categoryErr" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
-                      <input type="text" name="product_sub_category" id="product_sub_category" class="form-control" placeholder="Product Sub Category" />
+                      <input type="text" name="product_sub_category" id="product_sub_category" class="form-control" placeholder="Product Sub Category" readonly />
+                        <input type="hidden" name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -745,6 +747,36 @@
 @section('scripts')
 <script>
   const formData = new FormData();
+
+  const searchCategory = document.getElementById("tag-input");
+    // Event listener for clicking outside the tag input field
+    searchCategory.addEventListener("blur", (e) => {
+        let keyWordInput = '';
+        $('.tag-container .tag').each(function(index) {
+            if (index !== $('.tag-container .tag').length - 1) {
+                keyWordInput += $(this).text() + ',';
+            }else{
+                keyWordInput += $(this).text();
+            }
+        });
+        ApiRequest('product/find-category?tags='+keyWordInput, 'GET')
+        .then(response => {
+            if(response.data.status){
+                $('#product_category').empty();
+                $('#product_sub_category').empty();
+                $('#product_category').append().val(response.data.result.main_category);
+                $('#product_sub_category').append().val(response.data.result.sub_category);
+
+                $('#product_category_id').empty();
+                $('#product_sub_category_id').empty();
+                $('#product_category_id').append().val(response.data.result.main_category_id);
+                $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
+            }
+        })
+        .catch(error => {
+        console.error('Error222:', error);
+      });
+    });
   // Start code General Tab Step 1
   $('#generaltab').click(function() {
 
@@ -796,6 +828,8 @@
     const productDescription = $('#product_description').val();
     const mainCategory = $('#product_category').val();
     const subCategory = $('#product_sub_category').val();
+    const mainCategoryId = $('#product_category_id').val();
+    const subCategoryId = $('#product_sub_category_id').val();
     const features = $('#features-list').children().length;
 
     // Validate Product Keywords
@@ -869,6 +903,8 @@
       formData.append('product_description', productDescription);
       formData.append('product_category', mainCategory);
       formData.append('product_sub_category', subCategory);
+      formData.append('product_category_id', mainCategoryId);
+      formData.append('product_sub_category_id', subCategoryId);
 
       // Proceed to next step
       document.querySelector('a[data-bs-target="#shipping"]').click();
