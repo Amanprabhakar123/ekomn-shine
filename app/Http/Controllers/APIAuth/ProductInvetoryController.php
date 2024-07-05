@@ -5,15 +5,16 @@ namespace App\Http\Controllers\APIAuth;
 use App\Models\User;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
-use App\Models\ProductVariation;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use League\Fractal\Resource\Collection;
-use App\Transformers\ProductVariationTransformer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Models\ProductFeature;
 use App\Models\ProductKeyword;
 use App\Models\ProductInventory;
-use App\Models\ProductFeature;
+use App\Models\ProductVariation;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use League\Fractal\Resource\Collection;
+use Illuminate\Support\Facades\Validator;
+use App\Transformers\ProductVariationTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class ProductInvetoryController extends Controller
 {
@@ -201,18 +202,19 @@ class ProductInvetoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function addInventory(Request $request){
-
-       // dd($request->all());
-        try {
-            $validator = Validator::make($request->all(), [
+    public function addInventory(Request $request)
+    {
+        // dd($request->all());
+        # i want to add validation for image if no_variant is coming then stock, size, media array required but media atleast 5 image required and color field is required
+         try {
+            $rules = [
                 'product_name' => 'required|string|max:255',
                 'product_description' => 'required|string',
                 'product_keywords' => 'required|array',
                 'product_keywords.*' => 'string',
                 'product_category' => 'required|string|max:255',
                 'product_sub_category' => 'required|string|max:255',
-                'feature' => 'nullable|array',
+                'feature' => 'required|array',
                 'feature.*' => 'string',
                 'dropship_rate' => 'required|numeric',
                 'potential_mrp' => 'required|numeric',
@@ -225,12 +227,12 @@ class ProductInvetoryController extends Controller
                 'shipping.*.regional' => 'required|numeric|min:1',
                 'shipping.*.national' => 'required|numeric|min:1',
                 'upc' => 'nullable|numeric',
-                'isbn' => 'nullable|string||regex:/^\d{10}(\d{3})?$/',
+                // 'isbn' => 'nullable|string|regex:/^\d{10}(\d{3})?$/',
                 'mpn' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9- ]+$/',
-                'package_volumetric_weight' => 'required|numeric',
-                'volumetric_weight' => 'required|numeric',
+                // 'package_volumetric_weight' => 'required|numeric',
+                // 'volumetric_weight' => 'required|numeric',
                 'model' => 'required|string|max:255',
-                'product_hsn' => 'required|string|string|digits_between:6,8|regex:/^\d{6,8}$/',
+                'product_hsn' => 'required|string|digits_between:6,8|regex:/^\d{6,8}$/',
                 'gst_bracket' => 'required|numeric|in:0,5,12,18,28',
                 'availability' => 'required|string|in:1,2',
                 'length' => 'required|numeric',
@@ -245,45 +247,85 @@ class ProductInvetoryController extends Controller
                 'package_dimension_class' => 'required|in:mm,cm,inch',
                 'package_weight' => 'required|numeric',
                 'package_weight_class' => 'required|in:mg,gm,kg,ml,ltr',
-                'product_listing_status' => 'required|in:0,1,2',
-                'variant' => 'required|array',
-                'variant.*.color' => 'required',
-                'variant.*.size.*' => 'required|string',
-                'variant.*.stock.*' => 'required|numeric|min:0',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode400'),
-                    'status' => __('statusCode.status400'),
-                    'message' => $validator->errors()
-                ]], __('statusCode.statusCode400'));
+                'product_listing_status' => 'required|in:0,1,2,3',
+            ];
+            $variant_key = "no_variant";
+            if($request->has('no_variant')){
+                $variant_key = "no_variant";
+            } else if($request->has('yes_variant')){
+                $variant_key = "yes_variant";
             }
+            // If `no_variant` is posted, add additional rules
+                $rules = array_merge($rules, [
+                    "$variant_key" => 'array',
+                    "$variant_key.*.stock" => 'required|array|min:0',
+                    "$variant_key.*.stock.*" => 'required|numeric|min:0',
+                    "$variant_key.*.size" => 'required|array|min:1',
+                    "$variant_key.*.size.*" => 'required|string',
+                    "$variant_key.*.media" => 'required|array|min:5',
+                    "$variant_key.*.media.*" => 'required|mimes:png,jpeg,jpg,mp4',
+                    "$variant_key.*.color.*" => 'required|string'
+                ]);
+            
+                $messages = [
+                    "feature" => "The feature list field is required",
+                    "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
+                    "$variant_key.*.stock.array" => "The stock must be an array.",
+                    "$variant_key.*.stock.min" => "The stock must have at least one entry.",
+                    "$variant_key.*.stock.*.required" => "Each stock entry is required and must be numeric.",
+                    "$variant_key.*.stock.*.numeric" => "Each stock entry must be a number.",
+                    "$variant_key.*.size.required" => "The size field is required when no variant is present.",
+                    "$variant_key.*.size.array" => "The size must be an array.",
+                    "$variant_key.*.size.min" => "The size must have at least one entry.",
+                    "$variant_key.*.size.*.required" => "Each size entry is required.",
+                    "$variant_key.*.size.*.string" => "Each size entry must be a string.",
+                    "$variant_key.*.media.required" => "The media field is required when no variant is present.",
+                    "$variant_key.*.media.array" => "The media must be an array.",
+                    "$variant_key.*.media.min" => "The media must have at least 5 images.",
+                    "$variant_key.*.media.*.required" => "Each media entry is required.",
+                    "$variant_key.*.media.*.image" => "Each media entry must be an image.",
+                    "$variant_key.*.color.required" => "The color field is required when no variant is present.",
+                    "$variant_key.*.color.string" => "The color must be a string.",
+                ];
+            $validator = Validator::make($request->all(), $rules, $messages);
 
-            // Find the product variation
+            
+             if ($validator->fails()) {
+                 return response()->json(['data' => [
+                     'statusCode' => __('statusCode.statusCode422'),
+                     'status' => __('statusCode.status422'),
+                     'message' => $validator->errors()
+                 ]], __('statusCode.statusCode200'));
+             }
 
-            if (1) {
-                $user_id = auth()->user()->id;
-                $company_id =auth()->user()->company_id;
-                // Check if the product variation belongs to the authenticated user
-                $data = $request->all();
+            $user_id = auth()->user()->id;
+            $company_id =auth()->user()->companyDetails->id;
+            // Check if the product variation belongs to the authenticated user
+            $data = $request->all();
+            // dd($data['no_variant'][0]['media']);
+             if ($request->has('no_variant') || $request->has('yes_variant')) {
+
+                // bulk order tier rate
                 if(count($data['bulk']) > 0){
                     $tierRate = [];
                     $min = 1;
                     foreach ($data['bulk'] as $bulk) {
-                            $tierRate[] = [
-                                'range' => [
-                                    'min' => $min, // You might want to adjust this according to your logic
-                                    'max' => (int) $bulk['quantity']
-                                ],
-                                'price' => $bulk['price']
-                            ];
-                            $min = (int) $bulk['quantity'] + 1;
+                        $tierRate[] = [
+                            'range' => [
+                                'min' => $min, // You might want to adjust this according to your logic
+                                'max' => (int) $bulk['quantity']
+                            ],
+                            'price' => $bulk['price']
+                        ];
+                        $min = (int) $bulk['quantity'] + 1;
                     }
                 }
-                    $tierShippingRate = [];
-                    $minRange = 1;
-                    if(count($data['shipping']) > 0){
+
+                // shipping tier rate
+                  
+                $tierShippingRate = [];
+                $minRange = 1;
+                if(count($data['shipping']) > 0){
 
                     foreach ($data['shipping'] as $shipping) {
                         $tierShippingRate[] = [
@@ -299,6 +341,7 @@ class ProductInvetoryController extends Controller
                     }
                 }
 
+                DB::beginTransaction();
                 $product = ProductInventory::create([
                     'title' =>  $data['product_name'],
                     'description' =>  $data['product_description'],
@@ -314,7 +357,7 @@ class ProductInvetoryController extends Controller
                     'mpin' =>  $data['mpn'] ?? null,
                     'gst_percentage' =>  $data['gst_bracket'],
                     'availability_status' => $data['availability'],
-                    'status' => $data['product_listing_status'] ?? 1
+                    'status' => $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE
                 ]);
 
                 $product_id =  $product->id;
@@ -338,55 +381,56 @@ class ProductInvetoryController extends Controller
                         ]);
                     }
                 }
-               
-            
-                $generateProductID = generateProductID($request->product_name, $product_id);
-                    foreach ($data['variant'] as $key => $value) {
-                        foreach ($value['size'] as $size_key => $value1) {
-                            $productVariation = ProductVariation::create([
-                                'product_id' => $product_id,
-                                'company_id' => $company_id,
-                                'product_slug_id' => $generateProductID,
-                                'slug' => '',
-                                'sku' => generateSKU($request->product_name, $data['product_category']),
-                                'size' => $value1,
-                                'stock' => $data['variant'][$key]['stock'][$size_key],
-                                'title' => $request->product_name,
-                                'description' => $request->product_description,
-                                'color' => $value['color'],
-                                'length' => $request->length,
-                                'width' => $request->width,
-                                'height' => $request->height,
-                                'dimension_class' => $request->dimension_class,
-                                'weight' => $request->weight,
-                                'weight_class' => $request->weight_class,
-                                'volumetric_weight' => $request->volumetric_weight,
-                                'package_length' => $request->package_length,
-                                'package_width' => $request->package_width,
-                                'package_height' => $request->package_height,
-                                'package_dimension_class' => $request->package_dimension_class,
-                                'package_weight' => $request->package_weight,
-                                'package_weight_class' => $request->package_weight_class,
-                                'price_before_tax' => 0,
-                                'price_after_tax' => 0,
-                                'status' => $data['product_listing_status'] ?? 1,
-                                'availability_status' => $request->availability,
-                                'dropship_rate' => $request->dropship_rate,
-                                'potential_mrp' => $request->potential_mrp,
-                                'tier_rate' => json_encode($tierRate),
-                                'tier_shipping_rate' => json_encode($tierShippingRate),
-                            ]); 
 
-                            $productVariation->slug = generateSlug($request->product_name, $productVariation->id);
-                            $productVariation->save();
-                        }
-                        
-                    }
-                    // Create new product variation
+                // Insert Product Variation table
+                foreach($data[$variant_key] as $key => $value){
                     
-            
-                
-                
+                    foreach ($value['size'] as $size_key => $value1) {
+                        $productVariation = ProductVariation::create([
+                            'product_id' => $product_id,
+                            'company_id' => $company_id,
+                            'product_slug_id' => '',
+                            'slug' => '',
+                            'sku' => generateSKU($request->product_name, $data['product_category']),
+                            'size' => $value1,
+                            'stock' => $data['variant'][$key]['stock'][$size_key],
+                            'title' => $request->product_name,
+                            'description' => $request->product_description,
+                            'color' => $value['color'],
+                            'length' => $request->length,
+                            'width' => $request->width,
+                            'height' => $request->height,
+                            'dimension_class' => $request->dimension_class,
+                            'weight' => $request->weight,
+                            'weight_class' => $request->weight_class,
+                            'volumetric_weight' => $request->volumetric_weight,
+                            'package_length' => $request->package_length,
+                            'package_width' => $request->package_width,
+                            'package_height' => $request->package_height,
+                            'package_dimension_class' => $request->package_dimension_class,
+                            'package_weight' => $request->package_weight,
+                            'package_weight_class' => $request->package_weight_class,
+                            'price_before_tax' => 0,
+                            'price_after_tax' => 0,
+                            'status' => $data['product_listing_status'] ?? 1,
+                            'availability_status' => $request->availability,
+                            'dropship_rate' => $request->dropship_rate,
+                            'potential_mrp' => $request->potential_mrp,
+                            'tier_rate' => json_encode($tierRate),
+                            'tier_shipping_rate' => json_encode($tierShippingRate),
+                        ]); 
+
+                        $generateProductID = generateProductID($request->product_name, $productVariation->id);
+                        $productVariation->product_slug_id = $generateProductID;
+                        $productVariation->slug = generateSlug($request->product_name, $generateProductID);
+                        $productVariation->save();
+                    }
+                }
+                foreach ($data['no_variant'][0]['media'] as $key => $value) {
+                  // upload images and image data insert in image variation
+                }
+                // 
+                DB::commit();
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
@@ -394,15 +438,17 @@ class ProductInvetoryController extends Controller
                 ];
                 // Return a success message
                 return response()->json($response);
-            } 
-        } catch (\Exception $e) {
-            dd($e->getMessage());
-            // Handle the exception
-            return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));
-        }
 
-        dd($request->all());
-    }
+             }
+             
+         } catch (\Exception $e) {
+            DB::rollBack();
+             dd($e->getMessage(), $e->getLine(), $e->getFile());
+             // Handle the exception
+             return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));
+         }
+     }
+
 
     /**
      * Update the stock of a product variation.
