@@ -227,8 +227,8 @@
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="availability" id="availability" required>
-                        <option value="till">Till Stock Lasts</option>
-                        <option value="available" selected>Regular Available</option>
+                        <option value="1">Till Stock Lasts</option>
+                        <option value="2" selected>Regular Available</option>
                       </select>
                       <div id="availabilityErr" class="invalid-feedback"></div>
                     </div>
@@ -1731,9 +1731,15 @@
           alert('Inventory added successfully');
         }
         if (response.data.statusCode == 422) {
-          const field = response.data.key;
-          $(`#${field}`).addClass('is-invalid');
-          $(`#${field}Err`).text(response.data.message);
+          const field_list = response.data.message;
+          // Iterate over the entries in the field_list object
+          for (const [field, messages] of Object.entries(field_list)) {
+            // Add 'is-invalid' class to the corresponding element
+            $(`#${field}`).addClass('is-invalid');
+
+            // Set the error message in the corresponding error field
+            $(`#${field}Err`).text(messages[0]);
+          }
         }
       },
       error: function(error) {

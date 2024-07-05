@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('company_id');
-            $table->string('product_slug_id', 30)->unique();
-            $table->string('slug', 191);
+            $table->string('product_slug_id', 30)->nullable()->unique();
+            $table->string('slug', 191)->nullable();
             $table->string('sku', 100)->unique();
             $table->string('title', 191)->nullable();
             $table->text('description')->nullable();
