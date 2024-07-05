@@ -15,6 +15,7 @@ use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ProductVariationTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Models\ProductVariationMedia;
 
 class ProductInvetoryController extends Controller
 {
@@ -204,7 +205,7 @@ class ProductInvetoryController extends Controller
      */
     public function addInventory(Request $request)
     {
-        // dd($request->all());
+       // dd($request->all());
         # i want to add validation for image if no_variant is coming then stock, size, media array required but media atleast 5 image required and color field is required
          try {
             $rules = [
@@ -256,7 +257,7 @@ class ProductInvetoryController extends Controller
                 $variant_key = "yes_variant";
             }
             // If `no_variant` is posted, add additional rules
-                $rules = array_merge($rules, [
+              /*  $rules = array_merge($rules, [
                     "$variant_key" => 'array',
                     "$variant_key.*.stock" => 'required|array|min:0',
                     "$variant_key.*.stock.*" => 'required|numeric|min:0',
@@ -286,9 +287,9 @@ class ProductInvetoryController extends Controller
                     "$variant_key.*.media.*.image" => "Each media entry must be an image.",
                     "$variant_key.*.color.required" => "The color field is required when no variant is present.",
                     "$variant_key.*.color.string" => "The color must be a string.",
-                ];
-            $validator = Validator::make($request->all(), $rules, $messages);
-
+                ];*/
+            $validator = Validator::make($request->all(), $rules);
+//dd($request->all());
             
              if ($validator->fails()) {
                  return response()->json(['data' => [
@@ -341,7 +342,7 @@ class ProductInvetoryController extends Controller
                     }
                 }
 
-                DB::beginTransaction();
+              DB::beginTransaction();
                 $product = ProductInventory::create([
                     'title' =>  $data['product_name'],
                     'description' =>  $data['product_description'],
@@ -384,7 +385,7 @@ class ProductInvetoryController extends Controller
 
                 // Insert Product Variation table
                 foreach($data[$variant_key] as $key => $value){
-                    
+
                     foreach ($value['size'] as $size_key => $value1) {
                         $productVariation = ProductVariation::create([
                             'product_id' => $product_id,
@@ -393,10 +394,10 @@ class ProductInvetoryController extends Controller
                             'slug' => '',
                             'sku' => generateSKU($request->product_name, $data['product_category']),
                             'size' => $value1,
-                            'stock' => $data['variant'][$key]['stock'][$size_key],
+                            'stock' => $data[$variant_key][$key]['stock'][$size_key],
                             'title' => $request->product_name,
                             'description' => $request->product_description,
-                            'color' => $value['color'],
+                            'color' => !empty($data[$variant_key][$key]['color'][$key]) ? $data[$variant_key][$key]['color'][$key] : $value['color'],
                             'length' => $request->length,
                             'width' => $request->width,
                             'height' => $request->height,
@@ -426,11 +427,21 @@ class ProductInvetoryController extends Controller
                         $productVariation->save();
                     }
                 }
-                foreach ($data['no_variant'][0]['media'] as $key => $value) {
-                  // upload images and image data insert in image variation
-                }
+               /* foreach ($value['media'] as $key => $media) {
+                    ProductVariationMedia::create([
+                        'product_id' => $product_id,
+                        'product_variation_id' => $productVariation->id,
+                        'media_type' ,
+                        'file_path',
+                        'thumbnail_path',
+                        'is_master',
+                        'desc',
+                        'is_active',
+                        'is_compressed',
+                    ]);
+                }*/
                 // 
-                DB::commit();
+            DB::commit();
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
@@ -442,7 +453,7 @@ class ProductInvetoryController extends Controller
              }
              
          } catch (\Exception $e) {
-            DB::rollBack();
+             DB::rollBack();
              dd($e->getMessage(), $e->getLine(), $e->getFile());
              // Handle the exception
              return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));
