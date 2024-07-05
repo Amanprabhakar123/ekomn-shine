@@ -9,20 +9,20 @@
         <a href="{{route('bulk-upload')}}" class="btn btnekomn btn-sm">Bulk Upload<i class="fas fa-cloud-upload-alt ms-2"></i></a>
       </div>
       <div>
-      <ul class="nav nav-underline ekom_tab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
-            </li>
-          </ul>
+        <ul class="nav nav-underline ekom_tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+          </li>
+        </ul>
         <div class="tab-content" id="pills-tabContent">
           <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
 
@@ -78,7 +78,7 @@
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
                       <input type="text" name="product_sub_category" id="product_sub_category" class="form-control" placeholder="Product Sub Category" readonly />
-                        <input type="hidden" name="product_sub_category_id" id="product_sub_category_id" />
+                      <input type="hidden" name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -437,27 +437,27 @@
                     <div class="mb10">
                       <label for="">Color<span class="req_star">*</span></label>
                       <select class="form-select" required>
-                      <option value="default" selected>Default</option>
-                      <option value="beige">Beige</option>
-                      <option value="black">Black</option>
-                      <option value="blue">Blue</option>
-                      <option value="brown">Brown</option>
-                      <option value="gold">Gold</option>
-                      <option value="green">Green</option>
-                      <option value="grey">Grey</option>
-                      <option value="maroon">Maroon</option>
-                      <option value="multicolor">Multicolor</option>
-                      <option value="orange">Orange</option>
-                      <option value="pink">Pink</option>
-                      <option value="purple">Purple</option>
-                      <option value="red">Red</option>
-                      <option value="silver">Silver</option>
-                      <option value="white">White</option>
-                      <option value="yellow">Yellow</option>
+                        <option value="default" selected>Default</option>
+                        <option value="beige">Beige</option>
+                        <option value="black">Black</option>
+                        <option value="blue">Blue</option>
+                        <option value="brown">Brown</option>
+                        <option value="gold">Gold</option>
+                        <option value="green">Green</option>
+                        <option value="grey">Grey</option>
+                        <option value="maroon">Maroon</option>
+                        <option value="multicolor">Multicolor</option>
+                        <option value="orange">Orange</option>
+                        <option value="pink">Pink</option>
+                        <option value="purple">Purple</option>
+                        <option value="red">Red</option>
+                        <option value="silver">Silver</option>
+                        <option value="white">White</option>
+                        <option value="yellow">Yellow</option>
                       </select>
                     </div>
                     <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
-                      <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')"/>
+                      <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" />
                       <img id="img-box-1" src="" alt="Image" style="display: none;" />
                       <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')">&#10006;</div>
                       <div class="placeholdertext">
@@ -482,7 +482,7 @@
                           <td>
                             <input type="text" class="smallInput_n" placeholder="0" name="stock">
                           </td>
-                          
+
                         </tr>
                       </tbody>
                     </table>
@@ -490,7 +490,7 @@
                 </div>
                 <div class="multi-row">
                   <div class="image-upload-box" id="box-2" onclick="triggerUpload('box-2')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-2')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-2')" />
                     <img id="img-box-2" src="#" alt="Image 2" style="display: none;" />
                     <div class="delete-icon" id="delete-box-2" onclick="deleteImage(event, 'box-2')">&#10006;</div>
                     <div class="placeholdertext">
@@ -499,7 +499,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-3" onclick="triggerUpload('box-3')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-3')"  />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-3')" />
                     <img id="img-box-3" src="#" alt="Image 3" style="display: none;" />
                     <div class="delete-icon" id="delete-box-3" onclick="deleteImage(event, 'box-3')">&#10006;</div>
                     <div class="placeholdertext">
@@ -508,7 +508,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-4" onclick="triggerUpload('box-4')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-4')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-4')" />
                     <img id="img-box-4" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-4" onclick="deleteImage(event, 'box-4')">&#10006;</div>
                     <div class="placeholdertext">
@@ -517,7 +517,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-5" onclick="triggerUpload('box-5')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-5')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-5')" />
                     <img id="img-box-5" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-5" onclick="deleteImage(event, 'box-5')">&#10006;</div>
                     <div class="placeholdertext">
@@ -526,7 +526,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-6" onclick="triggerUpload('box-6')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-6')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-6')" />
                     <img id="img-box-6" src="#" alt="Image 6" style="display: none;" />
                     <div class="delete-icon" id="delete-box-6" onclick="deleteImage(event, 'box-6')">&#10006;</div>
                     <div class="placeholdertext">
@@ -535,7 +535,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-7" onclick="triggerUpload('box-7')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-7')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-7')" />
                     <img id="img-box-7" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-7" onclick="deleteImage(event, 'box-7')">&#10006;</div>
                     <div class="placeholdertext">
@@ -544,7 +544,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-8" onclick="triggerUpload('box-8')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-8')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-8')" />
                     <img id="img-box-8" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-8" onclick="deleteImage(event, 'box-8')">&#10006;</div>
                     <div class="placeholdertext">
@@ -553,7 +553,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-9" onclick="triggerUpload('box-9')">
-                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-9')" />
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-9')" />
                     <img id="img-box-9" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-9" onclick="deleteImage(event, 'box-9')">&#10006;</div>
                     <div class="placeholdertext">
@@ -581,7 +581,7 @@
                       </svg>
                     </div>
                     <div class="delete-icon">&#10006;</div>
-                    <input type="file"  class="file-input" accept="video/*">
+                    <input type="file" class="file-input" accept="video/*">
                   </div>
                 </div>
               </div>
@@ -593,22 +593,22 @@
                         <div class="mb10">
                           <label for="">Color<span class="req_star">*</span></label>
                           <select class="form-select" required>
-                                <option value="beige">Beige</option>
-                                <option value="black">Black</option>
-                                <option value="blue">Blue</option>
-                                <option value="brown">Brown</option>
-                                <option value="gold">Gold</option>
-                                <option value="green">Green</option>
-                                <option value="grey">Grey</option>
-                                <option value="maroon">Maroon</option>
-                                <option value="multicolor">Multicolor</option>
-                                <option value="orange">Orange</option>
-                                <option value="pink">Pink</option>
-                                <option value="purple">Purple</option>
-                                <option value="red">Red</option>
-                                <option value="silver">Silver</option>
-                                <option value="white">White</option>
-                                <option value="yellow">Yellow</option>
+                            <option value="beige">Beige</option>
+                            <option value="black">Black</option>
+                            <option value="blue">Blue</option>
+                            <option value="brown">Brown</option>
+                            <option value="gold">Gold</option>
+                            <option value="green">Green</option>
+                            <option value="grey">Grey</option>
+                            <option value="maroon">Maroon</option>
+                            <option value="multicolor">Multicolor</option>
+                            <option value="orange">Orange</option>
+                            <option value="pink">Pink</option>
+                            <option value="purple">Purple</option>
+                            <option value="red">Red</option>
+                            <option value="silver">Silver</option>
+                            <option value="white">White</option>
+                            <option value="yellow">Yellow</option>
                           </select>
                         </div>
                         <div class="image-upload-box" id="box1-1" onclick="triggerUpload('box1-1')">
@@ -633,7 +633,7 @@
                           <tbody>
                             <tr>
                               <td>
-                              <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                                <input type="text" class="smallInput_n" placeholder="Size" name="size">
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="0" name="stock">
@@ -753,10 +753,10 @@
             <div class="form-group mt15">
               <label>Product Listing Status</label>
               <select id="product_listing_status" class="form-select w_200_f" required>
-              <option value="1">Active</option>
-              <option value="2" selected>Inactive</option>
-              <option value="3">Out of Stock</option>
-              <option value="4">Draft</option>
+                <option value="1">Active</option>
+                <option value="2" selected>Inactive</option>
+                <option value="3">Out of Stock</option>
+                <option value="4">Draft</option>
               </select>
             </div>
             <div class="saveform_footer">
@@ -778,34 +778,34 @@
   const formData = new FormData();
 
   const searchCategory = document.getElementById("tag-input");
-    // Event listener for clicking outside the tag input field
-    searchCategory.addEventListener("blur", (e) => {
-        let keyWordInput = '';
-        $('.tag-container .tag').each(function(index) {
-            if (index !== $('.tag-container .tag').length - 1) {
-                keyWordInput += $(this).text() + ',';
-            }else{
-                keyWordInput += $(this).text();
-            }
-        });
-        ApiRequest('product/find-category?tags='+keyWordInput, 'GET')
-        .then(response => {
-            if(response.data.status){
-                $('#product_category').empty();
-                $('#product_sub_category').empty();
-                $('#product_category').append().val(response.data.result.main_category);
-                $('#product_sub_category').append().val(response.data.result.sub_category);
+  // Event listener for clicking outside the tag input field
+  searchCategory.addEventListener("blur", (e) => {
+    let keyWordInput = '';
+    $('.tag-container .tag').each(function(index) {
+      if (index !== $('.tag-container .tag').length - 1) {
+        keyWordInput += $(this).text() + ',';
+      } else {
+        keyWordInput += $(this).text();
+      }
+    });
+    ApiRequest('product/find-category?tags=' + keyWordInput, 'GET')
+      .then(response => {
+        if (response.data.status) {
+          $('#product_category').empty();
+          $('#product_sub_category').empty();
+          $('#product_category').append().val(response.data.result.main_category);
+          $('#product_sub_category').append().val(response.data.result.sub_category);
 
-                $('#product_category_id').empty();
-                $('#product_sub_category_id').empty();
-                $('#product_category_id').append().val(response.data.result.main_category_id);
-                $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
-            }
-        })
-        .catch(error => {
+          $('#product_category_id').empty();
+          $('#product_sub_category_id').empty();
+          $('#product_category_id').append().val(response.data.result.main_category_id);
+          $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
+        }
+      })
+      .catch(error => {
         console.error('Error222:', error);
       });
-    });
+  });
   // Start code General Tab Step 1
   $('#generaltab').click(function() {
 
@@ -921,7 +921,7 @@
       });
 
       // Add Product Keywords to FormData
-      
+
       $('.tag-container .tag').each(function(index) {
         formData.append(`product_keywords[${index}]`, $(this).text());
 
@@ -1164,7 +1164,7 @@
         errorMessage: 'Dimension Class is required.'
       },
 
-      
+
       {
         id: '#weight',
         errorId: '#weightErr',
@@ -1218,8 +1218,7 @@
       // }
     ];
 
-    const fieldsToUnrequire = [
-      {
+    const fieldsToUnrequire = [{
         id: '#upc',
       },
       {
@@ -1228,7 +1227,7 @@
       {
         id: '#mpn',
       },
-     
+
       {
         id: '#package_volumetric_weight',
       },
@@ -1266,7 +1265,7 @@
       allFields.forEach(field => {
         formData.append(field.id.replace('#', ''), $(field.id).val());
       });
-          
+
       // Proceed to next step
       document.querySelector('a[data-bs-target="#images"]').click();
     }
@@ -1442,7 +1441,7 @@
 
     const singlebox = document.createElement("div");
     singlebox.className = "singlebox";
-    
+
     singlebox.id = `variationColor-${containerCount}`;
     const singleboxColor = document.createElement("div");
     singleboxColor.className = "mb10";
@@ -1601,122 +1600,122 @@
 
   // Start code Submit Inventory Form
   $('#submitInventoryForm').on('click', function() {
-      // Check if variant radio button is checked
-      const variantChecked = $('input[name="variant"]:checked');
+    // Check if variant radio button is checked
+    const variantChecked = $('input[name="variant"]:checked');
 
-      if (variantChecked.length > 0) {
-        const variantId = variantChecked.attr('id');
-        
-        if (variantId === 'no') {
-          // Assuming you want to remove all files previously appended for the 'yes_variant' case.
-          const keysToDelete = [];
-          for (const key of formData.keys()) {
-            if (key.startsWith('yes_variant')) {
-              keysToDelete.push(key);
+    if (variantChecked.length > 0) {
+      const variantId = variantChecked.attr('id');
+
+      if (variantId === 'no') {
+        // Assuming you want to remove all files previously appended for the 'yes_variant' case.
+        const keysToDelete = [];
+        for (const key of formData.keys()) {
+          if (key.startsWith('yes_variant')) {
+            keysToDelete.push(key);
+          }
+        }
+        // Delete the collected keys
+        keysToDelete.forEach(key => formData.delete(key));
+
+        // Append files for the 'no_variant' case
+        const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
+        fileInputs.forEach((input, index) => {
+          const files = input.files;
+          if (files.length > 0) { // Ensure that there are files to append
+            for (let i = 0; i < files.length; i++) {
+              formData.append(`no_variant[0][media][${index}]`, files[i]);
             }
           }
-          // Delete the collected keys
-          keysToDelete.forEach(key => formData.delete(key));
+        });
 
-          // Append files for the 'no_variant' case
-          const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
+        // Append size and stock data for the 'no_variant' case
+        const size = document.querySelectorAll("#variantSize input[type='text'][name='size']");
+        const stock = document.querySelectorAll("#variantSize input[type='text'][name='stock']");
+        size.forEach((size, index) => {
+          formData.append(`no_variant[${index}][stock][0]`, size.value);
+        });
+        stock.forEach((stock, index) => {
+          formData.append(`no_variant[${index}][size][0]`, stock.value);
+        });
+        // Append color data for the 'no_variant' case
+        const variationColor = document.querySelectorAll("#variationColor select");
+        variationColor.forEach((color, index) => {
+          formData.append(`no_variant[${index}][color][0]`, color.value);
+        });
+
+
+      } else if (variantId === 'yes') {
+        // Assuming you want to remove all files previously appended for the 'no_variant' case.
+        const keysToDelete = [];
+        for (const key of formData.keys()) {
+          if (key.startsWith('no_variant')) {
+            keysToDelete.push(key);
+          }
+        }
+        // Delete the collected keys
+        keysToDelete.forEach(key => formData.delete(key));
+
+        // // Append files for the 'yes_variant' case
+        const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
+        // Iterate over each variant element to collect data
+        imagecontainerVariationElements.forEach((variantElement, i) => {
+          const fileInputs = variantElement.querySelectorAll('input[type="file"]');
           fileInputs.forEach((input, index) => {
             const files = input.files;
-            if (files.length > 0) {  // Ensure that there are files to append
-              for (let i = 0; i < files.length; i++) {
-                formData.append(`no_variant[0][media][${index}]`, files[i]);
+            if (files.length > 0) { // Ensure that there are files to append
+              for (let a = 0; a < files.length; a++) {
+                formData.append(`yes_variant[${i}][media][${index}]`, files[a]);
               }
             }
           });
+        });
 
-          // Append size and stock data for the 'no_variant' case
-          const size = document.querySelectorAll("#variantSize input[type='text'][name='size']");
-          const stock = document.querySelectorAll("#variantSize input[type='text'][name='stock']");
-          size.forEach((size, index) => {
-            formData.append(`no_variant[${index}][stock][0]`, size.value);
-          });
-          stock.forEach((stock, index) => {
-            formData.append(`no_variant[${index}][size][0]`, stock.value);
-          });
-          // Append color data for the 'no_variant' case
-          const variationColor = document.querySelectorAll("#variationColor select");
-            variationColor.forEach((color, index) => {
-            formData.append(`no_variant[${index}][color][0]`, color.value);
-          });
+        // Initialize arrays to store size and stock data
+        const sizes = [];
+        const stocks = [];
 
+        // Get all elements whose IDs start with 'variantSize-'
+        const variantElements = document.querySelectorAll("[id^='variantSize-']");
 
-        } else if (variantId === 'yes') {
-          // Assuming you want to remove all files previously appended for the 'no_variant' case.
-          const keysToDelete = [];
-          for (const key of formData.keys()) {
-            if (key.startsWith('no_variant')) {
-              keysToDelete.push(key);
+        // Iterate over each variant element to collect data
+        variantElements.forEach((variantElement, i) => {
+          // Collect all 'size' and 'stock' inputs within each variant element
+          const sizeInputs = variantElement.querySelectorAll("input[type='text'][name='size']");
+          const stockInputs = variantElement.querySelectorAll("input[type='text'][name='stock']");
+
+          // Initialize arrays at specific indices if they don't exist
+          if (!sizes[i]) sizes[i] = [];
+          if (!stocks[i]) stocks[i] = [];
+
+          // Collect multiple sizes
+          sizeInputs.forEach((sizeInput, index) => {
+            if (sizeInput.value) {
+              formData.append(`yes_variant[${i}][size][${index}]`, sizeInput.value);
             }
+          });
+
+          // Collect multiple stocks
+          stockInputs.forEach((stockInput, index) => {
+            if (stockInput.value) {
+              formData.append(`yes_variant[${i}][stock][${index}]`, stockInput.value);
+            }
+          });
+        });
+
+        // Append color data for the 'yes_variant' case
+        const variationColor = document.querySelectorAll("[id^='variationColor-']");
+        variationColor.forEach((colorField, i) => {
+          const colorSelect = colorField.querySelector("select");
+          const selectedColor = colorSelect.value; // Get the selected option's value
+          if (selectedColor) {
+            formData.append(`yes_variant[${i}][color]`, selectedColor);
           }
-          // Delete the collected keys
-          keysToDelete.forEach(key => formData.delete(key));
-
-          // // Append files for the 'yes_variant' case
-          const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
-              // Iterate over each variant element to collect data
-              imagecontainerVariationElements.forEach((variantElement, i) => {
-                const fileInputs = variantElement.querySelectorAll('input[type="file"]');
-                fileInputs.forEach((input, index) => {
-                const files = input.files;
-                if (files.length > 0) {  // Ensure that there are files to append
-                  for (let a = 0; a < files.length; a++) {
-                    formData.append(`yes_variant[${i}][media][${index}]`, files[a]);
-                  }
-                }
-              });
-            });
-
-          // Initialize arrays to store size and stock data
-          const sizes = [];
-          const stocks = [];
-
-          // Get all elements whose IDs start with 'variantSize-'
-          const variantElements = document.querySelectorAll("[id^='variantSize-']");
-
-          // Iterate over each variant element to collect data
-          variantElements.forEach((variantElement, i) => {
-            // Collect all 'size' and 'stock' inputs within each variant element
-            const sizeInputs = variantElement.querySelectorAll("input[type='text'][name='size']");
-            const stockInputs = variantElement.querySelectorAll("input[type='text'][name='stock']");
-
-            // Initialize arrays at specific indices if they don't exist
-            if (!sizes[i]) sizes[i] = [];
-            if (!stocks[i]) stocks[i] = [];
-
-            // Collect multiple sizes
-            sizeInputs.forEach((sizeInput, index) => {
-              if (sizeInput.value) {
-                formData.append(`yes_variant[${i}][size][${index}]`, sizeInput.value);
-              }
-            });
-
-            // Collect multiple stocks
-            stockInputs.forEach((stockInput, index) => {
-              if (stockInput.value) {
-                formData.append(`yes_variant[${i}][stock][${index}]`, stockInput.value);
-              }
-            });
-          });
-
-         // Append color data for the 'yes_variant' case
-         const variationColor = document.querySelectorAll("[id^='variationColor-']");
-          variationColor.forEach((colorField, i) => {
-            const colorSelect = colorField.querySelector("select");
-            const selectedColor = colorSelect.value; // Get the selected option's value
-            if (selectedColor) {
-              formData.append(`yes_variant[${i}][color]`, selectedColor);
-            }
-          });
-        }
+        });
       }
+    }
 
     // Add Product Listing Status to FormData
-    const productListingStatus = $('#product_listing_status').val(); 
+    const productListingStatus = $('#product_listing_status').val();
     formData.append('product_listing_status', productListingStatus);
     $.ajax({
       url: '{{route("inventory.store")}}',
@@ -1734,11 +1733,77 @@
           const field_list = response.data.message;
           // Iterate over the entries in the field_list object
           for (const [field, messages] of Object.entries(field_list)) {
-            // Add 'is-invalid' class to the corresponding element
-            $(`#${field}`).addClass('is-invalid');
+            if (field == 'product_keywords') {
+              $('#tag-input').addClass('is-invalid');
+              $('#tag-inputErr').text(messages[0]);
+            } else if (field == 'feature') {
+              $('#features-error').removeClass('hide');
+            } else if (field == 'bulk') {
+              // Validate Bulk Rate table rows
+              $('#bulkRateTable tbody tr').each(function() {
+                const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
+                const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
+                const quantity = quantityInput.val();
+                const price = priceInput.val();
 
-            // Set the error message in the corresponding error field
-            $(`#${field}Err`).text(messages[0]);
+                if (!quantity) {
+                  quantityInput.addClass('is-invalid form-control');
+                } else {
+                  quantityInput.removeClass('is-invalid form-control');
+                }
+                if (!price) {
+                  priceInput.addClass('is-invalid form-control');
+                } else {
+                  priceInput.removeClass('is-invalid form-control');
+                }
+              });
+            } else if (field == 'shipping') {
+              // Validate Shipping Rate table rows
+              $('#shippingRateTable tbody tr').each(function() {
+                const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
+                const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
+                const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
+                const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
+                const quantity = quantityInput.val();
+                const local = localInput.val();
+                const regional = regionalInput.val();
+                const national = nationalInput.val();
+
+                if (!quantity) {
+                  quantityInput.addClass('is-invalid form-control');
+                  isValid = false;
+                } else {
+                  quantityInput.removeClass('is-invalid form-control');
+                }
+
+                if (!local) {
+                  localInput.addClass('is-invalid form-control');
+                  isValid = false;
+                } else {
+                  localInput.removeClass('is-invalid form-control');
+                }
+
+                if (!regional) {
+                  regionalInput.addClass('is-invalid form-control');
+                  isValid = false;
+                } else {
+                  regionalInput.removeClass('is-invalid form-control');
+                }
+
+                if (!national) {
+                  nationalInput.addClass('is-invalid form-control');
+                  isValid = false;
+                } else {
+                  nationalInput.removeClass('is-invalid form-control');
+                }
+              });
+            } else {
+              // Add 'is-invalid' class to the corresponding element
+              $(`#${field}`).addClass('is-invalid');
+
+              // Set the error message in the corresponding error field
+              $(`#${field}Err`).text(messages[0]);
+            }
           }
         }
       },
