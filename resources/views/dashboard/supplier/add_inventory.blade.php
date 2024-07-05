@@ -431,19 +431,33 @@
                 <input class="form-check-input" type="radio" name="variant" id="no" checked />
                 <label class="form-check-label" for="no">No</label>
               </div>
-              <div class="noblock mt15">
+              <div class="noblock mt15 no_variant">
                 <div class="single-row">
-                  <div class="singlebox">
+                  <div class="singlebox" id="variationColor">
                     <div class="mb10">
                       <label for="">Color<span class="req_star">*</span></label>
-                      <select class="form-select" id="variant[0]['color']" name="variant[0]['color']" required>
-                        <option value="black">Black1</option>
-                        <option value="red">Red</option>
-                        <option value="blue">Blue</option>
+                      <select class="form-select" required>
+                      <option value="default" selected>Default</option>
+                      <option value="beige">Beige</option>
+                      <option value="black">Black</option>
+                      <option value="blue">Blue</option>
+                      <option value="brown">Brown</option>
+                      <option value="gold">Gold</option>
+                      <option value="green">Green</option>
+                      <option value="grey">Grey</option>
+                      <option value="maroon">Maroon</option>
+                      <option value="multicolor">Multicolor</option>
+                      <option value="orange">Orange</option>
+                      <option value="pink">Pink</option>
+                      <option value="purple">Purple</option>
+                      <option value="red">Red</option>
+                      <option value="silver">Silver</option>
+                      <option value="white">White</option>
+                      <option value="yellow">Yellow</option>
                       </select>
                     </div>
                     <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
-                      <input type="file" class="no_variant" accept="image/*" onchange="previewImage(event, 'box-1')"/>
+                      <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')"/>
                       <img id="img-box-1" src="" alt="Image" style="display: none;" />
                       <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')">&#10006;</div>
                       <div class="placeholdertext">
@@ -463,10 +477,10 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="Size" name="variant[0]['size'][0]">
+                            <input type="text" class="smallInput_n" placeholder="Size" name="size">
                           </td>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="0" name="variant[0]['stock'][0]">
+                            <input type="text" class="smallInput_n" placeholder="0" name="stock">
                           </td>
                           
                         </tr>
@@ -476,7 +490,7 @@
                 </div>
                 <div class="multi-row">
                   <div class="image-upload-box" id="box-2" onclick="triggerUpload('box-2')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-2')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-2')" />
                     <img id="img-box-2" src="#" alt="Image 2" style="display: none;" />
                     <div class="delete-icon" id="delete-box-2" onclick="deleteImage(event, 'box-2')">&#10006;</div>
                     <div class="placeholdertext">
@@ -485,7 +499,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-3" onclick="triggerUpload('box-3')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-3')"  />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-3')"  />
                     <img id="img-box-3" src="#" alt="Image 3" style="display: none;" />
                     <div class="delete-icon" id="delete-box-3" onclick="deleteImage(event, 'box-3')">&#10006;</div>
                     <div class="placeholdertext">
@@ -494,7 +508,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-4" onclick="triggerUpload('box-4')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-4')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-4')" />
                     <img id="img-box-4" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-4" onclick="deleteImage(event, 'box-4')">&#10006;</div>
                     <div class="placeholdertext">
@@ -503,7 +517,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-5" onclick="triggerUpload('box-5')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-5')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-5')" />
                     <img id="img-box-5" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-5" onclick="deleteImage(event, 'box-5')">&#10006;</div>
                     <div class="placeholdertext">
@@ -512,7 +526,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-6" onclick="triggerUpload('box-6')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-6')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-6')" />
                     <img id="img-box-6" src="#" alt="Image 6" style="display: none;" />
                     <div class="delete-icon" id="delete-box-6" onclick="deleteImage(event, 'box-6')">&#10006;</div>
                     <div class="placeholdertext">
@@ -521,7 +535,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-7" onclick="triggerUpload('box-7')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-7')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-7')" />
                     <img id="img-box-7" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-7" onclick="deleteImage(event, 'box-7')">&#10006;</div>
                     <div class="placeholdertext">
@@ -530,7 +544,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-8" onclick="triggerUpload('box-8')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-8')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-8')" />
                     <img id="img-box-8" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-8" onclick="deleteImage(event, 'box-8')">&#10006;</div>
                     <div class="placeholdertext">
@@ -539,7 +553,7 @@
                     </div>
                   </div>
                   <div class="image-upload-box" id="box-9" onclick="triggerUpload('box-9')">
-                    <input type="file" class="no_variant"  accept="image/*" onchange="previewImage(event, 'box-9')" />
+                    <input type="file"  accept="image/*" onchange="previewImage(event, 'box-9')" />
                     <img id="img-box-9" src="#" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-9" onclick="deleteImage(event, 'box-9')">&#10006;</div>
                     <div class="placeholdertext">
@@ -567,25 +581,38 @@
                       </svg>
                     </div>
                     <div class="delete-icon">&#10006;</div>
-                    <input type="file"  class="file-input no_variant" accept="video/*">
+                    <input type="file"  class="file-input" accept="video/*">
                   </div>
                 </div>
               </div>
-              <div class="yesblock">
+              <div class="yesblock yes_variant">
                 <div class="main-container" id="main-container">
-                  <div class="imagecontainer">
+                  <div class="imagecontainer" id="imagecontainerVariation-1">
                     <div class="single-row">
-                      <div class="singlebox">
+                      <div class="singlebox" id="variationColor-1">
                         <div class="mb10">
                           <label for="">Color<span class="req_star">*</span></label>
-                          <select class="form-select" id="image0Color" name="variant[0]['color']" required>
-                            <option value="black">Black</option>
-                            <option value="red">Red</option>
-                            <option value="blue">Blue</option>
+                          <select class="form-select" required>
+                                <option value="beige">Beige</option>
+                                <option value="black">Black</option>
+                                <option value="blue">Blue</option>
+                                <option value="brown">Brown</option>
+                                <option value="gold">Gold</option>
+                                <option value="green">Green</option>
+                                <option value="grey">Grey</option>
+                                <option value="maroon">Maroon</option>
+                                <option value="multicolor">Multicolor</option>
+                                <option value="orange">Orange</option>
+                                <option value="pink">Pink</option>
+                                <option value="purple">Purple</option>
+                                <option value="red">Red</option>
+                                <option value="silver">Silver</option>
+                                <option value="white">White</option>
+                                <option value="yellow">Yellow</option>
                           </select>
                         </div>
                         <div class="image-upload-box" id="box1-1" onclick="triggerUpload('box1-1')">
-                          <input type="file" accept="image/*" onchange="previewImage(event, 'box1-1')" name="variant[0]['image'][1]" required />
+                          <input type="file" accept="image/*" onchange="previewImage(event, 'box1-1')" required />
                           <img id="img-box1-1" src="" alt="Image 1" style="display: none;" />
                           <div class="delete-icon" id="delete-box1-1" onclick="deleteImage(event, 'box1-1')">&#10006;</div>
                           <div class="placeholdertext">
@@ -595,7 +622,7 @@
                         </div>
                       </div>
                       <div class="colorStock">
-                        <table class="v_t_c_s" id="variantSize">
+                        <table class="v_t_c_s" id="variantSize-1">
                           <thead>
                             <tr>
                               <th>Size</th>
@@ -606,10 +633,10 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" name="variant[0]['size'][0]">
+                              <input type="text" class="smallInput_n" placeholder="Size" name="size">
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" name="variant[0]['stock'][0]">
+                                <input type="text" class="smallInput_n" placeholder="0" name="stock">
                               </td>
                               <td>
                                 <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -725,10 +752,11 @@
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
-              <select name="variant['product_listing_status']" id="variant['product_listing_status']" class="form-select w_200_f" required>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="draft">Draft</option>
+              <select id="product_listing_status" class="form-select w_200_f" required>
+              <option value="1">Active</option>
+              <option value="2" selected>Inactive</option>
+              <option value="3">Out of Stock</option>
+              <option value="4">Draft</option>
               </select>
             </div>
             <div class="saveform_footer">
@@ -1342,12 +1370,14 @@
       sizeInput.type = "text";
       sizeInput.className = "smallInput_n";
       sizeInput.placeholder = "Size";
+      sizeInput.name = "size";
       sizeCell.appendChild(sizeInput);
       const stockCell = document.createElement("td");
       const stockInput = document.createElement("input");
       stockInput.type = "text";
       stockInput.className = "smallInput_n";
       stockInput.placeholder = "0";
+      stockInput.name = "stock";
       stockCell.appendChild(stockInput);
       const actionCell = document.createElement("td");
       const removeButton = document.createElement("button");
@@ -1374,14 +1404,6 @@
 
   function triggerUpload(boxId) {
     document.querySelector(`#${boxId} input[type="file"]`).click();
-
-    // add all the images to the form data
-    const fileInput = document.querySelector(`#${boxId} input[type="file"]`);
-    fileInput.addEventListener("change", (event) => {
-      formData.append(`variant[0]['image'][${boxId.split("-")[1]}]`, event.target.files[0]);
-    });   
-
-
   }
 
   function previewImage(event, boxId) {
@@ -1412,6 +1434,7 @@
     const containers = document.getElementById("main-container");
     const newContainer = document.createElement("div");
     newContainer.className = "imagecontainer";
+    newContainer.id = `imagecontainerVariation-${containerCount}`;
 
     // Add the first image upload box
     const firstBoxContainer = document.createElement("div");
@@ -1419,20 +1442,34 @@
 
     const singlebox = document.createElement("div");
     singlebox.className = "singlebox";
-
+    
+    singlebox.id = `variationColor-${containerCount}`;
     const singleboxColor = document.createElement("div");
     singleboxColor.className = "mb10";
     singleboxColor.innerHTML = `<label for="">Color<span class="req_star">*</span></label>
                               <select class="form-select">
+                                <option value="beige">Beige</option>
                                 <option value="black">Black</option>
-                                <option value="red">Red</option>
                                 <option value="blue">Blue</option>
+                                <option value="brown">Brown</option>
+                                <option value="gold">Gold</option>
+                                <option value="green">Green</option>
+                                <option value="grey">Grey</option>
+                                <option value="maroon">Maroon</option>
+                                <option value="multicolor">Multicolor</option>
+                                <option value="orange">Orange</option>
+                                <option value="pink">Pink</option>
+                                <option value="purple">Purple</option>
+                                <option value="red">Red</option>
+                                <option value="silver">Silver</option>
+                                <option value="white">White</option>
+                                <option value="yellow">Yellow</option>
                               </select>`;
     singlebox.appendChild(singleboxColor);
 
     const firstboxsize = document.createElement("div");
     firstboxsize.className = "colorStock";
-    firstboxsize.innerHTML = `<table class="v_t_c_s" id="variantSize">
+    firstboxsize.innerHTML = `<table class="v_t_c_s" id="variantSize-${containerCount}">
                               <thead>
                                 <tr>
                                   <th>Size</th>
@@ -1443,10 +1480,10 @@
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size">
+                                    <input type="text" class="smallInput_n" placeholder="Size" name="size">
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0">
+                                    <input type="text" class="smallInput_n" placeholder="0" name="stock">
                                   </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -1564,57 +1601,123 @@
 
   // Start code Submit Inventory Form
   $('#submitInventoryForm').on('click', function() {
- // add all the stock size and color to the form data
+      // Check if variant radio button is checked
+      const variantChecked = $('input[name="variant"]:checked');
 
- // Check if variant radio button is checked
- const variantChecked = $('input[name="variant"]:checked');
-if (variantChecked.length > 0) {
-  const variantId = variantChecked.attr('id');
-  if (variantId === 'no') {
-    const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
-    fileInputs.forEach((input) => {
-      const files = input.files;
-      for (let i = 0; i < files.length; i++) {
-        formData.append(`variant[${i}]`, files[i]);
+      if (variantChecked.length > 0) {
+        const variantId = variantChecked.attr('id');
+        
+        if (variantId === 'no') {
+          // Assuming you want to remove all files previously appended for the 'yes_variant' case.
+          const keysToDelete = [];
+          for (const key of formData.keys()) {
+            if (key.startsWith('yes_variant')) {
+              keysToDelete.push(key);
+            }
+          }
+          // Delete the collected keys
+          keysToDelete.forEach(key => formData.delete(key));
+
+          // Append files for the 'no_variant' case
+          const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
+          fileInputs.forEach((input, index) => {
+            const files = input.files;
+            if (files.length > 0) {  // Ensure that there are files to append
+              for (let i = 0; i < files.length; i++) {
+                formData.append(`no_variant[0][media][${index}]`, files[i]);
+              }
+            }
+          });
+
+          // Append size and stock data for the 'no_variant' case
+          const size = document.querySelectorAll("#variantSize input[type='text'][name='size']");
+          const stock = document.querySelectorAll("#variantSize input[type='text'][name='stock']");
+          size.forEach((size, index) => {
+            formData.append(`no_variant[${index}][stock][0]`, size.value);
+          });
+          stock.forEach((stock, index) => {
+            formData.append(`no_variant[${index}][size][0]`, stock.value);
+          });
+          // Append color data for the 'no_variant' case
+          const variationColor = document.querySelectorAll("#variationColor select");
+            variationColor.forEach((color, index) => {
+            formData.append(`no_variant[${index}][color][0]`, color.value);
+          });
+
+
+        } else if (variantId === 'yes') {
+          // Assuming you want to remove all files previously appended for the 'no_variant' case.
+          const keysToDelete = [];
+          for (const key of formData.keys()) {
+            if (key.startsWith('no_variant')) {
+              keysToDelete.push(key);
+            }
+          }
+          // Delete the collected keys
+          keysToDelete.forEach(key => formData.delete(key));
+
+          // // Append files for the 'yes_variant' case
+          const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
+              // Iterate over each variant element to collect data
+              imagecontainerVariationElements.forEach((variantElement, i) => {
+                const fileInputs = variantElement.querySelectorAll('input[type="file"]');
+                fileInputs.forEach((input, index) => {
+                const files = input.files;
+                if (files.length > 0) {  // Ensure that there are files to append
+                  for (let a = 0; a < files.length; a++) {
+                    formData.append(`yes_variant[${i}][media][${index}]`, files[a]);
+                  }
+                }
+              });
+            });
+
+          // Initialize arrays to store size and stock data
+          const sizes = [];
+          const stocks = [];
+
+          // Get all elements whose IDs start with 'variantSize-'
+          const variantElements = document.querySelectorAll("[id^='variantSize-']");
+
+          // Iterate over each variant element to collect data
+          variantElements.forEach((variantElement, i) => {
+            // Collect all 'size' and 'stock' inputs within each variant element
+            const sizeInputs = variantElement.querySelectorAll("input[type='text'][name='size']");
+            const stockInputs = variantElement.querySelectorAll("input[type='text'][name='stock']");
+
+            // Initialize arrays at specific indices if they don't exist
+            if (!sizes[i]) sizes[i] = [];
+            if (!stocks[i]) stocks[i] = [];
+
+            // Collect multiple sizes
+            sizeInputs.forEach((sizeInput, index) => {
+              if (sizeInput.value) {
+                formData.append(`yes_variant[${i}][size][${index}]`, sizeInput.value);
+              }
+            });
+
+            // Collect multiple stocks
+            stockInputs.forEach((stockInput, index) => {
+              if (stockInput.value) {
+                formData.append(`yes_variant[${i}][stock][${index}]`, stockInput.value);
+              }
+            });
+          });
+
+         // Append color data for the 'yes_variant' case
+         const variationColor = document.querySelectorAll("[id^='variationColor-']");
+          variationColor.forEach((colorField, i) => {
+            const colorSelect = colorField.querySelector("select");
+            const selectedColor = colorSelect.value; // Get the selected option's value
+            if (selectedColor) {
+              formData.append(`yes_variant[${i}][color]`, selectedColor);
+            }
+          });
+        }
       }
-    });
-  } else {
-    // Assuming you want to remove all files previously appended for the 'no_variant' case.
-    const keysToDelete = [];
-    for (const key of formData.keys()) {
-      if (key.startsWith('variant')) {
-        keysToDelete.push(key);
-      }
-    }
-    // Delete the collected keys
-    console.log(keysToDelete);
-    keysToDelete.forEach(key => formData.delete(key));
-  }
-}
 
-
- const stockSize = document.querySelectorAll(".colorStock tbody tr");
-
-stockSize.forEach((size, index) => {
-  const sizeInput = size.querySelector("input[type='text'][placeholder='Size']");
-  const stockInput = size.querySelector("input[type='text'][placeholder='0']");
-  
-  if (sizeInput && stockInput) {
-    if (sizeInput.value && stockInput.value) {
-      formData.append(`variant[0]['stock'][${index}]['size']`, sizeInput.value);
-      formData.append(`variant[0]['stock'][${index}]['stock']`, stockInput.value);
-    } else {
-      console.warn(`Row ${index + 1} is missing size or stock value.`);
-    }
-  } else {
-    console.warn(`Row ${index + 1} is missing size or stock input.`);
-  }
-});
-
-    
-
-    
-    console.log(formData);
+    // Add Product Listing Status to FormData
+    const productListingStatus = $('#product_listing_status').val(); 
+    formData.append('product_listing_status', productListingStatus);
     $.ajax({
       url: '{{route("inventory.store")}}',
       type: 'POST',
