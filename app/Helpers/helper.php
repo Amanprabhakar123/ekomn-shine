@@ -360,3 +360,42 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         ];
     }
 }
+
+function convertKg($weightInKg, $unit) {
+    switch ($unit) {
+        case 'mg':
+            return $weightInKg * 1000000; // Convert kg to mg
+        case 'gm':
+            return $weightInKg * 1000; // Convert kg to gm
+        case 'ml':
+            return $weightInKg * 1000; // Convert kg to ml (assuming 1 kg = 1 L)
+        case 'ltr':
+            return $weightInKg; // Convert kg to L (assuming 1 kg = 1 L)
+        case 'kg':
+                return $weightInKg;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mg', 'gm', 'ml', or 'ltr'.");
+    }
+}
+
+
+function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm') {
+    // Determine the Dimensional Weight Factor based on the unit
+    switch ($unit) {
+        case 'mm':
+            $dimensionalWeightFactor = 500000;
+            break;
+        case 'cm':
+            $dimensionalWeightFactor = 5000;
+            break;
+        case 'in':
+            $dimensionalWeightFactor = 139;
+            break;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mm', 'cm', or 'in'.");
+    }
+
+    // Calculate the volumetric weight
+    $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
+    return $volumetricWeight;
+}
