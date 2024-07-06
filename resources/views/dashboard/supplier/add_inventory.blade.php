@@ -1002,37 +1002,37 @@
       const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
       const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
       const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
-      const quantity = quantityInput.val();
-      const local = localInput.val();
-      const regional = regionalInput.val();
-      const national = nationalInput.val();
+      const quantity = parseInt(quantityInput.val());
+      const local = parseInt(localInput.val());
+      const regional = parseInt(regionalInput.val());
+      const national = parseInt(nationalInput.val());
 
-      if (!quantity) {
-        quantityInput.addClass('is-invalid form-control');
-        isValid = false;
+      if (isNaN(quantity) || !Number.isInteger(quantity)) {
+      quantityInput.addClass('is-invalid form-control');
+      isValid = false;
       } else {
-        quantityInput.removeClass('is-invalid form-control');
+      quantityInput.removeClass('is-invalid form-control');
       }
 
-      if (!local) {
-        localInput.addClass('is-invalid form-control');
-        isValid = false;
+      if (isNaN(local) || !Number.isInteger(local)) {
+      localInput.addClass('is-invalid form-control');
+      isValid = false;
       } else {
-        localInput.removeClass('is-invalid form-control');
+      localInput.removeClass('is-invalid form-control');
       }
 
-      if (!regional) {
-        regionalInput.addClass('is-invalid form-control');
-        isValid = false;
+      if (isNaN(regional) || !Number.isInteger(regional)) {
+      regionalInput.addClass('is-invalid form-control');
+      isValid = false;
       } else {
-        regionalInput.removeClass('is-invalid form-control');
+      regionalInput.removeClass('is-invalid form-control');
       }
 
-      if (!national) {
-        nationalInput.addClass('is-invalid form-control');
-        isValid = false;
+      if (isNaN(national) || !Number.isInteger(national)) {
+      nationalInput.addClass('is-invalid form-control');
+      isValid = false;
       } else {
-        nationalInput.removeClass('is-invalid form-control');
+      nationalInput.removeClass('is-invalid form-control');
       }
       shipping_quantity.push(quantity);
     });

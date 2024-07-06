@@ -344,22 +344,19 @@ if (!function_exists('generateUniqueCompanyUsername')) {
     }
 
     /**
-     * Calculate the exclusive price and after-tax price based on GST.
+     * Calculate the inclusive price and exclusive tax amount based on GST.
      *
-     * @param float $inclusivePrice Price including GST.
+     * @param float $exclusivePrice Price before GST.
      * @param float $gstRate GST rate in percentage.
-     * @return array Associative array containing exclusive and after-tax prices.
+     * @return array Associative array containing inclusive price and exclusive tax amount.
      */
-    function calculateExclusiveAndAfterTaxPrice(float $inclusivePrice, float $gstRate): array {
-        // Calculate exclusive price
-        $exclusivePrice = $inclusivePrice / (1 + $gstRate / 100);
-        
-        // Calculate after-tax price to verify
-        $afterTaxPrice = $exclusivePrice * (1 + $gstRate / 100);
+    function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array {
+        // Calculate inclusive price
+        $inclusivePrice = $exclusivePrice * (1 + $gstRate / 100);
         
         return [
-            'price_before_tax' => $exclusivePrice,
-            'price_after_tax' => $afterTaxPrice 
+            'price_after_tax' => $inclusivePrice,
+            'price_before_tax' => $exclusivePrice
         ];
     }
 }

@@ -417,7 +417,7 @@ class ProductInvetoryController extends Controller
                         $media_images[] = ['file_path' =>  $path, 'is_image' => $media_type, 'is_master' => $is_master];
                     }
                     foreach ($value['size'] as $size_key => $value1) {
-                        $price = calculateExclusiveAndAfterTaxPrice($data['dropship_rate'],$data['gst_bracket']);
+                        $price = calculateInclusivePriceAndTax($data['dropship_rate'],$data['gst_bracket']);
                         $productVariation = ProductVariation::create([
                             'product_id' => $product_id,
                             'company_id' => $company_id,
