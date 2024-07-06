@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\APIAuth;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\ProductFeature;
@@ -11,11 +12,12 @@ use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ProductVariationMedia;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ProductVariationTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Models\ProductVariationMedia;
 
 class ProductInvetoryController extends Controller
 {
@@ -205,7 +207,7 @@ class ProductInvetoryController extends Controller
      */
     public function addInventory(Request $request)
     {
-       // dd($request->all());
+       dd($request->all());
         # i want to add validation for image if no_variant is coming then stock, size, media array required but media atleast 5 image required and color field is required
          try {
             $rules = [
@@ -257,7 +259,7 @@ class ProductInvetoryController extends Controller
                 $variant_key = "yes_variant";
             }
             // If `no_variant` is posted, add additional rules
-              /*  $rules = array_merge($rules, [
+                $rules = array_merge($rules, [
                     "$variant_key" => 'array',
                     "$variant_key.*.stock" => 'required|array|min:0',
                     "$variant_key.*.stock.*" => 'required|numeric|min:0',
@@ -287,9 +289,8 @@ class ProductInvetoryController extends Controller
                     "$variant_key.*.media.*.image" => "Each media entry must be an image.",
                     "$variant_key.*.color.required" => "The color field is required when no variant is present.",
                     "$variant_key.*.color.string" => "The color must be a string.",
-                ];*/
+                ];
             $validator = Validator::make($request->all(), $rules);
-//dd($request->all());
             
              if ($validator->fails()) {
                  return response()->json(['data' => [
@@ -383,10 +384,40 @@ class ProductInvetoryController extends Controller
                     }
                 }
 
+                $img_ext = ['png', 'jpeg', 'jpg'];
+                $vide_ext = ['mp4'];
                 // Insert Product Variation table
                 foreach($data[$variant_key] as $key => $value){
-
+                    $is_master = ProductVariationMedia::IS_MASTER_FALSE;
+                    $first_image_processed = false;
+                    $media_images = [];
+                    foreach($value['media'] as $k => $med){
+                        $filename = md5(Str::random(40)) . '.' . $med->getClientOriginalExtension();
+                        // Get the file contents
+                        $fileContents = $med->get();
+                        // Define the path
+                        $path = "company_{$company_id}/".$product_id."/documents/{$filename}"; 
+                        if(in_array($med->getClientOriginalExtension(), $img_ext)){
+                            $path = "company_{$company_id}/".$product_id."/images/{$filename}";
+                            $media_type = ProductVariationMedia::MEDIA_TYPE_IMAGE;
+                           // Set $is_master to true only for the first image
+                            if (!$first_image_processed) {
+                                $is_master = ProductVariationMedia::IS_MASTER_TRUE;
+                                $first_image_processed = true;
+                            } else {
+                                $is_master = ProductVariationMedia::IS_MASTER_FALSE;
+                            }
+                        } else if(in_array($med->getClientOriginalExtension(), $vide_ext)){
+                            $path = "company_{$company_id}/".$product_id."/videos/{$filename}";
+                            $media_type = ProductVariationMedia::MEDIA_TYPE_VIDEO;
+                            $is_master = ProductVariationMedia::IS_MASTER_FALSE;
+                        }
+                        // Store the file
+                        Storage::disk('public')->put($path, $fileContents);
+                        $media_images[] = ['file_path' =>  $path, 'is_image' => $media_type, 'is_master' => $is_master];
+                    }
                     foreach ($value['size'] as $size_key => $value1) {
+                        $price = calculateExclusiveAndAfterTaxPrice($data['dropship_rate'],$data['gst_bracket']);
                         $productVariation = ProductVariation::create([
                             'product_id' => $product_id,
                             'company_id' => $company_id,
@@ -397,7 +428,7 @@ class ProductInvetoryController extends Controller
                             'stock' => $data[$variant_key][$key]['stock'][$size_key],
                             'title' => $request->product_name,
                             'description' => $request->product_description,
-                            'color' => !empty($data[$variant_key][$key]['color'][$key]) ? $data[$variant_key][$key]['color'][$key] : $value['color'],
+                            'color' => !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key],
                             'length' => $request->length,
                             'width' => $request->width,
                             'height' => $request->height,
@@ -411,8 +442,8 @@ class ProductInvetoryController extends Controller
                             'package_dimension_class' => $request->package_dimension_class,
                             'package_weight' => $request->package_weight,
                             'package_weight_class' => $request->package_weight_class,
-                            'price_before_tax' => 0,
-                            'price_after_tax' => 0,
+                            'price_before_tax' =>  number_format($price['price_before_tax'], 2),
+                            'price_after_tax' => number_format($price['price_after_tax'], 2),
                             'status' => $data['product_listing_status'] ?? 1,
                             'availability_status' => $request->availability,
                             'dropship_rate' => $request->dropship_rate,
@@ -425,21 +456,20 @@ class ProductInvetoryController extends Controller
                         $productVariation->product_slug_id = $generateProductID;
                         $productVariation->slug = generateSlug($request->product_name, $generateProductID);
                         $productVariation->save();
+
+                        foreach($media_images as $media){
+                            ProductVariationMedia::create([
+                                'product_id' => $product_id,
+                                'product_variation_id' => $productVariation->id,
+                                'media_type' => $media['is_image'],
+                                'file_path' => $media['file_path'],
+                                'is_master' => $media['is_master'],
+                                'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
+                                'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                            ]);
+                        }
                     }
                 }
-               /* foreach ($value['media'] as $key => $media) {
-                    ProductVariationMedia::create([
-                        'product_id' => $product_id,
-                        'product_variation_id' => $productVariation->id,
-                        'media_type' ,
-                        'file_path',
-                        'thumbnail_path',
-                        'is_master',
-                        'desc',
-                        'is_active',
-                        'is_compressed',
-                    ]);
-                }*/
                 // 
             DB::commit();
                 $response['data'] = [

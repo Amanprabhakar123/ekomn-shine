@@ -254,11 +254,11 @@ if (!function_exists('generateUniqueCompanyUsername')) {
      * @return string The generated product ID.
      */
     function generateProductID($title, $nextNumber) {
-        // Extract and sanitize the first 4 letters of the product title
-        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 3));
+        // Extract and sanitize the first 2 letters of the product title
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 2));
 
-        // Ensure the prefix is exactly 4 characters, padding with 'X' if needed
-        $prefix = str_pad($prefix, 3, 'X');
+        // Ensure the prefix is exactly 2 characters, padding with 'X' if needed
+        $prefix = str_pad($prefix, 2, 'X');
 
         // Format the next number as a zero-padded string, ensuring it's 6 digits
         $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
@@ -341,5 +341,25 @@ if (!function_exists('generateUniqueCompanyUsername')) {
             default:
                 return 'Unknown';
         }
+    }
+
+    /**
+     * Calculate the exclusive price and after-tax price based on GST.
+     *
+     * @param float $inclusivePrice Price including GST.
+     * @param float $gstRate GST rate in percentage.
+     * @return array Associative array containing exclusive and after-tax prices.
+     */
+    function calculateExclusiveAndAfterTaxPrice(float $inclusivePrice, float $gstRate): array {
+        // Calculate exclusive price
+        $exclusivePrice = $inclusivePrice / (1 + $gstRate / 100);
+        
+        // Calculate after-tax price to verify
+        $afterTaxPrice = $exclusivePrice * (1 + $gstRate / 100);
+        
+        return [
+            'price_before_tax' => $exclusivePrice,
+            'price_after_tax' => $afterTaxPrice 
+        ];
     }
 }

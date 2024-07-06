@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use App\Models\ProductVariationMedia;
 use App\Services\ImageService;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+
+use function PHPUnit\Framework\throwException;
 
 class ImageCompression extends Command
 {
@@ -49,6 +52,27 @@ class ImageCompression extends Command
             $start = microtime(true);
             $this->info('Image Compression started at: ' . now());
 
+
+            $end = microtime(true);
+            $executionTime = round($end - $start, 2);
+            $this->info('Image Compression. Total execution time: ' . $executionTime . ' seconds.');
+        } catch (\Exception $e) {
+            // Handle the exception here
+            Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
+        }
+    }
+
+
+
+    /**
+     * Fetches and compresses all images.
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function fetchAndCompressAllImages()
+    {
+        try {
             // Your code here
             $imagePaths = ProductVariationMedia::where(['is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE, 'media_type' => ProductVariationMedia::MEDIA_TYPE_IMAGE])->get();
             if ($imagePaths->isEmpty()) {
@@ -72,8 +96,8 @@ class ImageCompression extends Command
 
                 $filename = Str::random(40) . '.webp';
                 $thumbnail_file_name = Str::random(40) . '.webp';
-                $destinationPath = "images/product/" . $filename;
-                $thumbnailPath = "images/product/thumbnails/" . $thumbnail_file_name;
+                $destinationPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/{$filename}";
+                $thumbnailPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/thumbnails/" . $thumbnail_file_name;
 
                 // Convert and compress image to WebP format
                 $this->imageService->convertAndCompressToWebP($originalFullPath, $destinationPath);
@@ -100,12 +124,12 @@ class ImageCompression extends Command
                     'thumbnail_path' => Storage::url($thumbnailPath)
                 ]);
             }
-            $end = microtime(true);
-            $executionTime = round($end - $start, 2);
-            $this->info('Image Compression. Total execution time: ' . $executionTime . ' seconds.');
-        } catch (\Exception $e) {
-            // Handle the exception here
-            Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), $e->getCode());
         }
+    }
+    private function fetchAndCompressSameVariantImages()
+    {
+        //
     }
 }
