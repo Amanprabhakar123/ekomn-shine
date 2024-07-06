@@ -131,7 +131,7 @@ class ProductInvetoryController extends Controller
 
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock'];
-            $sort = in_array($sort, $allowedSorts) ? $sort : 'title';
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'product_slug_id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
