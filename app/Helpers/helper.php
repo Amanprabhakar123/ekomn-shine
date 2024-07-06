@@ -388,7 +388,7 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm') {
         case 'cm':
             $dimensionalWeightFactor = 5000;
             break;
-        case 'in':
+        case 'inch':
             $dimensionalWeightFactor = 139;
             break;
         default:
