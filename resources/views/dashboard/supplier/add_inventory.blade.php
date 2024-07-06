@@ -302,7 +302,7 @@
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
                         <option value="mm">mm</option>
-                        <option value="cm">cm</option>
+                        <option value="cm" selected>cm</option>
                         <option value="inch">inch</option>
                       </select>
                       <div id="dimension_classErr" class="invalid-feedback"></div>
@@ -330,15 +330,6 @@
                         <option value="ltr">ltr</option>
                       </select>
                       <div id="weight_classErr" class="invalid-feedback"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-12 col-md-3">
-                  <div class="ek_group">
-                    <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
-                    <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="volumetric_weight" id="volumetric_weight" readonly />
-                      <div id="volumetric_weightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -378,7 +369,7 @@
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                         <option value="mm">mm</option>
-                        <option value="cm">cm</option>
+                        <option value="cm" selected>cm</option>
                         <option value="inch">inch</option>
                       </select>
                       <div id="package_dimension_classErr" class="invalid-feedback"></div>
@@ -411,7 +402,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Volumetric Weight in kg:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="package_volumetric_weight" id="package_volumetric_weight" required />
                       <div id="package_volumetric_weightErr" class="invalid-feedback"></div>
@@ -1242,6 +1233,41 @@
 
   // -----------------------------------------------------------------------------------
 
+  let packageLength = 0;
+  let packageWidth = 0;
+  let packageHeight = 0;
+  let dimensionClass = 'cm';
+  let packageVolumetricWeight = 0;
+
+  // Add onchange function for each id
+  $('#package_length').on('change', function() {
+    packageLength = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_width').on('change', function() {
+    packageWidth = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_height').on('change', function() {
+    packageHeight = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_dimension_class').on('change', function() {
+    dimensionClass = $(this).val();
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+  
   // Start code Data and Dimension Tab Step 3
   $('#dataAndDimesionTab').click(function() {
     let isValid = true;
@@ -1359,9 +1385,7 @@
       {
         id: '#package_volumetric_weight',
       },
-      {
-        id: '#volumetric_weight',
-      }
+     
     ];
 
     // Validate each field
@@ -1400,6 +1424,7 @@
     });
 
     if (isValid) {
+      formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
       // Add each field to FormData
 
       const allFields = [...fieldsToUnrequire, ...fieldsToValidate];
@@ -1414,6 +1439,45 @@
 
 
   });
+
+/**
+ * Calculate the volumetric weight in kilograms based on the dimensions and unit.
+ *
+ * @param {number} length The length of the object.
+ * @param {number} breadth The breadth of the object.
+ * @param {number} height The height of the object.
+ * @param {string} unit The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
+ * @return {number} The volumetric weight in kilograms.
+ * @throws {Error} If an unsupported unit is provided.
+ */
+function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
+    // Convert dimensions to centimeters
+    switch (unit) {
+        case 'mm':
+            length /= 10;
+            breadth /= 10;
+            height /= 10;
+            break;
+        case 'in':
+        case 'inch':
+            length *= 2.54;
+            breadth *= 2.54;
+            height *= 2.54;
+            break;
+        case 'cm':
+            // No conversion needed
+            break;
+        default:
+            throw new Error("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+    }
+
+    // Dimensional Weight Factor for cm to kg
+    const dimensionalWeightFactor = 5000;
+
+    // Calculate the volumetric weight in kilograms
+    const volumetricWeight = (length * breadth * height) / dimensionalWeightFactor;
+    return volumetricWeight;
+}
   // End code Data and Dimension Tab Step 3
 
   // -----------------------------------------------------------------------------------
@@ -1871,6 +1935,13 @@
         //   console.log(response);
         if (response.data.statusCode == 200) {
           // Redirect to the inventory index page
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Invwntory Added Successfully.",
+            showConfirmButton: false,
+            timer: 1500
+          });
           window.location.href = '{{route("my.inventory")}}';
         }
         if (response.data.statusCode == 422) {

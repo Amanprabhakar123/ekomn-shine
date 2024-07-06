@@ -35,7 +35,7 @@ class ProductVariation extends Model
         'dimension_class',
         'weight',
         'weight_class',
-        'volumetric_weight',
+        'package_volumetric_weight',
         'package_length',
         'package_width',
         'package_height',
