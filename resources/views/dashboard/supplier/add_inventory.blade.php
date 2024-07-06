@@ -1058,7 +1058,6 @@
       if (isPriceDescending) {
         for (let i = 0; i < check_bulk_price.length; i++) {
             if (parseInt(dropshipRate) < parseInt(check_bulk_price[i])) {
-              console.log(check_bulk_price[i]);
               isDropshippingGrater = false;
             }
           }
