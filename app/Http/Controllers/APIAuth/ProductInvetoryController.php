@@ -12,6 +12,7 @@ use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\CompanyDetail;
 use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
@@ -207,8 +208,7 @@ class ProductInvetoryController extends Controller
      */
     public function addInventory(Request $request)
     {
-    //    dd($request->all());
-        # i want to add validation for image if no_variant is coming then stock, size, media array required but media atleast 5 image required and color field is required
+        // dd($request->all());
          try {
             $rules = [
                 'product_name' => 'required|string|max:255',
@@ -232,7 +232,6 @@ class ProductInvetoryController extends Controller
                 'upc' => 'nullable|numeric',
                 'isbn' => 'nullable|string|regex:/^\d{10}(\d{3})?$/',
                 'mpn' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9- ]+$/',
-                'package_volumetric_weight' => 'required|numeric',
                 'model' => 'required|string|max:255',
                 'product_hsn' => 'required|string|digits_between:6,8|regex:/^\d{6,8}$/',
                 'gst_bracket' => 'required|numeric|in:0,5,12,18,28',
@@ -249,6 +248,7 @@ class ProductInvetoryController extends Controller
                 'package_dimension_class' => 'required|in:mm,cm,inch',
                 'package_weight' => 'required|numeric',
                 'package_weight_class' => 'required|in:mg,gm,kg,ml,ltr',
+                'package_volumetric_weight' => 'required|numeric',
                 'product_listing_status' => 'required|in:0,1,2,3',
             ];
             $variant_key = "no_variant";
@@ -257,49 +257,120 @@ class ProductInvetoryController extends Controller
             } else if($request->has('yes_variant')){
                 $variant_key = "yes_variant";
             }
-            // If `no_variant` is posted, add additional rules
-                $rules = array_merge($rules, [
-                    "$variant_key" => 'array',
-                    "$variant_key.*.stock" => 'required|array|min:0',
-                    "$variant_key.*.stock.*" => 'required|numeric|min:0',
-                    "$variant_key.*.size" => 'required|array|min:1',
-                    "$variant_key.*.size.*" => 'required|string',
-                    "$variant_key.*.media" => 'required|array|min:5',
-                    "$variant_key.*.media.*" => 'required|mimes:png,jpeg,jpg,mp4',
-                    "$variant_key.*.color.*" => 'required|string'
-                ]);
-            
-                $messages = [
-                    "feature" => "The feature list field is required",
-                    "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
-                    "$variant_key.*.stock.array" => "The stock must be an array.",
-                    "$variant_key.*.stock.min" => "The stock must have at least one entry.",
-                    "$variant_key.*.stock.*.required" => "Each stock entry is required and must be numeric.",
-                    "$variant_key.*.stock.*.numeric" => "Each stock entry must be a number.",
-                    "$variant_key.*.size.required" => "The size field is required when no variant is present.",
-                    "$variant_key.*.size.array" => "The size must be an array.",
-                    "$variant_key.*.size.min" => "The size must have at least one entry.",
-                    "$variant_key.*.size.*.required" => "Each size entry is required.",
-                    "$variant_key.*.size.*.string" => "Each size entry must be a string.",
-                    "$variant_key.*.media.required" => "The media field is required when no variant is present.",
-                    "$variant_key.*.media.array" => "The media must be an array.",
-                    "$variant_key.*.media.min" => "The media must have at least 5 images.",
-                    "$variant_key.*.media.*.required" => "Each media entry is required.",
-                    "$variant_key.*.media.*.image" => "Each media entry must be an image.",
-                    "$variant_key.*.color.required" => "The color field is required when no variant is present.",
-                    "$variant_key.*.color.string" => "The color must be a string.",
-                ];
-            $validator = Validator::make($request->all(), $rules);
+            // Define validation rules
+            $rules = array_merge($rules, [
+                "$variant_key" => 'array',
+                "$variant_key.*.stock" => 'required|array|min:0',
+                "$variant_key.*.stock.*" => 'required|numeric|min:0',
+                "$variant_key.*.size" => 'required|array|min:1',
+                "$variant_key.*.size.*" => 'required|string',
+                "$variant_key.*.media" => 'required|array|min:5',
+                "$variant_key.*.media.*" => 'required|mimes:png,jpeg,jpg,mp4',
+                "$variant_key.*.color" => 'required|string',
+            ]);
+
+            // Define validation messages
+            $messages = [
+                "feature" => "The feature list field is required",
+                "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
+                "$variant_key.*.stock.array" => "The stock must be an array.",
+                "$variant_key.*.stock.min" => "The stock must have at least one entry.",
+                "$variant_key.*.stock.*.required" => "Each stock entry is required and must be numeric.",
+                "$variant_key.*.stock.*.numeric" => "Each stock entry must be a number.",
+                "$variant_key.*.size.required" => "The size field is required when no variant is present.",
+                "$variant_key.*.size.array" => "The size must be an array.",
+                "$variant_key.*.size.min" => "The size must have at least one entry.",
+                "$variant_key.*.size.*.required" => "Each size entry is required.",
+                "$variant_key.*.size.*.string" => "Each size entry must be a string.",
+                "$variant_key.*.media.required" => "The media field is required when no variant is present.",
+                "$variant_key.*.media.array" => "The media must be an array.",
+                "$variant_key.*.media.min" => "The media must have at least 5 images including main image.",
+                "$variant_key.*.media.*.required" => "Each media entry is required.",
+                "$variant_key.*.media.*.mimes" => "Each media entry must be an image or video (png, jpeg, jpg, mp4).",
+                "$variant_key.*.color.required" => "The color field is required when no variant is present.",
+                "$variant_key.*.color.string" => "The color must be a string.",
+            ];
+
+            if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                $rules['supplier_id'] = 'required|string|max:20';
+            }
+
+            $validator = Validator::make($request->all(), $rules, $messages);
             
              if ($validator->fails()) {
+                $step_1 = [
+                    'product_name',
+                    'product_description',
+                    'product_keywords',
+                    'product_category',
+                    'product_sub_category',
+                    'feature',
+                    'supplier_id',
+                ];
+                $step_2 = [
+                    'dropship_rate',
+                    'potential_mrp',
+                    'bulk',
+                    'shipping'
+                ];
+                $step_3 = [
+                    'upc',
+                    'isbn',
+                    'mpn',
+                    'model',
+                    'product_hsn',
+                    'gst_bracket',
+                    'availability',
+                    'length',
+                    'width',
+                    'height',
+                    'dimension_class',
+                    'weight',
+                    'weight_class',
+                    'package_length',
+                    'package_width',
+                    'package_height',
+                    'package_dimension_class',
+                    'package_weight',
+                    'package_weight_class',
+                    'package_volumetric_weight',
+                ];
+                
+                if(in_array($validator->errors()->keys()[0], $step_1)){
+                    $step = 1;
+                } else if(in_array($validator->errors()->keys()[0], $step_2)){
+                    $step = 2;
+                } else if(in_array($validator->errors()->keys()[0], $step_3)){
+                    $step = 3;
+                } else {
+                    $step = 4;
+                }
                  return response()->json(['data' => [
                      'statusCode' => __('statusCode.statusCode422'),
                      'status' => __('statusCode.status422'),
-                     'message' => $validator->errors()
+                     'message' => $validator->errors(),
+                     'step' => $step,
                  ]], __('statusCode.statusCode200'));
              }
-
-            $user_id = auth()->user()->id;
+            
+            $user_id = null;
+             if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+                $user_id = auth()->user()->id;
+             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                $companyDetail = CompanyDetail::where('company_serial_id', $request->supplier_id)->first();
+                if ($companyDetail) {
+                    $user_id = $companyDetail->user_id;
+                }else{
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.supplierNotFound'),
+                        'step' => 1,
+                    ]], __('statusCode.statusCode200'));
+                }
+             } else {
+                 abort('403', 'Unauthorized action.');
+             }
             $company_id =auth()->user()->companyDetails->id;
             // Check if the product variation belongs to the authenticated user
             $data = $request->all();
@@ -418,6 +489,12 @@ class ProductInvetoryController extends Controller
                     foreach ($value['size'] as $size_key => $value1) {
                         $price = calculateInclusivePriceAndTax($data['dropship_rate'],$data['gst_bracket']);
                         $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
+                        // check stock array key not exist
+                        $stock = 0;
+                        if(array_key_exists($size_key, $data[$variant_key][$key]['stock'])){
+                            $stock = $data[$variant_key][$key]['stock'][$size_key];
+                        }
+                        
                         $productVariation = ProductVariation::create([
                             'product_id' => $product_id,
                             'company_id' => $company_id,
@@ -425,7 +502,7 @@ class ProductInvetoryController extends Controller
                             'slug' => '',
                             'sku' => generateSKU($request->product_name, $data['product_category']),
                             'size' => $value1,
-                            'stock' => $data[$variant_key][$key]['stock'][$size_key],
+                            'stock' => $stock,
                             'title' => $request->product_name .' ( '.$color. ', '.$value1.' ) ',
                             'description' => $request->product_description,
                             'color' => $color,

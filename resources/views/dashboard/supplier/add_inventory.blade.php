@@ -460,6 +460,7 @@
                         <img src="assets/images/icon/placeholder-img-1.png" />
                         <h6>Upload Main Image</h6>
                       </div>
+                      <div id="boxError1" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="colorStock">
@@ -1819,12 +1820,29 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
           if (key.startsWith('yes_variant')) {
             keysToDelete.push(key);
           }
+          if (key.startsWith('yes_variant')) {
+            keysToDelete.push(key);
+          }
         }
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
 
         // Append files for the 'no_variant' case
+        let totalFilesCount = 0;
         const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
+        fileInputs.forEach(input => {
+            totalFilesCount += input.files.length; // Count total number of files
+        });
+        if (totalFilesCount < 5) {
+            // Prevent form submission if less than 5 files
+            event.preventDefault();
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "You must upload at least 5 images. including 1 main image and 4 additional images."
+            });
+            return;
+        }
         fileInputs.forEach((input, index) => {
           const files = input.files;
           if (files.length > 0) { // Ensure that there are files to append
@@ -1857,6 +1875,9 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
           if (key.startsWith('no_variant')) {
             keysToDelete.push(key);
           }
+          if (key.startsWith('yes_variant')) {
+            keysToDelete.push(key);
+          }
         }
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
@@ -1866,6 +1887,20 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
         // Iterate over each variant element to collect data
         imagecontainerVariationElements.forEach((variantElement, i) => {
           const fileInputs = variantElement.querySelectorAll('input[type="file"]');
+          let totalFilesCount = 0;
+          fileInputs.forEach(input => {
+              totalFilesCount += input.files.length; // Count total number of files
+          });
+          if (totalFilesCount < 5) {
+              // Prevent form submission if less than 5 files
+              event.preventDefault();
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You must upload at least 5 images. including 1 main image and 4 additional images per variant."
+              });
+              return;
+          }
           fileInputs.forEach((input, index) => {
             const files = input.files;
             if (files.length > 0) { // Ensure that there are files to append
@@ -1936,9 +1971,9 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
         if (response.data.statusCode == 200) {
           // Redirect to the inventory index page
           Swal.fire({
-            position: "top-end",
+            position: "center",
             icon: "success",
-            title: "Invwntory Added Successfully.",
+            title: "Invetory Added Successfully.",
             showConfirmButton: false,
             timer: 1500
           });
@@ -2019,6 +2054,15 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
               // Set the error message in the corresponding error field
               $(`#${field}Err`).text(messages[0]);
             }
+          }
+          if(response.data.step == 1){
+            document.querySelector('a[data-bs-target="#general"]').click();
+          }else if(response.data.step == 2){
+            document.querySelector('a[data-bs-target="#shipping"]').click();
+          }else if(response.data.step == 3){
+            document.querySelector('a[data-bs-target="#data"]').click();
+          }else if(response.data.step == 4){
+            document.querySelector('a[data-bs-target="#images"]').click();
           }
         }
       },
