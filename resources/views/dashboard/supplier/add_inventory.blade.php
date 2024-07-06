@@ -1002,37 +1002,37 @@
       const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
       const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
       const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
-      const quantity = parseInt(quantityInput.val());
-      const local = parseInt(localInput.val());
-      const regional = parseInt(regionalInput.val());
-      const national = parseInt(nationalInput.val());
+      const quantity = quantityInput.val();
+      const local = localInput.val();
+      const regional = regionalInput.val();
+      const national = nationalInput.val();
 
-      if (isNaN(quantity) || !Number.isInteger(quantity)) {
-      quantityInput.addClass('is-invalid form-control');
-      isValid = false;
+      if (!quantity) {
+        quantityInput.addClass('is-invalid form-control');
+        isValid = false;
       } else {
-      quantityInput.removeClass('is-invalid form-control');
+        quantityInput.removeClass('is-invalid form-control');
       }
 
-      if (isNaN(local) || !Number.isInteger(local)) {
-      localInput.addClass('is-invalid form-control');
-      isValid = false;
+      if (!local) {
+        localInput.addClass('is-invalid form-control');
+        isValid = false;
       } else {
-      localInput.removeClass('is-invalid form-control');
+        localInput.removeClass('is-invalid form-control');
       }
 
-      if (isNaN(regional) || !Number.isInteger(regional)) {
-      regionalInput.addClass('is-invalid form-control');
-      isValid = false;
+      if (!regional) {
+        regionalInput.addClass('is-invalid form-control');
+        isValid = false;
       } else {
-      regionalInput.removeClass('is-invalid form-control');
+        regionalInput.removeClass('is-invalid form-control');
       }
 
-      if (isNaN(national) || !Number.isInteger(national)) {
-      nationalInput.addClass('is-invalid form-control');
-      isValid = false;
+      if (!national) {
+        nationalInput.addClass('is-invalid form-control');
+        isValid = false;
       } else {
-      nationalInput.removeClass('is-invalid form-control');
+        nationalInput.removeClass('is-invalid form-control');
       }
       shipping_quantity.push(quantity);
     });
@@ -1115,10 +1115,11 @@
         }
           // Add Shipping Rate table rows to FormData
         $('#shippingRateTable tbody tr').each(function(index) {
+          const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
           const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
           const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
           const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
-          // formData.append(`shipping[${index}][quantity]`, quantity);
+          formData.append(`shipping[${index}][quantity]`, quantity);
           formData.append(`shipping[${index}][local]`, local);
           formData.append(`shipping[${index}][regional]`, regional);
           formData.append(`shipping[${index}][national]`, national);
@@ -1797,8 +1798,7 @@
         //   console.log(response);
         if (response.data.statusCode == 200) {
           // Redirect to the inventory index page
-          alert('Inventor Added Successfully');
-          //window.location.href = '{{route("my.inventory")}}';
+          window.location.href = '{{route("my.inventory")}}';
         }
         if (response.data.statusCode == 422) {
           const field_list = response.data.message;

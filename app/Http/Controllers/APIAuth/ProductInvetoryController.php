@@ -207,7 +207,7 @@ class ProductInvetoryController extends Controller
      */
     public function addInventory(Request $request)
     {
-       dd($request->all());
+    //    dd($request->all());
         # i want to add validation for image if no_variant is coming then stock, size, media array required but media atleast 5 image required and color field is required
          try {
             $rules = [
@@ -418,6 +418,7 @@ class ProductInvetoryController extends Controller
                     }
                     foreach ($value['size'] as $size_key => $value1) {
                         $price = calculateInclusivePriceAndTax($data['dropship_rate'],$data['gst_bracket']);
+                        $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
                         $productVariation = ProductVariation::create([
                             'product_id' => $product_id,
                             'company_id' => $company_id,
@@ -426,9 +427,9 @@ class ProductInvetoryController extends Controller
                             'sku' => generateSKU($request->product_name, $data['product_category']),
                             'size' => $value1,
                             'stock' => $data[$variant_key][$key]['stock'][$size_key],
-                            'title' => $request->product_name,
+                            'title' => $request->product_name .' ( '.$color. ', '.$value1.' ) ',
                             'description' => $request->product_description,
-                            'color' => !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key],
+                            'color' => $color,
                             'length' => $request->length,
                             'width' => $request->width,
                             'height' => $request->height,
@@ -442,8 +443,8 @@ class ProductInvetoryController extends Controller
                             'package_dimension_class' => $request->package_dimension_class,
                             'package_weight' => $request->package_weight,
                             'package_weight_class' => $request->package_weight_class,
-                            'price_before_tax' =>  number_format($price['price_before_tax'], 2),
-                            'price_after_tax' => number_format($price['price_after_tax'], 2),
+                            'price_before_tax' =>  (float) $price['price_before_tax'],
+                            'price_after_tax' =>   (float) $price['price_after_tax'],
                             'status' => $data['product_listing_status'] ?? 1,
                             'availability_status' => $request->availability,
                             'dropship_rate' => $request->dropship_rate,
