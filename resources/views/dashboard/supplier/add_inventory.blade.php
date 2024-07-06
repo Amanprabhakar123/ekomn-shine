@@ -127,10 +127,11 @@
                             <tr>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
+                                <div id="bulk_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
-
+                                <div id="bulk_priceErr0" class="invalid-feedback"></div>
                               </td>
                             </tr>
                           </tbody>
@@ -158,15 +159,19 @@
                             <tr>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required>
+                                <div id="shipping_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][local]" id="shipping[0][local]" required>
+                                <div id="shipping_localErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][regional]" id="shipping[0][regional]" required>
+                                <div id="shipping_regionalErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][national]" id="shipping[0][national]" required>
+                                <div id="shipping_nationalErr0" class="invalid-feedback"></div>
                               </td>
                               <td></td>
                             </tr>
@@ -958,7 +963,13 @@
       $('#dropship_rate').addClass('is-invalid');
       $('#dropship_rateErr').text('Dropship Rate is required.');
       isValid = false;
-    }
+
+      
+    } else if (!/^\d+$/.test(dropshipRate)) {
+        $('#dropship_rate').addClass('is-invalid');
+        $('#dropship_rateErr').text('Dropship Rate should be a number.');
+        isValid = false;
+      }
 
     // Validate Potential MRP
     const potentialMrp = $('#potential_mrp').val();
@@ -966,30 +977,47 @@
       $('#potential_mrp').addClass('is-invalid');
       $('#potential_mrpErr').text('Potential MRP is required.');
       isValid = false;
-    }
+    }else if (!/^\d+$/.test(potentialMrp)) {
+        $('#potential_mrp').addClass('is-invalid');
+        $('#potential_mrpErr').text('Potential MRP should be a number.');
+        isValid = false;
+      }
 
 
     const check_bulk_quantity = [];
     const check_bulk_price = [];
     // Validate Bulk Rate table rows
-    $('#bulkRateTable tbody tr').each(function() {
+    $('#bulkRateTable tbody tr').each(function(index) {
       const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
       const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
       const quantity = quantityInput.val();
       const price = priceInput.val();
+      console.log(index, quantity, price);
 
       if (!quantity) {
         quantityInput.addClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('Quantity is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(quantity)){ 
+        quantityInput.addClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('Quantity should be a number.');
+        isValid = false;
+      }else {
         quantityInput.removeClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('');
       }
 
       if (!price) {
         priceInput.addClass('is-invalid form-control');
+        $('#bulk_priceErr'+index).text('Price is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(price)){
+        priceInput.addClass('is-invalid'); 
+        $('#bulk_priceErr'+index).text('Price should be a number.');
+        isValid = false; 
+      }else {
         priceInput.removeClass('is-invalid form-control');
+        $('#bulk_priceErr'+index).text('');
       }
       check_bulk_quantity.push(quantity);
       check_bulk_price.push(price);
@@ -997,7 +1025,7 @@
 
     const shipping_quantity = [];
     // Validate Shipping Rate table rows
-    $('#shippingRateTable tbody tr').each(function() {
+    $('#shippingRateTable tbody tr').each(function(index) {
       const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
       const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
       const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
@@ -1009,30 +1037,54 @@
 
       if (!quantity) {
         quantityInput.addClass('is-invalid form-control');
+        $('#shipping_quantityErr'+index).text('Quantity is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(quantity)){
+        quantityInput.addClass('is-invalid');
+        $('#shipping_quantityErr'+index).text('Quantity should be a number.');
+        isValid = false;
+      }else {
         quantityInput.removeClass('is-invalid form-control');
+        $('#shipping_quantityErr'+index).text('');
       }
 
       if (!local) {
         localInput.addClass('is-invalid form-control');
+        $('#shipping_localErr'+index).text('Local Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(local)){
+        localInput.addClass('is-invalid');
+        $('#shipping_localErr'+index).text('Local Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         localInput.removeClass('is-invalid form-control');
+        $('#shipping_localErr'+index).text('');
       }
 
       if (!regional) {
         regionalInput.addClass('is-invalid form-control');
+        $('#shipping_regionalErr'+index).text('Regional Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(regional)){
+        regionalInput.addClass('is-invalid');
+        $('#shipping_regionalErr'+index).text('Regional Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         regionalInput.removeClass('is-invalid form-control');
+        $('#shipping_regionalErr'+index).text('');
       }
 
       if (!national) {
         nationalInput.addClass('is-invalid form-control');
+        $('#shipping_nationalErr'+index).text('National Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(national)){
+        nationalInput.addClass('is-invalid');
+        $('#shipping_nationalErr'+index).text('National Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         nationalInput.removeClass('is-invalid form-control');
+        $('#shipping_nationalErr'+index).text('');
       }
       shipping_quantity.push(quantity);
     });
@@ -1136,12 +1188,15 @@
         <tr>
             <td>
                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[${index}][quantity]" required>
+                <div id="bulk_quantityErr${index}" class="invalid-feedback"></div>
             </td>
             <td>
                 <input type="text" class="smallInput_n " placeholder="Rs. 0.00" name="bulk[${index}][price]" required>
-            </td>
+            <div id="bulk_priceErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                  <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
+                 
             </td>
         </tr>`;
     $('#bulkRateTable tbody').append(newRow);
@@ -1160,16 +1215,20 @@
         <tr>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Qty. Upto" name="shipping[${index}][quantity]" required>
-            </td>
+                <div id="shipping_quantityErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][local]" required>
-            </td>
+              <div id="shipping_localErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][regional]" required>
-            </td>
+              <div id="shipping_regionalErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][national]" required>
-            </td>
+            <div id="shipping_nationalErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <button type="button" class="deleteRow deleteShippingRow"><i class="far fa-trash-alt"></i></button>
             </td>
@@ -1312,10 +1371,24 @@
         $(field.id).addClass('is-invalid');
         $(field.errorId).text(field.errorMessage);
         isValid = false;
+      } else if (field.id === '#length' || field.id === '#width' || field.id === '#height' || field.id === '#weight' || field.id === '#package_length' || field.id === '#package_width' || field.id === '#package_height' || field.id === '#package_weight') {
+        if (!/^\d+(\.\d+)?$/.test(value)) {
+          $(field.id).addClass('is-invalid');
+          $(field.errorId).text('Value should be a number.');
+          isValid = false;
+        } 
       } else {
         $(field.id).removeClass('is-invalid');
         $(field.errorId).text('');
       }
+
+      // if (field.id === '#length' || field.id === '#width' || field.id === '#height' || field.id === '#weight' || field.id === '#package_length' || field.id === '#package_width' || field.id === '#package_height' || field.id === '#package_weight') {
+      //     if (!/^\d+$/.test(value)) {
+      //       $(field.id).addClass('is-invalid');
+      //       $(field.errorId).text('Value should be a number.');
+      //       isValid = false;
+      //     }
+      //   }
 
       // Add event listener to handle input change
       $(field.id).on('input', function() {
