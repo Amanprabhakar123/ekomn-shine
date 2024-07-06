@@ -33,6 +33,7 @@ class ProductVariationMediaFactory extends Factory
             'is_master' => $this->faker->boolean(),
             'desc' => $this->faker->sentence(),
             'is_active' => $this->faker->boolean(),
+            'is_compressed' => true,
         ];
     }
 }

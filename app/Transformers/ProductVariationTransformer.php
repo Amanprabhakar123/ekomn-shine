@@ -22,7 +22,7 @@ class ProductVariationTransformer extends TransformerAbstract
                 'sku' => $product->sku,
                 'product_id' => $product->product_slug_id,
                 'stock' => $product->stock,
-                'selling_price' => $product->price_after_tax,
+                'selling_price' => $product->price_before_tax,
                 'product_category' => $product->product->category->name,
                 'availability_status' => getAvailablityStatusName($product->availability_status),
                 'status' => getStatusName($product->status),

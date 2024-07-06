@@ -68,6 +68,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
+        Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
     });
 });
 
@@ -77,7 +78,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
-        Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
+        
     });
 });
 

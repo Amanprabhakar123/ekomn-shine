@@ -774,6 +774,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   const formData = new FormData();
 
@@ -968,6 +969,8 @@
     }
 
 
+    const check_bulk_quantity = [];
+    const check_bulk_price = [];
     // Validate Bulk Rate table rows
     $('#bulkRateTable tbody tr').each(function() {
       const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
@@ -988,8 +991,11 @@
       } else {
         priceInput.removeClass('is-invalid form-control');
       }
+      check_bulk_quantity.push(quantity);
+      check_bulk_price.push(price);
     });
 
+    const shipping_quantity = [];
     // Validate Shipping Rate table rows
     $('#shippingRateTable tbody tr').each(function() {
       const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
@@ -1028,36 +1034,99 @@
       } else {
         nationalInput.removeClass('is-invalid form-control');
       }
+      shipping_quantity.push(quantity);
     });
 
     if (isValid) {
+      // Check if the quantity is in ascending order
+      let isQuantityAscending = true;
+      for (let i = 1; i < check_bulk_quantity.length; i++) {
+        if (parseInt(check_bulk_quantity[i]) <= parseInt(check_bulk_quantity[i - 1])) {
+          isQuantityAscending = false;
+          break;
+        }
+      }
+      // check if the price is in ascending order
+      let isPriceDescending = true;
+      for (let i = 1; i < check_bulk_price.length; i++) {
+        if (parseInt(check_bulk_price[i]) >= parseInt(check_bulk_price[i - 1])) {
+          isPriceDescending = false;
+          break;
+        }
+      }
+     
+      // check dropshipping price is greater then bulk order pricing
+      isDropshippingGrater = true;
+      if (isPriceDescending) {
+        for (let i = 0; i < check_bulk_price.length; i++) {
+            if (parseInt(dropshipRate) < parseInt(check_bulk_price[i])) {
+              isDropshippingGrater = false;
+            }
+          }
+      }
 
-      // Add Single Piece / Dropship Rate to FormData
-      formData.append('dropship_rate', dropshipRate);
-      formData.append('potential_mrp', potentialMrp);
+      // check shipping quantity is in ascending order
+      let isShippingQuantityAscending = true;
+      for (let i = 1; i < shipping_quantity.length; i++) {
+        if (parseInt(shipping_quantity[i]) <= parseInt(shipping_quantity[i - 1])) {
+          isShippingQuantityAscending = false;
+          break;
+        }
+      }
 
-      // Add Bulk Rate table rows to FormData
-      $('#bulkRateTable tbody tr').each(function(index) {
-        const quantity = $(this).find('input[name^="bulk"][name$="[quantity]"]').val();
-        const price = $(this).find('input[name^="bulk"][name$="[price]"]').val();
-        formData.append(`bulk[${index}][quantity]`, quantity);
-        formData.append(`bulk[${index}][price]`, price);
-      });
-
-      // Add Shipping Rate table rows to FormData
-      $('#shippingRateTable tbody tr').each(function(index) {
-        const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
-        const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
-        const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
-        const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
-        formData.append(`shipping[${index}][quantity]`, quantity);
-        formData.append(`shipping[${index}][local]`, local);
-        formData.append(`shipping[${index}][regional]`, regional);
-        formData.append(`shipping[${index}][national]`, national);
-      });
-
-      // Proceed to next tab
-      document.querySelector('a[data-bs-target="#data"]').click();
+      if(parseInt(potentialMrp) < parseInt(dropshipRate)){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Dropship Rate should be less than or Equal Potential MRP."
+        });
+      }else if(!isDropshippingGrater){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Dropship Rate should be greater than the Bulk Rate table."
+        });
+      }else if (!isQuantityAscending) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Quantity should be in ascending order. Please correct the quantity in the Bulk Rate table."
+        });
+      }else if(!isPriceDescending){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Price should be in descending order. Please correct the price in the Bulk Rate table."
+        });
+      }else if(!isShippingQuantityAscending){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Shipping quantity should be in ascending order. Please correct the quantity in the Shipping Rate table."
+        });
+      }else{
+        // Add Single Piece / Dropship Rate to FormData
+        formData.append('dropship_rate', dropshipRate);
+        formData.append('potential_mrp', potentialMrp);
+        // Add Bulk Rate table rows to FormData
+        for (let i = 0; i < check_bulk_quantity.length; i++) {
+          formData.append(`bulk[${i}][quantity]`, check_bulk_quantity[i]);
+          formData.append(`bulk[${i}][price]`, check_bulk_price[i]);
+        }
+          // Add Shipping Rate table rows to FormData
+        $('#shippingRateTable tbody tr').each(function(index) {
+          const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
+          const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
+          const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
+          const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
+          formData.append(`shipping[${index}][quantity]`, quantity);
+          formData.append(`shipping[${index}][local]`, local);
+          formData.append(`shipping[${index}][regional]`, regional);
+          formData.append(`shipping[${index}][national]`, national);
+        });
+        // Proceed to next tab
+        document.querySelector('a[data-bs-target="#data"]').click();
+      }
     }
   });
   $('#addNewRowButton').click(function() {
@@ -1640,7 +1709,7 @@
         // Append color data for the 'no_variant' case
         const variationColor = document.querySelectorAll("#variationColor select");
         variationColor.forEach((color, index) => {
-          formData.append(`no_variant[${index}][color][0]`, color.value);
+          formData.append(`no_variant[${index}][color]`, color.value);
         });
 
 
@@ -1724,10 +1793,12 @@
       dataType: 'json',
       processData: false,
       contentType: false,
+      async: false,
       success: function(response) {
         //   console.log(response);
         if (response.data.statusCode == 200) {
-          alert('Inventory added successfully');
+          // Redirect to the inventory index page
+          window.location.href = '{{route("my.inventory")}}';
         }
         if (response.data.statusCode == 422) {
           const field_list = response.data.message;

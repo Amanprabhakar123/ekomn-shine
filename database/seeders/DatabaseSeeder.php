@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PlanSeeder::class);
         $this->call(CompanySupplierSeeder::class);
         $this->call(CompanyBuyerSeeder::class);
-        $this->call(ProductSeeder::class);
+        // $this->call(ProductSeeder::class);
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
