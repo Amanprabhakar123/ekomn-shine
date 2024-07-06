@@ -995,6 +995,7 @@
       check_bulk_price.push(price);
     });
 
+    const shipping_quantity = [];
     // Validate Shipping Rate table rows
     $('#shippingRateTable tbody tr').each(function() {
       const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
@@ -1033,6 +1034,7 @@
       } else {
         nationalInput.removeClass('is-invalid form-control');
       }
+      shipping_quantity.push(quantity);
     });
 
     if (isValid) {
@@ -1062,17 +1064,15 @@
             }
           }
       }
-      // Add Shipping Rate table rows to FormData
-      $('#shippingRateTable tbody tr').each(function(index) {
-        const quantity = $(this).find('input[name^="shipping"][name$="[quantity]"]').val();
-        const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
-        const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
-        const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
-        formData.append(`shipping[${index}][quantity]`, quantity);
-        formData.append(`shipping[${index}][local]`, local);
-        formData.append(`shipping[${index}][regional]`, regional);
-        formData.append(`shipping[${index}][national]`, national);
-      });
+
+      // check shipping quantity is in ascending order
+      let isShippingQuantityAscending = true;
+      for (let i = 1; i < shipping_quantity.length; i++) {
+        if (parseInt(shipping_quantity[i]) <= parseInt(shipping_quantity[i - 1])) {
+          isShippingQuantityAscending = false;
+          break;
+        }
+      }
 
       if(parseInt(potentialMrp) < parseInt(dropshipRate)){
         Swal.fire({
@@ -1098,6 +1098,12 @@
           title: "Oops...",
           text: "Price should be in descending order. Please correct the price in the Bulk Rate table."
         });
+      }else if(!isShippingQuantityAscending){
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Shipping quantity should be in ascending order. Please correct the quantity in the Shipping Rate table."
+        });
       }else{
         // Add Single Piece / Dropship Rate to FormData
         formData.append('dropship_rate', dropshipRate);
@@ -1107,6 +1113,16 @@
           formData.append(`bulk[${i}][quantity]`, check_bulk_quantity[i]);
           formData.append(`bulk[${i}][price]`, check_bulk_price[i]);
         }
+          // Add Shipping Rate table rows to FormData
+        $('#shippingRateTable tbody tr').each(function(index) {
+          const local = $(this).find('input[name^="shipping"][name$="[local]"]').val();
+          const regional = $(this).find('input[name^="shipping"][name$="[regional]"]').val();
+          const national = $(this).find('input[name^="shipping"][name$="[national]"]').val();
+          // formData.append(`shipping[${index}][quantity]`, quantity);
+          formData.append(`shipping[${index}][local]`, local);
+          formData.append(`shipping[${index}][regional]`, regional);
+          formData.append(`shipping[${index}][national]`, national);
+        });
         // Proceed to next tab
         document.querySelector('a[data-bs-target="#data"]').click();
       }
