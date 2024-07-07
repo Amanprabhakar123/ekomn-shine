@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('category_image')->nullable();
             $table->unsignedInteger('parent_id')->default(0);
+            $table->unsignedInteger('depth')->default(0);
+            $table->unsignedInteger('root_parent_id')->default(0);
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->boolean('is_active')->default(true);

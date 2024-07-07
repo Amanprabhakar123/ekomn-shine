@@ -32,7 +32,7 @@
           </div> 
         </div>
         <div class="form-group mb-0">
-          <input type="text" class="form-control pwdico  @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password" />
+          <input type="password" class="form-control pwdico  @error('password') is-invalid @enderror" id="password" name="password" placeholder="Password" />
           <div id="passwordError" class="invalid-feedback">
           @error('password')
              {{ $message }}

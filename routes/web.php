@@ -1,16 +1,21 @@
 <?php
 
+use Razorpay\Api\Product;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
 use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\ProductInventory;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProfileController;
+use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
@@ -53,11 +58,27 @@ Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('editProfile', [DashboardController::class, 'editProfile'])->name('edit.profile');
+    Route::get('myInventory', [DashboardController::class, 'myInventory'])->name('my.inventory');
+    Route::get('addInventory', [DashboardController::class, 'addInventory'])->name('add.inventory');
+    Route::get('bulk-upload', [DashboardController::class, 'bulkUpload'])->name('bulk-upload');
 });
 
+// If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
+        Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
+        Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
+    });
+});
+
+// If we use json post and get data that time we will use this route
+Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
+    Route::prefix('api')->group(function () {
+        Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
+        Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
+        Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
+        
     });
 });
 
@@ -84,4 +105,3 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
 });
-

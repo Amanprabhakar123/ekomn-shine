@@ -348,7 +348,7 @@ Supplier Profile
 
 
 </div>
-<div class="ek_db_footer">&copy; 2024 ekomn.com, All Rights Reserved</div>
+@include('dashboard.layout.copyright')
 </div>
 <script>
     $(document).ready(function() {
@@ -970,7 +970,7 @@ Supplier Profile
                 <p class="m-0">Sign on a blank page, take a picture and upload a high resolution copy here</p>
             </div>`);
     @endif
-    
+
     </script>
 
 @endsection

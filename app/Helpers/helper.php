@@ -1,8 +1,25 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
+
+
+// User roles define for entire application
+const ROLE_BUYER = User::ROLE_BUYER;
+const ROLE_SUPPLIER = User::ROLE_SUPPLIER;
+const ROLE_ADMIN = User::ROLE_ADMIN;
+const PERMISSION_ADD_PRODUCT = User::PERMISSION_ADD_PRODUCT;
+const PERMISSION_LIST_PRODUCT = User::PERMISSION_LIST_PRODUCT;
+const PERMISSION_EDIT_PRODUCT_DETAILS = User::PERMISSION_EDIT_PRODUCT_DETAILS;
+const PERMISSION_ADD_CONNCETION = User::PERMISSION_ADD_CONNCETION;
+const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
+const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
+const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
+const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
 
 /**
  * Encrypts a string using a salt key.
@@ -76,33 +93,31 @@ if (!function_exists('printR')) {
 if (!function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName = null)
     {
-        if(!$companyName){
-              // Extract the initials
-        $username = '';
-        $words = explode(' ', $companyName);
-        if(count($words)== 1){
-            $username = strtoupper($words[0]);
-        } else {
-            foreach ($words as $word) {
-                $username .= strtoupper($word[0]);
+        if (!$companyName) {
+            // Extract the initials
+            $username = '';
+            $words = explode(' ', $companyName);
+            if (count($words) == 1) {
+                $username = strtoupper($words[0]);
+            } else {
+                foreach ($words as $word) {
+                    $username .= strtoupper($word[0]);
+                }
             }
-        }
 
-        $counter = 1;
-        $originalUsername = $username;
+            $counter = 1;
+            $originalUsername = $username;
 
-        // Ensure the username is unique
-        while (CompanyDetail::where('display_name', $username)->exists()) {
-            $username = $originalUsername . $counter;
-            $counter++;
-        }
+            // Ensure the username is unique
+            while (CompanyDetail::where('display_name', $username)->exists()) {
+                $username = $originalUsername . $counter;
+                $counter++;
+            }
 
-        return $username;
-
-        }else{
+            return $username;
+        } else {
             return '';
         }
-      
     }
 
 
@@ -151,7 +166,7 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         if ($key) {
             if (strpos($key, '.') !== false) {
                 $a = explode('.', trim($key));
-                $key = $a[0][0].'_'.$a[1];
+                $key = $a[0][0] . '_' . $a[1];
             }
             $response['key'] = trim($key);
         }
@@ -194,4 +209,235 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         // Format the new supplier ID with leading zeros and 's' prefix
         return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
     }
+
+
+    /**
+     * Generates a unique SKU for a product based on its name, category and the current time.
+     *
+     * The SKU is composed of:
+     * - The first 2 characters of the product name (uppercase)
+     * - The first 2 characters of the category name (uppercase)
+     * - The last 4 digits of the current Unix timestamp
+     * - A random 4-digit number
+     *
+     * Ensures the generated SKU is unique by checking against existing SKUs in the database.
+     *
+     * @param string $name The name of the product.
+     * @param string $category The category of the product.
+     * @return string The generated SKU, which is a maximum of 10 characters long.
+     */
+    function generateSKU($name, $category)
+    {
+        $namePart = strtoupper(substr($name, 0, 2));
+
+        $categoryPart = strtoupper(substr($category, 0, 2));
+
+        $timePart = substr(time(), -4);
+
+        $randomPart = mt_rand(1000, 9999);
+
+        $sku = $namePart . $categoryPart . $timePart . $randomPart;
+
+        while (ProductVariation::where('sku', $sku)->exists()) {
+            $randomPart = mt_rand(1000, 9999);
+            $sku = $namePart . $categoryPart . $timePart . $randomPart;
+        }
+
+        return substr($sku, 0, 12);
+    }
+
+    /**
+     * Generates a slug from the given product name.
+     *
+     * @param string $name The product name.
+     * @return string The generated slug.
+     */
+    function generateSlug($name, $p_id)
+    {
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
+        $p_id = strtolower($p_id);
+        return $slug . '-' . $p_id;
+    }
+
+    /**
+     * Generate a unique product ID based on the given title and next number.
+     *
+     * @param string $title The title of the product.
+     * @param int $nextNumber The next number to be appended to the product ID.
+     * @return string The generated product ID.
+     */
+    function generateProductID($title, $nextNumber)
+    {
+        // Extract and sanitize the first 2 letters of the product title
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 2));
+
+        // Ensure the prefix is exactly 2 characters, padding with 'X' if needed
+        $prefix = str_pad($prefix, 2, 'X');
+
+        // Format the next number as a zero-padded string, ensuring it's 6 digits
+        $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // Combine prefix and numeric part to form the ProductID
+        return $prefix . $numericPart;
+    }
+
+
+    /**
+     * Print the SQL query along with the parameter bindings for debugging purposes.
+     *
+     * This function takes a query builder instance as input, retrieves the SQL query string,
+     * and the parameter bindings from the query. It then combines them to create a complete
+     * SQL query with actual parameter values for display and debugging purposes.
+     *
+     * @param \Illuminate\Database\Query\Builder $query The query builder instance to print.
+     *
+     * @return string The combined SQL query with actual parameter values.
+     *
+     *
+     * @example
+     * $query = DB::table('users')
+     *            ->where('name', 'John')
+     *            ->orWhere('age', '>', 30);
+     *
+     * $combinedQuery = printQueryWithParameters($query);
+     * echo $combinedQuery;
+     *
+     * // Output:
+     * // select * from `users` where `name` = 'John' or `age` > 30
+     */
+    function printQueryWithParameters($query)
+    {
+        // Get the SQL query string
+        $sql = $query->toSql();
+
+        // Get the parameter bindings
+        $bindings = $query->getBindings();
+
+        // Combine them for display
+        return vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
+    }
+
+    /**
+     * Get the string representation of a status based on its type value.
+     *
+     * @param int $type The type value of the status.
+     * @return string The string representation of the status.
+     */
+    function getStatusName($type)
+    {
+        switch ($type) {
+            case ProductInventory::STATUS_ACTIVE:
+                return 'Active';
+            case ProductInventory::STATUS_INACTIVE:
+                return 'Inactive';
+            case ProductInventory::STATUS_OUT_OF_STOCK:
+                return 'Out of Stock';
+            case ProductInventory::STATUS_DRAFT:
+                return 'Draft';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    /**
+     * Get the string representation of an availability status based on its type value.
+     *
+     * @param int $type The type value of the availability status.
+     * @return string The string representation of the availability status.
+     */
+    function getAvailablityStatusName($type)
+    {
+        switch ($type) {
+            case ProductInventory::TILL_STOCK_LAST:
+                return 'Till Stock Last';
+            case ProductInventory::REGULAR_AVAILABLE:
+                return 'Regular Available';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    /**
+     * Calculate the inclusive price and exclusive tax amount based on GST.
+     *
+     * @param float $exclusivePrice Price before GST.
+     * @param float $gstRate GST rate in percentage.
+     * @return array Associative array containing inclusive price and exclusive tax amount.
+     */
+    function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array
+    {
+        // Calculate inclusive price
+        $inclusivePrice = $exclusivePrice * (1 + $gstRate / 100);
+
+        return [
+            'price_after_tax' => $inclusivePrice,
+            'price_before_tax' => $exclusivePrice
+        ];
+    }
 }
+/**
+ * Convert weight in kilograms to the specified unit.
+ *
+ * @param float $weightInKg The weight in kilograms to be converted.
+ * @param string $unit The unit to convert to. Supported units are 'mg', 'gm', 'ml', 'ltr', and 'kg'.
+ * @return float The converted weight.
+ * @throws Exception If an unsupported unit is provided.
+ */
+function convertKg($weightInKg, $unit)
+{
+    switch ($unit) {
+        case 'mg':
+            return $weightInKg * 1000000; // Convert kg to mg
+        case 'gm':
+            return $weightInKg * 1000; // Convert kg to gm
+        case 'ml':
+            return $weightInKg * 1000; // Convert kg to ml (assuming 1 kg = 1 L)
+        case 'ltr':
+            return $weightInKg; // Convert kg to L (assuming 1 kg = 1 L)
+        case 'kg':
+            return $weightInKg;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mg', 'gm', 'ml', or 'ltr'.");
+    }
+}
+/**
+ * Calculate the volumetric weight in kilograms based on the dimensions and unit.
+ *
+ * @param float $length The length of the object.
+ * @param float $breadth The breadth of the object.
+ * @param float $height The height of the object.
+ * @param string $unit The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
+ * @return float The volumetric weight in kilograms.
+ * @throws Exception If an unsupported unit is provided.
+ */
+function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
+{
+    // Convert dimensions to centimeters
+    switch ($unit) {
+        case 'mm':
+            $length /= 10;
+            $breadth /= 10;
+            $height /= 10;
+            break;
+        case 'in':
+        case 'inch':
+            $length *= 2.54;
+            $breadth *= 2.54;
+            $height *= 2.54;
+            break;
+        case 'cm':
+            // No conversion needed
+            break;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+    }
+
+    // Dimensional Weight Factor for cm to kg
+    $dimensionalWeightFactor = 5000;
+
+    // Calculate the volumetric weight in kilograms
+    $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
+    return $volumetricWeight;
+}
+
+

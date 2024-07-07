@@ -13,8 +13,10 @@
         "laravel/sanctum": "^3.3",
         "laravel/socialite": "^5.14",
         "laravel/tinker": "^2.8",
+        "league/fractal": "^0.20.1",
         "razorpay/razorpay": "2.*",
         "spatie/laravel-permission": "^6.7",
+        "tinify/tinify": "^1.6",
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {

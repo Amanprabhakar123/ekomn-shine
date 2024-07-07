@@ -43,7 +43,11 @@ class DashboardController extends Controller
 
     public function editProfile()
     {
-        $product_category = Category::all();
+        $product_category = Category::where([
+            'root_parent_id' => 0,
+            'is_active' => true,
+            'depth' => 0
+        ])->get();
         $selected_product_category = auth()->user()->companyDetails->productCategory->pluck('product_category_id')->toArray();
         $alternate_business_contact = json_decode(auth()->user()->companyDetails->alternate_business_contact);
         $languages =  ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
@@ -88,5 +92,52 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             return errorResponse($e->getMessage());
         }
+    }
+
+    /**
+     * Display the user's inventory.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function myInventory()
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            return view('dashboard.supplier.inventory');
+        } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+            return view('dashboard.buyer.inventory');
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            return view('dashboard.admin.inventory');
+        }
+        abort('403', 'Unauthorized action.');
+    }
+
+    /**
+     * Display the form to add a new product to the inventory.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function addInventory()
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.add_inventory');
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.add_inventory');
+        }
+        abort('403', 'Unauthorized action.');
+    }
+
+    /**
+     * Display the form to bulk upload products to the inventory.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function bulkUpload()
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.supplier.bulk_upload');
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.admin.bulk_upload');
+        }
+        abort('403', 'Unauthorized action.');
     }
 }

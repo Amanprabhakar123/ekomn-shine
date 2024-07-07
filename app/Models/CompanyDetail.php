@@ -135,4 +135,44 @@ class CompanyDetail extends Model
     {
         return $this->hasMany(CompanySalesChannel::class, 'company_id', 'id');
     }
+
+    /**
+     * Get the user that owns the company detail.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the variations for the product.
+     */
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the features for the product.
+     */
+    public function features()
+    {
+        return $this->hasMany(ProductFeature::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the keywords for the product.
+     */
+    public function keywords()
+    {
+        return $this->hasMany(ProductKeyword::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the products for the company.
+     */
+    public function products()
+    {
+        return $this->hasMany(ProductInventory::class, 'company_id', 'id');
+    }
 }

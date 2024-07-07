@@ -1,0 +1,1 @@
+<div class="ek_db_footer">&copy; 2024 ekomn.com, All Rights Reserved</div>

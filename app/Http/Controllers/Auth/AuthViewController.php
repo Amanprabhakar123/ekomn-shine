@@ -28,8 +28,12 @@ class AuthViewController extends Controller
      */
     public function loginFormView()
     {
-        $prouct = Category::all();
-        return view('auth.layout.app', ['product' => $prouct]);
+        $product = Category::where([
+            'root_parent_id' => 0,
+            'is_active' => true,
+            'depth' => 0
+        ])->get();
+        return view('auth.layout.app', ['product' => $product]);
     }
 
     /**

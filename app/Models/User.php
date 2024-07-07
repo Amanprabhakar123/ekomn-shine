@@ -22,13 +22,14 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
     const ROLE_ADMIN = 'super-admin';
-    const ROLE_ADD_PRODUCT = 'add-product';
-    const ROLE_EDIT_PRODUCT_DETAILS = 'edit-product-details';
-    const ROLE_ADD_CONNCETION = 'add-connection';
-    const ROLE_ADD_EDIT_CONNCETION = 'add-edit-connection';
-    const ROLE_ADD_NEW_ORDER = 'add-new-order';
-    const ROLE_ADD_EDIT_ORDER = 'add-edit-order';
-    const ROLE_ADD_NEW_RETURN = 'add-new-return';
+    const PERMISSION_ADD_PRODUCT = 'add_product_details';
+    const PERMISSION_LIST_PRODUCT = 'list_product_details';
+    const PERMISSION_EDIT_PRODUCT_DETAILS = 'edit_product_details';
+    const PERMISSION_ADD_CONNCETION = 'add_connection';
+    const PERMISSION_EDIT_CONNCETION = 'edit_connection';
+    const PERMISSION_ADD_NEW_ORDER = 'add_new_order';
+    const PERMISSION_EDIT_ORDER = 'edit_order';
+    const PERMISSION_ADD_NEW_RETURN = 'add_new_return';
 
     
 
@@ -192,5 +193,14 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function companyDetails()
     {
         return $this->hasOne(CompanyDetail::class);
+    }
+    /**
+     * Define a one-to-many relationship with the ProductInventory model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function productInventories()
+    {
+        return $this->hasMany(ProductInventory::class)->withPivot('product_id', 'id');
     }
 }

@@ -8,7 +8,13 @@
             <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="user">
                     <h4>{{auth()->user()->name}}</h4>
-                    <p class="m-0">User ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
+                    @if(auth()->check())
+                        @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            <p class="m-0">Admin</p>
+                        @elseif(auth()->user()->hasRole(ROLE_BUYER) || auth()->user()->hasRole(ROLE_SUPPLIER))
+                            <p class="m-0">User ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
+                        @endif
+                    @endif
                 </div>
                 <div class="img-box">
                     <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="some user image" />
@@ -20,10 +26,15 @@
                 <li><a class="dropdown-item" href="#">Settings</a></li>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
-                </form><a href="#" class="dropdown-item" onclick="event.preventDefault();
+                    <input type="hidden" name="token" id="token">
+                </form>
+                <a href="#" class="dropdown-item" onclick="event.preventDefault();
+                        document.getElementById('token').value = sessionStorage.getItem('token');
+                         sessionStorage.removeItem('token'); sessionStorage.removeItem('user_details');
                         document.getElementById('logout-form').submit();">
                     Logout
-                </a></li>
+                </a>
+                </li>
             </ul>
         </div>
     </div>

@@ -2,68 +2,86 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\CompanyDetail;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\ProductVariation;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductInventory extends Model
 {
     use HasFactory;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
+    const STATUS_OUT_OF_STOCK = 3;
+    const STATUS_DRAFT = 4;
+
+    const TILL_STOCK_LAST = 1;
+    const REGULAR_AVAILABLE = 2;
+
     protected $fillable = [
-        'title',
+        'title', // Product title copy this product variation title
         'company_id',
-        'supplier_id',
-        'description',
-        'features',
+        'user_id', // User ID of the user who created the product or supplier ID
+        'description', // copy this information product variation description
         'model',
-        'sku',
+        'gst_percentage',
         'hsn',
-        'gst',
-        'size',
-        'color',
         'upc',
         'isbn',
         'mpin',
-        'stock',
-        'gst_price',
-        'igst',
-        'igst_amount',
-        'cgst',
-        'cgst_amount',
-        'sgst',
-        'sgst_amount',
-        'price_before_tax',
-        'price_after_tax',
-        'tier_pricing',
-        'length',
-        'breadth',
-        'height',
-        'dimension_class',
-        'weight',
-        'weight_class',
-        'availability_status',
-        'status',
-        'packaging_detail',
-        'shipping_cost_detail',
+        'availability_status', // copy this information product variation availability status
+        'status', // Status of the product listed or not default 0 and 1 means listed
+        'product_category',
+        'product_subcategory'
     ];
 
-    protected $casts = [
-        'gst' => 'decimal:2',
-        'gst_price' => 'decimal:2',
-        'igst' => 'decimal:2',
-        'igst_amount' => 'decimal:2',
-        'cgst' => 'decimal:2',
-        'cgst_amount' => 'decimal:2',
-        'sgst' => 'decimal:2',
-        'sgst_amount' => 'decimal:2',
-        'price_before_tax' => 'decimal:2',
-        'price_after_tax' => 'decimal:2',
-        'tier_pricing' => 'array',
-        'packaging_detail' => 'array',
-        'shipping_cost_detail' => 'array',
-        'length' => 'decimal:2',
-        'breadth' => 'decimal:2',
-        'height' => 'decimal:2',
-        'weight' => 'decimal:2',
-    ];
+    /**
+     * Get the variations for the product.
+     */
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class, 'product_id', 'id');
+    }
+
+    /**
+     * Get the features for the product.
+     */
+    public function features()
+    {
+        return $this->hasMany(ProductFeature::class, 'product_id', 'id');
+    }
+
+    /**
+     * Get the keywords for the product.
+     */
+    public function keywords()
+    {
+        return $this->hasMany(ProductKeyword::class, 'product_id', 'id');
+    }
+
+    /**
+     * Get the company that owns the product.
+     */
+    public function company()
+    {
+        return $this->belongsTo(CompanyDetail::class);
+    }
+    
+    /**
+     * Get the user that owns the product.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the product category that owns the product.
+     */
+    public function category(){
+        return $this->belongsTo(Category::class, 'product_category', 'id');
+    }
 }

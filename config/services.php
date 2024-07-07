@@ -37,4 +37,11 @@ return [
         'redirect' => 'http://localhost:8083/auth/google/call-back',
     ],
 
+
+    'tinify' => [
+        'key' => env('TINIFY_API_KEY'),
+    ],
+
+
+
 ];
