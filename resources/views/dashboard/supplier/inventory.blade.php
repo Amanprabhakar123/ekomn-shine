@@ -6,7 +6,11 @@
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">My Inventory</h3>
+                @if(auth()->user()->hasRole(ROLE_SUPPLIER))
+                @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_PRODUCT))
                 <a class="btn btnekomn btn-sm" href="{{route('add.inventory')}}"><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
+                @endif
+                @endif
             </div>
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon" id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">

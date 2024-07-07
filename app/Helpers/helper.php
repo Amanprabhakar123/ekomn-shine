@@ -1,11 +1,25 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
 
+
+// User roles define for entire application
+const ROLE_BUYER = User::ROLE_BUYER;
+const ROLE_SUPPLIER = User::ROLE_SUPPLIER;
+const ROLE_ADMIN = User::ROLE_ADMIN;
+const PERMISSION_ADD_PRODUCT = User::PERMISSION_ADD_PRODUCT;
+const PERMISSION_LIST_PRODUCT = User::PERMISSION_LIST_PRODUCT;
+const PERMISSION_EDIT_PRODUCT_DETAILS = User::PERMISSION_EDIT_PRODUCT_DETAILS;
+const PERMISSION_ADD_CONNCETION = User::PERMISSION_ADD_CONNCETION;
+const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
+const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
+const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
+const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
 
 /**
  * Encrypts a string using a salt key.
