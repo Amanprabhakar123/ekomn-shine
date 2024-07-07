@@ -119,9 +119,9 @@ class DashboardController extends Controller
     public function addInventory()
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.supplier.add_inventory');
+            return view('dashboard.common.add_inventory');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.admin.add_inventory');
+            return view('dashboard.common.add_inventory');
         }
         abort('403', 'Unauthorized action.');
     }

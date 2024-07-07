@@ -355,12 +355,15 @@ class ProductInvetoryController extends Controller
                  }
                 
                 $user_id = null;
+                $company_id = null;
                  if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $user_id = auth()->user()->id;
+                    $company_id =auth()->user()->companyDetails->id;
                  } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
                     $companyDetail = CompanyDetail::where('company_serial_id', $request->supplier_id)->first();
                     if ($companyDetail) {
                         $user_id = $companyDetail->user_id;
+                        $company_id = $companyDetail->id;
                     }else{
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode422'),
@@ -372,10 +375,8 @@ class ProductInvetoryController extends Controller
                  } else {
                     return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
                  }
-                $company_id =auth()->user()->companyDetails->id;
                 // Check if the product variation belongs to the authenticated user
                 $data = $request->all();
-                // dd($data['no_variant'][0]['media']);
                  if ($request->has('no_variant') || $request->has('yes_variant')) {
     
                     // bulk order tier rate
@@ -562,6 +563,7 @@ class ProductInvetoryController extends Controller
                  
              } catch (\Exception $e) {
                  DB::rollBack();
+                 printR($e->getLine());
                  dd($e->getMessage(), $e->getLine(), $e->getFile());
                  // Handle the exception
                  return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));

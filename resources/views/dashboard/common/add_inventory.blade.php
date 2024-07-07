@@ -28,6 +28,15 @@
 
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
+            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            <div class="ek_group">
+                <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
+                <div class="ek_f_input">
+                    <input type="text" class="form-control" placeholder="Supplier Id." id="supplier_id" required />
+                    <div id="supplier_idErr" class="invalid-feedback"></div>
+                </div>
+            </div>
+            @endif
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -481,7 +490,6 @@
                             <input type="text" class="smallInput_n" placeholder="0" id="stock" name="stock">
                             <div id="stockErr" class="invalid-feedback"></div>
                           </td>
-
                         </tr>
                       </tbody>
                     </table>
@@ -916,6 +924,19 @@
       $('#product_sub_categoryErr').text('');
     }
 
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    const supplierId = $('#supplier_id').val();
+    if (!supplierId) {
+      $('#supplier_id').addClass('is-invalid');
+      $('#supplier_idErr').text('Supplier Id is required.');
+      isValid = false;
+    } else {
+      $('#supplier_id').removeClass('is-invalid');
+      $('#supplier_idErr').text('');
+    }
+    formData.append('supplier_id', supplierId);
+    @endif
+
     if (isValid) {
       $('#features-list').children().each(function(index) {
         const feature = $(this).find('.featurescontent').html().split('<div')[0].trim().replace(/<br>/g, '\n');
@@ -988,8 +1009,6 @@
       const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
       const quantity = quantityInput.val();
       const price = priceInput.val();
-      console.log(index, quantity, price);
-
       if (!quantity) {
         quantityInput.addClass('is-invalid form-control');
         $('#bulk_quantityErr'+index).text('Quantity is required.');
@@ -1846,6 +1865,31 @@ let stockAndSizeCounter = 1;
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
 
+
+        const stockIn = $("#stock");
+        const sizeIn = $("#size");
+        let = stock_value = stockIn.val();
+        let = size_value = sizeIn.val();
+        if (stock_value == '') {
+          stockIn.addClass('is-invalid');
+          $("#stockErr").text('Stock is required.');
+        } 
+        else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+          $("#stockErr").text('Stock shuld be a number.');
+        } 
+        else {
+          stockIn.removeClass('is-invalid');
+          $("#stockErr").text('');
+        }
+        if (size_value == '') {
+            sizeIn.addClass('is-invalid');
+            $("#sizeErr").text('Size is required.');
+        } else {
+          sizeIn.removeClass('is-invalid');
+          $("#sizeErr").text('');
+        }
+
+
         // Append files for the 'no_variant' case
         let totalFilesCount = 0;
         const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
@@ -1906,7 +1950,6 @@ let stockAndSizeCounter = 1;
         // add validation stock and size
         const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
         stockAndSizeElement.forEach((variantElement, i) => {
-          console.log(i);
           const stockIn = $("#stock-"+i);
           const sizeIn = $("#size-"+i);
           let = stock_value = stockIn.val();
@@ -1994,15 +2037,29 @@ let stockAndSizeCounter = 1;
           });
         });
 
+        const uniquieColor = [];
         // Append color data for the 'yes_variant' case
         const variationColor = document.querySelectorAll("[id^='variationColor-']");
         variationColor.forEach((colorField, i) => {
           const colorSelect = colorField.querySelector("select");
           const selectedColor = colorSelect.value; // Get the selected option's value
           if (selectedColor) {
+            uniquieColor.push(selectedColor);
             formData.append(`yes_variant[${i}][color]`, selectedColor);
           }
         });
+
+        // Check if there are duplicate colors
+        const duplicateColors = uniquieColor.filter((color, index) => uniquieColor.indexOf(color) !== index);
+        if (duplicateColors.length > 0) {
+          isValid = false;
+          event.preventDefault();
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Duplicate variant colors are not allowed."
+          });
+        }
       }
     }
 
@@ -2019,7 +2076,6 @@ let stockAndSizeCounter = 1;
         contentType: false,
         async: false,
         success: function(response) {
-          //   console.log(response);
           if (response.data.statusCode == 200) {
             // Redirect to the inventory index page
             Swal.fire({
