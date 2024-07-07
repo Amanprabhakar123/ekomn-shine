@@ -1,6 +1,6 @@
 
 /** Set Base url */
-const baseURL = 'http://staging.ekomn.com/api/';
+const baseURL = 'http://65.0.18.91:8081/api/';
 
 /** Set Header Values */
 const makeHeader = () => {
