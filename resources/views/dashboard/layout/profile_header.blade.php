@@ -9,9 +9,9 @@
                 <div class="user">
                     <h4>{{auth()->user()->name}}</h4>
                     @if(auth()->check())
-                        @if(auth()->user()->role == 'admin')
+                        @if(auth()->user()->hasRole(ROLE_ADMIN))
                             <p class="m-0">Admin</p>
-                        @elseif(auth()->user()->role == 'buyer' || auth()->user()->role == 'supplier')
+                        @elseif(auth()->user()->hasRole(ROLE_BUYER) || auth()->user()->hasRole(ROLE_SUPPLIER))
                             <p class="m-0">User ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
                         @endif
                     @endif

@@ -35,28 +35,32 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::query()->delete();
         
         // Create permissions
-        Permission::create(['name' => 'add_product_details']);
-        Permission::create(['name' => 'edit_product_details']);
-        Permission::create(['name' => 'add_connection']);
-        Permission::create(['name' => 'edit_connection']);
-        Permission::create(['name' => 'add_new_order']);
-        Permission::create(['name' => 'edit_order']);
-        Permission::create(['name' => 'add_new_return']);
+        Permission::create(['name' => PERMISSION_ADD_PRODUCT]);
+        Permission::create(['name' => PERMISSION_LIST_PRODUCT]);
+        Permission::create(['name' => PERMISSION_EDIT_PRODUCT_DETAILS]);
+        Permission::create(['name' => PERMISSION_ADD_CONNCETION]);
+        Permission::create(['name' => PERMISSION_EDIT_CONNCETION]);
+        Permission::create(['name' => PERMISSION_ADD_NEW_ORDER]);
+        Permission::create(['name' => PERMISSION_EDIT_ORDER]);
+        Permission::create(['name' => PERMISSION_ADD_NEW_RETURN]);
 
 
         // Create role  s and assign existing permissions
-        $role = Role::create(['name' => 'buyer']);
-        $role->givePermissionTo('add_connection');
-        $role->givePermissionTo('edit_connection');
-        $role->givePermissionTo('add_new_order');
-        $role->givePermissionTo('edit_order');
-        $role->givePermissionTo('add_new_return');
+        $role = Role::create(['name' => ROLE_BUYER]);
+        $role->givePermissionTo(PERMISSION_ADD_CONNCETION);
+        $role->givePermissionTo(PERMISSION_EDIT_CONNCETION);
+        $role->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
+        $role->givePermissionTo(PERMISSION_EDIT_ORDER);
+        $role->givePermissionTo(PERMISSION_ADD_NEW_RETURN);
 
-        $role = Role::create(['name' => 'supplier']);
-        $role->givePermissionTo('add_product_details');
-        $role->givePermissionTo('edit_connection');
+        $role = Role::create(['name' => ROLE_SUPPLIER]);
+        $role->givePermissionTo(PERMISSION_ADD_PRODUCT);
+        $role->givePermissionTo(PERMISSION_LIST_PRODUCT);
+        $role->givePermissionTo(PERMISSION_EDIT_PRODUCT_DETAILS);
+        $role->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
+        $role->givePermissionTo(PERMISSION_EDIT_ORDER);
 
-        $role = Role::create(['name' => 'super-admin']);
+        $role = Role::create(['name' => ROLE_ADMIN]);
         $role->givePermissionTo(Permission::all());
     }
 }

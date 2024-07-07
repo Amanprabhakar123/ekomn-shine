@@ -15,9 +15,11 @@ class ProductVariationTransformer extends TransformerAbstract
     public function transform(ProductVariation $product)
     {
         try {
+            $media = $product->media->where('is_master', 1)->first();
+            $thumbnail =  $media->thumbnail_path ? $media->thumbnail_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             $data = [
                 'id' => salt_encrypt($product->id),
-                'product_image' => $product->media->first() ? $product->media->first()->thumbnail_path : 'https://via.placeholder.com/640x480.png/0044ff?text=at',
+                'product_image' => $thumbnail,
                 'title' => $product->title,
                 'sku' => $product->sku,
                 'product_id' => $product->product_slug_id,

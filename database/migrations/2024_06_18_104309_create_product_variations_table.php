@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('dimension_class', 10)->nullable();
             $table->decimal('weight', 10, 2)->nullable();
             $table->string('weight_class', 10)->nullable();
-            $table->decimal('volumetric_weight', 10, 2)->nullable();
+            $table->decimal('package_volumetric_weight', 10, 2)->nullable();
             $table->decimal('package_length', 10, 2)->nullable();
             $table->decimal('package_width', 10, 2)->nullable();
             $table->decimal('package_height', 10, 2)->nullable();
