@@ -1807,6 +1807,7 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
 
   // Start code Submit Inventory Form
   $('#submitInventoryForm').on('click', function() {
+    let isValid = true;
     // Check if variant radio button is checked
     const variantChecked = $('input[name="variant"]:checked');
 
@@ -1834,6 +1835,7 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
             totalFilesCount += input.files.length; // Count total number of files
         });
         if (totalFilesCount < 5) {
+            isValid = false;
             // Prevent form submission if less than 5 files
             event.preventDefault();
             Swal.fire({
@@ -1892,6 +1894,7 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
               totalFilesCount += input.files.length; // Count total number of files
           });
           if (totalFilesCount < 5) {
+              isValid = false;
               // Prevent form submission if less than 5 files
               event.preventDefault();
               Swal.fire({
@@ -1958,118 +1961,120 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
     // Add Product Listing Status to FormData
     const productListingStatus = $('#product_listing_status').val();
     formData.append('product_listing_status', productListingStatus);
-    $.ajax({
-      url: '{{route("inventory.store")}}',
-      type: 'POST',
-      data: formData,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-      async: false,
-      success: function(response) {
-        //   console.log(response);
-        if (response.data.statusCode == 200) {
-          // Redirect to the inventory index page
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Invetory Added Successfully.",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          window.location.href = '{{route("my.inventory")}}';
-        }
-        if (response.data.statusCode == 422) {
-          const field_list = response.data.message;
-          // Iterate over the entries in the field_list object
-          for (const [field, messages] of Object.entries(field_list)) {
-            if (field == 'product_keywords') {
-              $('#tag-input').addClass('is-invalid');
-              $('#tag-inputErr').text(messages[0]);
-            } else if (field == 'feature') {
-              $('#features-error').removeClass('hide');
-            } else if (field == 'bulk') {
-              // Validate Bulk Rate table rows
-              $('#bulkRateTable tbody tr').each(function() {
-                const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
-                const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
-                const quantity = quantityInput.val();
-                const price = priceInput.val();
+    if(isValid){
+        $.ajax({
+        url: '{{route("inventory.store")}}',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        async: false,
+        success: function(response) {
+          //   console.log(response);
+          if (response.data.statusCode == 200) {
+            // Redirect to the inventory index page
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Invetory Added Successfully.",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            window.location.href = '{{route("my.inventory")}}';
+          }
+          if (response.data.statusCode == 422) {
+            const field_list = response.data.message;
+            // Iterate over the entries in the field_list object
+            for (const [field, messages] of Object.entries(field_list)) {
+              if (field == 'product_keywords') {
+                $('#tag-input').addClass('is-invalid');
+                $('#tag-inputErr').text(messages[0]);
+              } else if (field == 'feature') {
+                $('#features-error').removeClass('hide');
+              } else if (field == 'bulk') {
+                // Validate Bulk Rate table rows
+                $('#bulkRateTable tbody tr').each(function() {
+                  const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
+                  const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
+                  const quantity = quantityInput.val();
+                  const price = priceInput.val();
 
-                if (!quantity) {
-                  quantityInput.addClass('is-invalid form-control');
-                } else {
-                  quantityInput.removeClass('is-invalid form-control');
-                }
-                if (!price) {
-                  priceInput.addClass('is-invalid form-control');
-                } else {
-                  priceInput.removeClass('is-invalid form-control');
-                }
-              });
-            } else if (field == 'shipping') {
-              // Validate Shipping Rate table rows
-              $('#shippingRateTable tbody tr').each(function() {
-                const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
-                const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
-                const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
-                const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
-                const quantity = quantityInput.val();
-                const local = localInput.val();
-                const regional = regionalInput.val();
-                const national = nationalInput.val();
+                  if (!quantity) {
+                    quantityInput.addClass('is-invalid form-control');
+                  } else {
+                    quantityInput.removeClass('is-invalid form-control');
+                  }
+                  if (!price) {
+                    priceInput.addClass('is-invalid form-control');
+                  } else {
+                    priceInput.removeClass('is-invalid form-control');
+                  }
+                });
+              } else if (field == 'shipping') {
+                // Validate Shipping Rate table rows
+                $('#shippingRateTable tbody tr').each(function() {
+                  const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
+                  const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
+                  const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
+                  const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
+                  const quantity = quantityInput.val();
+                  const local = localInput.val();
+                  const regional = regionalInput.val();
+                  const national = nationalInput.val();
 
-                if (!quantity) {
-                  quantityInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  quantityInput.removeClass('is-invalid form-control');
-                }
+                  if (!quantity) {
+                    quantityInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    quantityInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!local) {
-                  localInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  localInput.removeClass('is-invalid form-control');
-                }
+                  if (!local) {
+                    localInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    localInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!regional) {
-                  regionalInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  regionalInput.removeClass('is-invalid form-control');
-                }
+                  if (!regional) {
+                    regionalInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    regionalInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!national) {
-                  nationalInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  nationalInput.removeClass('is-invalid form-control');
-                }
-              });
-            } else {
-              // Add 'is-invalid' class to the corresponding element
-              $(`#${field}`).addClass('is-invalid');
+                  if (!national) {
+                    nationalInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    nationalInput.removeClass('is-invalid form-control');
+                  }
+                });
+              } else {
+                // Add 'is-invalid' class to the corresponding element
+                $(`#${field}`).addClass('is-invalid');
 
-              // Set the error message in the corresponding error field
-              $(`#${field}Err`).text(messages[0]);
+                // Set the error message in the corresponding error field
+                $(`#${field}Err`).text(messages[0]);
+              }
+            }
+            if(response.data.step == 1){
+              document.querySelector('a[data-bs-target="#general"]').click();
+            }else if(response.data.step == 2){
+              document.querySelector('a[data-bs-target="#shipping"]').click();
+            }else if(response.data.step == 3){
+              document.querySelector('a[data-bs-target="#data"]').click();
+            }else if(response.data.step == 4){
+              document.querySelector('a[data-bs-target="#images"]').click();
             }
           }
-          if(response.data.step == 1){
-            document.querySelector('a[data-bs-target="#general"]').click();
-          }else if(response.data.step == 2){
-            document.querySelector('a[data-bs-target="#shipping"]').click();
-          }else if(response.data.step == 3){
-            document.querySelector('a[data-bs-target="#data"]').click();
-          }else if(response.data.step == 4){
-            document.querySelector('a[data-bs-target="#images"]').click();
-          }
+        },
+        error: function(error) {
+          console.error('Error:', error);
         }
-      },
-      error: function(error) {
-        console.error('Error:', error);
-      }
-    });
+      });
+    }
   });
 </script>
 @endsection
