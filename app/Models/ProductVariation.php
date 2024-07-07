@@ -50,7 +50,8 @@ class ProductVariation extends Model
         'dropship_rate',
         'potential_mrp',
         'tier_rate',
-        'tier_shipping_rate'
+        'tier_shipping_rate',
+        'allow_editable'
     ];
 
     protected $casts = [
