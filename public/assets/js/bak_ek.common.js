@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // end
 
   // Add or Remove Bulk Rate Row
-  document.getElementById('addNewRowButton').addEventListener('click', function () {
+ /*document.getElementById('addNewRowButton').addEventListener('click', function () {
     const tableBody = document.querySelector('#bulkRateTable tbody');
     const newRow = document.createElement('tr');
     const quantityCell = document.createElement('td');
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
     button.addEventListener('click', function () {
       button.closest('#bulkRateTable tr').remove();
     });
-  });
+  });*/
   // end
 
 

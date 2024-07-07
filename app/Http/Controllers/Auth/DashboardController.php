@@ -101,11 +101,11 @@ class DashboardController extends Controller
      */
     public function myInventory()
     {
-        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.supplier.inventory');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
             return view('dashboard.buyer.inventory');
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }
         abort('403', 'Unauthorized action.');
@@ -118,10 +118,10 @@ class DashboardController extends Controller
      */
     public function addInventory()
     {
-        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
-            return view('dashboard.supplier.add_inventory');
-        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
-            return view('dashboard.admin.add_inventory');
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.add_inventory');
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.add_inventory');
         }
         abort('403', 'Unauthorized action.');
     }
@@ -133,9 +133,9 @@ class DashboardController extends Controller
      */
     public function bulkUpload()
     {
-        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.supplier.bulk_upload');
-        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.admin.bulk_upload');
         }
         abort('403', 'Unauthorized action.');

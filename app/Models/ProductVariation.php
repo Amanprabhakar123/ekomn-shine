@@ -21,6 +21,7 @@ class ProductVariation extends Model
 
     protected $fillable = [
         'product_id',
+        'company_id',
         'product_slug_id',
         'slug',
         'title',
@@ -34,7 +35,7 @@ class ProductVariation extends Model
         'dimension_class',
         'weight',
         'weight_class',
-        'volumetric_weight',
+        'package_volumetric_weight',
         'package_length',
         'package_width',
         'package_height',

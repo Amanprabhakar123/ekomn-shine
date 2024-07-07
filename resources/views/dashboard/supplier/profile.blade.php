@@ -970,7 +970,7 @@ Supplier Profile
                 <p class="m-0">Sign on a blank page, take a picture and upload a high resolution copy here</p>
             </div>`);
     @endif
-    
+
     </script>
 
 @endsection

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('company_id');
-            $table->string('product_slug_id', 30)->unique();
-            $table->string('slug', 191);
+            $table->string('product_slug_id', 30)->nullable()->unique();
+            $table->string('slug', 191)->nullable();
             $table->string('sku', 100)->unique();
             $table->string('title', 191)->nullable();
             $table->text('description')->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('dimension_class', 10)->nullable();
             $table->decimal('weight', 10, 2)->nullable();
             $table->string('weight_class', 10)->nullable();
-            $table->decimal('volumetric_weight', 10, 2)->nullable();
+            $table->decimal('package_volumetric_weight', 10, 2)->nullable();
             $table->decimal('package_length', 10, 2)->nullable();
             $table->decimal('package_width', 10, 2)->nullable();
             $table->decimal('package_height', 10, 2)->nullable();

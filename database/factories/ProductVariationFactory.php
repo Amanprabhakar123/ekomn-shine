@@ -49,7 +49,7 @@ class ProductVariationFactory extends Factory
             'dimension_class' => 'cm',
             'weight' => 10,
             'weight_class' => 'kg',
-            'volumetric_weight' => 10,
+            'package_volumetric_weight' => 10,
             'package_length' => 10,
             'package_width' => 10,
             'package_height' => 10,

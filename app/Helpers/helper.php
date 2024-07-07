@@ -1,11 +1,25 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
 
+
+// User roles define for entire application
+const ROLE_BUYER = User::ROLE_BUYER;
+const ROLE_SUPPLIER = User::ROLE_SUPPLIER;
+const ROLE_ADMIN = User::ROLE_ADMIN;
+const PERMISSION_ADD_PRODUCT = User::PERMISSION_ADD_PRODUCT;
+const PERMISSION_LIST_PRODUCT = User::PERMISSION_LIST_PRODUCT;
+const PERMISSION_EDIT_PRODUCT_DETAILS = User::PERMISSION_EDIT_PRODUCT_DETAILS;
+const PERMISSION_ADD_CONNCETION = User::PERMISSION_ADD_CONNCETION;
+const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
+const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
+const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
+const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
 
 /**
  * Encrypts a string using a salt key.
@@ -79,33 +93,31 @@ if (!function_exists('printR')) {
 if (!function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName = null)
     {
-        if(!$companyName){
-              // Extract the initials
-        $username = '';
-        $words = explode(' ', $companyName);
-        if(count($words)== 1){
-            $username = strtoupper($words[0]);
-        } else {
-            foreach ($words as $word) {
-                $username .= strtoupper($word[0]);
+        if (!$companyName) {
+            // Extract the initials
+            $username = '';
+            $words = explode(' ', $companyName);
+            if (count($words) == 1) {
+                $username = strtoupper($words[0]);
+            } else {
+                foreach ($words as $word) {
+                    $username .= strtoupper($word[0]);
+                }
             }
-        }
 
-        $counter = 1;
-        $originalUsername = $username;
+            $counter = 1;
+            $originalUsername = $username;
 
-        // Ensure the username is unique
-        while (CompanyDetail::where('display_name', $username)->exists()) {
-            $username = $originalUsername . $counter;
-            $counter++;
-        }
+            // Ensure the username is unique
+            while (CompanyDetail::where('display_name', $username)->exists()) {
+                $username = $originalUsername . $counter;
+                $counter++;
+            }
 
-        return $username;
-
-        }else{
+            return $username;
+        } else {
             return '';
         }
-      
     }
 
 
@@ -154,7 +166,7 @@ if (!function_exists('generateUniqueCompanyUsername')) {
         if ($key) {
             if (strpos($key, '.') !== false) {
                 $a = explode('.', trim($key));
-                $key = $a[0][0].'_'.$a[1];
+                $key = $a[0][0] . '_' . $a[1];
             }
             $response['key'] = trim($key);
         }
@@ -240,10 +252,11 @@ if (!function_exists('generateUniqueCompanyUsername')) {
      * @param string $name The product name.
      * @return string The generated slug.
      */
-    function generateSlug($name, $p_id) {
+    function generateSlug($name, $p_id)
+    {
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
         $p_id = strtolower($p_id);
-        return $slug.'-'.$p_id;
+        return $slug . '-' . $p_id;
     }
 
     /**
@@ -253,12 +266,13 @@ if (!function_exists('generateUniqueCompanyUsername')) {
      * @param int $nextNumber The next number to be appended to the product ID.
      * @return string The generated product ID.
      */
-    function generateProductID($title, $nextNumber) {
-        // Extract and sanitize the first 4 letters of the product title
-        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 3));
+    function generateProductID($title, $nextNumber)
+    {
+        // Extract and sanitize the first 2 letters of the product title
+        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 2));
 
-        // Ensure the prefix is exactly 4 characters, padding with 'X' if needed
-        $prefix = str_pad($prefix, 3, 'X');
+        // Ensure the prefix is exactly 2 characters, padding with 'X' if needed
+        $prefix = str_pad($prefix, 2, 'X');
 
         // Format the next number as a zero-padded string, ensuring it's 6 digits
         $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
@@ -342,4 +356,88 @@ if (!function_exists('generateUniqueCompanyUsername')) {
                 return 'Unknown';
         }
     }
+
+    /**
+     * Calculate the inclusive price and exclusive tax amount based on GST.
+     *
+     * @param float $exclusivePrice Price before GST.
+     * @param float $gstRate GST rate in percentage.
+     * @return array Associative array containing inclusive price and exclusive tax amount.
+     */
+    function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array
+    {
+        // Calculate inclusive price
+        $inclusivePrice = $exclusivePrice * (1 + $gstRate / 100);
+
+        return [
+            'price_after_tax' => $inclusivePrice,
+            'price_before_tax' => $exclusivePrice
+        ];
+    }
 }
+/**
+ * Convert weight in kilograms to the specified unit.
+ *
+ * @param float $weightInKg The weight in kilograms to be converted.
+ * @param string $unit The unit to convert to. Supported units are 'mg', 'gm', 'ml', 'ltr', and 'kg'.
+ * @return float The converted weight.
+ * @throws Exception If an unsupported unit is provided.
+ */
+function convertKg($weightInKg, $unit)
+{
+    switch ($unit) {
+        case 'mg':
+            return $weightInKg * 1000000; // Convert kg to mg
+        case 'gm':
+            return $weightInKg * 1000; // Convert kg to gm
+        case 'ml':
+            return $weightInKg * 1000; // Convert kg to ml (assuming 1 kg = 1 L)
+        case 'ltr':
+            return $weightInKg; // Convert kg to L (assuming 1 kg = 1 L)
+        case 'kg':
+            return $weightInKg;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mg', 'gm', 'ml', or 'ltr'.");
+    }
+}
+/**
+ * Calculate the volumetric weight in kilograms based on the dimensions and unit.
+ *
+ * @param float $length The length of the object.
+ * @param float $breadth The breadth of the object.
+ * @param float $height The height of the object.
+ * @param string $unit The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
+ * @return float The volumetric weight in kilograms.
+ * @throws Exception If an unsupported unit is provided.
+ */
+function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
+{
+    // Convert dimensions to centimeters
+    switch ($unit) {
+        case 'mm':
+            $length /= 10;
+            $breadth /= 10;
+            $height /= 10;
+            break;
+        case 'in':
+        case 'inch':
+            $length *= 2.54;
+            $breadth *= 2.54;
+            $height *= 2.54;
+            break;
+        case 'cm':
+            // No conversion needed
+            break;
+        default:
+            throw new Exception("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+    }
+
+    // Dimensional Weight Factor for cm to kg
+    $dimensionalWeightFactor = 5000;
+
+    // Calculate the volumetric weight in kilograms
+    $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
+    return $volumetricWeight;
+}
+
+
