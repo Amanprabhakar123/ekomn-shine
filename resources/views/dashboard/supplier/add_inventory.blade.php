@@ -474,10 +474,12 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                            <input type="text" class="smallInput_n" placeholder="Size" id="size" name="size">
+                            <div id="sizeErr" class="invalid-feedback"></div>
                           </td>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="0" name="stock">
+                            <input type="text" class="smallInput_n" placeholder="0" id="stock" name="stock">
+                            <div id="stockErr" class="invalid-feedback"></div>
                           </td>
 
                         </tr>
@@ -630,10 +632,12 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size">
+                                <div id="sizeErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" name="stock">
+                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock">
+                                <div id="stockErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -1566,25 +1570,36 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
       initializeVideoUpload(container);
     });
   });
-
+let stockAndSizeCounter = 1;
   document.getElementById("main-container").addEventListener("click", function(event) {
     if (event.target.classList.contains("addSize")) {
       const variantSizetbody = event.target.closest(".colorStock").querySelector("tbody");
       const newSize = document.createElement("tr");
       const sizeCell = document.createElement("td");
       const sizeInput = document.createElement("input");
+      const ErrorDiv = document.createElement("div");
       sizeInput.type = "text";
       sizeInput.className = "smallInput_n";
       sizeInput.placeholder = "Size";
       sizeInput.name = "size";
+      sizeInput.id = "size-"+stockAndSizeCounter;
       sizeCell.appendChild(sizeInput);
+      ErrorDiv.id = "sizeErr-"+stockAndSizeCounter;
+      ErrorDiv.className = "invalid-feedback";
+      sizeCell.appendChild(ErrorDiv);
       const stockCell = document.createElement("td");
       const stockInput = document.createElement("input");
       stockInput.type = "text";
       stockInput.className = "smallInput_n";
       stockInput.placeholder = "0";
       stockInput.name = "stock";
+      stockInput.id = "stock-"+stockAndSizeCounter;
       stockCell.appendChild(stockInput);
+      const ErrorDivTwo = document.createElement("div");
+      ErrorDivTwo.id = "stockErr-"+stockAndSizeCounter;
+      ErrorDivTwo.className = "invalid-feedback";
+      stockCell.appendChild(ErrorDivTwo);
+      stockAndSizeCounter++;
       const actionCell = document.createElement("td");
       const removeButton = document.createElement("button");
       removeButton.className = "deleteRow";
@@ -1686,14 +1701,16 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                                    <input type="text" class="smallInput_n" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
+                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0" name="stock">
-                                  </td>
+                                    <input type="text" class="smallInput_n" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
+                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
-                                  </td>
+                                    </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -1734,6 +1751,7 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
     const multiRowContainer = document.createElement("div");
@@ -1884,6 +1902,35 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
 
+
+        // add validation stock and size
+        const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
+        stockAndSizeElement.forEach((variantElement, i) => {
+          console.log(i);
+          const stockIn = $("#stock-"+i);
+          const sizeIn = $("#size-"+i);
+          let = stock_value = stockIn.val();
+          let = size_value = sizeIn.val();
+          if (stock_value == '') {
+            stockIn.addClass('is-invalid');
+            $("#stockErr-"+i).text('Stock is required.');
+          } 
+          else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+            $("#stockErr-"+i).text('Stock shuld be a number.');
+          } 
+          else {
+            stockIn.removeClass('is-invalid');
+            $("#stockErr-"+i).text('');
+          }
+          if (size_value == '') {
+            sizeIn.addClass('is-invalid');
+            $("#sizeErr-"+i).text('Size is required.');
+          } else {
+            sizeIn.removeClass('is-invalid');
+            $("#sizeErr-"+i).text('');
+          }
+        });
+
         // // Append files for the 'yes_variant' case
         const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
         // Iterate over each variant element to collect data
@@ -1913,6 +1960,7 @@ function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
             }
           });
         });
+
 
         // Initialize arrays to store size and stock data
         const sizes = [];
