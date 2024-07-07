@@ -368,7 +368,7 @@ class ProductInvetoryController extends Controller
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode422'),
                             'status' => __('statusCode.status422'),
-                            'message' => __('auth.supplierNotFound'),
+                            'message' => ['supplier_id' => [__('auth.supplierNotFound')]],
                             'step' => 1,
                         ]], __('statusCode.statusCode200'));
                     }
