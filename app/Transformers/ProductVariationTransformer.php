@@ -31,6 +31,7 @@ class ProductVariationTransformer extends TransformerAbstract
                 'action' => $product->id,
                 'created_at' => $product->created_at->toDateTimeString(),
                 'updated_at' => $product->updated_at->toDateTimeString(),
+                'editInventory' => route('edit.inventory', ['variation_id' => salt_encrypt($product->id)]),
             ];
 
             if(auth()->user()->hasRole(User::ROLE_ADMIN)){

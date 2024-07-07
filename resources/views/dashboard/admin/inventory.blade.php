@@ -385,7 +385,7 @@
                 </select>
             </td>
             <td>
-                <button class="btn btn-link btn-sm">Edit</button>
+                <a class="nbtn btn-link btn-sm" href="${item.editInventory}">Edit</a>
             </td>
         </tr>
     `;

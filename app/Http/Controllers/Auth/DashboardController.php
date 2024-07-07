@@ -140,4 +140,20 @@ class DashboardController extends Controller
         }
         abort('403', 'Unauthorized action.');
     }
+
+    /**
+     * Edit the user's orders.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+
+     public function editInventory()
+     {
+         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+             return view('dashboard.common.edit_inventory');
+         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+             return view('dashboard.common.edit_inventory');
+         }
+         abort('403', 'Unauthorized action.');
+     }
 }
