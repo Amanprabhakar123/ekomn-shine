@@ -47,4 +47,5 @@ return [
     'productInventoryStoreFailed' => 'Product inventory store failed.',
     'updateStatus' => 'Status updated successfully.',
     'updateStatusFailed' => 'Status update failed.',
+    'supplierNotFound' => 'Supplier not found.',
 ];

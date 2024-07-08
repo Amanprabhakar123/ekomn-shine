@@ -4,6 +4,7 @@
     </div>
     <div class="sidebar-menu">
       <ul class="navbar-nav" id="dashboard_ekomn">
+      @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUPPLIER))
         <li class="nav-item">
           <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Inventory" data-bs-parent="#dashboard_ekomn" id="components">
             <i class="fas fa-warehouse menuIcon"></i>
@@ -11,14 +12,17 @@
             <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
           </a>
           <ul class="sidenav-second-level collapse" id="Inventory" data-bs-parent="#dashboard_ekomn">
+            @if(auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
             <li>
               <a class="nav-link" href="{{route('my.inventory')}}">My Inventory</a>
             </li>
+            @endif
             <li>
               <a class="nav-link" href="www.google.com">Integration Amazon</a>
             </li>
           </ul>
         </li>
+        @endif
         <li class="nav-item">
           <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Orders" data-bs-parent="#dashboard_ekomn" id="components">
             <i class="fas fa-shopping-cart menuIcon"></i>

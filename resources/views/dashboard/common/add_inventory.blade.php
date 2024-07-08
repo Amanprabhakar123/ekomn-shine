@@ -28,6 +28,15 @@
 
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
+            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            <div class="ek_group">
+                <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
+                <div class="ek_f_input">
+                    <input type="text" class="form-control" placeholder="Supplier Id." id="supplier_id" required />
+                    <div id="supplier_idErr" class="invalid-feedback"></div>
+                </div>
+            </div>
+            @endif
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -127,10 +136,11 @@
                             <tr>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
+                                <div id="bulk_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
-
+                                <div id="bulk_priceErr0" class="invalid-feedback"></div>
                               </td>
                             </tr>
                           </tbody>
@@ -158,15 +168,19 @@
                             <tr>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required>
+                                <div id="shipping_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][local]" id="shipping[0][local]" required>
+                                <div id="shipping_localErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][regional]" id="shipping[0][regional]" required>
+                                <div id="shipping_regionalErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][national]" id="shipping[0][national]" required>
+                                <div id="shipping_nationalErr0" class="invalid-feedback"></div>
                               </td>
                               <td></td>
                             </tr>
@@ -297,7 +311,7 @@
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
                         <option value="mm">mm</option>
-                        <option value="cm">cm</option>
+                        <option value="cm" selected>cm</option>
                         <option value="inch">inch</option>
                       </select>
                       <div id="dimension_classErr" class="invalid-feedback"></div>
@@ -325,15 +339,6 @@
                         <option value="ltr">ltr</option>
                       </select>
                       <div id="weight_classErr" class="invalid-feedback"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-12 col-md-3">
-                  <div class="ek_group">
-                    <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
-                    <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="volumetric_weight" id="volumetric_weight" readonly />
-                      <div id="volumetric_weightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -373,7 +378,7 @@
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                         <option value="mm">mm</option>
-                        <option value="cm">cm</option>
+                        <option value="cm" selected>cm</option>
                         <option value="inch">inch</option>
                       </select>
                       <div id="package_dimension_classErr" class="invalid-feedback"></div>
@@ -406,7 +411,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Volumetric Weight:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Volumetric Weight in kg:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="package_volumetric_weight" id="package_volumetric_weight" required />
                       <div id="package_volumetric_weightErr" class="invalid-feedback"></div>
@@ -464,6 +469,7 @@
                         <img src="assets/images/icon/placeholder-img-1.png" />
                         <h6>Upload Main Image</h6>
                       </div>
+                      <div id="boxError1" class="invalid-feedback"></div>
                     </div>
                   </div>
                   <div class="colorStock">
@@ -477,12 +483,13 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                            <input type="text" class="smallInput_n" placeholder="Size" id="size" name="size">
+                            <div id="sizeErr" class="invalid-feedback"></div>
                           </td>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="0" name="stock">
+                            <input type="text" class="smallInput_n" placeholder="0" id="stock" name="stock">
+                            <div id="stockErr" class="invalid-feedback"></div>
                           </td>
-
                         </tr>
                       </tbody>
                     </table>
@@ -633,10 +640,12 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size">
+                                <div id="sizeErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" name="stock">
+                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock">
+                                <div id="stockErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
                                 <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -915,6 +924,19 @@
       $('#product_sub_categoryErr').text('');
     }
 
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    const supplierId = $('#supplier_id').val();
+    if (!supplierId) {
+      $('#supplier_id').addClass('is-invalid');
+      $('#supplier_idErr').text('Supplier Id is required.');
+      isValid = false;
+    } else {
+      $('#supplier_id').removeClass('is-invalid');
+      $('#supplier_idErr').text('');
+    }
+    formData.append('supplier_id', supplierId);
+    @endif
+
     if (isValid) {
       $('#features-list').children().each(function(index) {
         const feature = $(this).find('.featurescontent').html().split('<div')[0].trim().replace(/<br>/g, '\n');
@@ -958,7 +980,13 @@
       $('#dropship_rate').addClass('is-invalid');
       $('#dropship_rateErr').text('Dropship Rate is required.');
       isValid = false;
-    }
+
+      
+    } else if (!/^\d+$/.test(dropshipRate)) {
+        $('#dropship_rate').addClass('is-invalid');
+        $('#dropship_rateErr').text('Dropship Rate should be a number.');
+        isValid = false;
+      }
 
     // Validate Potential MRP
     const potentialMrp = $('#potential_mrp').val();
@@ -966,30 +994,45 @@
       $('#potential_mrp').addClass('is-invalid');
       $('#potential_mrpErr').text('Potential MRP is required.');
       isValid = false;
-    }
+    }else if (!/^\d+$/.test(potentialMrp)) {
+        $('#potential_mrp').addClass('is-invalid');
+        $('#potential_mrpErr').text('Potential MRP should be a number.');
+        isValid = false;
+      }
 
 
     const check_bulk_quantity = [];
     const check_bulk_price = [];
     // Validate Bulk Rate table rows
-    $('#bulkRateTable tbody tr').each(function() {
+    $('#bulkRateTable tbody tr').each(function(index) {
       const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
       const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
       const quantity = quantityInput.val();
       const price = priceInput.val();
-
       if (!quantity) {
         quantityInput.addClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('Quantity is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(quantity)){ 
+        quantityInput.addClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('Quantity should be a number.');
+        isValid = false;
+      }else {
         quantityInput.removeClass('is-invalid form-control');
+        $('#bulk_quantityErr'+index).text('');
       }
 
       if (!price) {
         priceInput.addClass('is-invalid form-control');
+        $('#bulk_priceErr'+index).text('Price is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(price)){
+        priceInput.addClass('is-invalid'); 
+        $('#bulk_priceErr'+index).text('Price should be a number.');
+        isValid = false; 
+      }else {
         priceInput.removeClass('is-invalid form-control');
+        $('#bulk_priceErr'+index).text('');
       }
       check_bulk_quantity.push(quantity);
       check_bulk_price.push(price);
@@ -997,7 +1040,7 @@
 
     const shipping_quantity = [];
     // Validate Shipping Rate table rows
-    $('#shippingRateTable tbody tr').each(function() {
+    $('#shippingRateTable tbody tr').each(function(index) {
       const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
       const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
       const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
@@ -1009,30 +1052,54 @@
 
       if (!quantity) {
         quantityInput.addClass('is-invalid form-control');
+        $('#shipping_quantityErr'+index).text('Quantity is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(quantity)){
+        quantityInput.addClass('is-invalid');
+        $('#shipping_quantityErr'+index).text('Quantity should be a number.');
+        isValid = false;
+      }else {
         quantityInput.removeClass('is-invalid form-control');
+        $('#shipping_quantityErr'+index).text('');
       }
 
       if (!local) {
         localInput.addClass('is-invalid form-control');
+        $('#shipping_localErr'+index).text('Local Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(local)){
+        localInput.addClass('is-invalid');
+        $('#shipping_localErr'+index).text('Local Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         localInput.removeClass('is-invalid form-control');
+        $('#shipping_localErr'+index).text('');
       }
 
       if (!regional) {
         regionalInput.addClass('is-invalid form-control');
+        $('#shipping_regionalErr'+index).text('Regional Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(regional)){
+        regionalInput.addClass('is-invalid');
+        $('#shipping_regionalErr'+index).text('Regional Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         regionalInput.removeClass('is-invalid form-control');
+        $('#shipping_regionalErr'+index).text('');
       }
 
       if (!national) {
         nationalInput.addClass('is-invalid form-control');
+        $('#shipping_nationalErr'+index).text('National Shipping Rate is required.');
         isValid = false;
-      } else {
+      } else if(!/^\d+$/.test(national)){
+        nationalInput.addClass('is-invalid');
+        $('#shipping_nationalErr'+index).text('National Shipping Rate should be a number.');
+        isValid = false;
+      }else {
         nationalInput.removeClass('is-invalid form-control');
+        $('#shipping_nationalErr'+index).text('');
       }
       shipping_quantity.push(quantity);
     });
@@ -1136,12 +1203,15 @@
         <tr>
             <td>
                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[${index}][quantity]" required>
+                <div id="bulk_quantityErr${index}" class="invalid-feedback"></div>
             </td>
             <td>
                 <input type="text" class="smallInput_n " placeholder="Rs. 0.00" name="bulk[${index}][price]" required>
-            </td>
+            <div id="bulk_priceErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                  <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
+                 
             </td>
         </tr>`;
     $('#bulkRateTable tbody').append(newRow);
@@ -1160,16 +1230,20 @@
         <tr>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Qty. Upto" name="shipping[${index}][quantity]" required>
-            </td>
+                <div id="shipping_quantityErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][local]" required>
-            </td>
+              <div id="shipping_localErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][regional]" required>
-            </td>
+              <div id="shipping_regionalErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <input type="text" class="smallInput_n form-control" placeholder="Rs. 0.00" name="shipping[${index}][national]" required>
-            </td>
+            <div id="shipping_nationalErr${index}" class="invalid-feedback"></div>
+                </td>
             <td>
                 <button type="button" class="deleteRow deleteShippingRow"><i class="far fa-trash-alt"></i></button>
             </td>
@@ -1183,6 +1257,41 @@
 
   // -----------------------------------------------------------------------------------
 
+  let packageLength = 0;
+  let packageWidth = 0;
+  let packageHeight = 0;
+  let dimensionClass = 'cm';
+  let packageVolumetricWeight = 0;
+
+  // Add onchange function for each id
+  $('#package_length').on('change', function() {
+    packageLength = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_width').on('change', function() {
+    packageWidth = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_height').on('change', function() {
+    packageHeight = parseFloat($(this).val());
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+
+  $('#package_dimension_class').on('change', function() {
+    dimensionClass = $(this).val();
+    packageVolumetricWeight = calculateVolumetricWeight(packageLength, packageWidth, packageHeight, dimensionClass);
+    formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
+    parseFloat($('#package_volumetric_weight').val(packageVolumetricWeight.toFixed(3)));
+  });
+  
   // Start code Data and Dimension Tab Step 3
   $('#dataAndDimesionTab').click(function() {
     let isValid = true;
@@ -1300,9 +1409,7 @@
       {
         id: '#package_volumetric_weight',
       },
-      {
-        id: '#volumetric_weight',
-      }
+     
     ];
 
     // Validate each field
@@ -1312,10 +1419,24 @@
         $(field.id).addClass('is-invalid');
         $(field.errorId).text(field.errorMessage);
         isValid = false;
+      } else if (field.id === '#length' || field.id === '#width' || field.id === '#height' || field.id === '#weight' || field.id === '#package_length' || field.id === '#package_width' || field.id === '#package_height' || field.id === '#package_weight') {
+        if (!/^\d+(\.\d+)?$/.test(value)) {
+          $(field.id).addClass('is-invalid');
+          $(field.errorId).text('Value should be a number.');
+          isValid = false;
+        } 
       } else {
         $(field.id).removeClass('is-invalid');
         $(field.errorId).text('');
       }
+
+      // if (field.id === '#length' || field.id === '#width' || field.id === '#height' || field.id === '#weight' || field.id === '#package_length' || field.id === '#package_width' || field.id === '#package_height' || field.id === '#package_weight') {
+      //     if (!/^\d+$/.test(value)) {
+      //       $(field.id).addClass('is-invalid');
+      //       $(field.errorId).text('Value should be a number.');
+      //       isValid = false;
+      //     }
+      //   }
 
       // Add event listener to handle input change
       $(field.id).on('input', function() {
@@ -1327,6 +1448,7 @@
     });
 
     if (isValid) {
+      formData.append('package_volumetric_weight', packageVolumetricWeight.toFixed(3));
       // Add each field to FormData
 
       const allFields = [...fieldsToUnrequire, ...fieldsToValidate];
@@ -1341,6 +1463,45 @@
 
 
   });
+
+/**
+ * Calculate the volumetric weight in kilograms based on the dimensions and unit.
+ *
+ * @param {number} length The length of the object.
+ * @param {number} breadth The breadth of the object.
+ * @param {number} height The height of the object.
+ * @param {string} unit The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
+ * @return {number} The volumetric weight in kilograms.
+ * @throws {Error} If an unsupported unit is provided.
+ */
+function calculateVolumetricWeight(length, breadth, height, unit = 'cm') {
+    // Convert dimensions to centimeters
+    switch (unit) {
+        case 'mm':
+            length /= 10;
+            breadth /= 10;
+            height /= 10;
+            break;
+        case 'in':
+        case 'inch':
+            length *= 2.54;
+            breadth *= 2.54;
+            height *= 2.54;
+            break;
+        case 'cm':
+            // No conversion needed
+            break;
+        default:
+            throw new Error("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+    }
+
+    // Dimensional Weight Factor for cm to kg
+    const dimensionalWeightFactor = 5000;
+
+    // Calculate the volumetric weight in kilograms
+    const volumetricWeight = (length * breadth * height) / dimensionalWeightFactor;
+    return volumetricWeight;
+}
   // End code Data and Dimension Tab Step 3
 
   // -----------------------------------------------------------------------------------
@@ -1428,25 +1589,36 @@
       initializeVideoUpload(container);
     });
   });
-
+let stockAndSizeCounter = 1;
   document.getElementById("main-container").addEventListener("click", function(event) {
     if (event.target.classList.contains("addSize")) {
       const variantSizetbody = event.target.closest(".colorStock").querySelector("tbody");
       const newSize = document.createElement("tr");
       const sizeCell = document.createElement("td");
       const sizeInput = document.createElement("input");
+      const ErrorDiv = document.createElement("div");
       sizeInput.type = "text";
       sizeInput.className = "smallInput_n";
       sizeInput.placeholder = "Size";
       sizeInput.name = "size";
+      sizeInput.id = "size-"+stockAndSizeCounter;
       sizeCell.appendChild(sizeInput);
+      ErrorDiv.id = "sizeErr-"+stockAndSizeCounter;
+      ErrorDiv.className = "invalid-feedback";
+      sizeCell.appendChild(ErrorDiv);
       const stockCell = document.createElement("td");
       const stockInput = document.createElement("input");
       stockInput.type = "text";
       stockInput.className = "smallInput_n";
       stockInput.placeholder = "0";
       stockInput.name = "stock";
+      stockInput.id = "stock-"+stockAndSizeCounter;
       stockCell.appendChild(stockInput);
+      const ErrorDivTwo = document.createElement("div");
+      ErrorDivTwo.id = "stockErr-"+stockAndSizeCounter;
+      ErrorDivTwo.className = "invalid-feedback";
+      stockCell.appendChild(ErrorDivTwo);
+      stockAndSizeCounter++;
       const actionCell = document.createElement("td");
       const removeButton = document.createElement("button");
       removeButton.className = "deleteRow";
@@ -1548,14 +1720,16 @@
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size" name="size">
+                                    <input type="text" class="smallInput_n" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
+                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0" name="stock">
-                                  </td>
+                                    <input type="text" class="smallInput_n" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
+                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
-                                  </td>
+                                    </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -1596,6 +1770,7 @@
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
     const multiRowContainer = document.createElement("div");
@@ -1669,6 +1844,7 @@
 
   // Start code Submit Inventory Form
   $('#submitInventoryForm').on('click', function() {
+    let isValid = true;
     // Check if variant radio button is checked
     const variantChecked = $('input[name="variant"]:checked');
 
@@ -1682,12 +1858,55 @@
           if (key.startsWith('yes_variant')) {
             keysToDelete.push(key);
           }
+          if (key.startsWith('yes_variant')) {
+            keysToDelete.push(key);
+          }
         }
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
 
+
+        const stockIn = $("#stock");
+        const sizeIn = $("#size");
+        let = stock_value = stockIn.val();
+        let = size_value = sizeIn.val();
+        if (stock_value == '') {
+          stockIn.addClass('is-invalid');
+          $("#stockErr").text('Stock is required.');
+        } 
+        else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+          $("#stockErr").text('Stock shuld be a number.');
+        } 
+        else {
+          stockIn.removeClass('is-invalid');
+          $("#stockErr").text('');
+        }
+        if (size_value == '') {
+            sizeIn.addClass('is-invalid');
+            $("#sizeErr").text('Size is required.');
+        } else {
+          sizeIn.removeClass('is-invalid');
+          $("#sizeErr").text('');
+        }
+
+
         // Append files for the 'no_variant' case
+        let totalFilesCount = 0;
         const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
+        fileInputs.forEach(input => {
+            totalFilesCount += input.files.length; // Count total number of files
+        });
+        if (totalFilesCount < 5) {
+            isValid = false;
+            // Prevent form submission if less than 5 files
+            event.preventDefault();
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "You must upload at least 5 images. including 1 main image and 4 additional images."
+            });
+            return;
+        }
         fileInputs.forEach((input, index) => {
           const files = input.files;
           if (files.length > 0) { // Ensure that there are files to append
@@ -1720,15 +1939,61 @@
           if (key.startsWith('no_variant')) {
             keysToDelete.push(key);
           }
+          if (key.startsWith('yes_variant')) {
+            keysToDelete.push(key);
+          }
         }
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
+
+
+        // add validation stock and size
+        const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
+        stockAndSizeElement.forEach((variantElement, i) => {
+          const stockIn = $("#stock-"+i);
+          const sizeIn = $("#size-"+i);
+          let = stock_value = stockIn.val();
+          let = size_value = sizeIn.val();
+          if (stock_value == '') {
+            stockIn.addClass('is-invalid');
+            $("#stockErr-"+i).text('Stock is required.');
+          } 
+          else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+            $("#stockErr-"+i).text('Stock shuld be a number.');
+          } 
+          else {
+            stockIn.removeClass('is-invalid');
+            $("#stockErr-"+i).text('');
+          }
+          if (size_value == '') {
+            sizeIn.addClass('is-invalid');
+            $("#sizeErr-"+i).text('Size is required.');
+          } else {
+            sizeIn.removeClass('is-invalid');
+            $("#sizeErr-"+i).text('');
+          }
+        });
 
         // // Append files for the 'yes_variant' case
         const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
         // Iterate over each variant element to collect data
         imagecontainerVariationElements.forEach((variantElement, i) => {
           const fileInputs = variantElement.querySelectorAll('input[type="file"]');
+          let totalFilesCount = 0;
+          fileInputs.forEach(input => {
+              totalFilesCount += input.files.length; // Count total number of files
+          });
+          if (totalFilesCount < 5) {
+              isValid = false;
+              // Prevent form submission if less than 5 files
+              event.preventDefault();
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "You must upload at least 5 images. including 1 main image and 4 additional images per variant."
+              });
+              return;
+          }
           fileInputs.forEach((input, index) => {
             const files = input.files;
             if (files.length > 0) { // Ensure that there are files to append
@@ -1738,6 +2003,7 @@
             }
           });
         });
+
 
         // Initialize arrays to store size and stock data
         const sizes = [];
@@ -1771,117 +2037,148 @@
           });
         });
 
+        const uniquieColor = [];
         // Append color data for the 'yes_variant' case
         const variationColor = document.querySelectorAll("[id^='variationColor-']");
         variationColor.forEach((colorField, i) => {
           const colorSelect = colorField.querySelector("select");
           const selectedColor = colorSelect.value; // Get the selected option's value
           if (selectedColor) {
+            uniquieColor.push(selectedColor);
             formData.append(`yes_variant[${i}][color]`, selectedColor);
           }
         });
+
+        // Check if there are duplicate colors
+        const duplicateColors = uniquieColor.filter((color, index) => uniquieColor.indexOf(color) !== index);
+        if (duplicateColors.length > 0) {
+          isValid = false;
+          event.preventDefault();
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Duplicate variant colors are not allowed."
+          });
+        }
       }
     }
 
     // Add Product Listing Status to FormData
     const productListingStatus = $('#product_listing_status').val();
     formData.append('product_listing_status', productListingStatus);
-    $.ajax({
-      url: '{{route("inventory.store")}}',
-      type: 'POST',
-      data: formData,
-      dataType: 'json',
-      processData: false,
-      contentType: false,
-      async: false,
-      success: function(response) {
-        //   console.log(response);
-        if (response.data.statusCode == 200) {
-          // Redirect to the inventory index page
-          window.location.href = '{{route("my.inventory")}}';
-        }
-        if (response.data.statusCode == 422) {
-          const field_list = response.data.message;
-          // Iterate over the entries in the field_list object
-          for (const [field, messages] of Object.entries(field_list)) {
-            if (field == 'product_keywords') {
-              $('#tag-input').addClass('is-invalid');
-              $('#tag-inputErr').text(messages[0]);
-            } else if (field == 'feature') {
-              $('#features-error').removeClass('hide');
-            } else if (field == 'bulk') {
-              // Validate Bulk Rate table rows
-              $('#bulkRateTable tbody tr').each(function() {
-                const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
-                const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
-                const quantity = quantityInput.val();
-                const price = priceInput.val();
+    if(isValid){
+        $.ajax({
+        url: '{{route("inventory.store")}}',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        async: false,
+        success: function(response) {
+          if (response.data.statusCode == 200) {
+            // Redirect to the inventory index page
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "Invetory Added Successfully.",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            window.location.href = '{{route("my.inventory")}}';
+          }
+          if (response.data.statusCode == 422) {
+            const field_list = response.data.message;
+            // Iterate over the entries in the field_list object
+            for (const [field, messages] of Object.entries(field_list)) {
+              if (field == 'product_keywords') {
+                $('#tag-input').addClass('is-invalid');
+                $('#tag-inputErr').text(messages[0]);
+              } else if (field == 'feature') {
+                $('#features-error').removeClass('hide');
+              } else if (field == 'bulk') {
+                // Validate Bulk Rate table rows
+                $('#bulkRateTable tbody tr').each(function() {
+                  const quantityInput = $(this).find('input[name^="bulk"][name$="[quantity]"]');
+                  const priceInput = $(this).find('input[name^="bulk"][name$="[price]"]');
+                  const quantity = quantityInput.val();
+                  const price = priceInput.val();
 
-                if (!quantity) {
-                  quantityInput.addClass('is-invalid form-control');
-                } else {
-                  quantityInput.removeClass('is-invalid form-control');
-                }
-                if (!price) {
-                  priceInput.addClass('is-invalid form-control');
-                } else {
-                  priceInput.removeClass('is-invalid form-control');
-                }
-              });
-            } else if (field == 'shipping') {
-              // Validate Shipping Rate table rows
-              $('#shippingRateTable tbody tr').each(function() {
-                const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
-                const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
-                const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
-                const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
-                const quantity = quantityInput.val();
-                const local = localInput.val();
-                const regional = regionalInput.val();
-                const national = nationalInput.val();
+                  if (!quantity) {
+                    quantityInput.addClass('is-invalid form-control');
+                  } else {
+                    quantityInput.removeClass('is-invalid form-control');
+                  }
+                  if (!price) {
+                    priceInput.addClass('is-invalid form-control');
+                  } else {
+                    priceInput.removeClass('is-invalid form-control');
+                  }
+                });
+              } else if (field == 'shipping') {
+                // Validate Shipping Rate table rows
+                $('#shippingRateTable tbody tr').each(function() {
+                  const quantityInput = $(this).find('input[name^="shipping"][name$="[quantity]"]');
+                  const localInput = $(this).find('input[name^="shipping"][name$="[local]"]');
+                  const regionalInput = $(this).find('input[name^="shipping"][name$="[regional]"]');
+                  const nationalInput = $(this).find('input[name^="shipping"][name$="[national]"]');
+                  const quantity = quantityInput.val();
+                  const local = localInput.val();
+                  const regional = regionalInput.val();
+                  const national = nationalInput.val();
 
-                if (!quantity) {
-                  quantityInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  quantityInput.removeClass('is-invalid form-control');
-                }
+                  if (!quantity) {
+                    quantityInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    quantityInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!local) {
-                  localInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  localInput.removeClass('is-invalid form-control');
-                }
+                  if (!local) {
+                    localInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    localInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!regional) {
-                  regionalInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  regionalInput.removeClass('is-invalid form-control');
-                }
+                  if (!regional) {
+                    regionalInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    regionalInput.removeClass('is-invalid form-control');
+                  }
 
-                if (!national) {
-                  nationalInput.addClass('is-invalid form-control');
-                  isValid = false;
-                } else {
-                  nationalInput.removeClass('is-invalid form-control');
-                }
-              });
-            } else {
-              // Add 'is-invalid' class to the corresponding element
-              $(`#${field}`).addClass('is-invalid');
+                  if (!national) {
+                    nationalInput.addClass('is-invalid form-control');
+                    isValid = false;
+                  } else {
+                    nationalInput.removeClass('is-invalid form-control');
+                  }
+                });
+              } else {
+                // Add 'is-invalid' class to the corresponding element
+                $(`#${field}`).addClass('is-invalid');
 
-              // Set the error message in the corresponding error field
-              $(`#${field}Err`).text(messages[0]);
+                // Set the error message in the corresponding error field
+                $(`#${field}Err`).text(messages[0]);
+              }
+            }
+            if(response.data.step == 1){
+              document.querySelector('a[data-bs-target="#general"]').click();
+            }else if(response.data.step == 2){
+              document.querySelector('a[data-bs-target="#shipping"]').click();
+            }else if(response.data.step == 3){
+              document.querySelector('a[data-bs-target="#data"]').click();
+            }else if(response.data.step == 4){
+              document.querySelector('a[data-bs-target="#images"]').click();
             }
           }
+        },
+        error: function(error) {
+          console.error('Error:', error);
         }
-      },
-      error: function(error) {
-        console.error('Error:', error);
-      }
-    });
+      });
+    }
   });
 </script>
 @endsection
