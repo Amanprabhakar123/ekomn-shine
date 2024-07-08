@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Import;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
+use Validator;
+use App\Jobs\ImportProductJob;
 class ImportController extends Controller
 {
        /**
@@ -18,25 +19,38 @@ class ImportController extends Controller
      */
     public function importFile(Request $request)
     {
-        $request->validate([
-            'type' => 'required|string|max:100',
-            'import_file' => 'required|file'
-        ]);
+
+       $validator = Validator::make($request->all(),[
+            'type' => 'required|string|max:100|in:bulk_upload_inventory',
+            'import_file' => 'required|file'  
+       ]);
+
+       if($validator->fails()){
+        return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
+       }
+       $company_id = auth()->user()->companyDetails->id;
+
+       $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        
+       // Get the file contents
+       $fileContents = $request->file('import_file')->get();
+       // Define the path
+       // Store the file
+       Storage::disk('public')->put($path, $fileContents);
 
         $file = $request->file('import_file');
         $filename = $file->getClientOriginalName();
         $fileType = $file->getClientOriginalExtension();
-        $filePath = $file->store('imports');
-
         $importFile = Import::create([
             'type' => $request->input('type'),
             'filename' => $filename,
             'file_type' => $fileType,
-            'file_path' => $filePath,
-            'company_id' => $request->input('company_id'),
+            'file_path' => $path,
+            'company_id' => $company_id,
+            'status' => Import::STATUS_PENDING
         ]);
 
-        $fileContent = file_get_contents($file->getRealPath());
-        return response()->json(['message' => 'File imported successfully!']);
+        dispatch((new ImportProductJob($importFile->id,$company_id ))->onQueue('product_upload'));
+
+        return response()->json(['success' => true, 'message' => 'File has been queued successfully!']);
     }
 }

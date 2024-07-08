@@ -9,6 +9,11 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\Importable;
+use App\Models\ProductVariation;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+
+
 
 class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure
 {
@@ -19,8 +24,9 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
         DB::beginTransaction();
 
         try {
-
+            $company_id = auth()->user()->companyDetails->id;
             $product = ProductInventory::create([
+                'company_id' => $company_id,
                 'title' => $row['Product Name'],
                 'description' => $row['Description'],
                 'model' => $row['Model'],
@@ -32,44 +38,97 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
                 'isbn' => $row['ISBN'],
                 'mpin' => $row['MPN'],
                 'status' => $row['Listing Status']
-                
             ]);
 
-            $product = ProductInventory::create([
-                'product_name' => $row['Product Name'],
+            $tier_rate = [];
+
+            $tier_rate[$row['Bulk Rate1 - Quantity Upto']] =['quantity' => $row['Bulk Rate1 - Quantity Upto'],
+             'price' =>  $row['Bulk Rate1 - Price per piece']];
+             $tier_rate[$row['Bulk Rate2 - Quantity Upto']] =['quantity' => $row['Bulk Rate2 - Quantity Upto'],
+             'price' =>  $row['Bulk Rate2 - Price per piece']];
+             $tier_rate[$row['Bulk Rate3 - Quantity Upto']] =['quantity' => $row['Bulk Rate3 - Quantity Upto'],
+             'price' =>  $row['Bulk Rate3 - Price per piece']];
+
+            $shippingRateArray =[];
+            $shippingRateArray[$row['Shipping Rate1 - Quantity Upto']] = ['quantity' => $row['Shipping Rate1 - Quantity Upto'],
+            'local' =>  $row['Shipping Rate1 - Local'], 'regional' =>  $row['Shipping Rate1 - Regional'],
+            'national' =>  $row['Shipping Rate1 - National']];
+
+            $shippingRateArray[$row['Shipping Rate2 - Quantity Upto']] = ['quantity' => $row['Shipping Rate2 - Quantity Upto'],
+            'local' =>  $row['Shipping Rate2 - Local'], 'regional' =>  $row['Shipping Rate2 - Regional'],
+            'national' =>  $row['Shipping Rate2 - National']];
+
+            $shippingRateArray[$row['Shipping Rate3 - Quantity Upto']] =['quantity' => $row['Shipping Rate3 - Quantity Upto'],
+            'local' =>  $row['Shipping Rate3 - Local'], 'regional' =>  $row['Shipping Rate3 - Regional'],
+            'national' =>  $row['Shipping Rate3 - National']];
+
+            $productVariation = ProductVariation::create([
+                'product_id' => $product->id,
+                'company_id' => $company_id,
+                'title' => $row['Product Name'],
                 'description' => $row['Description'],
-                'product_keywords' => $row['Product Keywords'],
-                'product_features1' => $row['Product Features1'],
-                'product_features2' => $row['Product Features2'],
-                'product_features3' => $row['Product Features3'],
                 'model' => $row['Model'],
                 'sku' => $row['SKU'],
-                'product_hsn' => $row['Product HSN'],
-                'gst_bracket' => $row['GST Bracket'],
-                'availability' => $row['Availability'],
-                'upc' => $row['UPC'],
-                'isbn' => $row['ISBN'],
-                'mpn' => $row['MPN'],
+                'dropship_rate' => $row['Per piece/Dropship rate'],
+                'potential_mrp' => $row['Potential MRP'],
+                'product_slug_id' => '',
+                'slug' => '',
+                'availability_status' => $row['Availability'],
+                'size' => $row['Size'],
+                'color' => $row['Color'],
                 'length' => $row['Length'],
                 'width' => $row['Width'],
                 'height' => $row['Height'],
-                'product_dimension_unit' => $row['Product Dimension Unit'],
+                'dimension_class' => $row['Product Dimension Unit'],
                 'weight' => $row['Weight'],
-                'product_weight_unit' => $row['Product Weight Unit'],
+                'weight_class' => $row['Product Weight Unit'],
+                'package_length' => $row['Package Length'],
+                'package_width' => $row['Package Width'],
+                'package_height' => $row['Package Height'],
+                'package_dimension_class' => $row['Package Dimension Unit'],
+                'package_weight' => $row['Package Weight'],
+                'package_weight_class' => $row['Package Weight Unit'],
+                'allow_editable' => 1,
+                'stock' => (int) $row['Product Stock'],
+                'status' => $row['Listing Status']
             ]);
 
-            // Insert related data into other tables, use the $product->id for foreign key reference
-            OtherModel::create([
-                'product_id' => $product->id,
-                'other_field' => $row['Other Field'],
-                // Add other fields as necessary
-            ]);
+            $generateProductID = generateProductID($row['Product Name'], $productVariation->id);
+            $productVariation->product_slug_id = $generateProductID;
+            $productVariation->slug = generateSlug($row['Product Name'], $generateProductID);
+            $productVariation->save();
 
+            $this->createFeatures($product->id, $company_id, $row['Product Features1']);
+            $this->createFeatures($product->id, $company_id, $row['Product Features2']);
+            $this->createFeatures($product->id, $company_id, $row['Product Features3']);
+
+
+
+        if(!empty($row['Product Keywords'])){
+                foreach (explode(",", $row['Product Keywords']) as $key => $value) {
+                    ProductKeyword::create([
+                        'product_id' => $product->id,
+                        'company_id' => $company_id,
+                        'keyword' => $value
+                    ]);
+                }
+            }
             DB::commit();
 
         } catch (\Exception $e) {
             DB::rollBack();
             // Handle the exception, log it, etc.
+        }
+    }
+
+    private function createFeatures($product_id, $company_id, $feature){
+        if(!empty($feature)){
+            ProductFeature::create([
+                'product_id' => $product_id,
+                'company_id' => $company_id,
+                'feature_name' => $feature,
+                'value' => $feature
+            ]);
         }
     }
     public function rules(): array
@@ -95,6 +154,10 @@ class ProductsImport implements ToModel, WithHeadingRow, WithValidation, SkipsOn
             '*.Product Dimension Unit' => 'nullable|string',
             '*.Weight' => 'nullable|numeric',
             '*.Product Weight Unit' => 'nullable|string',
+            '*.Package Length' => 'nullable|numeric',
+            '*.Package Width' => 'nullable|numeric',
+            '*.Package Height' => 'nullable|numeric',
+            '*.Package Weight' => 'nullable|numeric',
             '*.Package Dimension Unit' => 'nullable|string',
             '*.Package Weight Unit' => 'nullable|string',
             '*.Per piece/Dropship rate' => 'nullable|numeric',
