@@ -563,10 +563,8 @@ class ProductInvetoryController extends Controller
                  
              } catch (\Exception $e) {
                  DB::rollBack();
-                 printR($e->getLine());
-                 dd($e->getMessage(), $e->getLine(), $e->getFile());
                  // Handle the exception
-                 return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));
+                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
              }
         }else{
             return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));

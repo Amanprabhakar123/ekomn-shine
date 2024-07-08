@@ -8,9 +8,11 @@ use App\Models\CanHandle;
 use App\Models\BusinessType;
 use App\Models\SalesChannel;
 use Illuminate\Http\Request;
+use App\Models\ProductVariation;
+use App\Services\CompanyService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
-use App\Services\CompanyService;
 
 class DashboardController extends Controller
 {
@@ -147,9 +149,26 @@ class DashboardController extends Controller
      * @return \Illuminate\Contracts\View\View
      */
 
-     public function editInventory()
+     public function editInventory(Request $request, $variation_id)
      {
          if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+            $variation_id = salt_decrypt($variation_id);
+            $userId = auth()->user()->id;
+            // DB::enableQueryLog();
+            $variations = ProductVariation::where('id', $variation_id)
+                ->whereHas('product', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })->with([
+                'media',
+                'product',
+                'product.category',
+                'product.company',
+                'product.keywords',
+                'product.features',
+            ]) // Eager load the product and category relationships
+            ->first();
+            // dd(DB::getQueryLog());
+            dd($variations);
              return view('dashboard.common.edit_inventory');
          }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
              return view('dashboard.common.edit_inventory');

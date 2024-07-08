@@ -303,7 +303,7 @@
                 </select>
             </td>
             <td>
-                <a class="nbtn btn-link btn-sm" href="${item.editInventory}">Edit</a>
+                <a class="nbtn btn-link btn-sm" href="${item.editInventory}" target="_blank">Edit</a>
             </td>
         </tr>
     `;
