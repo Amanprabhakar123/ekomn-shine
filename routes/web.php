@@ -69,6 +69,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
+        Route::patch('/update-inventory', [ProductInvetoryController::class, 'updateInventory'])->name('inventory.update');
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
     });
 });
