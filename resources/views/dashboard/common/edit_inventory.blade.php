@@ -11,7 +11,7 @@
       <div>
         <ul class="nav nav-underline ekom_tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
@@ -20,13 +20,13 @@
             <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+            <a class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
           <input type="hidden" value="{{salt_encrypt($variations->id)}}" id="varition_id">
-          <div class="tab-pane fade" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
+          <div class="tab-pane show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
             @if(auth()->user()->hasRole(ROLE_ADMIN))
             <div class="ek_group">
@@ -490,7 +490,7 @@
               <button type="button" class="btn btn-login btnekomn card_f_btn" id="dataAndDimesionTab">Save & Next</button>
             </div>
           </div>
-          <div class="tab-pane show active" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
+          <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
             <div class="addProductForm eklabel_wm">
               @if($variations->allow_editable)
               <h6>Do you have variants of this product?</h6>
@@ -587,7 +587,7 @@
                     @else
                     <div class="image-upload-box" id="box-{{$i+1}}" onclick="triggerUpload('box-{{$i+1}}')">
                     <input type="file" accept="image/*" onchange="previewImage(event, 'box-{{$i+1}}')" />
-                    <img id="img-box-{{$i+1}}" src="" alt="Image" style="display: none;" />
+                    <img id="img-box-{{$i+1}}" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-{{$i+1}}" onclick="deleteImage(event, 'box-{{$i+1}}')">&#10006;</div>
                     <div class="placeholdertext">
                     <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
@@ -1781,7 +1781,7 @@ let stockAndSizeCounter = 1;
   function deleteImage(event, boxId) {
     event.stopPropagation();
     const img = document.getElementById(`img-${boxId}`);
-    img.src = "";
+    img.removeAttribute("src");
     img.style.display = "none";
     document.getElementById(`delete-${boxId}`).style.display = "none";
     document.querySelector(`#${boxId} input[type="file"]`).value = "";
@@ -2008,13 +2008,32 @@ let stockAndSizeCounter = 1;
           $("#sizeErr").text('');
         }
 
+        const imagecontainerImage = document.querySelectorAll("[id^='img-box-']");
+
+        let totalFilesCount = 0;
+        imagecontainerImage.forEach(input => {
+          if(input.src != ''){
+            totalFilesCount++;
+          }
+        });
+        if (totalFilesCount < 5) {
+            isValid = false;
+            // Prevent form submission if less than 5 files
+            event.preventDefault();
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "You must upload at least 5 images. including 1 main image and 4 additional images."
+            });
+            return;
+        }
 
         // Append files for the 'no_variant' case
-        let totalFilesCount = 0;
+        // let totalFilesCount = 0;
         const fileInputs = document.querySelectorAll('.no_variant input[type="file"]');
-        fileInputs.forEach(input => {
-            totalFilesCount += input.files.length; // Count total number of files
-        });
+        // fileInputs.forEach(input => {
+        //     totalFilesCount += input.files.length; // Count total number of files
+        // });
         // if (totalFilesCount < 5) {
         //     isValid = false;
         //     // Prevent form submission if less than 5 files
@@ -2028,10 +2047,18 @@ let stockAndSizeCounter = 1;
         // }
         fileInputs.forEach((input, index) => {
           const files = input.files;
-          console.log(index);
           if (files.length > 0) { // Ensure that there are files to append
             for (let i = 0; i < files.length; i++) {
               formData.append(`no_variant[0][media][${index}]`, files[i]);
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const imgSrc = e.target.result;
+                const imgBox = document.getElementById('img-box');
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                imgBox.appendChild(img);
+              }
+              reader.readAsDataURL(files[i]);
             }
           }
         });

@@ -674,6 +674,7 @@ class ProductInvetoryController extends Controller
                         'product_sub_category',
                         'feature',
                         'supplier_id',
+                        'varition_id'
                     ];
                     $step_2 = [
                         'dropship_rate',
@@ -703,7 +704,7 @@ class ProductInvetoryController extends Controller
                         'package_weight_class',
                         'package_volumetric_weight',
                     ];
-                    
+
                     if(in_array($validator->errors()->keys()[0], $step_1)){
                         $step = 1;
                     } else if(in_array($validator->errors()->keys()[0], $step_2)){
