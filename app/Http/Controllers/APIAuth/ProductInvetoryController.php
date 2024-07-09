@@ -948,15 +948,29 @@ class ProductInvetoryController extends Controller
                                         'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
                                     ]);
                                 }else{
-                                    ProductVariationMedia::updateOrCreate(['id' => $existingMedia[$key]['id'], 'product_variation_id' => $productVariation->id],[
-                                        'product_id' => $product_id,
-                                        'product_variation_id' => $productVariation->id,
-                                        'media_type' => $media['is_image'],
-                                        'file_path' => $media['file_path'],
-                                        'thumbnail_path' => null,
-                                        'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
-                                    ]);
+                                    $where = [];
+                                    if(isset( $existingMedia[$key])){
+                                        $where = ['id' => $existingMedia[$key]['id'], 'product_variation_id' => $productVariation->id];
+                                        ProductVariationMedia::where($where)->update([
+                                            'product_id' => $product_id,
+                                            'product_variation_id' => $productVariation->id,
+                                            'media_type' => $media['is_image'],
+                                            'file_path' => $media['file_path'],
+                                            'thumbnail_path' => null,
+                                            'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
+                                            'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                                        ]);
+                                    }else{
+                                        ProductVariationMedia::create([
+                                            'product_id' => $product_id,
+                                            'product_variation_id' => $productVariation->id,
+                                            'media_type' => $media['is_image'],
+                                            'file_path' => $media['file_path'],
+                                            'thumbnail_path' => null,
+                                            'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
+                                            'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                                        ]);
+                                    }
                                 }
                             }
                     }
