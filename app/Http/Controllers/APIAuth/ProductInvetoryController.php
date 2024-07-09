@@ -1002,7 +1002,6 @@ class ProductInvetoryController extends Controller
                 }
 
             } catch (\Exception $e) {
-                dd($e->getMessage());
                 // Handle the exception
                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
             }
