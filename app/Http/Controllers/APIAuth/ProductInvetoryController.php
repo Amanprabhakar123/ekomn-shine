@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ProductVariationTransformer;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\File;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class ProductInvetoryController extends Controller
@@ -952,6 +952,21 @@ class ProductInvetoryController extends Controller
                                     $where = [];
                                     if(isset( $existingMedia[$key])){
                                         $where = ['id' => $existingMedia[$key]['id'], 'product_variation_id' => $productVariation->id];
+                                         // Remove the original file
+                                            $img1 = str_replace('storage/', '', $existingMedia[$key]['file_path']);
+                                            $img1 = storage_path('app/public/' . $img1);
+                                            $img2 = str_replace('storage/', '', $existingMedia[$key]['thumbnail_path']);
+                                            $img2 = storage_path('app/public/' . $img2);
+                                            \Log::info($img1);
+                                            if (File::exists($img1) && !empty($img1)) {
+                                                File::delete($img1);
+                                                \Log::info('deleted');
+                                            }
+                                            if (File::exists($img2) && !empty($img2)) {
+                                                File::delete($img2);
+                                                \Log::info('deleted');
+                                            }
+                                            
                                         ProductVariationMedia::where($where)->update([
                                             'product_id' => $product_id,
                                             'product_variation_id' => $productVariation->id,
@@ -987,6 +1002,7 @@ class ProductInvetoryController extends Controller
                 }
 
             } catch (\Exception $e) {
+                dd($e->getMessage());
                 // Handle the exception
                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
             }
