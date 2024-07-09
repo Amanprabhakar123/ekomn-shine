@@ -11,13 +11,19 @@ class ProductVariation extends Model
 {
     use HasFactory;
 
+    // Status
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
     const STATUS_OUT_OF_STOCK = 3;
     const STATUS_DRAFT = 4;
 
+    // Availability Status
     const TILL_STOCK_LAST = 1;
     const REGULAR_AVAILABLE = 2;
+    
+    // Allow Editable
+    const ALLOW_EDITABLE_TRUE = 1;
+    const ALLOW_EDITABLE_FALSE = 0;
 
     protected $fillable = [
         'product_id',
@@ -50,7 +56,8 @@ class ProductVariation extends Model
         'dropship_rate',
         'potential_mrp',
         'tier_rate',
-        'tier_shipping_rate'
+        'tier_shipping_rate',
+        'allow_editable'
     ];
 
     protected $casts = [
