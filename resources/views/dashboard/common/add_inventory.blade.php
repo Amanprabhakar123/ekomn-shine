@@ -816,11 +816,9 @@
         console.error('Error222:', error);
       });
   });
-  // Start code General Tab Step 1
-  $('#generaltab').click(function() {
 
 
-    $('#add-feature').on('click', function() {
+  $('#add-feature').on('click', function() {
       const $textarea = $('#product-description');
       const $featureList = $('#features-list');
 
@@ -860,7 +858,8 @@
         }
       });
     });
-
+  // Start code General Tab Step 1
+  $('#generaltab').click(function() {
     let isValid = true;
 
     const productName = $('#product_name').val();
@@ -1257,10 +1256,10 @@
 
   // -----------------------------------------------------------------------------------
 
-  let packageLength = 0;
-  let packageWidth = 0;
-  let packageHeight = 0;
-  let dimensionClass = 'cm';
+  let packageLength = $('#package_length').val() ?? 0;
+  let packageWidth = $('#package_width').val() ?? 0;
+  let packageHeight = $('#package_height').val() ?? 0;
+  let dimensionClass = $('#package_dimension_class').val() ?? 'cm';
   let packageVolumetricWeight = 0;
 
   // Add onchange function for each id

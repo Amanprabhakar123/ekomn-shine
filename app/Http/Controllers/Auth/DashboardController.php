@@ -168,10 +168,22 @@ class DashboardController extends Controller
             ]) // Eager load the product and category relationships
             ->first();
             // dd(DB::getQueryLog());
-            dd($variations);
-             return view('dashboard.common.edit_inventory');
+             return view('dashboard.common.edit_inventory', compact('variations'));
          }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
-             return view('dashboard.common.edit_inventory');
+
+            $variation_id = salt_decrypt($variation_id);
+            // DB::enableQueryLog();
+            $variations = ProductVariation::where('id', $variation_id)
+               ->with([
+                'media',
+                'product',
+                'product.category',
+                'product.company',
+                'product.keywords',
+                'product.features',
+            ]) // Eager load the product and category relationships
+            ->first();
+             return view('dashboard.common.edit_inventory', compact('variations'));
          }
          abort('403', 'Unauthorized action.');
      }

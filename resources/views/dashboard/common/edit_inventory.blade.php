@@ -25,14 +25,14 @@
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
-
+          <input type="hidden" value="{{salt_encrypt($variations->id)}}" id="varition_id">
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
             @if(auth()->user()->hasRole(ROLE_ADMIN))
             <div class="ek_group">
                 <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                    <input type="text" class="form-control" placeholder="Supplier Id." id="supplier_id" required />
+                    <input type="text" class="form-control" placeholder="Supplier Id." id="supplier_id" required  value="{{$variations->product->company->company_serial_id}}"/>
                     <div id="supplier_idErr" class="invalid-feedback"></div>
                 </div>
             </div>
@@ -40,14 +40,14 @@
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                  <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required />
+                  <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" value="{{$variations->title}}" id="product_name" required />
                   <div id="product_nameErr" class="invalid-feedback"></div>
                 </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel req"><span>Description:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                  <textarea class="form-control" placeholder="Product Description" name="product_description" id="product_description" required></textarea>
+                  <textarea class="form-control" placeholder="Product Description" name="product_description" id="product_description" required>{{$variations->description}}</textarea>
                   <div id="product_descriptionErr" class="invalid-feedback"></div>
                 </div>
               </div>
@@ -55,21 +55,35 @@
                 <label class="eklabel"><span>Product Keywords:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
                   <div class="tag-container">
+                     
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                     <div class="tag-input">
                       <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords" required />
                       <div id="tag-inputErr" class="invalid-feedback"></div>
                     </div>
+                    @else
+                    <div class="tag-input">
+                      <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords" required readonly />
+                      <div id="tag-inputErr" class="invalid-feedback"></div>
+                    </div>
+                    @endif
                   </div>
                 </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Features:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
+                @if(auth()->user()->hasRole(ROLE_ADMIN))
                   <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
+                  @else
+                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button" readonly></textarea>
+                  @endif
                   <span id="features-error" class="text-danger hide">At least one product feature is required.</span>
                   <div class="clearfix">
                     <span class="fs-14 opacity-25">You can only add up to 7 features</span>
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                     <button id="add-feature" type="button" class="btn addNewRow px-4">Add</button>
+                    @endif
                   </div>
                   <ol id="features-list" class="featureslisting"></ol>
                 </div>
@@ -80,14 +94,15 @@
                   <div class="row">
                     <div class="mb10 col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Main Category</label>
-                      <input type="text" name="product_category" id="product_category" class="form-control" placeholder="Product Category" readonly />
+                      <input type="text" name="product_category" id="product_category" class="form-control" value="{{$variations->product->category->name}}" placeholder="Product Category" readonly />
                       <input type="hidden" name="product_category_id" id="product_category_id" />
-                      <div id="product_categoryErr" class="invalid-feedback"></div>
+                      <div id="product_categoryErr" id="{{salt_encrypt($variations->product->category->id)}}" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
-                      <input type="text" name="product_sub_category" id="product_sub_category" class="form-control" placeholder="Product Sub Category" readonly />
-                      <input type="hidden" name="product_sub_category_id" id="product_sub_category_id" />
+                    
+                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->category->slug}}" class="form-control" placeholder="Product Sub Category" readonly />
+                      <input type="hidden" id="{{salt_encrypt($variations->product->category->id)}} name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -105,7 +120,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Single Piece / Dropship Rate:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" name="dropship_rate" id="dropship_rate" required />
+                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" value="{{(int)$variations->dropship_rate}}" name="dropship_rate" id="dropship_rate" required />
                       <div id="dropship_rateErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -114,7 +129,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Potential MRP:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Potential MRP" name="potential_mrp" id="potential_mrp" required />
+                      <input type="text" class="form-control" placeholder="Enter Potential MRP" value="{{(int)$variations->potential_mrp}}" name="potential_mrp" id="potential_mrp" required />
                       <div id="potential_mrpErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -133,16 +148,28 @@
                             </tr>
                           </thead>
                           <tbody>
+                            @php
+                            @$bulkRates = json_decode($variations->tier_rate, true);
+                            @$shippingRates = json_decode($variations->tier_shipping_rate, true);
+                            @endphp
+                          
+                            @foreach($bulkRates as $key => $bulkRate)                           
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
+                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" value="{{ $bulkRate['range']['max'] }}" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
                                 <div id="bulk_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
+                                <input type="text" class="smallInput_n" value="{{ $bulkRate['price'] }}" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
                                 <div id="bulk_priceErr0" class="invalid-feedback"></div>
                               </td>
+                              <td>
+                                @if($key != 0)
+                              <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
+                              @endif
+                              </td>
                             </tr>
+                            @endforeach
                           </tbody>
                         </table>
                         <button class="addNewRow" id="addNewRowButton" type="button">Add More</button>
@@ -165,25 +192,31 @@
                             </tr>
                           </thead>
                           <tbody>
+                            @foreach($shippingRates as $key => $shippingRate)
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required>
+                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]"  value="{{ $shippingRate['range']['max'] }}"  id="shipping[0][quantity]" required>
                                 <div id="shipping_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][local]" id="shipping[0][local]" required>
+                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" value="{{ $shippingRate['local'] }}" name="shipping[0][local]" id="shipping[0][local]" required>
                                 <div id="shipping_localErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][regional]" id="shipping[0][regional]" required>
+                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][regional]"  value="{{ $shippingRate['regional'] }}" id="shipping[0][regional]" required>
                                 <div id="shipping_regionalErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][national]" id="shipping[0][national]" required>
+                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="shipping[0][national]"  value="{{ $shippingRate['national'] }}" id="shipping[0][national]" required>
                                 <div id="shipping_nationalErr0" class="invalid-feedback"></div>
                               </td>
-                              <td></td>
+                              <td>
+                                @if($key != 0)
+                                <button type="button" class="deleteRow deleteShippingRow"><i class="far fa-trash-alt"></i></button>
+                                @endif
+                            </td>
                             </tr>
+                            @endforeach
                           </tbody>
                         </table>
                         <button class="addNewRow" id="addShippingRow" type="button">Add More</button>
@@ -207,7 +240,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Modal Number" name="model" id="model" required />
+                      <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       <div id="modelErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -216,7 +249,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product HSN:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter HSN Code" name="product_hsn" id="product_hsn" required />
+                      <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" required />
                       <div id="product_hsnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -225,12 +258,12 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <select class="form-select" name="gst_bracket" id="gst_bracket" required>
-                        <option value="0">0%</option>
-                        <option value="5" selected>5%</option>
-                        <option value="12">12%</option>
-                        <option value="18">18%</option>
-                        <option value="28">28%</option>
+                      <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required>
+                      <option value="0" {{ $variations->product->gst_percentage == '0' ? 'selected' : '' }}>0%</option>
+                      <option value="5" {{ $variations->product->gst_percentage == '5' ? 'selected' : '' }}>5%</option>
+                      <option value="12" {{ $variations->product->gst_percentage == '12' ? 'selected' : '' }}>12%</option>
+                      <option value="18" {{ $variations->product->gst_percentage == '18' ? 'selected' : '' }}>18%</option>
+                      <option value="28" {{ $variations->product->gst_percentage == '28' ? 'selected' : '' }}>28%</option>
                       </select>
                       <div id="gst_bracketErr" class="invalid-feedback"></div>
                     </div>
@@ -240,7 +273,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <select class="form-select" name="availability" id="availability" required>
+                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
                         <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
@@ -252,7 +285,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">UPC:</label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Universal Product Code" name="upc" id="upc" />
+                      <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
                       <div id="upcErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -261,7 +294,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">ISBN:</label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="International Standard Book Number" name="isbn" id="isbn" />
+                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
                       <div id="isbnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -270,7 +303,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">MPN:</label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" name="mpn" id="mpn" />
+                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
                       <div id="mpnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -282,7 +315,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Length:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="length" id="length" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->length}}" name="length" id="length" required />
                       <div id="lengthErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -291,7 +324,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Width:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="width" id="width" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->width}}" name="width" id="width" required />
                       <div id="widthErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -300,7 +333,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Height:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="height" id="height" required />
+                      <input type="text" class="form-control" placeholder="100" name="height" value="{{$variations->height}}" id="height" required />
                       <div id="heightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -310,9 +343,10 @@
                     <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
-                        <option value="mm">mm</option>
-                        <option value="cm" selected>cm</option>
-                        <option value="inch">inch</option>
+                      <option value="mm" {{ $variations->package_dimension_class == 'mm' ? 'selected' : '' }}>mm</option>
+                       <option value="cm" {{ $variations->package_dimension_class == 'cm' ? 'selected' : '' }}>cm</option>
+                        <option value="inch" {{ $variations->package_dimension_class == 'inch' ? 'selected' : '' }}>inch</option>
+
                       </select>
                       <div id="dimension_classErr" class="invalid-feedback"></div>
                     </div>
@@ -322,7 +356,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Weight:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="weight" id="weight" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->weight}}" name="weight" id="weight" required />
                       <div id="weightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -332,11 +366,12 @@
                     <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="weight_class" id="weight_class" required>
-                        <option value="mg">mg</option>
-                        <option value="gm">gm</option>
-                        <option value="kg">kg</option>
-                        <option value="ml">ml</option>
-                        <option value="ltr">ltr</option>
+                      <option value="mg" {{ $variations->weight_class == 'mg' ? 'selected' : '' }}>mg</option>
+                      <option value="gm" {{ $variations->weight_class == 'gm' ? 'selected' : '' }}>gm</option>
+                      <option value="kg" {{ $variations->weight_class == 'kg' ? 'selected' : '' }}>kg</option>
+                      <option value="ml" {{ $variations->weight_class == 'ml' ? 'selected' : '' }}>ml</option>
+                      <option value="ltr" {{ $variations->weight_class == 'ltr' ? 'selected' : '' }}>ltr</option>
+
                       </select>
                       <div id="weight_classErr" class="invalid-feedback"></div>
                     </div>
@@ -349,7 +384,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Length:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="package_length" id="package_length" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->package_length}}" name="package_length" id="package_length" required />
                       <div id="package_lengthErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -358,7 +393,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Width:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="package_width" id="package_width" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->package_width}}" name="package_width" id="package_width" required />
                       <div id="package_widthErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -367,7 +402,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Height:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="package_height" id="package_height" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->package_height}}" name="package_height" id="package_height" required />
                       <div id="package_heightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -377,9 +412,10 @@
                     <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
-                        <option value="mm">mm</option>
-                        <option value="cm" selected>cm</option>
-                        <option value="inch">inch</option>
+                      <option value="mm" {{ $variations->package_dimension_class == 'mm' ? 'selected' : '' }}>mm</option>
+                      <option value="cm" {{ $variations->package_dimension_class == 'cm' ? 'selected' : '' }}>cm</option>
+                      <option value="inch" {{ $variations->package_dimension_class == 'inch' ? 'selected' : '' }}>inch</option>
+
                       </select>
                       <div id="package_dimension_classErr" class="invalid-feedback"></div>
                     </div>
@@ -389,7 +425,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Weight:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="100" name="package_weight" id="package_weight" required />
+                      <input type="text" class="form-control" placeholder="100" value="{{$variations->package_weight}}" name="package_weight" id="package_weight" required />
                       <div id="package_weightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -399,11 +435,12 @@
                     <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_weight_class" id="package_weight_class" required>
-                        <option value="mg">mg</option>
-                        <option value="gm">gm</option>
-                        <option value="kg">kg</option>
-                        <option value="ml">ml</option>
-                        <option value="ltr">lt</option>
+                      <option value="mg" {{ $variations->package_weight_class == 'mg' ? 'selected' : '' }}>mg</option>
+                      <option value="gm" {{ $variations->package_weight_class == 'gm' ? 'selected' : '' }}>gm</option>
+                      <option value="kg" {{ $variations->package_weight_class == 'kg' ? 'selected' : '' }}>kg</option>
+                      <option value="ml" {{ $variations->package_weight_class == 'ml' ? 'selected' : '' }}>ml</option>
+                      <option value="ltr" {{ $variations->package_weight_class == 'ltr' ? 'selected' : '' }}>lt</option>
+
                       </select>
                       <div id="package_weight_classErr" class="invalid-feedback"></div>
                     </div>
@@ -413,7 +450,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Volumetric Weight in kg:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="L*W*H/5000" readonly name="package_volumetric_weight" id="package_volumetric_weight" required />
+                      <input type="text" class="form-control" placeholder="L*W*H/5000" value="{{$variations->package_volumetric_weight}}" readonly name="package_volumetric_weight" id="package_volumetric_weight" required />
                       <div id="package_volumetric_weightErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -427,6 +464,7 @@
           </div>
           <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
             <div class="addProductForm eklabel_wm">
+              @if($variations->allow_editable)
               <h6>Do you have variants of this product?</h6>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="variant" id="yes" />
@@ -436,37 +474,46 @@
                 <input class="form-check-input" type="radio" name="variant" id="no" checked />
                 <label class="form-check-label" for="no">No</label>
               </div>
+              @else
+              <input class="form-check-input" type="radio" name="variant" id="no" checked style="display:none;"/>
+              @endif
+              
               <div class="noblock mt15 no_variant">
                 <div class="single-row">
                   <div class="singlebox" id="variationColor">
                     <div class="mb10">
                       <label for="">Color<span class="req_star">*</span></label>
-                      <select class="form-select" required>
-                        <option value="default" selected>Default</option>
-                        <option value="beige">Beige</option>
-                        <option value="black">Black</option>
-                        <option value="blue">Blue</option>
-                        <option value="brown">Brown</option>
-                        <option value="gold">Gold</option>
-                        <option value="green">Green</option>
-                        <option value="grey">Grey</option>
-                        <option value="maroon">Maroon</option>
-                        <option value="multicolor">Multicolor</option>
-                        <option value="orange">Orange</option>
-                        <option value="pink">Pink</option>
-                        <option value="purple">Purple</option>
-                        <option value="red">Red</option>
-                        <option value="silver">Silver</option>
-                        <option value="white">White</option>
-                        <option value="yellow">Yellow</option>
+                      <select class="form-select" name="color" id="color" required>
+                        <option value="default" {{ $variations->color == 'default' ? 'selected' : '' }}>Default</option>
+                        <option value="beige" {{ $variations->color == 'beige' ? 'selected' : '' }}>Beige</option>
+                        <option value="black" {{ $variations->color == 'black' ? 'selected' : '' }}>Black</option>
+                        <option value="blue" {{ $variations->color == 'blue' ? 'selected' : '' }}>Blue</option>
+                        <option value="brown" {{ $variations->color == 'brown' ? 'selected' : '' }}>Brown</option>
+                        <option value="gold" {{ $variations->color == 'gold' ? 'selected' : '' }}>Gold</option>
+                        <option value="green" {{ $variations->color == 'green' ? 'selected' : '' }}>Green</option>
+                        <option value="grey" {{ $variations->color == 'grey' ? 'selected' : '' }}>Grey</option>
+                        <option value="maroon" {{ $variations->color == 'maroon' ? 'selected' : '' }}>Maroon</option>
+                        <option value="multicolor" {{ $variations->color == 'multicolor' ? 'selected' : '' }}>Multicolor</option>
+                        <option value="orange" {{ $variations->color == 'orange' ? 'selected' : '' }}>Orange</option>
+                        <option value="pink" {{ $variations->color == 'pink' ? 'selected' : '' }}>Pink</option>
+                        <option value="purple" {{ $variations->color == 'purple' ? 'selected' : '' }}>Purple</option>
+                        <option value="red" {{ $variations->color == 'red' ? 'selected' : '' }}>Red</option>
+                        <option value="silver" {{ $variations->color == 'silver' ? 'selected' : '' }}>Silver</option>
+                        <option value="white" {{ $variations->color == 'white' ? 'selected' : '' }}>White</option>
+                        <option value="yellow" {{ $variations->color == 'yellow' ? 'selected' : '' }}>Yellow</option>
                       </select>
+
                     </div>
                     <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
-                      <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" />
-                      <img id="img-box-1" src="" alt="Image" style="display: none;" />
-                      <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')">&#10006;</div>
-                      <div class="placeholdertext">
-                        <img src="assets/images/icon/placeholder-img-1.png" />
+                      <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" d/>
+                   
+                     
+                      <img id="img-box-1" src="{{$variations->media[0]->file_path}}" alt="Image" />
+                 
+      
+                      <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')" style="display: block;">&#10006;</div>
+                      <div class="placeholdertext" style="display: none;">
+                        <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                         <h6>Upload Main Image</h6>
                       </div>
                       <div id="boxError1" class="invalid-feedback"></div>
@@ -483,11 +530,11 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="Size" id="size" name="size">
+                            <input type="text" class="smallInput_n" placeholder="Size" value="{{$variations->size}}" id="size" name="size">
                             <div id="sizeErr" class="invalid-feedback"></div>
                           </td>
                           <td>
-                            <input type="text" class="smallInput_n" placeholder="0" id="stock" name="stock">
+                            <input type="text" class="smallInput_n" placeholder="0" value="{{$variations->stock}}" id="stock" name="stock">
                             <div id="stockErr" class="invalid-feedback"></div>
                           </td>
                         </tr>
@@ -496,78 +543,31 @@
                   </div>
                 </div>
                 <div class="multi-row">
-                  <div class="image-upload-box" id="box-2" onclick="triggerUpload('box-2')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-2')" />
-                    <img id="img-box-2" src="#" alt="Image 2" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-2" onclick="deleteImage(event, 'box-2')">&#10006;</div>
+                  @for($i = 1; $i < 9; $i++)
+                    @if(isset($variations->media[$i]))
+                    <div class="image-upload-box" id="box-{{$i+1}}" onclick="triggerUpload('box-{{$i+1}}')">
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-{{$i+1}}')" />
+                    <img id="img-box-{{$i+1}}" src="{{asset($variations->media[$i]->file_path)}}" alt="Image" />
+                    <div class="delete-icon" id="delete-box-{{$i+1}}" onclick="deleteImage(event, 'box-{{$i+1}}')" style="display: block;">&#10006;</div>
+                    <div class="placeholdertext" style="display: none;">
+                      <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
+                      <h6>Upload Image</h6>
+                    </div>
+                    
+                  </div>
+                    @else
+                    <div class="image-upload-box" id="box-{{$i+1}}" onclick="triggerUpload('box-{{$i+1}}')">
+                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-{{$i+1}}')" />
+                    <img id="img-box-{{$i+1}}" src="#" alt="Image" style="display: none;" />
+                    <div class="delete-icon" id="delete-box-{{$i+1}}" onclick="deleteImage(event, 'box-{{$i+1}}')">&#10006;</div>
                     <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
+                    <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                       <h6>Upload Image</h6>
                     </div>
                   </div>
-                  <div class="image-upload-box" id="box-3" onclick="triggerUpload('box-3')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-3')" />
-                    <img id="img-box-3" src="#" alt="Image 3" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-3" onclick="deleteImage(event, 'box-3')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-4" onclick="triggerUpload('box-4')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-4')" />
-                    <img id="img-box-4" src="#" alt="Image" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-4" onclick="deleteImage(event, 'box-4')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-5" onclick="triggerUpload('box-5')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-5')" />
-                    <img id="img-box-5" src="#" alt="Image" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-5" onclick="deleteImage(event, 'box-5')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-6" onclick="triggerUpload('box-6')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-6')" />
-                    <img id="img-box-6" src="#" alt="Image 6" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-6" onclick="deleteImage(event, 'box-6')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-7" onclick="triggerUpload('box-7')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-7')" />
-                    <img id="img-box-7" src="#" alt="Image" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-7" onclick="deleteImage(event, 'box-7')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-8" onclick="triggerUpload('box-8')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-8')" />
-                    <img id="img-box-8" src="#" alt="Image" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-8" onclick="deleteImage(event, 'box-8')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
-                  <div class="image-upload-box" id="box-9" onclick="triggerUpload('box-9')">
-                    <input type="file" accept="image/*" onchange="previewImage(event, 'box-9')" />
-                    <img id="img-box-9" src="#" alt="Image" style="display: none;" />
-                    <div class="delete-icon" id="delete-box-9" onclick="deleteImage(event, 'box-9')">&#10006;</div>
-                    <div class="placeholdertext">
-                      <img src="assets/images/icon/placeholder-img-1.png" />
-                      <h6>Upload Image</h6>
-                    </div>
-                  </div>
+                    @endif
+                  
+                  @endfor                  
                   <div class="video-container">
                     <div class="video-placeholder">
                       <div style="margin: 4px 0px 2px 0px;">
@@ -592,6 +592,7 @@
                   </div>
                 </div>
               </div>
+              
               <div class="yesblock yes_variant">
                 <div class="main-container" id="main-container">
                   <div class="imagecontainer" id="imagecontainerVariation-1">
@@ -758,6 +759,7 @@
                   <button class="btn btn-sm addNewRow mt10" type="button" onclick="addNewContainer()">Add More Variant</button>
                 </div>
               </div>
+              
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
@@ -785,6 +787,85 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Append Keyword data
+ 
+  const tagContainer = document.querySelector(".tag-container");
+  function createTag(label) {
+    const div = document.createElement("div");
+    div.setAttribute("class", "tag");
+    const span = document.createElement("span");
+    span.innerHTML = label.trim();
+    div.appendChild(span);
+    const closeIcon = document.createElement("span");
+    closeIcon.innerHTML = "";
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    closeIcon.setAttribute("class", "remove-tag");
+    @endif
+    closeIcon.onclick = function () {
+      tagContainer.removeChild(div);
+    };
+    div.appendChild(closeIcon);
+    return div;
+  }
+    $(document).ready(function() {
+  @foreach($variations->product->keywords as  $key => $keyword)
+      let a{{$key}} = "{{$keyword->keyword}}";
+      let input{{$key}} = document.querySelector("#tag-input");
+    const inputValue{{$key}} = a{{$key}}.trim().replace(/,$/, '');
+    if(inputValue{{$key}} !== "") {
+      let tag = createTag(inputValue{{$key}});
+      tagContainer.insertBefore(tag, input{{$key}}.parentElement);
+      input{{$key}}.value = "";
+    }
+    @endforeach
+  });
+
+    // populate features list
+    var featureList = $('#features-list');
+  $(document).ready(function(){
+
+  
+  var newFeature = '';
+  @foreach($variations->product->features as $key => $feature)
+  let featureName{{$key}} = "{{$feature->feature_name}}";
+  newFeature = $('<li>');
+      newFeature.html(`
+            <div class="featurescontent">
+              ${featureName{{$key}}.replace(/\n/g, '<br>')}
+              @if(auth()->user()->hasRole(ROLE_ADMIN))
+              <div class="f_btn f_btn_rightSide">
+                <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
+                <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
+              </div>
+                 @endif
+            </div>
+          `);
+      featureList.append(newFeature);
+    // Bind the event handlers for delete and edit buttons
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    bindFeatureEvents(newFeature);
+    @endif
+  @endforeach
+  });
+
+  function bindFeatureEvents(feature) {
+    feature.find('.delete-feature').on('click', function() {
+      feature.remove();
+      if (featureList.children().length < 7) {
+        $('#add-feature').prop('disabled', false);
+      }
+    });
+
+    feature.find('.edit-feature').on('click', function() {
+      const content = feature.find('.featurescontent').html().split('<div')[0].trim().replace(/<br>/g, '\n');
+      $('#product-description').val(content);
+      feature.remove();
+      if (featureList.children().length < 7) {
+        $('#add-feature').prop('disabled', false);
+      }
+    });
+  }
+
   const formData = new FormData();
 
   const searchCategory = document.getElementById("tag-input");
@@ -816,50 +897,32 @@
         console.error('Error222:', error);
       });
   });
-  // Start code General Tab Step 1
-  $('#generaltab').click(function() {
 
-
-    $('#add-feature').on('click', function() {
-      const $textarea = $('#product-description');
-      const $featureList = $('#features-list');
-
-      if ($textarea.val().trim() === '') {
+  $('#add-feature').on('click', function() {
+      const textarea = $('#product-description');;
+      if (textarea.val().trim() === '') {
         return;
       }
-      const newFeature = $('<li>');
+      newFeature = $('<li>');
       newFeature.html(`
             <div class="featurescontent">
-              ${$textarea.val().replace(/\n/g, '<br>')}
+              ${textarea.val().replace(/\n/g, '<br>')}
               <div class="f_btn f_btn_rightSide">
                 <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
               </div>
             </div>
           `);
-      $featureList.append(newFeature);
-      $textarea.val('');
-
-      if ($featureList.children().length >= 7) {
+      featureList.append(newFeature);
+      // Bind the event handlers for delete and edit buttons
+      bindFeatureEvents(newFeature);
+      textarea.val('');
+      if (featureList.children().length >= 7) {
         $('#add-feature').prop('disabled', true);
       }
-
-      newFeature.find('.delete-feature').on('click', function() {
-        newFeature.remove();
-        if ($featureList.children().length < 7) {
-          $('#add-feature').prop('disabled', false);
-        }
-      });
-
-      newFeature.find('.edit-feature').on('click', function() {
-        const content = newFeature.find('.featurescontent').html().split('<div')[0].trim().replace(/<br>/g, '\n');
-        $textarea.val(content);
-        newFeature.remove();
-        if ($featureList.children().length < 7) {
-          $('#add-feature').prop('disabled', false);
-        }
-      });
     });
+  // Start code General Tab Step 1
+  $('#generaltab').click(function() {
 
     let isValid = true;
 
@@ -956,6 +1019,7 @@
       formData.append('product_sub_category', subCategory);
       formData.append('product_category_id', mainCategoryId);
       formData.append('product_sub_category_id', subCategoryId);
+      formData.append('varition_id', $('#varition_id').val());
 
       // Proceed to next step
       document.querySelector('a[data-bs-target="#shipping"]').click();
@@ -1257,10 +1321,10 @@
 
   // -----------------------------------------------------------------------------------
 
-  let packageLength = 0;
-  let packageWidth = 0;
-  let packageHeight = 0;
-  let dimensionClass = 'cm';
+  let packageLength = $('#package_length').val();
+  let packageWidth = $('#package_width').val();
+  let packageHeight = $('#package_height').val();
+  let dimensionClass = $('#package_dimension_class').val();
   let packageVolumetricWeight = 0;
 
   // Add onchange function for each id
