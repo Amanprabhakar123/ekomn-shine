@@ -18,6 +18,7 @@ use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\Import\ImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,7 @@ use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+Route::post('api/import-product', [ImportController::class, 'importFile']);
 
 // Define routes for buyer, supplier, and admin login and registration forms
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');

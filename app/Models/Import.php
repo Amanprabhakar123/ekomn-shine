@@ -10,6 +10,7 @@ class Import extends Model
 {
     use HasFactory;
 
+    protected $table = 'import';
     /**
      * The attributes that are mass assignable.
      *

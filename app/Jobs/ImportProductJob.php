@@ -8,7 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Import;
-use App\Imports\ProductsImport;
+use App\Import\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
 
@@ -39,18 +39,32 @@ class ImportProductJob implements ShouldQueue
         ->first();
 
     if (!is_null($import)) {
-        $filePath = Storage::disk('public')->url($import->file_path); // Adjust the file path as needed
+        $import->status = Import::STATUS_INPROGRESS;
+        $import->save();
+        $import->refresh();
+        $filePath = storage_path('app/public/'.$import->file_path); // Adjust the file path as needed
 
         if (!file_exists($filePath)) {
+            \Log::error("File path does not exist ". $filePath);
             return;
         }
+        $errorCount = 0;
+        $successCount = 0;
+        $failCount = 0;
+        $productsImport = new ProductsImport();
 
         try {
-            Excel::import(new ProductsImport, $filePath);
+            Excel::import($productsImport, $filePath);
+
+            // Get the count of successfully imported rows
+            $successCount = $productsImport->getSuccessCount();
+            $failCount = $productsImport->getErrorCount();
+
+        
             // Update import status to completed
-            $import->status = Import::STATUS_COMPLETED;
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
+            $errorCount = count($failures);
 
             $errorFilePath = storage_path('app/public/errors_' . $this->import_id . '.csv');
             $errorFile = fopen($errorFilePath, 'w');
@@ -69,9 +83,10 @@ class ImportProductJob implements ShouldQueue
             fclose($errorFile);
             Storage::disk('public')->put('errors_' . $this->import_id . '.csv', file_get_contents($errorFile));
             $import->error_file = 'errors_' . $this->import_id . '.csv';
-            $import->status = Import::STATUS_FAILED;
         }
-
+        $import->status = Import::STATUS_SUCCESS;
+        $import->fail_count = $errorCount + $failCount;
+        $import->success_count = $successCount;
         $import->save();
     }
     }

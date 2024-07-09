@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Validator;
 use App\Jobs\ImportProductJob;
+use Illuminate\Support\Str;
 class ImportController extends Controller
 {
        /**
@@ -30,10 +31,12 @@ class ImportController extends Controller
        }
        $company_id = auth()->user()->companyDetails->id;
 
+
        $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        
        // Get the file contents
        $fileContents = $request->file('import_file')->get();
        // Define the path
+       $path = "import/bulk_upload_inventory/company_{$company_id}/".$filename;
        // Store the file
        Storage::disk('public')->put($path, $fileContents);
 
@@ -41,7 +44,7 @@ class ImportController extends Controller
         $filename = $file->getClientOriginalName();
         $fileType = $file->getClientOriginalExtension();
         $importFile = Import::create([
-            'type' => $request->input('type'),
+            'type' => $request->type,
             'filename' => $filename,
             'file_type' => $fileType,
             'file_path' => $path,
