@@ -1919,10 +1919,10 @@ let stockAndSizeCounter = 1;
         const size = document.querySelectorAll("#variantSize input[type='text'][name='size']");
         const stock = document.querySelectorAll("#variantSize input[type='text'][name='stock']");
         size.forEach((size, index) => {
-          formData.append(`no_variant[${index}][stock][0]`, size.value);
+          formData.append(`no_variant[${index}][size][0]`, size.value);
         });
         stock.forEach((stock, index) => {
-          formData.append(`no_variant[${index}][size][0]`, stock.value);
+          formData.append(`no_variant[${index}][stock][0]`, stock.value);
         });
         // Append color data for the 'no_variant' case
         const variationColor = document.querySelectorAll("#variationColor select");

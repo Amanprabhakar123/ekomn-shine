@@ -11,7 +11,7 @@
       <div>
         <ul class="nav nav-underline ekom_tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            <a class="nav-link" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
@@ -20,13 +20,13 @@
             <a class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+            <a class="nav-link active" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
           <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
           <input type="hidden" value="{{salt_encrypt($variations->id)}}" id="varition_id">
-          <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
+          <div class="tab-pane fade" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
             @if(auth()->user()->hasRole(ROLE_ADMIN))
             <div class="ek_group">
@@ -76,7 +76,7 @@
                 @if(auth()->user()->hasRole(ROLE_ADMIN))
                   <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
                   @else
-                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button" readonly></textarea>
+                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button" disabled></textarea>
                   @endif
                   <span id="features-error" class="text-danger hide">At least one product feature is required.</span>
                   <div class="clearfix">
@@ -94,15 +94,15 @@
                   <div class="row">
                     <div class="mb10 col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Main Category</label>
-                      <input type="text" name="product_category" id="product_category" class="form-control" value="{{$variations->product->category->name}}" placeholder="Product Category" readonly />
-                      <input type="hidden" name="product_category_id" id="product_category_id" />
-                      <div id="product_categoryErr" id="{{salt_encrypt($variations->product->category->id)}}" class="invalid-feedback"></div>
+                      <input type="text" name="product_category" id="product_category" class="form-control" value="{{$variations->product->category->name}}" placeholder="Product Category" disabled />
+                      <input type="hidden" name="product_category_id" id="product_category_id" value="{{salt_encrypt($variations->product->category->id)}}"/>
+                      <div id="product_categoryErr" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
                     
-                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->category->slug}}" class="form-control" placeholder="Product Sub Category" readonly />
-                      <input type="hidden" id="{{salt_encrypt($variations->product->category->id)}} name="product_sub_category_id" id="product_sub_category_id" />
+                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->category->slug}}" class="form-control" placeholder="Product Sub Category" disabled />
+                      <input type="hidden" value="{{salt_encrypt($variations->product->category->id)}}" name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -240,7 +240,11 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
+                      @else
+                      <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required disabled />
+                      @endif
                       <div id="modelErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -249,7 +253,11 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product HSN:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" required />
+                      @else
+                      <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" disabled />
+                      @endif
                       <div id="product_hsnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -258,7 +266,11 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required>
+                        @else
+                      <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required disabled>
+                        @endif
                       <option value="0" {{ $variations->product->gst_percentage == '0' ? 'selected' : '' }}>0%</option>
                       <option value="5" {{ $variations->product->gst_percentage == '5' ? 'selected' : '' }}>5%</option>
                       <option value="12" {{ $variations->product->gst_percentage == '12' ? 'selected' : '' }}>12%</option>
@@ -273,7 +285,11 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
+                      @else
+                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" disabled>
+                      @endif
                         <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
@@ -285,7 +301,11 @@
                   <div class="ek_group">
                     <label class="eklabel req">UPC:</label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
+                      @else
+                      <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" disabled/>
+                      @endif
                       <div id="upcErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -294,7 +314,11 @@
                   <div class="ek_group">
                     <label class="eklabel req">ISBN:</label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
+                      @else
+                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
+                      @endif
                       <div id="isbnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -303,7 +327,11 @@
                   <div class="ek_group">
                     <label class="eklabel req">MPN:</label>
                     <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
+                      @else
+                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
+                      @endif
                       <div id="mpnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -462,7 +490,7 @@
               <button type="button" class="btn btn-login btnekomn card_f_btn" id="dataAndDimesionTab">Save & Next</button>
             </div>
           </div>
-          <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
+          <div class="tab-pane show active" id="images" role="tabpanel" aria-labelledby="images-tab" tabindex="0">
             <div class="addProductForm eklabel_wm">
               @if($variations->allow_editable)
               <h6>Do you have variants of this product?</h6>
@@ -476,6 +504,7 @@
               </div>
               @else
               <input class="form-check-input" type="radio" name="variant" id="no" checked style="display:none;"/>
+              <input class="form-check-input" type="radio" name="variant" id="yes" style="display:none;"/>
               @endif
               
               <div class="noblock mt15 no_variant">
@@ -558,7 +587,7 @@
                     @else
                     <div class="image-upload-box" id="box-{{$i+1}}" onclick="triggerUpload('box-{{$i+1}}')">
                     <input type="file" accept="image/*" onchange="previewImage(event, 'box-{{$i+1}}')" />
-                    <img id="img-box-{{$i+1}}" src="#" alt="Image" style="display: none;" />
+                    <img id="img-box-{{$i+1}}" src="" alt="Image" style="display: none;" />
                     <div class="delete-icon" id="delete-box-{{$i+1}}" onclick="deleteImage(event, 'box-{{$i+1}}')">&#10006;</div>
                     <div class="placeholdertext">
                     <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
@@ -624,7 +653,7 @@
                           <img id="img-box1-1" src="" alt="Image 1" style="display: none;" />
                           <div class="delete-icon" id="delete-box1-1" onclick="deleteImage(event, 'box1-1')">&#10006;</div>
                           <div class="placeholdertext">
-                            <img src="assets/images/icon/placeholder-img-1.png" />
+                            <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                             <h6>Upload Main Image</h6>
                           </div>
                         </div>
@@ -663,7 +692,7 @@
                         <img id="img-box1-2" src="#" alt="Image 2" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-2" onclick="deleteImage(event, 'box1-2')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -672,7 +701,7 @@
                         <img id="img-box1-3" src="#" alt="Image 3" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-3" onclick="deleteImage(event, 'box1-3')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -681,7 +710,7 @@
                         <img id="img-box1-4" src="#" alt="Image 4" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-4" onclick="deleteImage(event, 'box1-4')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -690,7 +719,7 @@
                         <img id="img-box1-5" src="#" alt="Image 5" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-5" onclick="deleteImage(event, 'box1-5')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -699,7 +728,7 @@
                         <img id="img-box1-6" src="#" alt="Image 6" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-6" onclick="deleteImage(event, 'box1-6')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -708,7 +737,7 @@
                         <img id="img-box1-7" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-7" onclick="deleteImage(event, 'box1-7')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -717,7 +746,7 @@
                         <img id="img-box1-8" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-8" onclick="deleteImage(event, 'box1-8')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -726,7 +755,7 @@
                         <img id="img-box1-9" src="#" alt="Image" style="display: none;" />
                         <div class="delete-icon" id="delete-box1-9" onclick="deleteImage(event, 'box1-9')">&#10006;</div>
                         <div class="placeholdertext">
-                          <img src="assets/images/icon/placeholder-img-1.png" />
+                          <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                           <h6>Upload Image</h6>
                         </div>
                       </div>
@@ -763,11 +792,12 @@
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
-              <select id="product_listing_status" class="form-select w_200_f" required>
-                <option value="1">Active</option>
-                <option value="2" selected>Inactive</option>
-                <option value="3">Out of Stock</option>
-                <option value="4">Draft</option>
+                <select id="product_listing_status" class="form-select w_200_f" required>
+                <option value="1" @if($variations->product_listing_status == 1) selected @endif>Active</option>
+                <option value="2" @if($variations->product_listing_status == 2) selected @endif>Inactive</option>
+                <option value="3" @if($variations->product_listing_status == 3) selected @endif>Out of Stock</option>
+                <option value="4" @if($variations->product_listing_status == 4) selected @endif>Draft</option>
+                </select>
               </select>
             </div>
             <div class="saveform_footer">
@@ -1823,7 +1853,7 @@ let stockAndSizeCounter = 1;
 
     const firstPlaceholder = document.createElement("div");
     firstPlaceholder.className = "placeholdertext";
-    firstPlaceholder.innerHTML = `<img src="assets/images/icon/placeholder-img-1.png"><h6>Upload Main Image</h6>`;
+    firstPlaceholder.innerHTML = `<img src="{{asset('assets/images/icon/placeholder-img-1.png')}}"><h6>Upload Main Image</h6>`;
 
     firstBox.appendChild(firstInput);
     firstBox.appendChild(firstImg);
@@ -1960,19 +1990,20 @@ let stockAndSizeCounter = 1;
         fileInputs.forEach(input => {
             totalFilesCount += input.files.length; // Count total number of files
         });
-        if (totalFilesCount < 5) {
-            isValid = false;
-            // Prevent form submission if less than 5 files
-            event.preventDefault();
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "You must upload at least 5 images. including 1 main image and 4 additional images."
-            });
-            return;
-        }
+        // if (totalFilesCount < 5) {
+        //     isValid = false;
+        //     // Prevent form submission if less than 5 files
+        //     event.preventDefault();
+        //     Swal.fire({
+        //       icon: "error",
+        //       title: "Oops...",
+        //       text: "You must upload at least 5 images. including 1 main image and 4 additional images."
+        //     });
+        //     return;
+        // }
         fileInputs.forEach((input, index) => {
           const files = input.files;
+          console.log(index);
           if (files.length > 0) { // Ensure that there are files to append
             for (let i = 0; i < files.length; i++) {
               formData.append(`no_variant[0][media][${index}]`, files[i]);
@@ -1984,10 +2015,10 @@ let stockAndSizeCounter = 1;
         const size = document.querySelectorAll("#variantSize input[type='text'][name='size']");
         const stock = document.querySelectorAll("#variantSize input[type='text'][name='stock']");
         size.forEach((size, index) => {
-          formData.append(`no_variant[${index}][stock][0]`, size.value);
+          formData.append(`no_variant[${index}][size][0]`, size.value);
         });
         stock.forEach((stock, index) => {
-          formData.append(`no_variant[${index}][size][0]`, stock.value);
+          formData.append(`no_variant[${index}][stock][0]`, stock.value);
         });
         // Append color data for the 'no_variant' case
         const variationColor = document.querySelectorAll("#variationColor select");
@@ -2132,7 +2163,7 @@ let stockAndSizeCounter = 1;
     formData.append('product_listing_status', productListingStatus);
     if(isValid){
         $.ajax({
-        url: '{{route("inventory.store")}}',
+        url: '{{route("inventory.update")}}',
         type: 'POST',
         data: formData,
         dataType: 'json',
