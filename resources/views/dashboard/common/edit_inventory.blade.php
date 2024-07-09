@@ -596,7 +596,8 @@
                   </div>
                     @endif
                   
-                  @endfor                  
+                  @endfor 
+                  @isset($video->file_path)                 
                   <div class="video-container">
                     <div class="video-placeholder" style="display: none;">
                       <div style="margin: 4px 0px 2px 0px;">
@@ -619,6 +620,30 @@
                     <div class="delete-icon" style="display:block;">&#10006;</div>
                     <input type="file" class="file-input" accept="video/*" >
                   </div>
+                  @else
+                  <div class="video-container">
+                        <div class="video-placeholder">
+                          <div style="margin: 4px 0px 2px 0px;">
+                            <svg viewBox="0 0 64 64" width="38" height="38" fill="#FAFAFA">
+                              <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.15)" />
+                              <polygon points="25,16 25,48 48,32" />
+                            </svg>
+                          </div>
+                          <h6>Upload Video</h6>
+                        </div>
+                        <video class="video-element">
+                          <source src="" class="video-source">
+                        </video>
+                        <div class="play-icon">
+                          <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
+                            <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.5)" />
+                            <polygon points="25,16 25,48 48,32" />
+                          </svg>
+                        </div>
+                        <div class="delete-icon">&#10006;</div>
+                        <input type="file" class="file-input" accept="video/*" required>
+                      </div>
+                  @endif
                 </div>
               </div>
               
@@ -2179,7 +2204,7 @@ let stockAndSizeCounter = 1;
             Swal.fire({
               position: "center",
               icon: "success",
-              title: "Invetory Added Successfully.",
+              title: "Invetory Updated Successfully.",
               showConfirmButton: false,
               timer: 1500
             });

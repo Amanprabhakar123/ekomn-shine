@@ -832,8 +832,8 @@ class ProductInvetoryController extends Controller
                         }
                     }
 
-                    $img_ext = ['png', 'jpeg', 'jpg'];
-                    $vide_ext = ['mp4'];
+                    $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
+                    $vide_ext = ['mp4', 'MP4'];
                     $existingMedia = ProductVariationMedia::where('product_id', $product_id)->where('product_variation_id', $productVariation->id)->get();
 
                     // Insert Product Variation table
@@ -986,7 +986,6 @@ class ProductInvetoryController extends Controller
                 }
 
             } catch (\Exception $e) {
-                dd($e->getMessage(), $e->getLine());
                 // Handle the exception
                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
             }
