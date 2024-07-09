@@ -573,10 +573,10 @@
                 </div>
                 <div class="multi-row">
                   @for($i = 1; $i < 9; $i++)
-                    @if(isset($variations->media[$i]))
+                    @if(isset($image[$i]))
                     <div class="image-upload-box" id="box-{{$i+1}}" onclick="triggerUpload('box-{{$i+1}}')">
                     <input type="file" accept="image/*" onchange="previewImage(event, 'box-{{$i+1}}')" />
-                    <img id="img-box-{{$i+1}}" src="{{asset($variations->media[$i]->file_path)}}" alt="Image" />
+                    <img id="img-box-{{$i+1}}" src="{{asset($image[$i]->file_path)}}" alt="Image" />
                     <div class="delete-icon" id="delete-box-{{$i+1}}" onclick="deleteImage(event, 'box-{{$i+1}}')" style="display: block;">&#10006;</div>
                     <div class="placeholdertext" style="display: none;">
                       <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
@@ -598,7 +598,7 @@
                   
                   @endfor                  
                   <div class="video-container">
-                    <div class="video-placeholder">
+                    <div class="video-placeholder" style="display: none;">
                       <div style="margin: 4px 0px 2px 0px;">
                         <svg viewBox="0 0 64 64" width="38" height="38" fill="#FAFAFA">
                           <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.15)" />
@@ -607,17 +607,17 @@
                       </div>
                       <h6>Upload Video</h6>
                     </div>
-                    <video class="video-element">
-                      <source src="" class="video-source">
+                    <video class="video-element" style="display:block;">
+                      <source src="{{asset('storage/'.$video->file_path) ?? ''}}" class="video-source">
                     </video>
-                    <div class="play-icon">
+                    <div class="play-icon" style="display:block;">
                       <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
                         <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.5)" />
                         <polygon points="25,16 25,48 48,32" />
                       </svg>
                     </div>
-                    <div class="delete-icon">&#10006;</div>
-                    <input type="file" class="file-input" accept="video/*">
+                    <div class="delete-icon" style="display:block;">&#10006;</div>
+                    <input type="file" class="file-input" accept="video/*" >
                   </div>
                 </div>
               </div>
@@ -2169,6 +2169,9 @@ let stockAndSizeCounter = 1;
         dataType: 'json',
         processData: false,
         contentType: false,
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
         async: false,
         success: function(response) {
           if (response.data.statusCode == 200) {

@@ -67,20 +67,20 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
+        Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
         Route::post('update-inventory', [ProductInvetoryController::class, 'updateInventory'])->name('inventory.update');
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
+        Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
+        Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
     });
 });
 
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
-        Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
-        Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
-        
+        // Define routes for jwt token refresh, user details, and logout
     });
 });
 

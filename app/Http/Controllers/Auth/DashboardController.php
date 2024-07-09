@@ -13,6 +13,7 @@ use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
 {
@@ -167,8 +168,10 @@ class DashboardController extends Controller
                 'product.features',
             ]) // Eager load the product and category relationships
             ->first();
+            $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
+            $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
             // dd(DB::getQueryLog());
-             return view('dashboard.common.edit_inventory', compact('variations'));
+             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
          }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
 
             $variation_id = salt_decrypt($variation_id);
@@ -183,7 +186,9 @@ class DashboardController extends Controller
                 'product.features',
             ]) // Eager load the product and category relationships
             ->first();
-             return view('dashboard.common.edit_inventory', compact('variations'));
+            $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
+            $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
+             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
          }
          abort('403', 'Unauthorized action.');
      }
