@@ -29,7 +29,9 @@ class ImportController extends Controller
        if($validator->fails()){
         return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
        }
-       $company_id = auth()->user()->companyDetails->id;
+       //$company_id = auth()->user()->companyDetails->id;
+       $company_id = 1;
+
 
 
        $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        

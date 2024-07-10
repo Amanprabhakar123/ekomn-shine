@@ -11,6 +11,8 @@ use App\Models\Import;
 use App\Import\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
+use Illuminate\Validation\Rule;
+
 
 class ImportProductJob implements ShouldQueue
 {
@@ -51,43 +53,9 @@ class ImportProductJob implements ShouldQueue
         $errorCount = 0;
         $successCount = 0;
         $failCount = 0;
-        $productsImport = new ProductsImport();
+        $productsImport = new ProductsImport($import->id);
 
-        try {
             Excel::import($productsImport, $filePath);
-
-            // Get the count of successfully imported rows
-            $successCount = $productsImport->getSuccessCount();
-            $failCount = $productsImport->getErrorCount();
-
-        
-            // Update import status to completed
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $errorCount = count($failures);
-
-            $errorFilePath = storage_path('app/public/errors_' . $this->import_id . '.csv');
-            $errorFile = fopen($errorFilePath, 'w');
-            fputcsv($errorFile, ['row', 'attribute', 'errors', 'values']);
-
-            foreach ($failures as $failure) {
-                fputcsv($errorFile, [
-                    $failure->row(), 
-                    $failure->attribute(), 
-                    implode(', ', $failure->errors()), 
-                    json_encode($failure->values())
-                ]);
-            }
-
-
-            fclose($errorFile);
-            Storage::disk('public')->put('errors_' . $this->import_id . '.csv', file_get_contents($errorFile));
-            $import->error_file = 'errors_' . $this->import_id . '.csv';
-        }
-        $import->status = Import::STATUS_SUCCESS;
-        $import->fail_count = $errorCount + $failCount;
-        $import->success_count = $successCount;
-        $import->save();
     }
     }
 }
