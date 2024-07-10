@@ -368,7 +368,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
                       <option value="mm" {{ $variations->package_dimension_class == 'mm' ? 'selected' : '' }}>mm</option>
@@ -391,7 +391,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="weight_class" id="weight_class" required>
                       <option value="mg" {{ $variations->weight_class == 'mg' ? 'selected' : '' }}>mg</option>
@@ -437,7 +437,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                       <option value="mm" {{ $variations->package_dimension_class == 'mm' ? 'selected' : '' }}>mm</option>
@@ -460,7 +460,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_weight_class" id="package_weight_class" required>
                       <option value="mg" {{ $variations->package_weight_class == 'mg' ? 'selected' : '' }}>mg</option>
@@ -817,11 +817,15 @@
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
-                <select id="product_listing_status" class="form-select w_200_f" required>
-                <option value="1" @if($variations->product_listing_status == 1) selected @endif>Active</option>
-                <option value="2" @if($variations->product_listing_status == 2) selected @endif>Inactive</option>
-                <option value="3" @if($variations->product_listing_status == 3) selected @endif>Out of Stock</option>
-                <option value="4" @if($variations->product_listing_status == 4) selected @endif>Draft</option>
+              @if(isset($variations->product->category->name) && $variations->product->category->name == 'Unknown')
+                <select id="product_listing_status" class="form-select w_200_f" required disabled>
+                  @else
+                  <select id="product_listing_status" class="form-select w_200_f" required >
+                    @endif
+                <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
+                <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
+                <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
+                <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
                 </select>
               </select>
             </div>
@@ -946,6 +950,13 @@
           $('#product_sub_category_id').empty();
           $('#product_category_id').append().val(response.data.result.main_category_id);
           $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
+          const mainCategory = $('#product_category').val();
+          if( mainCategory == 'Unknown' ) {
+            $('#product_listing_status').val('2');
+            $('#product_listing_status').attr('disabled', true);
+          }else{
+            $('#product_listing_status').attr('disabled', false);
+          }
         }
       })
       .catch(error => {

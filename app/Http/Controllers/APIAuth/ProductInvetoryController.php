@@ -1067,16 +1067,16 @@ class ProductInvetoryController extends Controller
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
-                'stock' => 'required|integer'
+                'stock' => 'required|integer|min:0'
             ]);
             $variation_id = salt_decrypt($variation_id);
 
             if ($validator->fails()) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode400'),
-                    'status' => __('statusCode.status400'),
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
                     'message' => $validator->errors()->first()
-                ]], __('statusCode.statusCode400'));
+                ]], __('statusCode.statusCode200'));
             }
 
             // Find the product variation

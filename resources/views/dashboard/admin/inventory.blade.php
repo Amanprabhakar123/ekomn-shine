@@ -343,6 +343,10 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
+        let availabilityStatus = false;
+        if(item.product_category == 'Unknown'){
+            availabilityStatus = true;
+        }
         return `
         <tr>
             <td>
@@ -377,7 +381,7 @@
                 <div>${item.availability_status}</div>
             </td>
              <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)">
+                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
                     <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
                     <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
                     <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
@@ -412,6 +416,7 @@
                 product_id: productId
             })
             .then(response => {
+                
                 Swal.fire({
                     title: "Good job!",
                     text: response.data.message,
@@ -429,7 +434,16 @@
      * @param {number} productId - The ID of the product.
      */
     function updateStatus(itemId, productId, newStatus) {
-        // Make an API request to update the status of the product
+        Swal.fire({
+            title: "Do you want to save the changes status?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`
+            }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                  // Make an API request to update the status of the product
         ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
                 status: newStatus,
                 product_id: productId
@@ -444,6 +458,12 @@
             .catch(error => {
                 console.error('Error updating status:', error);
             });
+                
+            } else if (result.isDenied) {
+                Swal.fire("The status is not updated.", "", "info");
+            }
+            });
+      
         }
 </script>
 @endsection

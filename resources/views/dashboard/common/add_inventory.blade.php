@@ -307,7 +307,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
                         <option value="mm">mm</option>
@@ -329,7 +329,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit :<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="weight_class" id="weight_class" required>
                         <option value="mg">mg</option>
@@ -374,7 +374,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                         <option value="mm">mm</option>
@@ -396,7 +396,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit :<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_weight_class" id="package_weight_class" required>
                         <option value="mg">mg</option>
@@ -801,6 +801,7 @@
     ApiRequest('product/find-category?tags=' + keyWordInput, 'GET')
       .then(response => {
         if (response.data.status) {
+          
           $('#product_category').empty();
           $('#product_sub_category').empty();
           $('#product_category').append().val(response.data.result.main_category);
@@ -810,6 +811,15 @@
           $('#product_sub_category_id').empty();
           $('#product_category_id').append().val(response.data.result.main_category_id);
           $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
+
+          const mainCategory = $('#product_category').val();
+          if( mainCategory == 'Unknown' ) {
+            $('#product_listing_status').val('2');
+            $('#product_listing_status').attr('disabled', true);
+          }else{
+            $('#product_listing_status').attr('disabled', false);
+          
+          }
         }
       })
       .catch(error => {
@@ -869,6 +879,8 @@
     const mainCategoryId = $('#product_category_id').val();
     const subCategoryId = $('#product_sub_category_id').val();
     const features = $('#features-list').children().length;
+
+    console.log(mainCategory, subCategory, );
 
     // Validate Product Keywords
     const tagInputValue = $('#tag-input').val().trim();

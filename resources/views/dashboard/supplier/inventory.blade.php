@@ -264,6 +264,10 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
+        let availabilityStatus = false;
+        if(item.product_category == 'Unknown'){
+            availabilityStatus = true;
+        }
         return `
         <tr>
             <td>
@@ -295,7 +299,7 @@
                 <div>${item.availability_status}</div>
             </td>
             <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)">
+                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
                     <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
                     <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
                     <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
@@ -330,11 +334,19 @@
                 product_id: productId
             })
             .then(response => {
-                Swal.fire({
-                    title: "Good job!",
-                    text: response.data.message,
-                    icon: "success"
-                });
+                if(response.data.statusCode == 200){
+                    Swal.fire({
+                        title: "Good job!",
+                        text: response.data.message,
+                        icon: "success"
+                    });
+                }else if(response.data.statusCode == 422){
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.data.message,
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error updating stock:', error);
