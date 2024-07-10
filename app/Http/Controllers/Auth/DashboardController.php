@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Services\CompanyService;
+use App\Models\Import;
+
 
 class DashboardController extends Controller
 {
@@ -149,7 +151,8 @@ class DashboardController extends Controller
     public function bulkUploadList()
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.common.bulk_upload_list');
+            $bulk_upload_lists = Import::where('company_id', auth()->user()->companyDetails->id)->paginate();
+            return view('dashboard.common.bulk_upload_list', compact('bulk_upload_lists'));
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload_list');
         }

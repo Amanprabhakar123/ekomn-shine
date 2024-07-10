@@ -40,11 +40,10 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
     public function collection(Collection $rows)
     {
       //  DB::beginTransaction();
-                      //$company_id = auth()->user()->companyDetails->id;
-               // $user_id = auth()->user()->id;
+        $company_id = auth()->user()->companyDetails->id;
+        $user_id = auth()->user()->id;
     
-               $company_id = 1;
-               $user_id = 1;
+
         $is_error_heading = false;
         $errorFilePath = storage_path('app/public/product_import_error/errors_' . $this->import_id . '.csv');
         $errorFile = fopen($errorFilePath, 'w');

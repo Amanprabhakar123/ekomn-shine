@@ -22,17 +22,14 @@ class ImportController extends Controller
     {
 
        $validator = Validator::make($request->all(),[
-            'type' => 'required|string|max:100|in:bulk_upload_inventory',
+           // 'type' => 'required|string|max:100|in:bulk_upload_inventory',
             'import_file' => 'required|file'  
        ]);
-
+       $request->merge(['type' => 'bulk_upload_inventory']);
        if($validator->fails()){
-        return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
+        return redirect()->back()->withErrors(['error' => 'File upload failed. Please try again.']);
        }
-       //$company_id = auth()->user()->companyDetails->id;
-       $company_id = 1;
-
-
+       $company_id = auth()->user()->companyDetails->id;
 
        $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        
        // Get the file contents
@@ -55,7 +52,6 @@ class ImportController extends Controller
         ]);
 
         dispatch((new ImportProductJob($importFile->id,$company_id ))->onQueue('product_upload'));
-
-        return response()->json(['success' => true, 'message' => 'File has been queued successfully!']);
+        return redirect()->back()->with('success', 'File has been queued successfully!');
     }
 }

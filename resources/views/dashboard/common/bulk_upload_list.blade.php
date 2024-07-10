@@ -59,7 +59,21 @@
                 </thead>
 
                     <tbody id="dataContainer">
-                        <!-- Data will be displayed here -->
+                        <tbody id="dataContainer">
+                            @foreach ($bulk_upload_lists as $import)
+                            <tr>
+                                <td>{{ $import->filename }}</td>
+                                <td>{{ $import->created_at }}</td>
+                                <td>{{ $import->success_count +  $import->fail_count}}</td>
+                                <td>{{ $import->success_count }}</td>
+                                <td>{{ $import->fail_count }}</td>
+                                <td>{{ $import->status }}</td>
+                                <td>
+                                    <button class="btn btn-link btn-sm">Edit</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </tbody>
                 </table>
             </div>

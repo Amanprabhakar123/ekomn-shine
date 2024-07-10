@@ -19,6 +19,8 @@ use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\BulkUploadController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +37,6 @@ use App\Http\Controllers\Import\ImportController;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-Route::post('api/import-product', [ImportController::class, 'importFile']);
 
 // Define routes for buyer, supplier, and admin login and registration forms
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
@@ -72,6 +73,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
+        Route::post('bulk/import-product-inventory', [ImportController::class, 'importFile'])->name('import-product-inventory');
+        Route::get('/download-template', [BulkUploadController::class, 'downloadSampleTemplate'])->name('download-template');
+
     });
 });
 
