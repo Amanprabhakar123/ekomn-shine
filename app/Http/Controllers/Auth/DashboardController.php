@@ -140,4 +140,19 @@ class DashboardController extends Controller
         }
         abort('403', 'Unauthorized action.');
     }
+
+    /**
+     * Display the list of bulk uploads.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function bulkUploadList()
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.bulk_upload_list');
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.bulk_upload_list');
+        }
+        abort('403', 'Unauthorized action.');
+    }
 }
