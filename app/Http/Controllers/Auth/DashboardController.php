@@ -151,11 +151,11 @@ class DashboardController extends Controller
     public function bulkUploadList()
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            $bulk_upload_lists = Import::where('company_id', auth()->user()->companyDetails->id)->paginate();
-            return view('dashboard.common.bulk_upload_list', compact('bulk_upload_lists'));
+            return view('dashboard.common.bulk_upload_list');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload_list');
         }
         abort('403', 'Unauthorized action.');
     }
+    
 }

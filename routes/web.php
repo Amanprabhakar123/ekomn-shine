@@ -75,7 +75,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
         Route::post('bulk/import-product-inventory', [ImportController::class, 'importFile'])->name('import-product-inventory');
         Route::get('/download-template', [BulkUploadController::class, 'downloadSampleTemplate'])->name('download-template');
-
+        Route::get('/bulk-data', [ProductInvetoryController::class, 'getDataBulkInventory'])->name('bulk-data');
     });
 });
 
@@ -85,7 +85,6 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
-        
     });
 });
 

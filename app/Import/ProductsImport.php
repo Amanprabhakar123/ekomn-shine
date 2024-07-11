@@ -22,9 +22,9 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Validator;
 
-class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,SkipsOnFailure,SkipsEmptyRows
+class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsEmptyRows
 {
-    use Importable,SkipsFailures;
+    use Importable, SkipsFailures;
 
     private $successCount = 0;
     private $errorCount = 0;
@@ -35,36 +35,39 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
     {
         $this->import_id = $import_id;
     }
-    
+
 
     public function collection(Collection $rows)
     {
-      //  DB::beginTransaction();
+        //  DB::beginTransaction();
         $company_id = auth()->user()->companyDetails->id;
         $user_id = auth()->user()->id;
-    
 
         $is_error_heading = false;
         $errorFilePath = storage_path('app/public/product_import_error/errors_' . $this->import_id . '.csv');
+        // create directory if not exist
+        if (!file_exists(dirname($errorFilePath))) {
+            mkdir(dirname($errorFilePath), 0777, true);
+        }
+
         $errorFile = fopen($errorFilePath, 'w');
         $import = Import::where('id', $this->import_id)->first();
 
         foreach ($rows->toArray() as $key => $row) {
             try {
-               $validator =  Validator::make($row, $this->myCustomValidationRule());
-               if($validator->fails()){
-                   if(!$is_error_heading){
-                    $errorFile = fopen($errorFilePath, 'w');
-                    fputcsv($errorFile,array_merge(array_keys($row, ['error'])));
-                    $is_error_heading = true;
-                   }
-                   fputcsv($errorFile,array_merge(array_values($row), [$validator->errors()->first()]));
-                   $this->errorCount++;
-                   continue;
+                $validator =  Validator::make($row, $this->myCustomValidationRule());
+                if ($validator->fails()) {
+                    if (!$is_error_heading) {
+                        $errorFile = fopen($errorFilePath, 'w');
+                        fputcsv($errorFile, array_merge(array_keys($row, ['error'])));
+                        $is_error_heading = true;
+                    }
+                    fputcsv($errorFile, array_merge(array_values($row), [$validator->errors()->first()]));
+                    $this->errorCount++;
+                    continue;
+                }
 
-               }
 
-    
                 $row['listing_status'] = $this->getListingStatus($row['listing_status']);
                 $tags = explode(",", $row['product_keywords']);
                 $tagData = fetchCategoryFromProductTags($tags);
@@ -85,31 +88,31 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                     'product_subcategory' => $tagData['sub_category_id'],
                     'user_id' => $user_id,
                 ]);
-    
-    
+
+
                 $tier_rate = [];
-                if(!empty($row['bulk_rate1_quantity_upto']) && !empty($row['bulk_rate1_price_per_piece'])){
+                if (!empty($row['bulk_rate1_quantity_upto']) && !empty($row['bulk_rate1_price_per_piece'])) {
                     $tier_rate[$row['bulk_rate1_quantity_upto']] = [
                         'quantity' => $row['bulk_rate1_quantity_upto'],
                         'price' => $row['bulk_rate1_price_per_piece']
                     ];
                 }
-                if(!empty($row['bulk_rate2_quantity_upto']) && !empty($row['bulk_rate2_price_per_piece'])){
+                if (!empty($row['bulk_rate2_quantity_upto']) && !empty($row['bulk_rate2_price_per_piece'])) {
                     $tier_rate[$row['bulk_rate2_quantity_upto']] = [
                         'quantity' => $row['bulk_rate2_quantity_upto'],
                         'price' => $row['bulk_rate2_price_per_piece']
                     ];
                 }
-                if(!empty($row['bulk_rate3_quantity_upto']) && !empty($row['bulk_rate3_price_per_piece'])){
+                if (!empty($row['bulk_rate3_quantity_upto']) && !empty($row['bulk_rate3_price_per_piece'])) {
                     $tier_rate[$row['bulk_rate3_quantity_upto']] = [
                         'quantity' => $row['bulk_rate3_quantity_upto'],
                         'price' => $row['bulk_rate3_price_per_piece']
                     ];
                 }
-    
+
                 $tierRate = [];
-    
-                if(count($tier_rate) > 0){
+
+                if (count($tier_rate) > 0) {
                     $min = 1;
                     foreach ($tier_rate as $bulk) {
                         $tierRate[] = [
@@ -122,10 +125,12 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                         $min = (int) $bulk['quantity'] + 1;
                     }
                 }
-    
+
                 $shippingRateArray = [];
-                if(!empty($row['shipping_rate1_quantity_upto']) && !empty($row['shipping_rate1_local']) &&
-                 !empty($row['shipping_rate1_regional']) && !empty($row['shipping_rate1_national'])){
+                if (
+                    !empty($row['shipping_rate1_quantity_upto']) && !empty($row['shipping_rate1_local']) &&
+                    !empty($row['shipping_rate1_regional']) && !empty($row['shipping_rate1_national'])
+                ) {
                     $shippingRateArray[$row['shipping_rate1_quantity_upto']] = [
                         'quantity' => $row['shipping_rate1_quantity_upto'],
                         'local' => $row['shipping_rate1_local'],
@@ -133,32 +138,36 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                         'national' => $row['shipping_rate1_national']
                     ];
                 }
-    
-                if(!empty($row['shipping_rate2_quantity_upto']) && !empty($row['shipping_rate2_local']) &&
-                !empty($row['shipping_rate2_regional']) && !empty($row['shipping_rate2_national'])){
-                   $shippingRateArray[$row['shipping_rate2_quantity_upto']] = [
-                       'quantity' => $row['shipping_rate2_quantity_upto'],
-                       'local' => $row['shipping_rate2_local'],
-                       'regional' => $row['shipping_rate2_regional'],
-                       'national' => $row['shipping_rate2_national']
-                   ];
-               }
-    
-               if(!empty($row['shipping_rate3_quantity_upto']) && !empty($row['shipping_rate3_local']) &&
-               !empty($row['shipping_rate3_regional']) && !empty($row['shipping_rate3_national'])){
-                  $shippingRateArray[$row['shipping_rate3_quantity_upto']] = [
-                      'quantity' => $row['shipping_rate3_quantity_upto'],
-                      'local' => $row['shipping_rate3_local'],
-                      'regional' => $row['shipping_rate3_regional'],
-                      'national' => $row['shipping_rate3_national']
-                  ];
-              }
-    
-    
+
+                if (
+                    !empty($row['shipping_rate2_quantity_upto']) && !empty($row['shipping_rate2_local']) &&
+                    !empty($row['shipping_rate2_regional']) && !empty($row['shipping_rate2_national'])
+                ) {
+                    $shippingRateArray[$row['shipping_rate2_quantity_upto']] = [
+                        'quantity' => $row['shipping_rate2_quantity_upto'],
+                        'local' => $row['shipping_rate2_local'],
+                        'regional' => $row['shipping_rate2_regional'],
+                        'national' => $row['shipping_rate2_national']
+                    ];
+                }
+
+                if (
+                    !empty($row['shipping_rate3_quantity_upto']) && !empty($row['shipping_rate3_local']) &&
+                    !empty($row['shipping_rate3_regional']) && !empty($row['shipping_rate3_national'])
+                ) {
+                    $shippingRateArray[$row['shipping_rate3_quantity_upto']] = [
+                        'quantity' => $row['shipping_rate3_quantity_upto'],
+                        'local' => $row['shipping_rate3_local'],
+                        'regional' => $row['shipping_rate3_regional'],
+                        'national' => $row['shipping_rate3_national']
+                    ];
+                }
+
+
                 $tierShippingRate = [];
                 $minRange = 1;
-                if(count($shippingRateArray) > 0){
-    
+                if (count($shippingRateArray) > 0) {
+
                     foreach ($shippingRateArray as $shipping) {
                         $tierShippingRate[] = [
                             'range' => [
@@ -172,9 +181,9 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                         $minRange = (int) $shipping['quantity'] + 1;
                     }
                 }
-               $calPackageWeightInKgusingDimesnsion =  calculateVolumetricWeight($row['package_length'], $row['package_width'], $row['package_height'], $row['package_dimension_unit']);
-               $getPackageVolumetricWeight = convertKg($calPackageWeightInKgusingDimesnsion, $row['package_weight_unit']);
-    
+                $calPackageWeightInKgusingDimesnsion =  calculateVolumetricWeight($row['package_length'], $row['package_width'], $row['package_height'], $row['package_dimension_unit']);
+                $getPackageVolumetricWeight = convertKg($calPackageWeightInKgusingDimesnsion, $row['package_weight_unit']);
+
                 $productVariation = ProductVariation::create([
                     'product_id' => $product->id,
                     'company_id' => $company_id,
@@ -209,17 +218,17 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                     'tier_shipping_rate' => json_encode($tierShippingRate),
                     'allow_editable' => 1
                 ]);
-    
+
                 $generateProductID = generateProductID($row['product_name'], $productVariation->id);
                 $productVariation->sku = generateSku($row['product_name'], $generateProductID);
                 $productVariation->product_slug_id = $generateProductID;
                 $productVariation->slug = generateSlug($row['product_name'], $generateProductID);
                 $productVariation->save();
-    
+
                 $this->createFeatures($product->id, $company_id, $row['product_features1']);
                 $this->createFeatures($product->id, $company_id, $row['product_features2']);
                 $this->createFeatures($product->id, $company_id, $row['product_features3']);
-    
+
                 if (!empty($row['product_keywords'])) {
                     foreach ($tags as $key => $value) {
                         ProductKeyword::create([
@@ -229,14 +238,14 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
                         ]);
                     }
                 }
-    
+
                 $this->successCount++;
-               // DB::commit();
-    
+                // DB::commit();
+
             } catch (\Exception $e) {
                 $this->errorCount++;
                 \Log::info($e->getMessage());
-                           // DB::rollBack();
+                // DB::rollBack();
                 // Handle the exception, log it, etc.
             }
         }
@@ -244,13 +253,12 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
         fclose($errorFile);
         if (file_exists($errorFilePath) && !$is_error_heading) {
             unlink($errorFilePath);
-        } 
+        }
         $import->error_file = $is_error_heading ? 'product_import_error/errors_' . $this->import_id . '.csv' : null;
         $import->status = Import::STATUS_SUCCESS;
         $import->fail_count = $this->errorCount;
         $import->success_count = $this->successCount;
         $import->save();
-    
     }
 
     private function createFeatures($product_id, $company_id, $feature)
@@ -267,13 +275,12 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
 
     public function rules(): array
     {
-        return [
-       
-        ];
+        return [];
     }
 
-    private function myCustomValidationRule() {
-       return  [
+    private function myCustomValidationRule()
+    {
+        return  [
             'product_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'product_keywords' => 'required|string',
@@ -336,22 +343,24 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation,Ski
         return $this->errorCount;
     }
 
-    private function availabilityArray($availibity){
-        $availabilityArray = ['Till Stock Last' => 1,
-                            'Regular Available' => 2
-    ];
-    return $availabilityArray[$availibity];
-
+    private function availabilityArray($availibity)
+    {
+        $availabilityArray = [
+            'Till Stock Last' => ProductInventory::TILL_STOCK_LAST,
+            'Regular Available' => ProductInventory::REGULAR_AVAILABLE
+        ];
+        return $availabilityArray[$availibity];
     }
-    
 
-    private function getListingStatus($listingStatus){
+
+    private function getListingStatus($listingStatus)
+    {
         $listingStatusArray = [
             'Active' => ProductInventory::STATUS_ACTIVE,
             'Inactive' =>  ProductInventory::STATUS_INACTIVE,
             'Out of Stock' =>  ProductInventory::STATUS_OUT_OF_STOCK,
             'Draft' =>  ProductInventory::STATUS_DRAFT
-    ];
-    return $listingStatusArray[$listingStatus];
-    } 
+        ];
+        return $listingStatusArray[$listingStatus];
+    }
 }

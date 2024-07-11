@@ -17,6 +17,7 @@
                         <label class="eklabel w_50_f">Sort by:</label>
                         <div class="ek_f_input">
                             <select class="form-select" id="sort_by_status">
+                                <option value="0">Select</option>
                                 <option value="1">Pending</option>
                                 <option value="2">In Progress</option>
                                 <option value="3">Completed</option>
@@ -34,11 +35,6 @@
                     <tr>
                         <th>File Name</th>
                         <th>Upload Time</th>
-                        <th>Total Records
-                            <span class="sort_pos">
-                                <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                            </span>
-                        </th>
                         <th>Processed Records
                             <span class="sort_pos">
                                 <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
@@ -54,26 +50,10 @@
                                 <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                             </span>
                         </th>
-                        <th>Action</th>
+                        <th>Download File</th>
                     </tr>
                 </thead>
-
                     <tbody id="dataContainer">
-                        <tbody id="dataContainer">
-                            @foreach ($bulk_upload_lists as $import)
-                            <tr>
-                                <td>{{ $import->filename }}</td>
-                                <td>{{ $import->created_at }}</td>
-                                <td>{{ $import->success_count +  $import->fail_count}}</td>
-                                <td>{{ $import->success_count }}</td>
-                                <td>{{ $import->fail_count }}</td>
-                                <td>{{ $import->status }}</td>
-                                <td>
-                                    <button class="btn btn-link btn-sm">Edit</button>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
                     </tbody>
                 </table>
             </div>
@@ -146,7 +126,7 @@
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
-            let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`; // change the API endpoint here
+            let apiUrl = `bulk-data?per_page=${rows}&page=${currentPage}`; // change the API endpoint here
 
             if (sortField && sortOrder) {
                 apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
@@ -271,31 +251,47 @@
  * @returns {string} - The HTML markup for the table row.
  */
 function generateTableRow(item) {
+    let a = status(item);
     return `
     <tr>
         <td>
-            ${item.file_name}
+            ${item.filename}
         </td>
         <td>
-            ${item.upload_time}
+            ${item.created_at}
         </td>
         <td>
-            ${item.total_records}
+            ${item.success_count}
         </td>
         <td>
-            ${item.processed_records}
+            ${item.fail_count}
         </td>
         <td>
-            ${item.failed_records}
+       ${a}
         </td>
         <td>
-            ${item.status}
-        </td>
-        <td>
-            <button class="btn btn-link btn-sm">Edit</button>
+            <a href="${item.file_path}" class="btn btnekomn btn-sm">Download</a>
         </td>
     </tr>
     `;
+}
+
+function status(item){
+    if (item.status === 1) {
+        return "Pending";
+    } else if (item.status === 2) {
+        return "Processing";
+    } else if (item.status === 3) {
+        return "Completed";
+    } else if (item.status === 4) {
+        return "Failed";
+    } else if (item.status === 5) {
+        return "Queued";
+    } else if (item.status === 6) {
+        return "Validation Error";
+    } else {
+        return "Unknown";
+    }
 }
 
 
