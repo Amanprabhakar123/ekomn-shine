@@ -343,6 +343,7 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
+        let stock = allowEditable(item)
         let availabilityStatus = false;
         if(item.product_category == 'Unknown'){
             availabilityStatus = true;
@@ -382,10 +383,7 @@
             </td>
              <td>
                 <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
-                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+                    ${stock}
                 </select>
             </td>
             <td>
@@ -393,6 +391,26 @@
             </td>
         </tr>
     `;
+
+    function allowEditable(item){
+       if(item.allow_editable){
+        
+           return `
+                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+                `;
+       }
+       else{
+        // console.log(item.allow_editable);
+        return `
+            <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+            <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+            <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+        `;
+       }
+    }
     }
 
 

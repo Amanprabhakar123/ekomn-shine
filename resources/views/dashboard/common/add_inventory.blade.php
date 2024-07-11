@@ -761,12 +761,14 @@
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
+              <div id="product_listing">
               <select id="product_listing_status" class="form-select w_200_f" required>
                 <option value="1">Active</option>
                 <option value="2" selected>Inactive</option>
                 <option value="3">Out of Stock</option>
-                <option value="4">Draft</option>
+                <!-- <option value="4">Draft</option> -->
               </select>
+              </div>
             </div>
             <div class="saveform_footer">
               <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
@@ -785,6 +787,32 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+  $(document).ready(function(){
+    $('#product_listing_status').on('change', function() {
+        if(this.value == 3){
+          Swal.fire({
+            title: 'If your selected Out of Stock then your stock will be 0.',
+            didOpen: () => {
+        // Apply inline CSS to the title
+        const title = Swal.getTitle();
+        title.style.color = 'red';
+        title.style.fontSize = '20px';
+
+        // Apply inline CSS to the content
+        const content = Swal.getHtmlContainer();
+        content.style.color = 'blue';
+
+        // Apply inline CSS to the confirm button
+        const confirmButton = Swal.getConfirmButton();
+        confirmButton.style.backgroundColor = '#feca40';
+        confirmButton.style.color = 'white';
+    }
+          });
+          
+        }
+      });
+  })
   const formData = new FormData();
 
   const searchCategory = document.getElementById("tag-input");

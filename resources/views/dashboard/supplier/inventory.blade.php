@@ -264,8 +264,9 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
+        let stock = allowEditable(item)
         let availabilityStatus = false;
-        if(item.product_category == 'Unknown'){
+        if (item.product_category == 'Unknown') {
             availabilityStatus = true;
         }
         return `
@@ -299,18 +300,36 @@
                 <div>${item.availability_status}</div>
             </td>
             <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
-                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
-                </select>
+            <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
+               ${stock}
+               </select>
             </td>
             <td>
                 <a class="nbtn btn-link btn-sm" href="${item.editInventory}" target="_blank">Edit</a>
             </td>
         </tr>
     `;
+
+        function allowEditable(item) {
+            if (item.allow_editable) {
+
+                return `
+                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+                `;
+            } else {
+                // console.log(item.allow_editable);
+                return `
+            <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
+            <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
+            <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+        `;
+            }
+
+
+        }
     }
 
 
@@ -334,13 +353,14 @@
                 product_id: productId
             })
             .then(response => {
-                if(response.data.statusCode == 200){
+                if (response.data.statusCode == 200) {
                     Swal.fire({
                         title: "Good job!",
                         text: response.data.message,
                         icon: "success"
                     });
-                }else if(response.data.statusCode == 422){
+                    
+                } else if (response.data.statusCode == 422) {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
@@ -359,21 +379,37 @@
      * @param {number} productId - The ID of the product.
      */
     function updateStatus(itemId, productId, newStatus) {
-        // Make an API request to update the status of the product
-        ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
-                status: newStatus,
-                product_id: productId
-            })
-            .then(response => {
-                Swal.fire({
-                    title: "Good job!",
-                    text: response.data.message,
-                    icon: "success"
-                });
-            })
-            .catch(error => {
-                console.error('Error updating status:', error);
-            });
-        }
+        Swal.fire({
+            title: "Do you want to save the changes status?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                // Make an API request to update the status of the product
+                ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
+                        status: newStatus,
+                        product_id: productId
+                    })
+                    .then(response => {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success"
+                        });
+                        
+                    })
+                    .catch(error => {
+                        console.error('Error updating status:', error);
+                    });
+
+            } else if (result.isDenied) {
+                Swal.fire("The status is not updated.", "", "info");
+            }
+        });
+
+    }
 </script>
 @endsection

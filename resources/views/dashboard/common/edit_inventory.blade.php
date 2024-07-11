@@ -55,35 +55,25 @@
                 <label class="eklabel"><span>Product Keywords:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
                   <div class="tag-container">
-                     
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                     <div class="tag-input">
                       <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords" required />
                       <div id="tag-inputErr" class="invalid-feedback"></div>
                     </div>
-                    @else
-                    <div class="tag-input">
-                      <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords" required readonly />
-                      <div id="tag-inputErr" class="invalid-feedback"></div>
-                    </div>
-                    @endif
+                   
                   </div>
                 </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Features:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                @if(auth()->user()->hasRole(ROLE_ADMIN))
                   <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
-                  @else
-                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button" disabled></textarea>
-                  @endif
+                 
                   <span id="features-error" class="text-danger hide">At least one product feature is required.</span>
                   <div class="clearfix">
                     <span class="fs-14 opacity-25">You can only add up to 7 features</span>
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    
                     <button id="add-feature" type="button" class="btn addNewRow px-4">Add</button>
-                    @endif
+                    
                   </div>
                   <ol id="features-list" class="featureslisting"></ol>
                 </div>
@@ -253,11 +243,8 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product HSN:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" required />
-                      @else
-                      <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" disabled />
-                      @endif
+                      
                       <div id="product_hsnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -266,11 +253,8 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required>
-                        @else
-                      <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required disabled>
-                        @endif
+                   
                       <option value="0" {{ $variations->product->gst_percentage == '0' ? 'selected' : '' }}>0%</option>
                       <option value="5" {{ $variations->product->gst_percentage == '5' ? 'selected' : '' }}>5%</option>
                       <option value="12" {{ $variations->product->gst_percentage == '12' ? 'selected' : '' }}>12%</option>
@@ -822,10 +806,18 @@
                   @else
                   <select id="product_listing_status" class="form-select w_200_f" required >
                     @endif
-                <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
-                <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
-                <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
+                    @if($variations->allow_editable)
+                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
+                      <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
+                    @else
+                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
+                      
+                    @endif
+               
                 </select>
               </select>
             </div>
@@ -882,8 +874,29 @@
     // populate features list
     var featureList = $('#features-list');
   $(document).ready(function(){
+    $('#product_listing_status').on('change', function() {
+        if(this.value == 3){
+          Swal.fire({
+            title: 'If your selected Out of Stock then your stock will be 0.',
+            didOpen: () => {
+        // Apply inline CSS to the title
+        const title = Swal.getTitle();
+        title.style.color = 'red';
+        title.style.fontSize = '20px';
 
-  
+        // Apply inline CSS to the content
+        const content = Swal.getHtmlContainer();
+        content.style.color = 'blue';
+
+        // Apply inline CSS to the confirm button
+        const confirmButton = Swal.getConfirmButton();
+        confirmButton.style.backgroundColor = '#feca40';
+        confirmButton.style.color = 'white';
+    }
+          });
+          
+        }
+      });
   var newFeature = '';
   @foreach($variations->product->features as $key => $feature)
   let featureName{{$key}} = "{{$feature->feature_name}}";
@@ -2222,7 +2235,9 @@ let stockAndSizeCounter = 1;
     }
 
     // Add Product Listing Status to FormData
-    const productListingStatus = $('#product_listing_status').val();
+    let productListingStatus = $('#product_listing_status').val();
+
+    
     formData.append('product_listing_status', productListingStatus);
     if(isValid){
         $.ajax({
