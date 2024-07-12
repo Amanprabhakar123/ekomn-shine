@@ -213,7 +213,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     'package_weight_class' => $row['package_weight_unit'],
                     'allow_editable' => 1,
                     'stock' => (int)$row['product_stock'],
-                    'status' => $row['listing_status'],
+                    'status' => ProductVariation::STATUS_DRAFT,
                     'tier_rate' => json_encode($tierRate),
                     'tier_shipping_rate' => json_encode($tierShippingRate),
                     'allow_editable' => 1
