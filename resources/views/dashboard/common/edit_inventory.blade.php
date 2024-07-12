@@ -849,9 +849,7 @@
     div.appendChild(span);
     const closeIcon = document.createElement("span");
     closeIcon.innerHTML = "";
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
     closeIcon.setAttribute("class", "remove-tag");
-    @endif
     closeIcon.onclick = function () {
       tagContainer.removeChild(div);
     };
@@ -910,19 +908,15 @@
       newFeature.html(`
             <div class="featurescontent">
               ${featureName{{$key}}.replace(/\n/g, '<br>')}
-              @if(auth()->user()->hasRole(ROLE_ADMIN))
               <div class="f_btn f_btn_rightSide">
                 <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
               </div>
-                 @endif
             </div>
           `);
       featureList.append(newFeature);
     // Bind the event handlers for delete and edit buttons
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
     bindFeatureEvents(newFeature);
-    @endif
   @endforeach
   });
 
