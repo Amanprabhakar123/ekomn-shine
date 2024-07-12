@@ -537,15 +537,23 @@
                     <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
                       <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" d/>
                    
-                     
+                    @isset($variations->media[0]->file_path)  
                       <img id="img-box-1" src="{{$variations->media[0]->file_path}}" alt="Image" />
-                 
-      
                       <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')" style="display: block;">&#10006;</div>
-                      <div class="placeholdertext" style="display: none;">
+                      <div class="placeholdertext"  style="display: none;">
                         <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                         <h6>Upload Main Image</h6>
                       </div>
+                    @else
+                    <img id="img-box-1" src="" alt="Image" style="display: none;"/>
+                    <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')" >&#10006;</div>
+                      <div class="placeholdertext">
+                        <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
+                        <h6>Upload Main Image</h6>
+                      </div>
+                    @endif
+      
+                     
                       <div id="boxError1" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -823,7 +831,7 @@
                   @else
                   <select id="product_listing_status" class="form-select w_200_f" required >
                     @endif
-                    @if($variations->allow_editable)
+                    @if(!$variations->allow_editable)
                       <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
                       <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
                       <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
@@ -855,7 +863,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Append Keyword data
- 
+    $('#no').click(function(){
+      $('#product_listing_status').append('<option value="4">Draft</option>');
+    });
+    $('#yes').click(function(){
+      $('#product_listing_status option[value="4"]').remove();
+    });
   const tagContainer = document.querySelector(".tag-container");
   function createTag(label) {
     const div = document.createElement("div");

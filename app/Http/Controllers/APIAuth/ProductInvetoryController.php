@@ -1345,11 +1345,9 @@ class ProductInvetoryController extends Controller
             $data = $this->fractal->createData($resource)->toArray();
 
             // Return the JSON response with paginated data
-            
             return response()->json($data);
             
         } catch (\Exception $e) {
-            dd($e->getMessage(), $e->getLine());
             // Handle the exception
             return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
         }

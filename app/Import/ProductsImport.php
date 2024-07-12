@@ -216,7 +216,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     'status' => ProductVariation::STATUS_DRAFT,
                     'tier_rate' => json_encode($tierRate),
                     'tier_shipping_rate' => json_encode($tierShippingRate),
-                    'allow_editable' => 1
+                    'allow_editable' => ProductVariation::ALLOW_EDITABLE_TRUE,
                 ]);
 
                 $generateProductID = generateProductID($row['product_name'], $productVariation->id);
