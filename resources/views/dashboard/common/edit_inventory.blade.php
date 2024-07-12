@@ -859,6 +859,12 @@
     return div;
   }
     $(document).ready(function() {
+      $('#no').click(function(){
+      $('#product_listing_status').append('<option value="4">Draft</option>');
+    });
+    $('#yes').click(function(){
+      $('#product_listing_status option[value="4"]').remove();
+    });
   @foreach($variations->product->keywords as  $key => $keyword)
       let a{{$key}} = "{{$keyword->keyword}}";
       let input{{$key}} = document.querySelector("#tag-input");

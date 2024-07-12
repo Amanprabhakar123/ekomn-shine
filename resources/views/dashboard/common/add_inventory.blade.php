@@ -761,14 +761,12 @@
             </div>
             <div class="form-group mt15">
               <label>Product Listing Status</label>
-              <div id="product_listing">
               <select id="product_listing_status" class="form-select w_200_f" required>
                 <option value="1">Active</option>
                 <option value="2" selected>Inactive</option>
                 <option value="3">Out of Stock</option>
-                <!-- <option value="4">Draft</option> -->
+                <option value="4">Draft</option>
               </select>
-              </div>
             </div>
             <div class="saveform_footer">
               <button type="button" class="btn btn-login btnekomn card_f_btn previous_Tab"><i class="fas fa-arrow-left me-3 fs-13"></i>Back</button>
@@ -789,6 +787,12 @@
 <script>
 
   $(document).ready(function(){
+    $('#no').click(function(){
+      $('#product_listing_status').append('<option value="4">Draft</option>');
+    });
+    $('#yes').click(function(){
+      $('#product_listing_status option[value="4"]').remove();
+    });
     $('#product_listing_status').on('change', function() {
         if(this.value == 3){
           Swal.fire({
