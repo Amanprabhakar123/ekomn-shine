@@ -944,6 +944,11 @@
   // Event listener for clicking outside the tag input field
   searchCategory.addEventListener("blur", (e) => {
     let keyWordInput = '';
+    if (e.target.value.trim() !== "") {
+      const tag = createTag(e.target.value);
+      tagContainer.insertBefore(tag, searchCategory.parentElement);
+      e.target.value = "";
+    }
     $('.tag-container .tag').each(function(index) {
       if (index !== $('.tag-container .tag').length - 1) {
         keyWordInput += $(this).text() + ',';
@@ -975,6 +980,7 @@
       .catch(error => {
         console.error('Error222:', error);
       });
+    
   });
 
   $('#add-feature').on('click', function() {

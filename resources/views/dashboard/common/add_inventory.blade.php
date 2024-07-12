@@ -819,10 +819,32 @@
   })
   const formData = new FormData();
 
+  // add tag container code
+  const tagContainer = document.querySelector(".tag-container");
+  function createTag(label) {
+    const div = document.createElement("div");
+    div.setAttribute("class", "tag");
+    const span = document.createElement("span");
+    span.innerHTML = label.trim();
+    div.appendChild(span);
+    const closeIcon = document.createElement("span");
+    closeIcon.innerHTML = "";
+    closeIcon.setAttribute("class", "remove-tag");
+    closeIcon.onclick = function () {
+      tagContainer.removeChild(div);
+    };
+    div.appendChild(closeIcon);
+    return div;
+  }
   const searchCategory = document.getElementById("tag-input");
   // Event listener for clicking outside the tag input field
   searchCategory.addEventListener("blur", (e) => {
     let keyWordInput = '';
+    if (e.target.value.trim() !== "") {
+      const tag = createTag(e.target.value);
+      tagContainer.insertBefore(tag, searchCategory.parentElement);
+      e.target.value = "";
+    }
     $('.tag-container .tag').each(function(index) {
       if (index !== $('.tag-container .tag').length - 1) {
         keyWordInput += $(this).text() + ',';
