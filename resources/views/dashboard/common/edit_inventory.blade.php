@@ -232,6 +232,9 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
+                      @endif
+                      @if($variations->allow_editable)  
+                      <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @else
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required disabled />
                       @endif
@@ -271,10 +274,13 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
+                      @endif
+                      @if($variations->allow_editable) 
+                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
                       @else
                       <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" disabled>
-                      @endif
-                        <option value="1">Till Stock Lasts</option>
+                        @endif
+                      <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
                       <div id="availabilityErr" class="invalid-feedback"></div>
@@ -287,6 +293,9 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
+                      @endif
+                      @if($variations->allow_editable)
+                      <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
                       @else
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" disabled/>
                       @endif
@@ -300,10 +309,14 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
-                      @else
-                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
                       @endif
-                      <div id="isbnErr" class="invalid-feedback"></div>
+
+                      @if($variations->allow_editable)
+                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
+                     @else
+                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
+                      @endif
+                       <div id="isbnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -313,8 +326,12 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
-                      @else
-                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
+                      @endif
+
+                      @if($variations->allow_editable) 
+                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
+                     @else
+                     <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
                       @endif
                       <div id="mpnErr" class="invalid-feedback"></div>
                     </div>
@@ -810,12 +827,11 @@
                       <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
                       <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
                       <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                      <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
                     @else
                       <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
                       <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
                       <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                      
+                      <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
                     @endif
                
                 </select>
@@ -849,7 +865,9 @@
     div.appendChild(span);
     const closeIcon = document.createElement("span");
     closeIcon.innerHTML = "";
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
     closeIcon.setAttribute("class", "remove-tag");
+    @endif
     closeIcon.onclick = function () {
       tagContainer.removeChild(div);
     };
@@ -857,12 +875,6 @@
     return div;
   }
     $(document).ready(function() {
-      $('#no').click(function(){
-      $('#product_listing_status').append('<option value="4">Draft</option>');
-    });
-    $('#yes').click(function(){
-      $('#product_listing_status option[value="4"]').remove();
-    });
   @foreach($variations->product->keywords as  $key => $keyword)
       let a{{$key}} = "{{$keyword->keyword}}";
       let input{{$key}} = document.querySelector("#tag-input");
@@ -908,15 +920,19 @@
       newFeature.html(`
             <div class="featurescontent">
               ${featureName{{$key}}.replace(/\n/g, '<br>')}
+              @if(auth()->user()->hasRole(ROLE_ADMIN))
               <div class="f_btn f_btn_rightSide">
                 <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
               </div>
+                 @endif
             </div>
           `);
       featureList.append(newFeature);
     // Bind the event handlers for delete and edit buttons
+    @if(auth()->user()->hasRole(ROLE_ADMIN))
     bindFeatureEvents(newFeature);
+    @endif
   @endforeach
   });
 
@@ -944,11 +960,6 @@
   // Event listener for clicking outside the tag input field
   searchCategory.addEventListener("blur", (e) => {
     let keyWordInput = '';
-    if (e.target.value.trim() !== "") {
-      const tag = createTag(e.target.value);
-      tagContainer.insertBefore(tag, searchCategory.parentElement);
-      e.target.value = "";
-    }
     $('.tag-container .tag').each(function(index) {
       if (index !== $('.tag-container .tag').length - 1) {
         keyWordInput += $(this).text() + ',';
@@ -980,7 +991,6 @@
       .catch(error => {
         console.error('Error222:', error);
       });
-    
   });
 
   $('#add-feature').on('click', function() {

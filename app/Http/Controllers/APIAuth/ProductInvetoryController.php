@@ -250,7 +250,7 @@ class ProductInvetoryController extends Controller
                     'package_weight' => 'required|numeric',
                     'package_weight_class' => 'required|in:mg,gm,kg,ml,ltr',
                     'package_volumetric_weight' => 'required|numeric',
-                    'product_listing_status' => 'required|in:0,1,2,3',
+                    'product_listing_status' => 'required|in:1,2,3,4',
                 ];
                 $variant_key = "no_variant";
                 if($request->has('no_variant')){
@@ -500,6 +500,11 @@ class ProductInvetoryController extends Controller
                                     $stock = $data[$variant_key][$key]['stock'][$size_key];
                                 }
                             }
+                            if($data['product_listing_status'] == ProductInventory::STATUS_DRAFT){
+                                $allow_editable = ProductVariation::ALLOW_EDITABLE_TRUE;
+                            }else{
+                                $allow_editable = ProductVariation::ALLOW_EDITABLE_FALSE;
+                            }
                             $productVariation = ProductVariation::create([
                                 'product_id' => $product_id,
                                 'company_id' => $company_id,
@@ -532,6 +537,7 @@ class ProductInvetoryController extends Controller
                                 'potential_mrp' => $request->potential_mrp,
                                 'tier_rate' => json_encode($tierRate),
                                 'tier_shipping_rate' => json_encode($tierShippingRate),
+                                'allow_editable' => $allow_editable
                             ]); 
     
                             $generateProductID = generateProductID($request->product_name, $productVariation->id);
