@@ -16,6 +16,7 @@ class CategoryController extends Controller
      */
     public function findCategory(Request $request)
     {
+        try{
         // Get the comma-separated tags from input
         $tags = explode(',', $request->input('tags'));
         if(!empty($tags)){
@@ -28,6 +29,9 @@ class CategoryController extends Controller
         $categoryDetails = $this->searchCategory($tags);
 
         return response()->json(['data' => $categoryDetails]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
+        }
     }
 
 
@@ -54,6 +58,9 @@ class CategoryController extends Controller
                     // Check if they share the same root parent category
                     if ($category1->root_parent_id == $category2->root_parent_id) {
                         $mainCategory = Category::where('id', $category1->root_parent_id)->first();
+                        if(!$mainCategory){
+                            $mainCategory = $category1;
+                        }
                         $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
 
                         $mainCategoryName = $mainCategory->name ?? $tag1;
