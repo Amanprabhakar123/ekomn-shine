@@ -307,7 +307,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="dimension_class" id="dimension_class" required>
                         <option value="mm">mm</option>
@@ -329,7 +329,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit :<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="weight_class" id="weight_class" required>
                         <option value="mg">mg</option>
@@ -374,7 +374,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Dimension Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Dimension Unit:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_dimension_class" id="package_dimension_class" required>
                         <option value="mm">mm</option>
@@ -396,7 +396,7 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
-                    <label class="eklabel req"><span>Weight Class:<span class="req_star">*</span></span></label>
+                    <label class="eklabel req"><span>Weight Unit :<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="package_weight_class" id="package_weight_class" required>
                         <option value="mg">mg</option>
@@ -785,6 +785,38 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+  $(document).ready(function(){
+    $('#no').click(function(){
+      $('#product_listing_status').append('<option value="4">Draft</option>');
+    });
+    $('#yes').click(function(){
+      $('#product_listing_status option[value="4"]').remove();
+    });
+    $('#product_listing_status').on('change', function() {
+        if(this.value == 3){
+          Swal.fire({
+            title: 'If your selected Out of Stock then your stock will be 0.',
+            didOpen: () => {
+        // Apply inline CSS to the title
+        const title = Swal.getTitle();
+        title.style.color = 'red';
+        title.style.fontSize = '20px';
+
+        // Apply inline CSS to the content
+        const content = Swal.getHtmlContainer();
+        content.style.color = 'blue';
+
+        // Apply inline CSS to the confirm button
+        const confirmButton = Swal.getConfirmButton();
+        confirmButton.style.backgroundColor = '#feca40';
+        confirmButton.style.color = 'white';
+    }
+          });
+          
+        }
+      });
+  })
   const formData = new FormData();
 
   const searchCategory = document.getElementById("tag-input");
@@ -801,6 +833,7 @@
     ApiRequest('product/find-category?tags=' + keyWordInput, 'GET')
       .then(response => {
         if (response.data.status) {
+          
           $('#product_category').empty();
           $('#product_sub_category').empty();
           $('#product_category').append().val(response.data.result.main_category);
@@ -810,6 +843,15 @@
           $('#product_sub_category_id').empty();
           $('#product_category_id').append().val(response.data.result.main_category_id);
           $('#product_sub_category_id').append().val(response.data.result.sub_category_id);
+
+          const mainCategory = $('#product_category').val();
+          if( mainCategory == 'Unknown' ) {
+            $('#product_listing_status').val('2');
+            $('#product_listing_status').attr('disabled', true);
+          }else{
+            $('#product_listing_status').attr('disabled', false);
+          
+          }
         }
       })
       .catch(error => {
@@ -869,6 +911,8 @@
     const mainCategoryId = $('#product_category_id').val();
     const subCategoryId = $('#product_sub_category_id').val();
     const features = $('#features-list').children().length;
+
+    console.log(mainCategory, subCategory, );
 
     // Validate Product Keywords
     const tagInputValue = $('#tag-input').val().trim();

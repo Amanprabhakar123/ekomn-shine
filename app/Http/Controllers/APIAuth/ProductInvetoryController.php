@@ -128,12 +128,12 @@ class ProductInvetoryController extends Controller
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
-            $sortOrder = $request->input('order', 'asc'); // Default sort direction 'asc'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock'];
-            $sort = in_array($sort, $allowedSorts) ? $sort : 'product_slug_id';
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
@@ -231,7 +231,7 @@ class ProductInvetoryController extends Controller
                     'shipping.*.regional' => 'required|numeric|min:1',
                     'shipping.*.national' => 'required|numeric|min:1',
                     'upc' => 'nullable|numeric',
-                    'isbn' => 'nullable|string|regex:/^\d{10}(\d{3})?$/',
+                    'isbn' => 'nullable|string',
                     'mpn' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9- ]+$/',
                     'model' => 'required|string|max:255',
                     'product_hsn' => 'required|string|digits_between:6,8|regex:/^\d{6,8}$/',
@@ -493,10 +493,13 @@ class ProductInvetoryController extends Controller
                             $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
                             // check stock array key not exist
                             $stock = 0;
-                            if(array_key_exists($size_key, $data[$variant_key][$key]['stock'])){
-                                $stock = $data[$variant_key][$key]['stock'][$size_key];
+                            if($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK){
+                                $stock = 0;
+                            }else{
+                                if(array_key_exists($size_key, $data[$variant_key][$key]['stock'])){
+                                    $stock = $data[$variant_key][$key]['stock'][$size_key];
+                                }
                             }
-                            
                             $productVariation = ProductVariation::create([
                                 'product_id' => $product_id,
                                 'company_id' => $company_id,
@@ -900,9 +903,14 @@ class ProductInvetoryController extends Controller
                                     $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
                                     // check stock array key not exist
                                     $stock = 0;
-                                    if(array_key_exists($size_key, $data[$variant_key][$key]['stock'])){
-                                        $stock = $data[$variant_key][$key]['stock'][$size_key];
+                                    if($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK){
+                                        $stock = 0;
+                                    }else{
+                                        if(array_key_exists($size_key, $data[$variant_key][$key]['stock'])){
+                                            $stock = $data[$variant_key][$key]['stock'][$size_key];
+                                        }
                                     }
+                                   
                                     if($productVariation){
                                         $productVariation->product_id = $product_id;
                                         $productVariation->company_id = $company_id;
@@ -1082,16 +1090,16 @@ class ProductInvetoryController extends Controller
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
-                'stock' => 'required|integer'
+                'stock' => 'required|integer|min:0'
             ]);
             $variation_id = salt_decrypt($variation_id);
 
             if ($validator->fails()) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode400'),
-                    'status' => __('statusCode.status400'),
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
                     'message' => $validator->errors()->first()
-                ]], __('statusCode.statusCode400'));
+                ]], __('statusCode.statusCode200'));
             }
 
             // Find the product variation
@@ -1104,6 +1112,11 @@ class ProductInvetoryController extends Controller
                 }
                 // Update the stock of the product variation
                 $variation->stock = $request->input('stock');
+                if($request->input('stock') == 0){
+                    $variation->status = ProductVariation::STATUS_OUT_OF_STOCK;
+                }else{
+                    $variation->status = ProductVariation::STATUS_ACTIVE;
+                }
                 $variation->save();
 
                 $response['data'] = [
@@ -1225,6 +1238,9 @@ class ProductInvetoryController extends Controller
                 }
                 // Update the status of the product variation
                 $variation->status = $request->input('status');
+                if($request->input('status') == ProductVariation::STATUS_OUT_OF_STOCK){
+                    $variation->stock = 0;
+                }
                 $variation->save();
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),

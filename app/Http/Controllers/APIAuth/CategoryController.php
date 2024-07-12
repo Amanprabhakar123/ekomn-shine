@@ -21,6 +21,9 @@ class CategoryController extends Controller
         if(!empty($tags)){
             $tags = array_map('trim', $tags); // Trim whitespace from each tag
             $tags = array_map('strtolower', $tags); // Convert tags to lowercase
+            $tags = array_map(function($tag) {
+                return str_replace(' ', '-', $tag); 
+            }, $tags); // Replace spaces with hyphens
         }
         $categoryDetails = $this->searchCategory($tags);
 
