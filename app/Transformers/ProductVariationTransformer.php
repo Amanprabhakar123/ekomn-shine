@@ -28,9 +28,11 @@ class ProductVariationTransformer extends TransformerAbstract
                 'product_category' => $product->product->category->name,
                 'availability_status' => getAvailablityStatusName($product->availability_status),
                 'status' => getStatusName($product->status),
+                'allow_editable' => $product->allow_editable,
                 'action' => $product->id,
                 'created_at' => $product->created_at->toDateTimeString(),
                 'updated_at' => $product->updated_at->toDateTimeString(),
+                'editInventory' => route('edit.inventory', ['variation_id' => salt_encrypt($product->id)]),
             ];
 
             if(auth()->user()->hasRole(User::ROLE_ADMIN)){

@@ -48,4 +48,5 @@ return [
     'updateStatus' => 'Status updated successfully.',
     'updateStatusFailed' => 'Status update failed.',
     'supplierNotFound' => 'Supplier not found.',
+    'variantNotFound' => 'Product variation not found.',
 ];

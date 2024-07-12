@@ -1,6 +1,6 @@
 <div class="ek_nav">
     <div class="sidebar-header">
-      <img src="assets/images/Logo.svg" alt="logo" height="40px" />
+      <img src="{{asset('assets/images/Logo.svg')}}" alt="logo" height="40px" />
     </div>
     <div class="sidebar-menu">
       <ul class="navbar-nav" id="dashboard_ekomn">

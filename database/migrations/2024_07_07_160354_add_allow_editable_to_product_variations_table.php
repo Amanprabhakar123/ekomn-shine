@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
 
-            Schema::table('product_variations', function (Blueprint $table) {
-                $table->tinyInteger('allow_editable')->default(0);
-            });
+        Schema::table('product_variations', function (Blueprint $table) {
+            $table->tinyInteger('allow_editable')->default(0)->after('tier_shipping_rate')->comment('0: Not Editable, 1: Editable');
+        });
     }
 
     /**
