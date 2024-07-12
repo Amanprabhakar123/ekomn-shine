@@ -6,6 +6,8 @@ use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
+use App\Models\Category;
+
 
 
 // User roles define for entire application
@@ -20,6 +22,15 @@ const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
 const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
 const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
 const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
+
+// Bulk Upload Processing Status
+const BULK_UPLOAD_STATUS_PENDING = 1;
+const BULK_UPLOAD_STATUS_PROCESSING = 2;
+const BULK_UPLOAD_STATUS_COMPLETED = 3;
+const BULK_UPLOAD_STATUS_FAILED = 4;
+const BULK_UPLOAD_STATUS_QUEUED = 5;
+const BULK_UPLOAD_STATUS_VALIDATION_ERROR = 6;
+
 
 /**
  * Encrypts a string using a salt key.
@@ -439,6 +450,35 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
     // Calculate the volumetric weight in kilograms
     $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
     return $volumetricWeight;
+}
+
+function fetchCategoryFromProductTags($tags){
+    foreach ($tags as $firstTag) {
+        if(!empty($firstTag)){
+            $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
+            if ($firstTagCategory) {
+                if ($firstTagCategory->root_parent_id) {
+                    $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
+                    $mainCategoryName = $rootParentCategory->name ?? 'unknown';
+                    $mainCategoryId = $rootParentCategory->id ?? 0;
+                    $subCategoryName = $firstTagCategory->name ?? 'unknown';
+                    $subCategoryId = $firstTagCategory->id ?? 0;
+                } else {
+                    $mainCategoryName = $firstTagCategory->name ?? 'unknown';
+                    $mainCategoryId = $firstTagCategory->id ?? 0;
+                    $subCategoryName = $mainCategoryName;
+                    $subCategoryId = $mainCategoryId;
+                }
+                $data = [
+                    'main_category' => $mainCategoryName,
+                    'main_category_id' => $mainCategoryId,
+                    'sub_category' => $subCategoryName,
+                    'sub_category_id' => $subCategoryId,
+                ];
+                return $data;
+            }
+        }
+    }
 }
 
 

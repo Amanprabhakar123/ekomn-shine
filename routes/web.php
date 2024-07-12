@@ -18,6 +18,9 @@ use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\BulkUploadController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +64,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('myInventory', [DashboardController::class, 'myInventory'])->name('my.inventory');
     Route::get('addInventory', [DashboardController::class, 'addInventory'])->name('add.inventory');
     Route::get('bulk-upload', [DashboardController::class, 'bulkUpload'])->name('bulk-upload');
+    Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
 });
 
@@ -72,6 +76,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
         Route::post('update-inventory', [ProductInvetoryController::class, 'updateInventory'])->name('inventory.update');
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
+        Route::post('bulk/import-product-inventory', [ImportController::class, 'importFile'])->name('import-product-inventory');
+        Route::get('/download-template', [BulkUploadController::class, 'downloadSampleTemplate'])->name('download-template');
+        Route::get('/bulk-data', [ProductInvetoryController::class, 'getDataBulkInventory'])->name('bulk-data');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
     });

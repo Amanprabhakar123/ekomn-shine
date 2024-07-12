@@ -18,15 +18,18 @@ use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ProductVariationTransformer;
+use App\Transformers\BulkDataTransformer;
 use Illuminate\Support\Facades\File;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Models\Import;
 
 class ProductInvetoryController extends Controller
 {
 
     protected $fractal;
+    protected $BulkDataTransformer;
 
-    public function __construct(Manager $fractal)
+    public function __construct(Manager $fractal, BulkDataTransformer $BulkDataTransformer)
     {
         $this->fractal = $fractal;
     }
@@ -124,7 +127,6 @@ class ProductInvetoryController extends Controller
         try {
             // Get the authenticated user's ID
             $userId = auth()->user()->id;
-
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
@@ -195,6 +197,7 @@ class ProductInvetoryController extends Controller
 
             // Return the JSON response with paginated data
             return response()->json($data);
+            dd($data);
         } catch (\Exception $e) {
             // Handle the exception
             return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
@@ -1275,4 +1278,80 @@ class ProductInvetoryController extends Controller
             return response()->json(['data' => __('auth.updateStatusFailed')], __('statusCode.statusCode500'));
         }
     }
+
+    /**
+     * Get bulk inventory data.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDataBulkInventory(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $searchTerm = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sortOrder = $request->input('order', 'asc'); // Default sort direction 'asc'
+            $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
+
+            // Allowed sort fields to prevent SQL injection
+            $allowedSorts = ['processed_records', 'failed_records', 'status'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+
+            if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+                // Get the authenticated user's ID
+                $company_id = auth()->user()->companyDetails->id;
+                // Eager load product variations with product inventory that matches user_id
+                $bulkData = Import::where('company_id', $company_id);
+                
+                if ($sort_by_status != 0) {
+                    $bulkData = $bulkData->where('status', $sort_by_status);
+                }
+                $bulkData = $bulkData->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('filename', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                    });
+                })->orderBy($sort, $sortOrder) // Apply sorting
+                ->paginate($perPage); // Paginate results
+
+
+            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+                // Eager load product variations with product inventory that matches user_id
+                $bulkData = Import::when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('filename', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                    });
+                });
+                if ($sort_by_status != 0) {
+                    $bulkData = $bulkData->where('status', $sort_by_status);
+                }
+                $bulkData = $bulkData->orderBy($sort, $sortOrder) // Apply sorting
+                    ->paginate($perPage); // Paginate results
+            } else {
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+            // Transform the paginated results using Fractal
+            $resource = new Collection($bulkData, new BulkDataTransformer());
+
+            // Add pagination information to the resource
+            $resource->setPaginator(new IlluminatePaginatorAdapter($bulkData));
+
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
+
+            // Return the JSON response with paginated data
+            return response()->json($data);
+            
+        } catch (\Exception $e) {
+            // Handle the exception
+            return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
+        }
+    }
+
+   
 }

@@ -14,7 +14,16 @@
           <ul class="sidenav-second-level collapse" id="Inventory" data-bs-parent="#dashboard_ekomn">
             @if(auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
             <li>
+              <a class="nav-link" href="{{route('add.inventory')}}">Add New Inventory</a>
+            </li>
+            <li>
               <a class="nav-link" href="{{route('my.inventory')}}">My Inventory</a>
+            </li>
+            <li>
+              <a class="nav-link" href="{{route('bulk-upload')}}">Bulk Upload Inventory</a>
+            </li>
+            <li>
+              <a class="nav-link" href="{{route('bulk-upload.list')}}">Bulk Upload List</a>
             </li>
             @endif
             <li>

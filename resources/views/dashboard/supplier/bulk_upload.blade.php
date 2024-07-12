@@ -13,7 +13,7 @@
               <i class="far fa-file-excel"></i>
               Download the excel template to add your product details
             </div>
-            <button class="btn btnekomn-border mt25 mb5">Download</button>
+            <a href="{{ route('download-template') }}" class="btn btnekomn-border mt25 mb5">Download</a>
           </div>
           <div class="bt_arrow">
             <i class="fas fa-long-arrow-alt-right"></i>
@@ -23,13 +23,31 @@
               <i class="fas fa-upload"></i>
               Upload the fulled excel file with your product details
             </div>
-            <input type="file" id="fileInput" class="file-input" accept=".csv, .xls, .xlsx" />
-            <div class="d-flex gap-3 align-items-center">
-              <label for="fileInput" class="file-label">
-                <span class="file-label-text">Upload</span>
-              </label>
-              <div id="fileName" class="file-name mt20"></div>
-            </div>
+            <form id="uploadForm" action="{{ route('import-product-inventory') }}" method="POST" enctype="multipart/form-data">
+              @csrf
+              <input type="file" name="import_file" id="fileInput" class="file-input" accept=".csv, .xls, .xlsx" required />
+              <div class="d-flex gap-3 align-items-center">
+                  <label for="fileInput" class="file-label">
+                      <span class="file-label-text">Upload</span>
+                  </label>
+                  <div id="fileName" class="file-name mt20"></div>
+              </div>
+              <button type="submit" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button>
+          </form>
+          @if ($errors->any())
+          <div class="alert alert-danger mt-3">
+              <ul>
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+          </div>
+      @endif
+      @if (session('success'))
+          <div class="alert alert-success mt-3">
+              {{ session('success') }}
+          </div>
+      @endif
           </div>
         </div>
         <p class="mt15 opacity-50">

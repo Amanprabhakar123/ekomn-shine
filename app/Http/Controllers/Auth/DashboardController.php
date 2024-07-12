@@ -13,6 +13,7 @@ use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Models\Import;
 use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
@@ -140,6 +141,21 @@ class DashboardController extends Controller
             return view('dashboard.supplier.bulk_upload');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.admin.bulk_upload');
+        }
+        abort('403', 'Unauthorized action.');
+    }
+
+    /**
+     * Display the list of bulk uploads.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function bulkUploadList()
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.bulk_upload_list');
+        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.bulk_upload_list');
         }
         abort('403', 'Unauthorized action.');
     }

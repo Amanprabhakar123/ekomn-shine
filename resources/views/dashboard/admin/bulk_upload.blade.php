@@ -13,7 +13,8 @@
               <i class="far fa-file-excel"></i>
               Download the excel template to add your product details
             </div>
-            <button class="btn btnekomn-border mt25 mb5">Download</button>
+            <a href="{{ route('download-template') }}" class="btn btnekomn-border mt25 mb5">Download</a>
+
           </div>
           <div class="bt_arrow">
             <i class="fas fa-long-arrow-alt-right"></i>
