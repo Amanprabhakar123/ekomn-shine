@@ -137,7 +137,7 @@ class DashboardController extends Controller
     public function bulkUpload()
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.supplier.bulk_upload');
+            return view('dashboard.common.bulk_upload');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.admin.bulk_upload');
         }

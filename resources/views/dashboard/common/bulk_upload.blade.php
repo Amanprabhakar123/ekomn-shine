@@ -23,8 +23,8 @@
               <i class="fas fa-upload"></i>
               Upload the fulled excel file with your product details
             </div>
-            <form id="uploadForm" action="{{ route('import-product-inventory') }}" method="POST" enctype="multipart/form-data">
-              @csrf
+            <!-- <form id="uploadForm" action="{{ route('import-product-inventory') }}" method="POST" enctype="multipart/form-data"> -->
+            
               <input type="file" name="import_file" id="fileInput" class="file-input" accept=".csv, .xls, .xlsx" required />
               <div class="d-flex gap-3 align-items-center">
                   <label for="fileInput" class="file-label">
@@ -32,7 +32,7 @@
                   </label>
                   <div id="fileName" class="file-name mt20"></div>
               </div>
-              <button type="submit" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button>
+              <!-- <button type="submit" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button> -->
           </form>
           @if ($errors->any())
           <div class="alert alert-danger mt-3">
@@ -54,7 +54,7 @@
           The QC proces swill start after the upload of your product.
         </p>
         <div class="saveform_footer text-right mt30">
-          <button type="button" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button>
+          <button type="button" id="processing" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button>
         </div>
       </div>
     </div>
@@ -66,10 +66,46 @@
 
 @section('scripts')
 <script>
+  formData = new FormData();
+  isvalid = true;
+  $('document').ready(function(){
+    $('#fileInput').change(function(){
+      var file = $('#fileInput')[0].files[0];
+      $('#fileName').text(file.name);
+      var fileExtension = file.name.split('.').pop().toLowerCase();
+      if (['xls', 'xlsx'].indexOf(fileExtension) === -1) {
+        alert('Invalid file format. Please upload a valid Excel file.');
+        isvalid = false;
+      } else {
+        formData.append('import_file', file);
+        console.log(file);
+        isvalid = true;
+      }
+    });
+    $('#processing').click(function(){
+      alert('start processing');
+      console.log(formData);
+      if(isvalid){
+        $.ajax({
+          url: "{{ route('import-product-inventory') }}",
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response){
+            console.log(response);
+          }
+        });
+      }
+    });
+  });
+</script>
+
+<!-- <script>
   document.getElementById('fileInput').addEventListener('change', function(event) {
     const fileName = event.target.files[0]?.name || 'No file chosen';
     document.getElementById('fileName').textContent = fileName;
 });
 
-</script>
+</script> -->
 @endsection
