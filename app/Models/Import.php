@@ -35,6 +35,19 @@ class Import extends Model
     const STATUS_QUEUED = BULK_UPLOAD_STATUS_QUEUED;
     const STATUS_VALIDATION = BULK_UPLOAD_STATUS_VALIDATION_ERROR;
 
+    // Import type
+    const TYPE_BULK_UPLOAD_INVENTORY = 'bulk_upload_inventory';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'success_count' => 'integer',
+        'fail_count' => 'integer',
+        'company_id' => 'integer',
+    ];
 
     /**
      * Get the company details associated with the product category.
@@ -45,14 +58,11 @@ class Import extends Model
     }
 
 
-        /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
+    /**
+     * Get the error messages associated with the import.
      */
-    protected $casts = [
-        'success_count' => 'integer',
-        'fail_count' => 'integer',
-        'company_id' => 'integer',
-    ];
+    public function errorMessages()
+    {
+        return $this->hasMany(ImportErrorMessage::class, 'import_id', 'id');
+    }
 }

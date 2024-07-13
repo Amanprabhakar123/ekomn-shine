@@ -49,4 +49,5 @@ return [
     'updateStatusFailed' => 'Status update failed.',
     'supplierNotFound' => 'Supplier not found.',
     'variantNotFound' => 'Product variation not found.',
+    'importSuccess' => 'File upload successfully!',
 ];

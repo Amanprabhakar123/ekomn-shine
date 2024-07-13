@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Import;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Import;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Validator;
-use App\Jobs\ImportProductJob;
+use App\Models\QueueName;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Jobs\ImportProductJob;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+
 class ImportController extends Controller
 {
        /**
@@ -22,14 +25,23 @@ class ImportController extends Controller
     {
 
        $validator = Validator::make($request->all(),[
-           // 'type' => 'required|string|max:100|in:bulk_upload_inventory',
             'import_file' => 'required|file|mimes:xls,xlsx'
        ]);
-       $request->merge(['type' => 'bulk_upload_inventory']);
+       $request->merge(['type' => Import::TYPE_BULK_UPLOAD_INVENTORY]);
        if($validator->fails()){
-        return redirect()->back()->withErrors(['error' => 'File upload failed. Please try again.']);
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode422'),
+            'status' => __('statusCode.status422'),
+            'message' => $validator->errors(),
+        ]], __('statusCode.statusCode200'));
        }
-       $company_id = auth()->user()->companyDetails->id;
+
+       if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+        $company_id = auth()->user()->companyDetails->id;
+       } else if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+        $company_id = '1';
+       }
+       
 
        $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        
        // Get the file contents
@@ -51,7 +63,14 @@ class ImportController extends Controller
             'status' => Import::STATUS_PENDING
         ]);
 
-        dispatch((new ImportProductJob($importFile->id,$company_id ))->onQueue('product_upload'));
-        return redirect()->back()->with('success', 'File has been queued successfully!');
+
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'message' => __('auth.importSuccess'),
+        ]], __('statusCode.statusCode200'));
+        
+        // dispatch((new ImportProductJob($importFile->id,$company_id ))->onQueue(QueueName::ProductBulkUpload));
+        // return redirect()->back()->with('success', 'File has been queued successfully!');
     }
 }

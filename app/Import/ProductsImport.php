@@ -9,6 +9,7 @@ use App\Models\ProductKeyword;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Services\CategoryService;
+use App\Models\ImportErrorMessage;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -53,34 +54,49 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
      */
     public function collection(Collection $rows)
     {
-        //  DB::beginTransaction();
-        $company_id = auth()->user()->companyDetails->id;
-        $user_id = auth()->user()->id;
-
-        $is_error_heading = false;
-        $errorFilePath = storage_path('app/public/product_import_error/errors_' . $this->import_id . '.csv');
-        // create directory if not exist
-        if (!file_exists(dirname($errorFilePath))) {
-            mkdir(dirname($errorFilePath), 0777, true);
-        }
-
-        $errorFile = fopen($errorFilePath, 'w');
+        DB::beginTransaction();
         $import = Import::where('id', $this->import_id)->first();
+        if(!$import){
+            ImportErrorMessage::create([
+                'import_id' => $import->id,
+                'row_number' => 'Import ID',
+                'error_message' => 'Import not found',
+            ]);
+            return;
+        }
+        $company_id = $import->company_id;
+        $user_id = $import->companyDetails->user_id;
 
+        $isValidationFailed = false;
         foreach ($rows->toArray() as $key => $row) {
             try {
                 $validator =  Validator::make($row, $this->myCustomValidationRule(), $this->myValidationMessage());
                 if ($validator->fails()) {
-                    if (!$is_error_heading) {
-                        $errorFile = fopen($errorFilePath, 'w');
-                        fputcsv($errorFile, array_merge(array_keys($row, ['error'])));
-                        $is_error_heading = true;
+                    $isValidationFailed = true;
+                    if ($validator->errors()->count() > 0) {
+                        foreach ($validator->errors()->toArray() as $key => $value) {
+                            ImportErrorMessage::create([
+                                'import_id' => $import->id,
+                                'row_number' => $key,
+                                'error_message' => $value[0]
+                            ]);
+                            DB::commit();   
+                        }
                     }
-                    fputcsv($errorFile, array_merge(array_values($row), [$validator->errors()->first()]));
                     $this->errorCount++;
                     continue;
                 }
 
+                // Check if the product validation failed
+                if($isValidationFailed){
+                    $import->status = Import::STATUS_VALIDATION;
+                    $import->fail_count = $this->errorCount;
+                    $import->success_count = $this->successCount;
+                    $import->save();
+                    DB::commit();
+                    return;
+                }
+                
                 $tags = explode(",", $row['product_keywords']);
                 if(!empty($tags)){
                     $tags = array_map('trim', $tags); // Trim whitespace from each tag
@@ -97,7 +113,8 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                     $main_category_id = 1;
                     $sub_category_id = 1;
                 }
-                // dd($main_category_id, $sub_category_id);
+
+
                 $product = ProductInventory::create([
                     'company_id' => $company_id,
                     'title' => $row['product_name'],
@@ -115,7 +132,6 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                     'product_subcategory' => $sub_category_id,
                     'user_id' => $user_id,
                 ]);
-
 
                 $tier_rate = [];
                 if (!empty($row['bulk_rate1_quantity_upto']) && !empty($row['bulk_rate1_price_per_piece'])) {
@@ -277,25 +293,32 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                 }
 
                 $this->successCount++;
-                // DB::commit();
+                DB::commit();
 
             } catch (\Exception $e) {
                 $this->errorCount++;
+                // dd(e->getMessage());
                 \Log::info($e->getMessage());
-                // DB::rollBack();
+                DB::rollBack();
+                ImportErrorMessage::create([
+                    'import_id' => $import->id,
+                    'row_number' => $row['product_name'],
+                    'error_message' => $e->getMessage()
+                ]);
+                DB::commit();
                 // Handle the exception, log it, etc.
             }
         }
 
-        fclose($errorFile);
-        if (file_exists($errorFilePath) && !$is_error_heading) {
-            unlink($errorFilePath);
+        if($this->errorCount > 0 && $this->successCount == 0){
+            $import->status = Import::STATUS_FAILED;
+        }else{
+            $import->status = Import::STATUS_SUCCESS;
         }
-        $import->error_file = $is_error_heading ? 'product_import_error/errors_' . $this->import_id . '.csv' : null;
-        $import->status = Import::STATUS_SUCCESS;
         $import->fail_count = $this->errorCount;
         $import->success_count = $this->successCount;
         $import->save();
+        DB::commit();
     }
 
     /**

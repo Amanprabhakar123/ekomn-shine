@@ -45,6 +45,9 @@
                                 <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                             </span>
                         </th>
+                        <th>
+                            Failed Resons
+                        </th>
                         <th>Status
                             <span class="sort_pos">
                                 <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
@@ -265,6 +268,9 @@ function generateTableRow(item) {
         </td>
         <td>
             ${item.fail_count}
+        </td>
+        <td>
+            <a href="${item.id}" class="">View Reasons</a>
         </td>
         <td>
        ${a}

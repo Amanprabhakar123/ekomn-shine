@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Import;
 use App\Models\CompanyPlan;
 use App\Models\CompanyCanHandle;
 use App\Models\CompanyOperation;
@@ -174,5 +175,13 @@ class CompanyDetail extends Model
     public function products()
     {
         return $this->hasMany(ProductInventory::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the company that owns the company detail.
+     */
+    public function import()
+    {
+        return $this->hasMany(Import::class, 'company_id', 'id');
     }
 }
