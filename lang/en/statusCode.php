@@ -19,6 +19,8 @@ return [
     'statusCode400' => '400',
     'status403' => 'Forbidden',
     'statusCode403' => '403',
+    'status404' => 'Not Found',
+    'statusCode404' => '404',
     'status422' => 'Validation error',
     'statusCode422' => '422',
     'status200' => 'OK Request',

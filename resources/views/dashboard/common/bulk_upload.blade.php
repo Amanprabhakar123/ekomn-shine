@@ -21,7 +21,7 @@
           <div class="uploadContainer">
             <div class="u_d_text">
               <i class="fas fa-upload"></i>
-              Upload the fulled excel file with your product details
+              Upload the filled excel file with your product details
             </div>
             <!-- <form id="uploadForm" action="{{ route('import-product-inventory') }}" method="POST" enctype="multipart/form-data"> -->
             
@@ -65,6 +65,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   formData = new FormData();
   isvalid = true;
@@ -78,12 +79,10 @@
         isvalid = false;
       } else {
         formData.append('import_file', file);
-        console.log(file);
         isvalid = true;
       }
     });
     $('#processing').click(function(){
-      alert('start processing');
       console.log(formData);
       if(isvalid){
         $.ajax({
@@ -93,7 +92,32 @@
           contentType: false,
           processData: false,
           success: function(response){
-            console.log(response);
+            // alert(response.data.message);
+            // Swal.fire("SweetAlert2 is working!");
+            Swal.fire({
+            title: response.data.message,
+            icon: "success",
+            didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+              }
+           }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "{{ route('bulk-upload.list') }}";
+            }
+          });
+            // console.log(response);
           }
         });
       }

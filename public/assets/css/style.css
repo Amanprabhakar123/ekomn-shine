@@ -1665,6 +1665,7 @@ video {
 
 
 /* ekomtab */
+
 .ekom_tab{
   border-bottom: 1px solid #eee;
   margin-bottom: 20px!important;
@@ -1693,4 +1694,48 @@ video {
 .form-control.is-invalid, .was-validated .form-control:invalid{
   background-image: none;
 }
+
+
+
+
+h1 {
+  color: green;
+}
+
+/* bulk uplaod list css popup  */
+
+.popup-button{
+  color: #feca40;
+    background: none;
+    border: none;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 1000;
+}
+#popupDialog {
+  width: 50%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1001;
+}
+
+.popup-btn{
+  float: right;
+}
+
+
 /* end */

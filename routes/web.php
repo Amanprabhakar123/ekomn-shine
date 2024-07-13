@@ -1,12 +1,15 @@
 <?php
 
 use Razorpay\Api\Product;
+use App\Models\ImportErrorMessage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\BulkUploadController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
 use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\APIAuth\ForgotController;
 use App\Http\Controllers\APIAuth\ProductInventory;
 use App\Http\Controllers\Auth\DashboardController;
@@ -14,13 +17,11 @@ use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProfileController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\ImportErrorMessageController;
 use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\BulkUploadController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,7 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 
+
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
@@ -81,6 +83,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/bulk-data', [ProductInvetoryController::class, 'getDataBulkInventory'])->name('bulk-data');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
+        Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
     });
 });
 

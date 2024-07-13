@@ -2289,8 +2289,9 @@ let stockAndSizeCounter = 1;
               title: "Invetory Updated Successfully.",
               showConfirmButton: false,
               timer: 1500
-            });
+            }).then(() => {
             window.location.href = '{{route("my.inventory")}}';
+            });
           }
           if (response.data.statusCode == 422) {
             const field_list = response.data.message;
