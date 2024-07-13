@@ -19,7 +19,7 @@
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
                                 <option value="1">Pending</option>
-                                <option value="2">In Progress</option>
+                                <option value="2">Processing</option>
                                 <option value="3">Completed</option>
                                 <option value="4">Failed</option>
                                 <option value="5">Queued</option>

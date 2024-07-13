@@ -2,41 +2,55 @@
 
 namespace App\Import;
 
-use App\Models\ProductInventory;
-use App\Models\ProductVariation;
-use App\Models\ProductFeature;
-use App\Models\ProductKeyword;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Storage;
 use App\Models\Import;
-
-
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use App\Services\CategoryService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Validator;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsEmptyRows
+class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, SkipsEmptyRows
 {
     use Importable, SkipsFailures;
 
     private $successCount = 0;
     private $errorCount = 0;
-
+     /**
+     * The ID of the import.
+     *
+     * @var int
+     */
     private $import_id;
+    protected $categoryService;
 
+    /**
+     * Create a new instance of ProductsImport.
+     *
+     * @param int $import_id The ID of the import.
+     * @return void
+     */
     public function __construct($import_id)
     {
         $this->import_id = $import_id;
+        $this->categoryService = new CategoryService();
     }
 
-
+    /**
+     * Import the collection of rows.
+     *
+     * @param \Illuminate\Support\Collection $rows The collection of rows to import.
+     * @return void
+     */
     public function collection(Collection $rows)
     {
         //  DB::beginTransaction();
@@ -55,7 +69,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
 
         foreach ($rows->toArray() as $key => $row) {
             try {
-                $validator =  Validator::make($row, $this->myCustomValidationRule());
+                $validator =  Validator::make($row, $this->myCustomValidationRule(), $this->myValidationMessage());
                 if ($validator->fails()) {
                     if (!$is_error_heading) {
                         $errorFile = fopen($errorFilePath, 'w');
@@ -67,10 +81,23 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     continue;
                 }
 
-
-                $row['listing_status'] = $this->getListingStatus($row['listing_status']);
                 $tags = explode(",", $row['product_keywords']);
-                $tagData = fetchCategoryFromProductTags($tags);
+                if(!empty($tags)){
+                    $tags = array_map('trim', $tags); // Trim whitespace from each tag
+                    $tags = array_map('strtolower', $tags); // Convert tags to lowercase
+                    $tags = array_map(function($tag) {
+                        return str_replace(' ', '-', $tag); 
+                    }, $tags); // Replace spaces with hyphens
+                }
+                $tagData = $this->categoryService->searchCategory($tags);
+                if(isset($tagData['result'])){
+                    $main_category_id = salt_decrypt($tagData['result']['main_category_id']);
+                    $sub_category_id = salt_decrypt($tagData['result']['sub_category_id']);
+                }else{
+                    $main_category_id = 1;
+                    $sub_category_id = 1;
+                }
+                // dd($main_category_id, $sub_category_id);
                 $product = ProductInventory::create([
                     'company_id' => $company_id,
                     'title' => $row['product_name'],
@@ -83,9 +110,9 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     'upc' => $row['upc'],
                     'isbn' => $row['isbn'],
                     'mpin' => $row['mpn'],
-                    'status' => $row['listing_status'],
-                    'product_category' => $tagData['main_category_id'],
-                    'product_subcategory' => $tagData['sub_category_id'],
+                    'status' => ProductInventory::STATUS_DRAFT,
+                    'product_category' => $main_category_id,
+                    'product_subcategory' => $sub_category_id,
                     'user_id' => $user_id,
                 ]);
 
@@ -182,7 +209,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     }
                 }
                 $calPackageWeightInKgusingDimesnsion =  calculateVolumetricWeight($row['package_length'], $row['package_width'], $row['package_height'], $row['package_dimension_unit']);
-                $getPackageVolumetricWeight = convertKg($calPackageWeightInKgusingDimesnsion, $row['package_weight_unit']);
+                $price = calculateInclusivePriceAndTax($row['per_piecedropship_rate'],$row['gst_bracket']);
 
                 $productVariation = ProductVariation::create([
                     'product_id' => $product->id,
@@ -204,7 +231,9 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                     'dimension_class' => $row['product_dimension_unit'],
                     'weight' => $row['weight'],
                     'weight_class' => $row['product_weight_unit'],
-                    'package_volumetric_weight' => $getPackageVolumetricWeight,
+                    'package_volumetric_weight' => $calPackageWeightInKgusingDimesnsion,
+                    'price_before_tax' =>  (float) $price['price_before_tax'],
+                    'price_after_tax' =>   (float) $price['price_after_tax'],
                     'package_length' => $row['package_length'],
                     'package_width' => $row['package_width'],
                     'package_height' => $row['package_height'],
@@ -225,10 +254,18 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
                 $productVariation->slug = generateSlug($row['product_name'], $generateProductID);
                 $productVariation->save();
 
-                $this->createFeatures($product->id, $company_id, $row['product_features1']);
-                $this->createFeatures($product->id, $company_id, $row['product_features2']);
-                $this->createFeatures($product->id, $company_id, $row['product_features3']);
+                // Add product features
+                if(isset($row['product_features1'])){
+                    $this->createFeatures($product->id, $company_id, $row['product_features1']);
+                }
+                if(isset($row['product_features2'])){
+                    $this->createFeatures($product->id, $company_id, $row['product_features2']);
+                }
+                if($row['product_features3']){
+                    $this->createFeatures($product->id, $company_id, $row['product_features3']);
+                }
 
+                // Add product keywords
                 if (!empty($row['product_keywords'])) {
                     foreach ($tags as $key => $value) {
                         ProductKeyword::create([
@@ -261,6 +298,14 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
         $import->save();
     }
 
+    /**
+     * Create a new product feature.
+     *
+     * @param int $product_id The ID of the product.
+     * @param int $company_id The ID of the company.
+     * @param string $feature The feature name and value.
+     * @return void
+     */
     private function createFeatures($product_id, $company_id, $feature)
     {
         if (!empty($feature)) {
@@ -273,11 +318,11 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
         }
     }
 
-    public function rules(): array
-    {
-        return [];
-    }
-
+    /**
+     * Returns the custom validation rules for the product import.
+     *
+     * @return array The custom validation rules.
+     */
     private function myCustomValidationRule()
     {
         return  [
@@ -292,7 +337,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
             'gst_bracket' => 'required|numeric|in:0,5,12,18,28',
             'availability' => 'required|in:Till Stock Last,Regular Available',
             'upc' => 'nullable|numeric',
-            'isbn' => 'nullable|string|regex:/^\d{10}(\d{3})?$/',
+            'isbn' => 'nullable|string',
             'mpn' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9- ]+$/',
             'length' => 'required|numeric',
             'width' => 'required|numeric',
@@ -328,31 +373,59 @@ class ProductsImport implements ToCollection, WithHeadingRow, WithValidation, Sk
             'shipping_rate3_national' => 'nullable|numeric',
             'color' => 'required|string',
             'size' => 'required|string',
-            'product_stock' => 'required|integer|min:1',
-            'listing_status' => 'required|in:Active,Inactive,Out of Stock,Draft',
+            'product_stock' => 'required|integer|min:1'
         ];
     }
 
-    public function getSuccessCount()
-    {
-        return $this->successCount;
+    /**
+     * Returns an array of validation messages for the import process.
+     *
+     * @return array
+     */
+    private function myValidationMessage(){
+        return [
+            "feature" => "The feature list field is required",
+            "*.stock.required" => "The stock field is required when no variant is present.",
+            "*.stock.array" => "The stock must be an array.",
+            "*.stock.min" => "The stock must have at least one entry.",
+            "*.stock.*.required" => "Each stock entry is required and must be numeric.",
+            "*.stock.*.numeric" => "Each stock entry must be a number.",
+            "*.size.required" => "The size field is required when no variant is present.",
+            "*.size.array" => "The size must be an array.",
+            "*.size.min" => "The size must have at least one entry.",
+            "*.size.*.required" => "Each size entry is required.",
+            "*.size.*.string" => "Each size entry must be a string.",
+            "*.media.required" => "The media field is required when no variant is present.",
+            "*.media.array" => "The media must be an array.",
+            "*.media.min" => "The media must have at least 5 images including main image.",
+            "*.media.*.required" => "Each media entry is required.",
+            "*.media.*.mimes" => "Each media entry must be an image or video (png, jpeg, jpg, mp4).",
+            "*.color.required" => "The color field is required when no variant is present.",
+            "*.color.string" => "The color must be a string.",
+        ];
     }
 
-    public function getErrorCount()
-    {
-        return $this->errorCount;
-    }
-
-    private function availabilityArray($availibity)
+    /**
+     * Get the availability value based on the given availability string.
+     *
+     * @param string $availability The availability string.
+     * @return int The availability value.
+     */
+    private function availabilityArray($availability)
     {
         $availabilityArray = [
             'Till Stock Last' => ProductInventory::TILL_STOCK_LAST,
             'Regular Available' => ProductInventory::REGULAR_AVAILABLE
         ];
-        return $availabilityArray[$availibity];
+        return $availabilityArray[$availability];
     }
 
-
+    /**
+     * Get the listing status value based on the given listing status string.
+     *
+     * @param string $listingStatus The listing status string.
+     * @return int The listing status value.
+     */
     private function getListingStatus($listingStatus)
     {
         $listingStatusArray = [

@@ -50,12 +50,8 @@ class ImportProductJob implements ShouldQueue
             \Log::error("File path does not exist ". $filePath);
             return;
         }
-        $errorCount = 0;
-        $successCount = 0;
-        $failCount = 0;
         $productsImport = new ProductsImport($import->id);
-
-            Excel::import($productsImport, $filePath);
+        Excel::import($productsImport, $filePath);
     }
     }
 }

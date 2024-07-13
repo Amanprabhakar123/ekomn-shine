@@ -23,7 +23,7 @@ class ImportController extends Controller
 
        $validator = Validator::make($request->all(),[
            // 'type' => 'required|string|max:100|in:bulk_upload_inventory',
-            'import_file' => 'required|file'  
+            'import_file' => 'required|file|mimes:xls,xlsx'
        ]);
        $request->merge(['type' => 'bulk_upload_inventory']);
        if($validator->fails()){

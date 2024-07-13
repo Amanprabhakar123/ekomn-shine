@@ -84,4 +84,11 @@ class ProductInventory extends Model
     public function category(){
         return $this->belongsTo(Category::class, 'product_category', 'id');
     }
+
+     /**
+     * Get the product category that owns the product.
+     */
+    public function subCategory(){
+        return $this->belongsTo(Category::class, 'product_subcategory', 'id');
+    }
 }

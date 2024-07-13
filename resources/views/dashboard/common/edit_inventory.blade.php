@@ -91,8 +91,8 @@
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
                     
-                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->category->slug}}" class="form-control" placeholder="Product Sub Category" disabled />
-                      <input type="hidden" value="{{salt_encrypt($variations->product->category->id)}}" name="product_sub_category_id" id="product_sub_category_id" />
+                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->subCategory->name}}" class="form-control" placeholder="Product Sub Category" disabled />
+                      <input type="hidden" value="{{salt_encrypt($variations->product->subCategory->id)}}" name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -878,9 +878,7 @@
     div.appendChild(span);
     const closeIcon = document.createElement("span");
     closeIcon.innerHTML = "";
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
     closeIcon.setAttribute("class", "remove-tag");
-    @endif
     closeIcon.onclick = function () {
       tagContainer.removeChild(div);
     };
@@ -933,19 +931,16 @@
       newFeature.html(`
             <div class="featurescontent">
               ${featureName{{$key}}.replace(/\n/g, '<br>')}
-              @if(auth()->user()->hasRole(ROLE_ADMIN))
+              
               <div class="f_btn f_btn_rightSide">
                 <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
               </div>
-                 @endif
             </div>
           `);
       featureList.append(newFeature);
     // Bind the event handlers for delete and edit buttons
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
     bindFeatureEvents(newFeature);
-    @endif
   @endforeach
   });
 
@@ -973,6 +968,11 @@
   // Event listener for clicking outside the tag input field
   searchCategory.addEventListener("blur", (e) => {
     let keyWordInput = '';
+    if (e.target.value.trim() !== "") {
+      const tag = createTag(e.target.value);
+      tagContainer.insertBefore(tag, searchCategory.parentElement);
+      e.target.value = "";
+    }
     $('.tag-container .tag').each(function(index) {
       if (index !== $('.tag-container .tag').length - 1) {
         keyWordInput += $(this).text() + ',';

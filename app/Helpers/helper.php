@@ -452,33 +452,4 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
     return $volumetricWeight;
 }
 
-function fetchCategoryFromProductTags($tags){
-    foreach ($tags as $firstTag) {
-        if(!empty($firstTag)){
-            $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
-            if ($firstTagCategory) {
-                if ($firstTagCategory->root_parent_id) {
-                    $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
-                    $mainCategoryName = $rootParentCategory->name ?? 'unknown';
-                    $mainCategoryId = $rootParentCategory->id ?? 0;
-                    $subCategoryName = $firstTagCategory->name ?? 'unknown';
-                    $subCategoryId = $firstTagCategory->id ?? 0;
-                } else {
-                    $mainCategoryName = $firstTagCategory->name ?? 'unknown';
-                    $mainCategoryId = $firstTagCategory->id ?? 0;
-                    $subCategoryName = $mainCategoryName;
-                    $subCategoryId = $mainCategoryId;
-                }
-                $data = [
-                    'main_category' => $mainCategoryName,
-                    'main_category_id' => $mainCategoryId,
-                    'sub_category' => $subCategoryName,
-                    'sub_category_id' => $subCategoryId,
-                ];
-                return $data;
-            }
-        }
-    }
-}
-
 

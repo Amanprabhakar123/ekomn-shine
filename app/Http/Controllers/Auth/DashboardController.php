@@ -89,7 +89,6 @@ class DashboardController extends Controller
      */
     public function updateCompanyDetails(Request $request)
     {
-        // dd($request->all());
         try {
             $response = (new CompanyService())->updateCompanyDetails($request);
             return successResponse(null, $response['data']);
@@ -179,6 +178,7 @@ class DashboardController extends Controller
                 'media',
                 'product',
                 'product.category',
+                'product.subCategory',
                 'product.company',
                 'product.keywords',
                 'product.features',
@@ -197,6 +197,7 @@ class DashboardController extends Controller
                 'media',
                 'product',
                 'product.category',
+                'product.subCategory',
                 'product.company',
                 'product.keywords',
                 'product.features',
