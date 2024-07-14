@@ -1095,7 +1095,6 @@ class ProductInvetoryController extends Controller
     public function updateStock(Request $request, $variation_id)
     {
         try {
-            // dd($request->all());
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
@@ -1291,13 +1290,13 @@ class ProductInvetoryController extends Controller
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
-            $sortOrder = $request->input('order', 'asc'); // Default sort direction 'asc'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['processed_records', 'failed_records', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Get the authenticated user's ID

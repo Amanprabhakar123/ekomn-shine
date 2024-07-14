@@ -25,7 +25,7 @@ class ImportController extends Controller
     {
 
        $validator = Validator::make($request->all(),[
-            'import_file' => 'required|file|mimes:xls,xlsx'
+            'import_file' => 'required|file|mimes:xls,xlsx,xlsm|max:4096',
        ]);
        $request->merge(['type' => Import::TYPE_BULK_UPLOAD_INVENTORY]);
        if($validator->fails()){
@@ -42,7 +42,6 @@ class ImportController extends Controller
         $company_id = '1';
        }
        
-
        $filename = md5(Str::random(20).time()) . '.' . $request->file('import_file')->getClientOriginalExtension();        
        // Get the file contents
        $fileContents = $request->file('import_file')->get();
@@ -62,7 +61,6 @@ class ImportController extends Controller
             'company_id' => $company_id,
             'status' => Import::STATUS_PENDING
         ]);
-
 
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),

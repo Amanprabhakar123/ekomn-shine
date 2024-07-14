@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('import_id');
             $table->string('row_number');
+            $table->string('field_name')->nullable();
             $table->text('error_message');
             $table->foreign('import_id')->references('id')->on('import')->onDelete('cascade');
             $table->timestamps();

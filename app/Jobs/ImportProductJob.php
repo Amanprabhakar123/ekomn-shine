@@ -6,14 +6,12 @@ use Storage;
 use App\Models\Import;
 use Illuminate\Bus\Queueable;
 use App\Import\ProductsImport;
-use Illuminate\Validation\Rule;
 use App\Models\ImportErrorMessage;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-
 
 class ImportProductJob implements ShouldQueue
 {
@@ -61,8 +59,60 @@ class ImportProductJob implements ShouldQueue
                 ]);
                 return;
             }
-            $productsImport = new ProductsImport($import->id);
-            Excel::import($productsImport, $filePath);
+            $productsImport = new ProductsImport($this->import_id, $this->company_id);
+            $productsImport->sheetName = 'Listing Data';
+            $productsImport->headerRows = 2;
+            $productsImport->selectedColumns = [
+                'product_name',
+                'description',
+                'product_keywords',
+                'product_features1',
+                'product_features2',
+                'product_features3',
+                'model',
+                'product_hsn',
+                'gst_bracket',
+                'availability',
+                'upc',
+                'isbn',
+                'mpn',
+                'length',
+                'width',
+                'height',
+                'product_dimension_unit',
+                'weight',
+                'product_weight_unit',
+                'package_length',
+                'package_width',
+                'package_height',
+                'package_weight',
+                'package_dimension_unit',
+                'package_weight_unit',
+                'per_piecedropship_rate',
+                'potential_mrp',
+                'bulk_rate1_quantity_upto',
+                'bulk_rate1_price_per_piece',
+                'bulk_rate2_quantity_upto',
+                'bulk_rate2_price_per_piece',
+                'bulk_rate3_quantity_upto',
+                'bulk_rate3_price_per_piece',
+                'shipping_rate1_quantity_upto',
+                'shipping_rate1_local',
+                'shipping_rate1_regional',
+                'shipping_rate1_national',
+                'shipping_rate2_quantity_upto',
+                'shipping_rate2_local',
+                'shipping_rate2_regional',
+                'shipping_rate2_national',
+                'shipping_rate3_quantity_upto',
+                'shipping_rate3_local',
+                'shipping_rate3_regional',
+                'shipping_rate3_national',
+                'color',
+                'size',
+                'product_stock'
+            ]; // Include only specified columns
+            Excel::import($productsImport, $filePath, null, \Maatwebsite\Excel\Excel::XLSX);
         }
     }
 }

@@ -81,12 +81,13 @@
 
             <div id="overlay"></div>
             <div id="popupDialog">
-                <h4 class="text-center">Bulk upload file error</h4>
+                <h4 class="text-center">Bulk Upload File Error</h4>
                 <hr>
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Row Number</th>
+                            <th scope="col">S.No</th>
+                            <th scope="col">Field Name</th>
                             <th scope="col">Error Message</th>
 
                         </tr>
@@ -336,6 +337,7 @@
                             innderData.innerHTML += `
                                 <tr>
                                     <td>${element.row_number}</td>
+                                    <td>${element.field_name}</td>
                                     <td>${element.error_message}</td>
                                 </tr>`
                         });

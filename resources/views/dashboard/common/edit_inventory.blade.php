@@ -273,12 +273,12 @@
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
-                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
+                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
                       @endif
                       @if($variations->allow_editable) 
-                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
+                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
                       @else
-                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" disabled>
+                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" disabled>
                         @endif
                       <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
@@ -832,14 +832,14 @@
                   <select id="product_listing_status" class="form-select w_200_f" required >
                     @endif
                     @if(!$variations->allow_editable)
-                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
-                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
-                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
+                      <option value="1" @if($variations->status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->status == 3) selected @endif>Out of Stock</option>
                     @else
-                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
-                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
-                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                      <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
+                      <option value="1" @if($variations->status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->status == 3) selected @endif>Out of Stock</option>
+                      <option value="4" @if($variations->status == 4) selected @endif>Draft</option>
                     @endif
                
                 </select>

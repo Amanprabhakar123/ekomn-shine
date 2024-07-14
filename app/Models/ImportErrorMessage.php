@@ -17,6 +17,7 @@ class ImportErrorMessage extends Model
     protected $fillable = [
         'import_id',
         'row_number',
+        'field_name',
         'error_message',
     ];
 

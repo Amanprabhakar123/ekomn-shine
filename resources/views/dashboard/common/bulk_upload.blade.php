@@ -25,7 +25,7 @@
             </div>
             <!-- <form id="uploadForm" action="{{ route('import-product-inventory') }}" method="POST" enctype="multipart/form-data"> -->
             
-              <input type="file" name="import_file" id="fileInput" class="file-input" accept=".csv, .xls, .xlsx" required />
+              <input type="file" name="import_file" id="fileInput" class="file-input" accept=".xls, .xlsx, .xlsm" required />
               <div class="d-flex gap-3 align-items-center">
                   <label for="fileInput" class="file-label">
                       <span class="file-label-text">Upload</span>
@@ -34,20 +34,6 @@
               </div>
               <!-- <button type="submit" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button> -->
           </form>
-          @if ($errors->any())
-          <div class="alert alert-danger mt-3">
-              <ul>
-                  @foreach ($errors->all() as $error)
-                      <li>{{ $error }}</li>
-                  @endforeach
-              </ul>
-          </div>
-      @endif
-      @if (session('success'))
-          <div class="alert alert-success mt-3">
-              {{ session('success') }}
-          </div>
-      @endif
           </div>
         </div>
         <p class="mt15 opacity-50">
@@ -74,8 +60,12 @@
       var file = $('#fileInput')[0].files[0];
       $('#fileName').text(file.name);
       var fileExtension = file.name.split('.').pop().toLowerCase();
-      if (['xls', 'xlsx'].indexOf(fileExtension) === -1) {
-        alert('Invalid file format. Please upload a valid Excel file.');
+      if (['xls', 'xlsx', 'xlsm'].indexOf(fileExtension) === -1) {
+        Swal.fire({
+          title: 'Invalid file format. Please upload a valid Excel file.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
         isvalid = false;
       } else {
         formData.append('import_file', file);

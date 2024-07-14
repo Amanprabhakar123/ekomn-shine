@@ -426,22 +426,36 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
 {
     // Convert dimensions to centimeters
     switch ($unit) {
+        case 'm':
+            $length *= 100;
+            $breadth *= 100;
+            $height *= 100;
+            break;
         case 'mm':
             $length /= 10;
             $breadth /= 10;
             $height /= 10;
             break;
         case 'in':
+            $length *= 2.54;
+            $breadth *= 2.54;
+            $height *= 2.54;
+            break;
         case 'inch':
             $length *= 2.54;
             $breadth *= 2.54;
             $height *= 2.54;
             break;
+        case 'ft':
+            $length *= 30.48;
+            $breadth *= 30.48;
+            $height *= 30.48;
+            break;
         case 'cm':
             // No conversion needed
             break;
         default:
-            throw new Exception("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+            throw new Exception("Unsupported unit. Please use 'mm', 'cm','ft', 'm' or 'inch'.");
     }
 
     // Dimensional Weight Factor for cm to kg

@@ -13,37 +13,98 @@ use App\Models\ImportErrorMessage;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, SkipsEmptyRows
+class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithStartRow
 {
-    use Importable, SkipsFailures;
-
-    private $successCount = 0;
-    private $errorCount = 0;
      /**
      * The ID of the import.
      *
      * @var int
      */
     private $import_id;
+    private $company_id;
+    public $sheetName;
+    public $headerRows;
+    public $selectedColumns;
     protected $categoryService;
+    protected $loop = 3;
+    private $successCount = 0;
+    private $errorCount = 0;
 
-    /**
-     * Create a new instance of ProductsImport.
+
+   /**
+     * Create a new instance of the import.
      *
      * @param int $import_id The ID of the import.
-     * @return void
+     * @param int $company_id The ID of the company.
      */
-    public function __construct($import_id)
+    public function __construct($import_id, $company_id)
     {
         $this->import_id = $import_id;
+        $this->company_id = $company_id;
         $this->categoryService = new CategoryService();
+    }
+
+    /**
+     * Define the model for the import.
+     *
+     * @param array $row The row data to import.
+     * @return void
+     */
+    public function model(array $row)
+    {
+       // Only include selected columns and remove null values
+        $filteredRow = array_intersect_key($row, array_flip($this->selectedColumns));
+
+        // Check if the row is empty (i.e., all values are null)
+        if (count(array_filter($filteredRow, function ($value) {
+            return !is_null($value);
+        })) === 0) {
+            return null;
+        }
+        // Ignore rows where all the selected columns are null or empty
+        if (!empty($filteredRow) && count($filteredRow) > 1) {
+            $this->collection(collect([$filteredRow]));
+        }
+
+        return null;
+       
+    }
+
+    /**
+     * Get the chunk size for the import.
+     *
+     * @return int
+     */
+    public function chunkSize(): int
+    {
+        return 1000; // Adjust the chunk size as needed
+    }
+
+    /**
+     * Get the starting row for the import.
+     *
+     * @return int
+     */
+    public function startRow(): int
+    {
+        return $this->headerRows + 1; // Skip the header rows
+    }
+
+    public function headingRow(): int
+    {
+        return $this->headerRows; // Specify the header row
+    }
+
+    public function sheets(): array
+    {
+        return [
+            $this->sheetName => $this
+        ];
     }
 
     /**
@@ -56,18 +117,11 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
     {
         DB::beginTransaction();
         $import = Import::where('id', $this->import_id)->first();
-        if(!$import){
-            ImportErrorMessage::create([
-                'import_id' => $import->id,
-                'row_number' => 'Import ID',
-                'error_message' => 'Import not found',
-            ]);
-            return;
-        }
-        $company_id = $import->company_id;
+        $company_id = $this->company_id;
         $user_id = $import->companyDetails->user_id;
 
         $isValidationFailed = false;
+        
         foreach ($rows->toArray() as $key => $row) {
             try {
                 $validator =  Validator::make($row, $this->myCustomValidationRule(), $this->myValidationMessage());
@@ -77,13 +131,15 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                         foreach ($validator->errors()->toArray() as $key => $value) {
                             ImportErrorMessage::create([
                                 'import_id' => $import->id,
-                                'row_number' => $key,
+                                'field_name' => $key,
+                                'row_number' => $this->loop,
                                 'error_message' => $value[0]
                             ]);
                             DB::commit();   
                         }
                     }
                     $this->errorCount++;
+                    $this->loop++;
                     continue;
                 }
 
@@ -113,7 +169,6 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                     $main_category_id = 1;
                     $sub_category_id = 1;
                 }
-
 
                 $product = ProductInventory::create([
                     'company_id' => $company_id,
@@ -291,7 +346,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                         ]);
                     }
                 }
-
+                $this->loop++;
                 $this->successCount++;
                 DB::commit();
 
@@ -302,9 +357,11 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
                 DB::rollBack();
                 ImportErrorMessage::create([
                     'import_id' => $import->id,
-                    'row_number' => $row['product_name'],
-                    'error_message' => $e->getMessage()
+                    'error_message' => $e->getMessage(),
+                    'field_name' => $row['product_name'],
+                    'row_number' => $this->loop,
                 ]);
+                $this->loop++;
                 DB::commit();
                 // Handle the exception, log it, etc.
             }
@@ -365,14 +422,14 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
             'length' => 'required|numeric',
             'width' => 'required|numeric',
             'height' => 'required|numeric',
-            'product_dimension_unit' => 'required|in:mm,cm,inch',
+            'product_dimension_unit' => 'required|in:mm,cm,inch,m,in',
             'weight' => 'required|numeric',
             'product_weight_unit' => 'required|in:mg,gm,kg,ml,ltr',
             'package_length' => 'required|numeric',
             'package_width' => 'required|numeric',
             'package_height' => 'required|numeric',
             'package_weight' => 'required|numeric',
-            'package_dimension_unit' => 'required|in:mm,cm,inch',
+            'package_dimension_unit' => 'required|in:mm,cm,inch,m,in',
             'package_weight_unit' => 'required|in:mg,gm,kg,ml,ltr',
             'per_piecedropship_rate' => 'required|numeric|min:1',
             'potential_mrp' => 'required|numeric|min:1',
@@ -395,7 +452,7 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
             'shipping_rate3_regional' => 'nullable|numeric',
             'shipping_rate3_national' => 'nullable|numeric',
             'color' => 'required|string',
-            'size' => 'required|string',
+            'size' => 'required|regex:/^[a-zA-Z0-9\s]+$/',
             'product_stock' => 'required|integer|min:1'
         ];
     }
@@ -441,22 +498,5 @@ class ProductsImport implements ToCollection, WithHeadingRow, SkipsOnFailure, Sk
             'Regular Available' => ProductInventory::REGULAR_AVAILABLE
         ];
         return $availabilityArray[$availability];
-    }
-
-    /**
-     * Get the listing status value based on the given listing status string.
-     *
-     * @param string $listingStatus The listing status string.
-     * @return int The listing status value.
-     */
-    private function getListingStatus($listingStatus)
-    {
-        $listingStatusArray = [
-            'Active' => ProductInventory::STATUS_ACTIVE,
-            'Inactive' =>  ProductInventory::STATUS_INACTIVE,
-            'Out of Stock' =>  ProductInventory::STATUS_OUT_OF_STOCK,
-            'Draft' =>  ProductInventory::STATUS_DRAFT
-        ];
-        return $listingStatusArray[$listingStatus];
     }
 }
