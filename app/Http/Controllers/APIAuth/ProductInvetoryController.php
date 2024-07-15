@@ -1312,6 +1312,11 @@ class ProductInvetoryController extends Controller
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
                 // Update the stock of the product variation
                 $variation->stock = $request->input('stock');
+                if ($request->input('stock') == 0) {
+                    $variation->status = ProductVariation::STATUS_OUT_OF_STOCK;
+                } else {
+                    $variation->status = ProductVariation::STATUS_ACTIVE;
+                }
                 $variation->save();
 
                 $response['data'] = [
@@ -1435,6 +1440,9 @@ class ProductInvetoryController extends Controller
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
                 // Update the status of the product variation
                 $variation->status = $request->input('status');
+                if ($request->input('status') == ProductVariation::STATUS_OUT_OF_STOCK) {
+                    $variation->stock = 0;
+                }
                 $variation->save();
 
                 $response['data'] = [

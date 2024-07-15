@@ -434,12 +434,31 @@
                 product_id: productId
             })
             .then(response => {
-                
+
                 Swal.fire({
-                    title: "Good job!",
-                    text: response.data.message,
-                    icon: "success"
-                });
+                title: "Good job!",
+                text: response.data.message,
+                icon: "success",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                //   content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
+            }).then(() => {
+                // Redirect to the inventory page
+                window.location.href = "{{ route('my.inventory') }}";
+            })
+               
             })
             .catch(error => {
                 console.error('Error updating stock:', error);
@@ -454,15 +473,24 @@
     function updateStatus(itemId, productId, newStatus) {
         Swal.fire({
             title: "Do you want to save the changes status?",
-            showDenyButton: true,
             showCancelButton: true,
             confirmButtonText: "Save",
-            denyButtonText: `Don't save`
+            denyButtonText: `Don't save`,
+            didOpen: () => {
+                const title = Swal.getTitle();
+                title.style.fontSize = '25px';
+                // Apply inline CSS to the content
+                const content = Swal.getHtmlContainer();
+                // Apply inline CSS to the confirm button
+                const confirmButton = Swal.getConfirmButton();
+                confirmButton.style.backgroundColor = '#feca40';
+                confirmButton.style.color = 'white';
+            }
             }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                   // Make an API request to update the status of the product
-        ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
+                ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
                 status: newStatus,
                 product_id: productId
             })
@@ -470,8 +498,25 @@
                 Swal.fire({
                     title: "Good job!",
                     text: response.data.message,
-                    icon: "success"
-                });
+                    icon: "success",
+                    didOpen: () => {
+                    // Apply inline CSS to the title
+                    const title = Swal.getTitle();
+                    title.style.color = 'red';
+                    title.style.fontSize = '20px';
+
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                    }
+                }).then(() => {
+                    // Redirect to the inventory page
+                    window.location.href = "{{ route('my.inventory') }}";
+                })
             })
             .catch(error => {
                 console.error('Error updating status:', error);
