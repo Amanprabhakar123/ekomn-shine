@@ -1704,10 +1704,11 @@ h1 {
 
 /* bulk uplaod list css popup  */
 
-.popup-button{
+.popup-button {
   color: #feca40;
-    background: none;
-    border: none;
+  background: none;
+  border: none;
+  cursor: pointer; /* Added for better UX */
 }
 
 #overlay {
@@ -1720,8 +1721,10 @@ h1 {
   display: none;
   z-index: 1000;
 }
+
 #popupDialog {
-  width: 50%;
+  width: 90%;
+  max-width: 600px; /* Sets a max width for larger screens */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -1731,6 +1734,30 @@ h1 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   display: none;
   z-index: 1001;
+  max-height: 80vh; /* Adjusts height relative to viewport */
+  overflow-y: auto;
+  border-radius: 8px; /* Added for better aesthetics */
+  
+}
+
+
+/* Media queries for responsiveness */
+@media (min-width: 600px) {
+  #popupDialog {
+    width: 70%;
+  }
+}
+
+@media (min-width: 768px) {
+  #popupDialog {
+    width: 60%;
+  }
+}
+
+@media (min-width: 992px) {
+  #popupDialog {
+    width: 50%;
+  }
 }
 
 .popup-btn{

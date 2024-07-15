@@ -31,7 +31,7 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
     public $headerRows;
     public $selectedColumns;
     protected $categoryService;
-    protected $loop = 3;
+    protected $loop = 1;
     private $successCount = 0;
     private $errorCount = 0;
 
