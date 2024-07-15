@@ -1047,10 +1047,10 @@
       isValid = false;
 
       
-    } else if (!/^\d+$/.test(dropshipRate)) {
-        $('#dropship_rate').addClass('is-invalid');
-        $('#dropship_rateErr').text('Dropship Rate should be a number.');
-        isValid = false;
+    } else if (!/^\d+(\.\d+)?$/.test(dropshipRate)) {
+      $('#dropship_rate').addClass('is-invalid');
+      $('#dropship_rateErr').text('Dropship Rate should be a number.');
+      isValid = false;
       }
 
     // Validate Potential MRP
@@ -1059,7 +1059,7 @@
       $('#potential_mrp').addClass('is-invalid');
       $('#potential_mrpErr').text('Potential MRP is required.');
       isValid = false;
-    }else if (!/^\d+$/.test(potentialMrp)) {
+    }else if (!/^\d+(\.\d+)?$/.test(potentialMrp)) {
         $('#potential_mrp').addClass('is-invalid');
         $('#potential_mrpErr').text('Potential MRP should be a number.');
         isValid = false;
@@ -1091,7 +1091,7 @@
         priceInput.addClass('is-invalid form-control');
         $('#bulk_priceErr'+index).text('Price is required.');
         isValid = false;
-      } else if(!/^\d+$/.test(price)){
+      } else if(!/^\d+(\.\d+)?$/.test(price)){
         priceInput.addClass('is-invalid'); 
         $('#bulk_priceErr'+index).text('Price should be a number.');
         isValid = false; 
