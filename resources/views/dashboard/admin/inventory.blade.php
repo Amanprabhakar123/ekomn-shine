@@ -344,10 +344,6 @@
      */
     function generateTableRow(item) {
         let stock = allowEditable(item)
-        let availabilityStatus = false;
-        if(item.product_category == 'Unknown'){
-            availabilityStatus = true;
-        }
         return `
         <tr>
             <td>
@@ -382,7 +378,7 @@
                 <div>${item.availability_status}</div>
             </td>
              <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
+                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${item.allow_editable == true ? 'disabled' : '' }>
                     ${stock}
                 </select>
             </td>
