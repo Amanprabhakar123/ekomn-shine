@@ -2270,12 +2270,24 @@ let stockAndSizeCounter = 1;
         success: function(response) {
           if (response.data.statusCode == 200) {
             // Redirect to the inventory index page
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Invetory Updated Successfully.",
-              showConfirmButton: false,
-              timer: 1500
+              Swal.fire({
+                title: "Invetory Updated Successfully.",
+                icon: "success",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
             }).then(() => {
             window.location.href = '{{route("my.inventory")}}';
             });
