@@ -68,6 +68,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('bulk-upload', [DashboardController::class, 'bulkUpload'])->name('bulk-upload');
     Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
+    Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
+    Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
+    Route::get('view-order', [DashboardController::class, 'viewOrder'])->name('view.order');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route

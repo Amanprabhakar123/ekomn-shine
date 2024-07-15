@@ -207,4 +207,35 @@ class DashboardController extends Controller
          }
          abort('403', 'Unauthorized action.');
      }
+
+    /**
+     * Place your order.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createOrder(Request $request)
+    {
+        return view('dashboard.common.create_order');
+    }
+
+    /**
+     * Display the user's orders.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function myOrders()
+    {
+        return view('dashboard.common.my_orders');
+    }
+
+    /**
+     * Display the view order.
+     * 
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function viewOrder()
+    {
+        return view('dashboard.common.view-order');
+    }
 }

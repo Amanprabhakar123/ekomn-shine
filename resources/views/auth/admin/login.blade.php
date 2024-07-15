@@ -6,6 +6,7 @@
     <title>Login | Ekomn</title>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" as="style" onload="this.rel='stylesheet'">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}" as="style" onload="this.rel='stylesheet'" />
+    <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}" as="style" onload="this.rel='stylesheet'" />
     <link rel="stylesheet" href="{{asset('assets/css/all.min.css')}}" as="style" onload="this.rel='stylesheet'" >
 
 

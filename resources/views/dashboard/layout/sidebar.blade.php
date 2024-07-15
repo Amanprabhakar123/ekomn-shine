@@ -39,8 +39,13 @@
             <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
           </a>
           <ul class="sidenav-second-level collapse" id="Orders" data-bs-parent="#dashboard_ekomn">
+          @if(auth()->user()->hasRole(ROLE_BUYER) || auth()->user()->hasRole(ROLE_ADMIN))
+          <li>
+              <a class="nav-link" href="{{route('create.order')}}">Create Orders</a>
+            </li>
+            @endif
             <li>
-              <a class="nav-link" href="#">My Orders</a>
+              <a class="nav-link" href="{{route('my.orders')}}">My Oders</a>
             </li>
             <li>
               <a class="nav-link" href="#">Platform/Website Orders</a>
