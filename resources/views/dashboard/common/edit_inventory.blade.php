@@ -1974,7 +1974,7 @@ let stockAndSizeCounter = 1;
 
       const newPlaceholder = document.createElement("div");
       newPlaceholder.className = "placeholdertext";
-      newPlaceholder.innerHTML = `<img src="assets/images/icon/placeholder-img-1.png"><h6>Upload Image</h6>`;
+      newPlaceholder.innerHTML = `<img src="{{asset('assets/images/icon/placeholder-img-1.png')}}"><h6>Upload Image</h6>`;
 
       newBox.appendChild(newInput);
       newBox.appendChild(newImg);

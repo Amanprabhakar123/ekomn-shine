@@ -139,7 +139,7 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.admin.bulk_upload');
+            return view('dashboard.common.bulk_upload');
         }
         abort('403', 'Unauthorized action.');
     }
