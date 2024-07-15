@@ -6,6 +6,8 @@ use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
+use App\Models\Category;
+
 
 
 // User roles define for entire application
@@ -20,6 +22,15 @@ const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
 const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
 const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
 const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
+
+// Bulk Upload Processing Status
+const BULK_UPLOAD_STATUS_PENDING = 1;
+const BULK_UPLOAD_STATUS_PROCESSING = 2;
+const BULK_UPLOAD_STATUS_COMPLETED = 3;
+const BULK_UPLOAD_STATUS_FAILED = 4;
+const BULK_UPLOAD_STATUS_QUEUED = 5;
+const BULK_UPLOAD_STATUS_VALIDATION_ERROR = 6;
+
 
 /**
  * Encrypts a string using a salt key.
@@ -415,22 +426,36 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
 {
     // Convert dimensions to centimeters
     switch ($unit) {
+        case 'm':
+            $length *= 100;
+            $breadth *= 100;
+            $height *= 100;
+            break;
         case 'mm':
             $length /= 10;
             $breadth /= 10;
             $height /= 10;
             break;
         case 'in':
+            $length *= 2.54;
+            $breadth *= 2.54;
+            $height *= 2.54;
+            break;
         case 'inch':
             $length *= 2.54;
             $breadth *= 2.54;
             $height *= 2.54;
             break;
+        case 'ft':
+            $length *= 30.48;
+            $breadth *= 30.48;
+            $height *= 30.48;
+            break;
         case 'cm':
             // No conversion needed
             break;
         default:
-            throw new Exception("Unsupported unit. Please use 'mm', 'cm', or 'inch'.");
+            throw new Exception("Unsupported unit. Please use 'mm', 'cm','ft', 'm' or 'inch'.");
     }
 
     // Dimensional Weight Factor for cm to kg

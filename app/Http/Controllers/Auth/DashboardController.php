@@ -13,6 +13,7 @@ use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Models\Import;
 use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
@@ -88,7 +89,6 @@ class DashboardController extends Controller
      */
     public function updateCompanyDetails(Request $request)
     {
-        // dd($request->all());
         try {
             $response = (new CompanyService())->updateCompanyDetails($request);
             return successResponse(null, $response['data']);
@@ -137,9 +137,22 @@ class DashboardController extends Controller
     public function bulkUpload()
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.supplier.bulk_upload');
+            return view('dashboard.common.bulk_upload');
         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
-            return view('dashboard.admin.bulk_upload');
+            return view('dashboard.common.bulk_upload');
+        }
+        abort('403', 'Unauthorized action.');
+    }
+
+    /**
+     * Display the list of bulk uploads.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function bulkUploadList()
+    {
+        if (auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+            return view('dashboard.common.bulk_upload_list');
         }
         abort('403', 'Unauthorized action.');
     }
@@ -163,6 +176,7 @@ class DashboardController extends Controller
                 'media',
                 'product',
                 'product.category',
+                'product.subCategory',
                 'product.company',
                 'product.keywords',
                 'product.features',
@@ -181,6 +195,7 @@ class DashboardController extends Controller
                 'media',
                 'product',
                 'product.category',
+                'product.subCategory',
                 'product.company',
                 'product.keywords',
                 'product.features',

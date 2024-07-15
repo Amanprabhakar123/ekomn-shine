@@ -91,8 +91,8 @@
                     <div class="form-group col-sm-12 col-md-3">
                       <label style="font-size: 13px;opacity: 0.6;">Sub Category</label>
                     
-                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->category->slug}}" class="form-control" placeholder="Product Sub Category" disabled />
-                      <input type="hidden" value="{{salt_encrypt($variations->product->category->id)}}" name="product_sub_category_id" id="product_sub_category_id" />
+                      <input type="text" name="product_sub_category" id="product_sub_category" value="{{$variations->product->subCategory->name}}" class="form-control" placeholder="Product Sub Category" disabled />
+                      <input type="hidden" value="{{salt_encrypt($variations->product->subCategory->id)}}" name="product_sub_category_id" id="product_sub_category_id" />
                       <div id="product_sub_categoryErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -230,7 +230,9 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
+                      @elseif($variations->allow_editable)  
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @else
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required disabled />
@@ -269,12 +271,8 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
-                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" required>
-                      @else
-                      <select class="form-select" name="availability" value="{{$variations->product->availability_status}}" id="availability" disabled>
-                      @endif
-                        <option value="1">Till Stock Lasts</option>
+                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
+                      <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
                       <div id="availabilityErr" class="invalid-feedback"></div>
@@ -287,6 +285,8 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
+                      @elseif($variations->allow_editable)
+                      <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
                       @else
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" disabled/>
                       @endif
@@ -300,10 +300,12 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
-                      @else
-                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
+                      @elseif($variations->allow_editable)
+                      <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
+                     @else
+                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
                       @endif
-                      <div id="isbnErr" class="invalid-feedback"></div>
+                       <div id="isbnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -313,8 +315,10 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
-                      @else
-                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
+                      @elseif($variations->allow_editable) 
+                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
+                     @else
+                     <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
                       @endif
                       <div id="mpnErr" class="invalid-feedback"></div>
                     </div>
@@ -520,15 +524,23 @@
                     <div class="image-upload-box" id="box-1" onclick="triggerUpload('box-1')">
                       <input type="file" accept="image/*" onchange="previewImage(event, 'box-1')" d/>
                    
-                     
+                    @isset($variations->media[0]->file_path)  
                       <img id="img-box-1" src="{{$variations->media[0]->file_path}}" alt="Image" />
-                 
-      
                       <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')" style="display: block;">&#10006;</div>
-                      <div class="placeholdertext" style="display: none;">
+                      <div class="placeholdertext"  style="display: none;">
                         <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
                         <h6>Upload Main Image</h6>
                       </div>
+                    @else
+                    <img id="img-box-1" src="" alt="Image" style="display: none;"/>
+                    <div class="delete-icon" id="delete-box-1" onclick="deleteImage(event, 'box-1')" >&#10006;</div>
+                      <div class="placeholdertext">
+                        <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
+                        <h6>Upload Main Image</h6>
+                      </div>
+                    @endif
+      
+                     
                       <div id="boxError1" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -806,16 +818,15 @@
                   @else
                   <select id="product_listing_status" class="form-select w_200_f" required >
                     @endif
-                    @if($variations->allow_editable)
-                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
-                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
-                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                      <option value="4" @if($variations->availability_status == 4) selected @endif>Draft</option>
+                    @if(!$variations->allow_editable)
+                      <option value="1" @if($variations->status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->status == 3) selected @endif>Out of Stock</option>
                     @else
-                      <option value="1" @if($variations->availability_status == 1) selected @endif>Active</option>
-                      <option value="2" @if($variations->availability_status == 2) selected @endif>Inactive</option>
-                      <option value="3" @if($variations->availability_status == 3) selected @endif>Out of Stock</option>
-                      
+                      <option value="1" @if($variations->status == 1) selected @endif>Active</option>
+                      <option value="2" @if($variations->status == 2) selected @endif>Inactive</option>
+                      <option value="3" @if($variations->status == 3) selected @endif>Out of Stock</option>
+                      <option value="4" @if($variations->status == 4) selected @endif>Draft</option>
                     @endif
                
                 </select>
@@ -839,7 +850,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Append Keyword data
- 
+    $('#no').click(function(){
+      $('#product_listing_status').append('<option value="4">Draft</option>');
+    });
+    $('#yes').click(function(){
+      $('#product_listing_status option[value="4"]').remove();
+    });
   const tagContainer = document.querySelector(".tag-container");
   function createTag(label) {
     const div = document.createElement("div");
@@ -857,12 +873,6 @@
     return div;
   }
     $(document).ready(function() {
-      $('#no').click(function(){
-      $('#product_listing_status').append('<option value="4">Draft</option>');
-    });
-    $('#yes').click(function(){
-      $('#product_listing_status option[value="4"]').remove();
-    });
   @foreach($variations->product->keywords as  $key => $keyword)
       let a{{$key}} = "{{$keyword->keyword}}";
       let input{{$key}} = document.querySelector("#tag-input");
@@ -908,6 +918,7 @@
       newFeature.html(`
             <div class="featurescontent">
               ${featureName{{$key}}.replace(/\n/g, '<br>')}
+              
               <div class="f_btn f_btn_rightSide">
                 <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
@@ -980,7 +991,6 @@
       .catch(error => {
         console.error('Error222:', error);
       });
-    
   });
 
   $('#add-feature').on('click', function() {
@@ -1951,7 +1961,7 @@ let stockAndSizeCounter = 1;
 
       const newPlaceholder = document.createElement("div");
       newPlaceholder.className = "placeholdertext";
-      newPlaceholder.innerHTML = `<img src="assets/images/icon/placeholder-img-1.png"><h6>Upload Image</h6>`;
+      newPlaceholder.innerHTML = `<img src="{{asset('assets/images/icon/placeholder-img-1.png')}}"><h6>Upload Image</h6>`;
 
       newBox.appendChild(newInput);
       newBox.appendChild(newImg);
@@ -2266,8 +2276,9 @@ let stockAndSizeCounter = 1;
               title: "Invetory Updated Successfully.",
               showConfirmButton: false,
               timer: 1500
-            });
+            }).then(() => {
             window.location.href = '{{route("my.inventory")}}';
+            });
           }
           if (response.data.statusCode == 422) {
             const field_list = response.data.message;

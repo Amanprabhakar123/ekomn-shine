@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('image:compression')->everyMinute()->withoutOverlapping();
+        $schedule->command('process:bulk-upload-product')->everyMinute()->withoutOverlapping();
     }
 
     /**

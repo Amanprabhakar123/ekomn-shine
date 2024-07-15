@@ -24,7 +24,7 @@
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
-          <!-- <form id="addInventoryForm" enctype="multipart/form-data"> -->
+          <!--  id="addInventoryForm" enctype="multipart/form-data"> -->
 
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
@@ -2149,8 +2149,9 @@ let stockAndSizeCounter = 1;
               title: "Invetory Added Successfully.",
               showConfirmButton: false,
               timer: 1500
+            }).then(() => {
+              window.location.href = '{{route("my.inventory")}}';
             });
-            window.location.href = '{{route("my.inventory")}}';
           }
           if (response.data.statusCode == 422) {
             const field_list = response.data.message;

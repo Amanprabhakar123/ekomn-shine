@@ -10,6 +10,7 @@ class Import extends Model
 {
     use HasFactory;
 
+    protected $table = 'import';
     /**
      * The attributes that are mass assignable.
      *
@@ -27,11 +28,26 @@ class Import extends Model
         'error_file',
     ];
 
-    const STATUS_PENDING = 0;
-    const STATUS_INPROGRESS = 1;
-    const STATUS_SUCCESS = 2;
-    const STATUS_FAILED = 3;
+    const STATUS_PENDING = BULK_UPLOAD_STATUS_PENDING;
+    const STATUS_INPROGRESS = BULK_UPLOAD_STATUS_PROCESSING;
+    const STATUS_SUCCESS = BULK_UPLOAD_STATUS_COMPLETED;
+    const STATUS_FAILED = BULK_UPLOAD_STATUS_FAILED;
+    const STATUS_QUEUED = BULK_UPLOAD_STATUS_QUEUED;
+    const STATUS_VALIDATION = BULK_UPLOAD_STATUS_VALIDATION_ERROR;
 
+    // Import type
+    const TYPE_BULK_UPLOAD_INVENTORY = 'bulk_upload_inventory';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'success_count' => 'integer',
+        'fail_count' => 'integer',
+        'company_id' => 'integer',
+    ];
 
     /**
      * Get the company details associated with the product category.
@@ -42,14 +58,11 @@ class Import extends Model
     }
 
 
-        /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
+    /**
+     * Get the error messages associated with the import.
      */
-    protected $casts = [
-        'success_count' => 'integer',
-        'fail_count' => 'integer',
-        'company_id' => 'integer',
-    ];
+    public function errorMessages()
+    {
+        return $this->hasMany(ImportErrorMessage::class, 'import_id', 'id');
+    }
 }

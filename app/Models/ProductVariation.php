@@ -12,10 +12,10 @@ class ProductVariation extends Model
     use HasFactory;
 
     // Status
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 2;
-    const STATUS_OUT_OF_STOCK = 3;
-    const STATUS_DRAFT = 4;
+    const STATUS_ACTIVE = ProductInventory::STATUS_ACTIVE;
+    const STATUS_INACTIVE = ProductInventory::STATUS_INACTIVE;
+    const STATUS_OUT_OF_STOCK = ProductInventory::STATUS_OUT_OF_STOCK;
+    const STATUS_DRAFT = ProductInventory::STATUS_DRAFT;
 
     // Availability Status
     const TILL_STOCK_LAST = 1;
