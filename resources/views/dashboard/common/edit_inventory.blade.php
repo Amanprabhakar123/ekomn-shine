@@ -230,10 +230,9 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
-                      @endif
-                      @if($variations->allow_editable)  
+                      @elseif($variations->allow_editable)  
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @else
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required disabled />
@@ -272,14 +271,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
-                      @endif
-                      @if($variations->allow_editable) 
-                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
-                      @else
-                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" disabled>
-                        @endif
                       <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
@@ -293,8 +285,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
-                      @endif
-                      @if($variations->allow_editable)
+                      @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
                       @else
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" disabled/>
@@ -309,9 +300,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
-                      @endif
-
-                      @if($variations->allow_editable)
+                      @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
                      @else
                        <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
@@ -326,9 +315,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
-                      @endif
-
-                      @if($variations->allow_editable) 
+                      @elseif($variations->allow_editable) 
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
                      @else
                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
