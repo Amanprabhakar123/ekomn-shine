@@ -360,5 +360,11 @@
             document.getElementById("overlay").style.display = "none";
             document.getElementById("popupDialog").style.display = "none";
         }
+
+        document.getElementById("overlay").addEventListener("click", function(event) {
+            if (event.target === this) {
+                closeFn();
+            }
+        });
     </script>
     @endsection
