@@ -27,37 +27,61 @@ class CategoryService
                 $category2 = Category::where('slug', 'LIKE', "%$tag2%")->first();
 
                 if ($category1 && $category2) {
-                    // Check if they share the same root parent category
-                    if ($category1->root_parent_id == $category2->root_parent_id) {
-                        $mainCategory = Category::where('id', $category1->root_parent_id)->first();
-                        if (!$mainCategory) {
-                            $mainCategory = $category1;
-                        }
-                        $subCategory = $category1->id == $mainCategory->id ? $category2 : $category1;
+                    if ($category1->depth === 3 && $category2->depth === 2) {
+                        $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->first();
+                        $parentCategory1 = Category::where('id', $category1->parent_id)->first();
+                        $rootParentCategory2 = Category::where('id', $category2->root_parent_id)->first();
+                        $parentCategory2 = Category::where('id', $category2->parent_id)->first();
 
-                        $mainCategoryName = $mainCategory->name ?? $tag1;
-                        $mainCategoryId = $mainCategory->id ?? 0;
-                        $subCategoryName = $subCategory->name ?? $tag2;
-                        $subCategoryId = $subCategory->id ?? 0;
+                        $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
+                        $mainCategoryId = $rootParentCategory1->id ?? 0;
+                        $subCategoryName = $parentCategory1->name ?? 'unknown';
+                        $subCategoryId = $parentCategory1->id ?? 0;
 
-                        // If sub category is "unknown", use main category name
-                        if ($subCategoryName === 'unknown') {
+                        // Check if both categories share the same root parent category and parent category
+                        if ($rootParentCategory1->id === $rootParentCategory2->id) {
+                            $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
+                            $mainCategoryId = $rootParentCategory1->id ?? 0;
+                            $subCategoryName = $parentCategory1->name ?? 'unknown';
+                            $subCategoryId = $parentCategory1->id ?? 0;
+                        } 
+                    } elseif ($category1->depth === 1) {
+                        if ($category1->root_parent_id === null) {
+                            $mainCategoryName = $category1->name ?? 'unknown';
+                            $mainCategoryId = $category1->id ?? 0;
                             $subCategoryName = $mainCategoryName;
+                            $subCategoryId = $mainCategoryId;
+                        } else {
+                            $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->first();
+                            $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
+                            $mainCategoryId = $rootParentCategory1->id ?? 0;
+                            $subCategoryName = $category1->name ?? 'unknown';
+                            $subCategoryId = $category1->id ?? 0;
                         }
-
-                        $data = [
-                            'main_category' => $mainCategoryName,
-                            'main_category_id' => salt_encrypt($mainCategoryId),
-                            'sub_category' => $subCategoryName,
-                            'sub_category_id' => salt_encrypt($subCategoryId),
-                        ];
-
-                        return [
-                            'statusCode' => __('statusCode.statusCode200'),
-                            'status' => true,
-                            'result' => $data
-                        ];
+                    } elseif ($category1->depth === 0) {
+                        $mainCategoryName = $category1->name ?? 'unknown';
+                        $mainCategoryId = $category1->id ?? 0;
+                        $subCategoryName = $mainCategoryName;
+                        $subCategoryId = $mainCategoryId;
                     }
+
+                    // If sub category is "unknown", use main category name
+                    if ($subCategoryName === 'unknown') {
+                        $subCategoryName = $mainCategoryName;
+                    }
+
+                    $data = [
+                        'main_category' => $mainCategoryName,
+                        'main_category_id' => salt_encrypt($mainCategoryId),
+                        'sub_category' => $subCategoryName,
+                        'sub_category_id' => salt_encrypt($subCategoryId),
+                    ];
+
+                    return [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => true,
+                        'result' => $data
+                    ];
                 }
             }
         }
@@ -66,25 +90,43 @@ class CategoryService
         foreach ($tags as $firstTag) {
             if (!empty($firstTag)) {
                 $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
+                #i want to update this logic if $category1->depth === 3 and $category1->depth === 2 i want to check root_parent_id and parent_id data root_parent_id is main category and parent_id is sub category another case if $category1->depth === 1 i want to check root_parent_id if root_parent_id is null then i want to set main category and sub category is same if $category1->depth === 0 i want to set main category and sub category is same and same for $category2
+
                 if ($firstTagCategory) {
-                    if ($firstTagCategory->root_parent_id) {
+                    if ($firstTagCategory->depth === 3 || $firstTagCategory->depth === 2) {
                         $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
+                        $parentCategory = Category::where('id', $firstTagCategory->parent_id)->first();
                         $mainCategoryName = $rootParentCategory->name ?? 'unknown';
                         $mainCategoryId = $rootParentCategory->id ?? 0;
-                        $subCategoryName = $firstTagCategory->name ?? 'unknown';
-                        $subCategoryId = $firstTagCategory->id ?? 0;
-                    } else {
+                        $subCategoryName = $parentCategory->name ?? 'unknown';
+                        $subCategoryId = $parentCategory->id ?? 0;
+                    } elseif ($firstTagCategory->depth === 1) {
+                        if ($firstTagCategory->root_parent_id === null) {
+                            $mainCategoryName = $firstTagCategory->name ?? 'unknown';
+                            $mainCategoryId = $firstTagCategory->id ?? 0;
+                            $subCategoryName = $mainCategoryName;
+                            $subCategoryId = $mainCategoryId;
+                        } else {
+                            $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
+                            $mainCategoryName = $rootParentCategory->name ?? 'unknown';
+                            $mainCategoryId = $rootParentCategory->id ?? 0;
+                            $subCategoryName = $firstTagCategory->name ?? 'unknown';
+                            $subCategoryId = $firstTagCategory->id ?? 0;
+                        }
+                    } elseif ($firstTagCategory->depth === 0) {
                         $mainCategoryName = $firstTagCategory->name ?? 'unknown';
                         $mainCategoryId = $firstTagCategory->id ?? 0;
                         $subCategoryName = $mainCategoryName;
                         $subCategoryId = $mainCategoryId;
                     }
+
                     $data = [
                         'main_category' => $mainCategoryName,
                         'main_category_id' => salt_encrypt($mainCategoryId),
                         'sub_category' => $subCategoryName,
                         'sub_category_id' => salt_encrypt($subCategoryId),
                     ];
+
                     return [
                         'statusCode' => __('statusCode.statusCode200'),
                         'status' => true,
