@@ -465,6 +465,8 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
     private function myValidationMessage(){
         return [
             "feature" => "The feature list field is required",
+            "sku" => "The sku field is required and must be unique.",
+            "sku.regex" => "The sku field must be alphanumeric and may contain dashes and underscores.",
             "*.stock.required" => "The stock field is required when no variant is present.",
             "*.stock.array" => "The stock must be an array.",
             "*.stock.min" => "The stock must have at least one entry.",
