@@ -223,6 +223,15 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
+                    <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
+                    <div class="ek_f_input">
+                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" />
+                      <div id="skuErr" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                  <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="gst_bracket" id="gst_bracket" required>
@@ -1385,6 +1394,11 @@
         id: '#availability',
         errorId: '#availabilityErr',
         errorMessage: 'Availability is required.'
+      },
+      {
+        id: '#sku',
+        errorId: '#skuErr',
+        errorMessage: 'Product sku is required.'
       },
       {
         id: '#length',

@@ -253,6 +253,21 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
+                    <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
+                    <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
+                    @elseif($variations->allow_editable)
+                    <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
+                    @else
+                    <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}" disabled/>
+                    @endif
+                      <div id="skuErr" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                  <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="gst_bracket" id="gst_bracket"  value="{{$variations->product->gst_percentage}}"  required>
@@ -651,22 +666,23 @@
                         <div class="mb10">
                           <label for="">Color<span class="req_star">*</span></label>
                           <select class="form-select" required>
-                            <option value="beige">Beige</option>
-                            <option value="black">Black</option>
-                            <option value="blue">Blue</option>
-                            <option value="brown">Brown</option>
-                            <option value="gold">Gold</option>
-                            <option value="green">Green</option>
-                            <option value="grey">Grey</option>
-                            <option value="maroon">Maroon</option>
-                            <option value="multicolor">Multicolor</option>
-                            <option value="orange">Orange</option>
-                            <option value="pink">Pink</option>
-                            <option value="purple">Purple</option>
-                            <option value="red">Red</option>
-                            <option value="silver">Silver</option>
-                            <option value="white">White</option>
-                            <option value="yellow">Yellow</option>
+                          <option value="default" {{ $variations->color == 'default' ? 'selected' : '' }}>Default</option>
+                          <option value="beige" {{ $variations->color == 'beige' ? 'selected' : '' }}>Beige</option>
+                          <option value="black" {{ $variations->color == 'black' ? 'selected' : '' }}>Black</option>
+                          <option value="blue" {{ $variations->color == 'blue' ? 'selected' : '' }}>Blue</option>
+                          <option value="brown" {{ $variations->color == 'brown' ? 'selected' : '' }}>Brown</option>
+                          <option value="gold" {{ $variations->color == 'gold' ? 'selected' : '' }}>Gold</option>
+                          <option value="green" {{ $variations->color == 'green' ? 'selected' : '' }}>Green</option>
+                          <option value="grey" {{ $variations->color == 'grey' ? 'selected' : '' }}>Grey</option>
+                          <option value="maroon" {{ $variations->color == 'maroon' ? 'selected' : '' }}>Maroon</option>
+                          <option value="multicolor" {{ $variations->color == 'multicolor' ? 'selected' : '' }}>Multicolor</option>
+                          <option value="orange" {{ $variations->color == 'orange' ? 'selected' : '' }}>Orange</option>
+                          <option value="pink" {{ $variations->color == 'pink' ? 'selected' : '' }}>Pink</option>
+                          <option value="purple" {{ $variations->color == 'purple' ? 'selected' : '' }}>Purple</option>
+                          <option value="red" {{ $variations->color == 'red' ? 'selected' : '' }}>Red</option>
+                          <option value="silver" {{ $variations->color == 'silver' ? 'selected' : '' }}>Silver</option>
+                          <option value="white" {{ $variations->color == 'white' ? 'selected' : '' }}>White</option>
+                          <option value="yellow" {{ $variations->color == 'yellow' ? 'selected' : '' }}>Yellow</option>
                           </select>
                         </div>
                         <div class="image-upload-box" id="box1-1" onclick="triggerUpload('box1-1')">
@@ -691,11 +707,11 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size">
+                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size" value="{{$variations->size}}">
                                 <div id="sizeErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock">
+                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock" value="{{$variations->stock}}">
                                 <div id="stockErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
@@ -1479,6 +1495,11 @@
         id: '#availability',
         errorId: '#availabilityErr',
         errorMessage: 'Availability is required.'
+      },
+      {
+        id: '#sku',
+        errorId: '#skuErr',
+        errorMessage: 'Product sku is required.'
       },
       {
         id: '#length',

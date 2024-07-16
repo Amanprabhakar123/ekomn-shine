@@ -175,7 +175,6 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
                     'title' => $row['product_name'],
                     'description' => $row['description'],
                     'model' => $row['model'],
-                    'sku' => 'rg',
                     'hsn' => $row['product_hsn'],
                     'gst_percentage' => $row['gst_bracket'],
                     'availability_status' => $this->availabilityArray($row['availability']),
@@ -288,14 +287,14 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
                     'title' => $row['product_name'],
                     'description' => $row['description'],
                     'model' => $row['model'],
-                    'sku' => '',
+                    'sku' => $row['sku'],
                     'dropship_rate' => $row['per_piecedropship_rate'],
                     'potential_mrp' => $row['potential_mrp'],
                     'product_slug_id' => '',
                     'slug' => '',
                     'availability_status' => $this->availabilityArray($row['availability']),
                     'size' => $row['size'],
-                    'color' => $row['color'],
+                    'color' => strtolower($row['color']),
                     'length' => $row['length'],
                     'width' => $row['width'],
                     'height' => $row['height'],
@@ -320,7 +319,7 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
                 ]);
 
                 $generateProductID = generateProductID($row['product_name'], $productVariation->id);
-                $productVariation->sku = generateSku($row['product_name'], $generateProductID);
+                // $productVariation->sku = generateSku($row['product_name'], $generateProductID);
                 $productVariation->product_slug_id = $generateProductID;
                 $productVariation->slug = generateSlug($row['product_name'], $generateProductID);
                 $productVariation->save();
@@ -412,6 +411,7 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
             'product_features1' => 'required|string',
             'product_features2' => 'nullable|string',
             'product_features3' => 'nullable|string',
+            'sku' => 'required|string|min:3|max:10|unique:product_variations,sku|regex:/^[a-zA-Z0-9_-]+$/',
             'model' => 'nullable|string',
             'product_hsn' => 'required|digits_between:6,8|regex:/^\d{6,8}$/',
             'gst_bracket' => 'required|numeric|in:0,5,12,18,28',

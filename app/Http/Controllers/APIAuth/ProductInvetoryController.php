@@ -236,6 +236,7 @@ class ProductInvetoryController extends Controller
                     'upc' => 'nullable|numeric',
                     'isbn' => 'nullable|string',
                     'mpn' => 'nullable|string|max:255|regex:/^[a-zA-Z0-9- ]+$/',
+                    'sku' => 'required|string|min:3|max:10|unique:product_variations,sku|regex:/^[a-zA-Z0-9_-]+$/',
                     'model' => 'required|string|max:255',
                     'product_hsn' => 'required|string|digits_between:6,8|regex:/^\d{6,8}$/',
                     'gst_bracket' => 'required|numeric|in:0,5,12,18,28',
@@ -321,6 +322,7 @@ class ProductInvetoryController extends Controller
                         'upc',
                         'isbn',
                         'mpn',
+                        'sku',
                         'model',
                         'product_hsn',
                         'gst_bracket',
@@ -461,6 +463,7 @@ class ProductInvetoryController extends Controller
 
                     $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
                     $vide_ext = ['mp4', 'MP4'];
+                    $sku_counter = 1;
                     // Insert Product Variation table
                     foreach ($data[$variant_key] as $key => $value) {
                         $is_master = ProductVariationMedia::IS_MASTER_FALSE;
@@ -515,7 +518,7 @@ class ProductInvetoryController extends Controller
                                 'company_id' => $company_id,
                                 'product_slug_id' => '',
                                 'slug' => '',
-                                'sku' => generateSKU($request->product_name, $data['product_category']),
+                                'sku' => generateSKUCode($request->sku, $color, $value1, $sku_counter++),
                                 'size' => $value1,
                                 'stock' => $stock,
                                 'title' => $title,
@@ -634,6 +637,8 @@ class ProductInvetoryController extends Controller
                         'feature' => 'required|array',
                         'feature.*' => 'string',
                     ]);
+                }else if(($request->product_listing_status == ProductInventory::STATUS_DRAFT)){
+                    $rules['sku'] ='required|string|min:3|max:10|unique:product_variations,sku|regex:/^[a-zA-Z0-9_-]+$/';
                 }
                 $variant_key = "no_variant";
                 if ($request->has('no_variant')) {
@@ -656,6 +661,8 @@ class ProductInvetoryController extends Controller
                 // Define validation messages
                 $messages = [
                     "feature" => "The feature list field is required",
+                    "sku" => "The sku field is required and must be unique.",
+                    "sku.regex" => "The sku field must be alphanumeric and may contain dashes and underscores.",
                     "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
                     "$variant_key.*.stock.array" => "The stock must be an array.",
                     "$variant_key.*.stock.min" => "The stock must have at least one entry.",
@@ -699,6 +706,7 @@ class ProductInvetoryController extends Controller
                         'isbn',
                         'mpn',
                         'model',
+                        'sku',
                         'product_hsn',
                         'gst_bracket',
                         'availability',
@@ -853,6 +861,7 @@ class ProductInvetoryController extends Controller
                         $existingMedia = ProductVariationMedia::where('product_id', $product_id)->where('product_variation_id', $productVariation->id)->get();
                         $update_only_first_record = true;
                         $update_only_first_media_record = true;
+                        $sku_counter = 1;
                         // Iterate through the product variations
                         foreach ($data[$variant_key] as $key => $value) {
                             // Upload media files
@@ -912,8 +921,10 @@ class ProductInvetoryController extends Controller
                                         $productVariation->stock = $stock;
                                         if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
                                             $productVariation->title = $request->product_name;
+                                            $productVariation->sku = $request->sku;
                                         }else{
                                         $productVariation->title = $request->product_name . ' ( ' . $color . ', ' . $value1 . ' ) ';
+                                        $productVariation->sku = generateSKUCode($request->sku, $color, $value1, $sku_counter++);
                                         }
                                         $productVariation->description = $request->product_description;
                                         $productVariation->color = $color;
@@ -947,7 +958,7 @@ class ProductInvetoryController extends Controller
                                             'company_id' => $company_id,
                                             'product_slug_id' => '',
                                             'slug' => '',
-                                            'sku' => generateSKU($request->product_name, $data['product_category']),
+                                            'sku' => generateSKUCode($request->sku, $color, $value1, $sku_counter++),
                                             'size' => $value1,
                                             'stock' => $stock,
                                             'title' => $request->product_name . ' ( ' . $color . ', ' . $value1 . ' ) ',
