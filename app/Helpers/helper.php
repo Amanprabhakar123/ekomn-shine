@@ -258,6 +258,37 @@ if (!function_exists('generateUniqueCompanyUsername')) {
     }
 
     /**
+     * Generates a unique SKU code for a product based on its SKU, color, size, and a counter.
+     *
+     * The SKU code is composed of:
+     * - The SKU of the product
+     * - The first letter of the color (uppercase)
+     * - The first letter of the size (uppercase)
+     * - A counter value
+     *
+     * Ensures the generated SKU code is unique by checking against existing SKU codes in the database.
+     *
+     * @param string $sku The SKU of the product.
+     * @param string $color The color of the product.
+     * @param string $size The size of the product.
+     * @param int $i The counter value.
+     * @return string The generated SKU code.
+     */
+    function generateSKUCode($sku, $color, $size, $i){
+        $sku = strtoupper(str_replace(' ', '-', $sku));
+        // get color first 1 letter in upper case
+        $color = strtoupper(substr($color, 0, 1));
+        // get size first 1 letter in upper case
+        $size = strtoupper(substr($size, 0, 1));
+        $sku = $sku . '-' . $color . $size. '-' . $i;
+        while (ProductVariation::where('sku', $sku)->exists()) {
+            // $i++;
+            $sku = $sku . '-' . $i;
+        }
+        return $sku;
+    }
+
+    /**
      * Generates a slug from the given product name.
      *
      * @param string $name The product name.

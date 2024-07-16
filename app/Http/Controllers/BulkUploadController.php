@@ -10,8 +10,8 @@ class BulkUploadController extends Controller
 {
     public function downloadSampleTemplate()
     {
-        $filePath = public_path('templates/bulk_upload_template.xlsm'); // Adjust the path to your template file
-        $fileName = 'bulk_upload_template_' . uniqid() . '.xlsm'; // Generate a unique file name
+        $filePath = public_path('templates/Bulk-Upload-Template.xlsm'); // Adjust the path to your template file
+        $fileName = 'Bulk-Upload-Template_' . uniqid() . '.xlsm'; // Generate a unique file name
         return response()->download($filePath, $fileName);
     }
 

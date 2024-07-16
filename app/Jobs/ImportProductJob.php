@@ -69,6 +69,7 @@ class ImportProductJob implements ShouldQueue
                 'product_features1',
                 'product_features2',
                 'product_features3',
+                'sku',
                 'model',
                 'product_hsn',
                 'gst_bracket',
