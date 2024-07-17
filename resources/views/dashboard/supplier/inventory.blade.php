@@ -300,7 +300,7 @@
                 <div>${item.availability_status}</div>
             </td>
             <td>
-            <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${availabilityStatus == true ? 'disabled' : '' }>
+            <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${item.allow_editable == true ? 'disabled' : '' }>
                ${stock}
                </select>
             </td>
@@ -353,12 +353,29 @@
                 product_id: productId
             })
             .then(response => {
-                if (response.data.statusCode == 200) {
-                    Swal.fire({
-                        title: "Good job!",
-                        text: response.data.message,
-                        icon: "success"
-                    });
+            if (response.data.statusCode == 200) {
+            Swal.fire({
+                title: "Good job!",
+                text: response.data.message,
+                icon: "success",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
+            }).then(() => {
+                // Redirect to the inventory page
+                window.location.href = "{{ route('my.inventory') }}";
+            })
                     
                 } else if (response.data.statusCode == 422) {
                     Swal.fire({
@@ -381,10 +398,19 @@
     function updateStatus(itemId, productId, newStatus) {
         Swal.fire({
             title: "Do you want to save the changes status?",
-            showDenyButton: true,
             showCancelButton: true,
             confirmButtonText: "Save",
-            denyButtonText: `Don't save`
+            denyButtonText: `Don't save`,
+            didOpen: () => {
+                const title = Swal.getTitle();
+                title.style.fontSize = '25px';
+                // Apply inline CSS to the content
+                const content = Swal.getHtmlContainer();
+                // Apply inline CSS to the confirm button
+                const confirmButton = Swal.getConfirmButton();
+                confirmButton.style.backgroundColor = '#feca40';
+                confirmButton.style.color = 'white';
+            }
         }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
@@ -397,8 +423,25 @@
                         Swal.fire({
                             title: "Good job!",
                             text: response.data.message,
-                            icon: "success"
-                        });
+                            icon: "success",
+                            didOpen: () => {
+                            // Apply inline CSS to the title
+                            const title = Swal.getTitle();
+                            title.style.color = 'red';
+                            title.style.fontSize = '20px';
+
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href = "{{ route('my.inventory') }}";
+                        })
                         
                     })
                     .catch(error => {

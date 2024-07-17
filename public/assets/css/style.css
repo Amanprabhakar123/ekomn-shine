@@ -1523,7 +1523,7 @@ select.smallInput_n{text-align: left;}
   color: #555;
 }
 .uploadContainer{
-  width: 350px;
+  width: 450px;
   border: 1px solid #ddd;
   border-radius: 5px;
   overflow: hidden;
@@ -1717,7 +1717,20 @@ video {
   box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 4px 0px;
   margin-bottom: 15px;
 }
-.o_bannerimg img {
+
+/* bulk uplaod list css popup  */
+
+.popup-button {
+  color: #feca40;
+  background: none;
+  border: none;
+  cursor: pointer; /* Added for better UX */
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   max-height: 225px;
 }
@@ -1764,6 +1777,43 @@ video {
   position: relative;
   top: 1px;
   padding: 2px 15px;
+}
+#popupDialog {
+  width: 90%;
+  max-width: 600px; /* Sets a max width for larger screens */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1001;
+  max-height: 80vh; /* Adjusts height relative to viewport */
+  overflow-y: auto;
+  border-radius: 8px; /* Added for better aesthetics */
+  
+}
+
+
+/* Media queries for responsiveness */
+@media (min-width: 600px) {
+  #popupDialog {
+    width: 70%;
+  }
+}
+
+@media (min-width: 768px) {
+  #popupDialog {
+    width: 60%;
+  }
+}
+
+@media (min-width: 992px) {
+  #popupDialog {
+    width: 50%;
+  }
 }
 .payInvoiceTable {
   width: 100%;

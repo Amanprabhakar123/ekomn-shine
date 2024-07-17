@@ -223,6 +223,15 @@
                 </div>
                 <div class="col-sm-12 col-md-3">
                   <div class="ek_group">
+                    <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
+                    <div class="ek_f_input">
+                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" />
+                      <div id="skuErr" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                  <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
                       <select class="form-select" name="gst_bracket" id="gst_bracket" required>
@@ -1047,10 +1056,10 @@
       isValid = false;
 
       
-    } else if (!/^\d+$/.test(dropshipRate)) {
-        $('#dropship_rate').addClass('is-invalid');
-        $('#dropship_rateErr').text('Dropship Rate should be a number.');
-        isValid = false;
+    } else if (!/^\d+(\.\d+)?$/.test(dropshipRate)) {
+      $('#dropship_rate').addClass('is-invalid');
+      $('#dropship_rateErr').text('Dropship Rate should be a number.');
+      isValid = false;
       }
 
     // Validate Potential MRP
@@ -1059,7 +1068,7 @@
       $('#potential_mrp').addClass('is-invalid');
       $('#potential_mrpErr').text('Potential MRP is required.');
       isValid = false;
-    }else if (!/^\d+$/.test(potentialMrp)) {
+    }else if (!/^\d+(\.\d+)?$/.test(potentialMrp)) {
         $('#potential_mrp').addClass('is-invalid');
         $('#potential_mrpErr').text('Potential MRP should be a number.');
         isValid = false;
@@ -1091,7 +1100,7 @@
         priceInput.addClass('is-invalid form-control');
         $('#bulk_priceErr'+index).text('Price is required.');
         isValid = false;
-      } else if(!/^\d+$/.test(price)){
+      } else if(!/^\d+(\.\d+)?$/.test(price)){
         priceInput.addClass('is-invalid'); 
         $('#bulk_priceErr'+index).text('Price should be a number.');
         isValid = false; 
@@ -1385,6 +1394,11 @@
         id: '#availability',
         errorId: '#availabilityErr',
         errorMessage: 'Availability is required.'
+      },
+      {
+        id: '#sku',
+        errorId: '#skuErr',
+        errorMessage: 'Product sku is required.'
       },
       {
         id: '#length',
@@ -2144,11 +2158,23 @@ let stockAndSizeCounter = 1;
           if (response.data.statusCode == 200) {
             // Redirect to the inventory index page
             Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Invetory Added Successfully.",
-              showConfirmButton: false,
-              timer: 1500
+                title: "Invetory Added Successfully.",
+                icon: "success",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
             }).then(() => {
               window.location.href = '{{route("my.inventory")}}';
             });

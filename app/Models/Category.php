@@ -17,7 +17,7 @@ class Category extends Model
         'is_active',
         'meta_title',
         'meta_description',
-        'parent_id',
+        'parent_id',  // for depth level 3 parent_id store the sub category id that
         'depth',
         'root_parent_id'
     ];

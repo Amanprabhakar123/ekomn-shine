@@ -230,10 +230,9 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
-                      @endif
-                      @if($variations->allow_editable)  
+                      @elseif($variations->allow_editable)  
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @else
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required disabled />
@@ -249,6 +248,21 @@
                       <input type="text" class="form-control" placeholder="Enter HSN Code"  value="{{$variations->product->hsn}}"  name="product_hsn" id="product_hsn" required />
                       
                       <div id="product_hsnErr" class="invalid-feedback"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-3">
+                  <div class="ek_group">
+                    <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
+                    <div class="ek_f_input">
+                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
+                    @elseif($variations->allow_editable)
+                    <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
+                    @else
+                    <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}" disabled/>
+                    @endif
+                      <div id="skuErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
@@ -272,14 +286,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
-                      @endif
-                      @if($variations->allow_editable) 
-                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" required>
-                      @else
-                      <select class="form-select" name="availability" value="{{$variations->availability_status}}" id="availability" disabled>
-                        @endif
                       <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
@@ -293,8 +300,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
-                      @endif
-                      @if($variations->allow_editable)
+                      @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
                       @else
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" disabled/>
@@ -309,9 +315,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
-                      @endif
-
-                      @if($variations->allow_editable)
+                      @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
                      @else
                        <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" disabled />
@@ -326,9 +330,7 @@
                     <div class="ek_f_input">
                     @if(auth()->user()->hasRole(ROLE_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
-                      @endif
-
-                      @if($variations->allow_editable) 
+                      @elseif($variations->allow_editable) 
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
                      @else
                      <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" disabled />
@@ -664,22 +666,23 @@
                         <div class="mb10">
                           <label for="">Color<span class="req_star">*</span></label>
                           <select class="form-select" required>
-                            <option value="beige">Beige</option>
-                            <option value="black">Black</option>
-                            <option value="blue">Blue</option>
-                            <option value="brown">Brown</option>
-                            <option value="gold">Gold</option>
-                            <option value="green">Green</option>
-                            <option value="grey">Grey</option>
-                            <option value="maroon">Maroon</option>
-                            <option value="multicolor">Multicolor</option>
-                            <option value="orange">Orange</option>
-                            <option value="pink">Pink</option>
-                            <option value="purple">Purple</option>
-                            <option value="red">Red</option>
-                            <option value="silver">Silver</option>
-                            <option value="white">White</option>
-                            <option value="yellow">Yellow</option>
+                          <option value="default" {{ $variations->color == 'default' ? 'selected' : '' }}>Default</option>
+                          <option value="beige" {{ $variations->color == 'beige' ? 'selected' : '' }}>Beige</option>
+                          <option value="black" {{ $variations->color == 'black' ? 'selected' : '' }}>Black</option>
+                          <option value="blue" {{ $variations->color == 'blue' ? 'selected' : '' }}>Blue</option>
+                          <option value="brown" {{ $variations->color == 'brown' ? 'selected' : '' }}>Brown</option>
+                          <option value="gold" {{ $variations->color == 'gold' ? 'selected' : '' }}>Gold</option>
+                          <option value="green" {{ $variations->color == 'green' ? 'selected' : '' }}>Green</option>
+                          <option value="grey" {{ $variations->color == 'grey' ? 'selected' : '' }}>Grey</option>
+                          <option value="maroon" {{ $variations->color == 'maroon' ? 'selected' : '' }}>Maroon</option>
+                          <option value="multicolor" {{ $variations->color == 'multicolor' ? 'selected' : '' }}>Multicolor</option>
+                          <option value="orange" {{ $variations->color == 'orange' ? 'selected' : '' }}>Orange</option>
+                          <option value="pink" {{ $variations->color == 'pink' ? 'selected' : '' }}>Pink</option>
+                          <option value="purple" {{ $variations->color == 'purple' ? 'selected' : '' }}>Purple</option>
+                          <option value="red" {{ $variations->color == 'red' ? 'selected' : '' }}>Red</option>
+                          <option value="silver" {{ $variations->color == 'silver' ? 'selected' : '' }}>Silver</option>
+                          <option value="white" {{ $variations->color == 'white' ? 'selected' : '' }}>White</option>
+                          <option value="yellow" {{ $variations->color == 'yellow' ? 'selected' : '' }}>Yellow</option>
                           </select>
                         </div>
                         <div class="image-upload-box" id="box1-1" onclick="triggerUpload('box1-1')">
@@ -704,11 +707,11 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size">
+                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size" value="{{$variations->size}}">
                                 <div id="sizeErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock">
+                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock" value="{{$variations->stock}}">
                                 <div id="stockErr-0" class="invalid-feedback"></div>
                               </td>
                               <td>
@@ -1154,10 +1157,10 @@
       isValid = false;
 
       
-    } else if (!/^\d+$/.test(dropshipRate)) {
+    } else if (!/^\d+(\.\d+)?$/.test(dropshipRate)) {
         $('#dropship_rate').addClass('is-invalid');
         $('#dropship_rateErr').text('Dropship Rate should be a number.');
-        isValid = false;
+      isValid = false;
       }
 
     // Validate Potential MRP
@@ -1166,7 +1169,7 @@
       $('#potential_mrp').addClass('is-invalid');
       $('#potential_mrpErr').text('Potential MRP is required.');
       isValid = false;
-    }else if (!/^\d+$/.test(potentialMrp)) {
+    }else if (!/^\d+(\.\d+)?$/.test(potentialMrp)) {
         $('#potential_mrp').addClass('is-invalid');
         $('#potential_mrpErr').text('Potential MRP should be a number.');
         isValid = false;
@@ -1198,7 +1201,7 @@
         priceInput.addClass('is-invalid form-control');
         $('#bulk_priceErr'+index).text('Price is required.');
         isValid = false;
-      } else if(!/^\d+$/.test(price)){
+      } else if(!/^\d+(\.\d+)?$/.test(price)){
         priceInput.addClass('is-invalid'); 
         $('#bulk_priceErr'+index).text('Price should be a number.');
         isValid = false; 
@@ -1492,6 +1495,11 @@
         id: '#availability',
         errorId: '#availabilityErr',
         errorMessage: 'Availability is required.'
+      },
+      {
+        id: '#sku',
+        errorId: '#skuErr',
+        errorMessage: 'Product sku is required.'
       },
       {
         id: '#length',
@@ -1974,7 +1982,7 @@ let stockAndSizeCounter = 1;
 
       const newPlaceholder = document.createElement("div");
       newPlaceholder.className = "placeholdertext";
-      newPlaceholder.innerHTML = `<img src="assets/images/icon/placeholder-img-1.png"><h6>Upload Image</h6>`;
+      newPlaceholder.innerHTML = `<img src="{{asset('assets/images/icon/placeholder-img-1.png')}}"><h6>Upload Image</h6>`;
 
       newBox.appendChild(newInput);
       newBox.appendChild(newImg);
@@ -2283,12 +2291,24 @@ let stockAndSizeCounter = 1;
         success: function(response) {
           if (response.data.statusCode == 200) {
             // Redirect to the inventory index page
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Invetory Updated Successfully.",
-              showConfirmButton: false,
-              timer: 1500
+              Swal.fire({
+                title: "Invetory Updated Successfully.",
+                icon: "success",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
             }).then(() => {
             window.location.href = '{{route("my.inventory")}}';
             });
