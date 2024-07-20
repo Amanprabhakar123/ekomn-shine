@@ -92,6 +92,9 @@ class ImageCompression extends Command
 
                 if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
                     $this->info('Invalid file extension: ' . $fileExtension);
+                    ProductVariationMedia::where('id', $image->id)->update([
+                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE
+                    ]);
                     continue;
                 }
 
@@ -162,12 +165,16 @@ class ImageCompression extends Command
             $allowedExtensions = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
             foreach ($imagePaths as $image) {
 
+                $this->info($image->id);
                 // Get the file extension
                 $fileInfo = pathinfo($image->file_path);
                 $fileExtension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
 
                 if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
                     $this->info('Invalid file extension: ' . $fileExtension);
+                    ProductVariationMedia::where('id', $image->id)->update([
+                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE
+                    ]);
                     continue;
                 }
 
@@ -180,7 +187,6 @@ class ImageCompression extends Command
                 // Verify the original path and adjust if needed
                 $originalFullPath = storage_path('app/public/' . $originalPath);
                 if (!File::exists($originalFullPath)) {
-                    Log::info('Original image not found at path: ' . $originalFullPath);
                     $this->info('Original image not found at path: ' . $originalFullPath);
                     continue;
                 }
@@ -216,7 +222,6 @@ class ImageCompression extends Command
                 ]);
             }
         } catch (Exception $e) {
-            dd($e->getMessage());
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }
