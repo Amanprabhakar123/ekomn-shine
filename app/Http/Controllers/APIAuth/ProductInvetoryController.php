@@ -134,7 +134,7 @@ class ProductInvetoryController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock'];
+            $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock', 'product_slug_id'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
@@ -158,7 +158,7 @@ class ProductInvetoryController extends Controller
                         'media',
                         'product',
                         'product.category'
-                    ]) // Eager load the product and category relationships
+                    ]) // Eager load the product and category relationships with sorting
                     ->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results
 
@@ -197,8 +197,8 @@ class ProductInvetoryController extends Controller
 
             // Return the JSON response with paginated data
             return response()->json($data);
-            dd($data);
         } catch (\Exception $e) {
+            dd($e->getMessage());
             // Handle the exception
             return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
         }

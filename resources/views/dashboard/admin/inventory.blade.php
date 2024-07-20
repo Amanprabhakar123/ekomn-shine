@@ -16,8 +16,8 @@
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
                 <div class="filter">
                     <div class="ek_group m-0">
-                        <label class="eklabel w_50_f">Sort by:</label>
-                        <div class="ek_f_input">
+                        <!-- <label class="eklabel w_50_f">Sort by:</label> -->
+                        <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
                                 <option value="1">Active</option>
@@ -33,128 +33,41 @@
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th>Product Image</th>
-                            <th>Product Title</th>
-                            <th>SKU
+                            <th>Image</th>
+                            <th class="h_sorting"  data-sort-field="title">Product Title
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Product ID</th>
+                            <th class="h_sorting"  data-sort-field="sku">SKU
+                                <span class="sort_pos">
+                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                </span>
+                            </th>
+                            <th class="h_sorting" data-sort-field="product_slug_id">Product ID
+                                <span class="sort_pos">
+                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                </span>
+                            </th>
                             <th>Supplier ID</th>
-                            <th>Stock
+                            <th class="h_sorting"  data-sort-field="stock">Stock
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Selling Price
+                            <th class="h_sorting" data-sort-field="price_after_tax">Selling Price
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Category
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
+                            <th>Category</th>
                             <th>Availability</th>
-                            <th>Status
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="dataContainer">
-                        {{-- <tr>
-                            <td>
-                                <div class="productImg_t">
-                                    <img src="assets/images/product/product_1.jpg" alt="Product Image">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="productTitle_t">
-                                    Cushion covers
-                                </div>
-                            </td>
-                            <td>
-                                <div class="sku_t">KS93528TUT</div>
-                            </td>
-                            <td>
-                                EK501IND
-                            </td>
-                            <td>
-                                EK501IND
-                            </td>
-                            <td>
-                                <input type="text" class="stock_t" value="200">
-                            </td>
-                            <td>
-                                <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                            </td>
-                            <td>
-                                <div>Home Decor</div>
-                            </td>
-                            <td>
-                                <div>Till Stock Lasts</div>
-                            </td>
-                            <td>
-                                <select class="changeStatus_t form-select">
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Out of Stock" selected>Out of Stock</option>
-                                    <option value="Draft">Draft</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn btn-link btn-sm">Edit</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="productImg_t">
-                                    <img src="assets/images/product/product_5.jpg" alt="Product Image">
-                                </div>
-                            </td>
-                            <td>
-                                <div class="productTitle_t">
-                                    Dell WM126 Wireless Mouse
-                                </div>
-                            </td>
-                            <td>
-                                <div class="sku_t">KS93528TUT</div>
-                            </td>
-                            <td>
-                                EK502IND
-                            </td>
-                            <td>
-                                EK501IND
-                            </td>
-                            <td>
-                                <input type="text" class="stock_t" value="200">
-                            </td>
-                            <td>
-                                <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                            </td>
-                            <td>
-                                <div>Home Decor</div>
-                            </td>
-                            <td>
-                                <div>Regular Available</div>
-                            </td>
-                            <td>
-                                <select class="changeStatus_t form-select">
-                                    <option value="Active" selected>Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Out of Stock">Out of Stock</option>
-                                    <option value="Draft">Draft</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn btn-link btn-sm">Edit</button>
-                            </td>
-                        </tr> --}}
+                        <!-- Data will be displayed here -->
                     </tbody>
                 </table>
             </div>
@@ -212,16 +125,32 @@
         sortByStatus.addEventListener("change", () => {
             fetchData();
         });
+
+        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+        let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+        const h_sorting = document.querySelectorAll(".h_sorting");
+        h_sorting.forEach(element => {
+            element.addEventListener("click", () => {
+            const sortFieldElement = element;
+            sortField = sortFieldElement.getAttribute("data-sort-field");
+            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+            fetchData();
+            h_sorting.forEach(el => {
+                el.classList.remove("active");
+                el.classList.remove("asc");
+                el.classList.remove("desc");
+            });
+            element.classList.add("active");
+            element.classList.add(sortOrder);
+            });
+        });
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
-            const sortField = ""; // Set the sort field here
-            const sortOrder = ""; // Set the sort order here
-
             let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`;
 
             if (sortField && sortOrder) {
-            apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
+                apiUrl += `&sort=${sortField}&order=${sortOrder}`;
             }
 
             if (searchQuery) {
