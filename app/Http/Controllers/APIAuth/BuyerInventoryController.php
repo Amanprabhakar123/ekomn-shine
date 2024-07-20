@@ -26,7 +26,7 @@ class BuyerInventoryController extends Controller
     {
         $this->fractal = $fractal;
     }
-    
+
     /**
      * Retrieve the paginated buyer inventory data.
      *
@@ -60,11 +60,11 @@ class BuyerInventoryController extends Controller
                 if ($searchTerm) {
                     $buyerInventory = $buyerInventory->whereHas('product', function ($query) use ($searchTerm) {
                         $query->where('title', 'like', '%' . $searchTerm . '%')
-                              ->orWhere('sku', 'like', '%' . $searchTerm . '%')
-                              ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%')
-                              ->orWhereHas('product.category', function ($query) use ($searchTerm) {
-                                  $query->where('name', 'like', '%' . $searchTerm . '%');
-                              });
+                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%')
+                            ->orWhereHas('product.category', function ($query) use ($searchTerm) {
+                                $query->where('name', 'like', '%' . $searchTerm . '%');
+                            });
                     });
                 }
 
@@ -76,14 +76,14 @@ class BuyerInventoryController extends Controller
 
                 // Handle sorting by category name
                 $buyerInventory = $buyerInventory->join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
-                    ->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')  
+                    ->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')
                     ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
                     ->select('buyer_inventories.*');
-                
-                if($sort == 'name') {
+
+                if ($sort == 'name') {
                     $buyerInventory = $buyerInventory->orderBy('categories.name', $sortOrder);
                 } else {
-                    $buyerInventory = $buyerInventory->orderBy('product_variations.'.$sort, $sortOrder);
+                    $buyerInventory = $buyerInventory->orderBy('product_variations.' . $sort, $sortOrder);
                 }
 
                 // Paginate results
@@ -170,7 +170,6 @@ class BuyerInventoryController extends Controller
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.addBuyerInventory')
                 ]], __('statusCode.statusCode200'));
-
             } else {
                 return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
             }
@@ -203,13 +202,13 @@ class BuyerInventoryController extends Controller
             }
             // Find the product variation
             if (auth()->user()->hasRole(User::ROLE_BUYER)) {
-               BuyerInventory::where(['id' => $id])->delete();
+                BuyerInventory::where(['id' => $id])->delete();
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.removeBuyerInventory'),
                 ];
-                
+
                 // Return a success message
                 return response()->json($response);
             } else {
@@ -219,367 +218,210 @@ class BuyerInventoryController extends Controller
             // Handle the exception
             return response()->json(['data' => __('auth.removeBuyerInventoryFailed')], __('statusCode.statusCode500'));
         }
-    } 
-
-    // public function exportProductVariationData($variation_id){
-    //     try {
-    //         $variation_id = salt_decrypt($variation_id);
-    //         $productVariation = ProductVariation::find($variation_id);
-            
-    //         if($productVariation){
-    //             $product = $productVariation->product;
-    //             $productVariationList = $product->variations;
-    //             $productCategory = $product->category;
-    //             $productSubCategory = $product->subCategory;
-    //             $productKeywords = $product->keywords;
-    //             $productFeatures = $product->features;
-    //             $media = $productVariation->media->where('is_compressed', ProductVariationMedia::IS_COMPRESSED_TRUE);
-    //             $video = $productVariation->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
-    //             // i want to export this data in information in csv format with images and video and move a folder then zip it and send to user
-
-    //             // Export the data in CSV format
-    //             $csvData = []; // Array to store CSV data
-
-    //             // Add headers to the CSV data
-    //             $headers = [
-    //                 'PRODUCT_NAME',
-    //                 'DESCRIPTION',
-    //                 'PRODUCT_KEYWORDS',
-    //                 'PRODUCT_FEATURES',
-    //                 'SKU',
-    //                 'MODEL',
-    //                 'PRODUCT_HSN',
-    //                 'GST_BRACKET',
-    //                 'AVAILABILITY',
-    //                 'UPC',
-    //                 'ISBN',
-    //                 'MPN',
-    //                 'LENGTH',
-    //                 'WIDTH',
-    //                 'HEIGHT',
-    //                 'PRODUCT_DIMENSION_UNIT',
-    //                 'WEIGHT',
-    //                 'PRODUCT_WEIGHT_UNIT',
-    //                 'PACKAGE_LENGTH',
-    //                 'PACKAGE_WIDTH',
-    //                 'PACKAGE_HEIGHT',
-    //                 'PACKAGE_WEIGHT',
-    //                 'PACKAGE_DIMENSION_UNIT',
-    //                 'PACKAGE_WEIGHT_UNIT',
-    //                 'SELLING_PRICE',
-    //                 'POTENTIAL_MRP',
-    //                 'COLOR',
-    //                 'SIZE',
-    //                 'PRODUCT_STOCK',
-    //                 'CATEGORY',
-    //                 'SUB_CATEGORY'
-    //             ];
-    //             $csvData[] = $headers;
-
-    //             // Add data for each product variation
-    //             foreach ($productVariationList as $variation) {
-    //                 $rowData = [
-    //                     $variation->title,
-    //                     $variation->description,
-    //                     implode(', ', $productKeywords->pluck('keyword')->toArray()),
-    //                     implode(', ', $productFeatures->pluck('feature_name')->toArray()),
-    //                     $variation->sku,
-    //                     $variation->model,
-    //                     $product->product_hsn,
-    //                     $variation->gst_bracket,
-    //                     ($variation->availability_status == ProductInventory::TILL_STOCK_LAST) ? 'Till Stock Last' : 'Regular Available',
-    //                     $variation->upc,
-    //                     $variation->isbn,
-    //                     $variation->mpn,
-    //                     $variation->length,
-    //                     $variation->width,
-    //                     $variation->height,
-    //                     $variation->dimension_class,
-    //                     $variation->weight,
-    //                     $variation->weight_class,
-    //                     $variation->package_length,
-    //                     $variation->package_width,
-    //                     $variation->package_height,
-    //                     $variation->package_weight,
-    //                     $variation->package_dimension_class,
-    //                     $variation->package_weight_class,
-    //                     $variation->price_after_tax,
-    //                     $variation->potential_mrp,
-    //                     $variation->color,
-    //                     $variation->size,
-    //                     $variation->stock,
-    //                     isset($productCategory->name) ? $productCategory->name : '',
-    //                     isset($productSubCategory->name) ? $productSubCategory->name : ''
-    //                 ];
-    //                 $csvData[] = $rowData;
-    //             }
-
-    //             // Generate a unique filename for the CSV file
-    //             $filename = 'product_data_' . time() . '.csv';
-    //             $path = 'storage/export/'.auth()->user()->id.'/'.$productVariation->id;
-    //             // if directory not exist create directory
-    //             if (!file_exists($path)) {
-    //                 mkdir($path, 0777, true);
-    //             }
-    //             // Create a temporary file to store the CSV data
-    //             $tempFilePath = sys_get_temp_dir() . '/' . $filename;
-    //             $file = fopen($tempFilePath, 'w');
-
-    //             // Write the CSV data to the file
-    //             foreach ($csvData as $rowData) {
-    //                 fputcsv($file, $rowData);
-    //             }
-
-    //             // Close the file
-    //             fclose($file);
-    //             // Move the CSV file to a folder
-    //             $destinationFolder = $path;
-    //             $destinationFilePath = $destinationFolder . '/' . $filename;
-    //             rename($tempFilePath, $destinationFilePath);
-
-    //             // store file media in folder
-    //             $mediaPath = $path.'/media';
-    //             $mediaThumbnailPath = $path.'/media/thumbnail';
-    //             if (!file_exists($mediaPath)) {
-    //                 mkdir($mediaPath, 0777, true);
-    //             }
-    //             if (!file_exists($mediaThumbnailPath)) {
-    //                 mkdir($mediaThumbnailPath, 0777, true);
-    //             }
-                
-
-    //             // Zip the folder
-    //             $zipFilePath = $path.'.zip';
-    //             $zip = new ZipArchive();
-    //             $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-    //             $zip->addEmptyDir('product_data');
-    //             $zip->addFile($destinationFilePath, 'product_data/' . $filename);
-    //             if($media){
-    //                 foreach ($media as $media) {
-    //                     $mediaFile = substr($media->file_path, strrpos($media->file_path, '/') + 1);
-    //                     $media->file_path = str_replace('storage/', '', $media->file_path);
-    //                     file_put_contents($mediaPath.'/'.$mediaFile, file_get_contents(storage_path('app/public' . $media->file_path)));
-    //                     $zip->addFile($mediaPath.'/'.$mediaFile, 'product_data/media/' . $mediaFile);
-    //                     // Add the thumbnail image to the zip file
-    //                     $mediaThumbnailFile = substr($media->thumbnail_path, strrpos($media->thumbnail_path, '/') + 1);
-    //                     $media->thumbnail_path = str_replace('storage/', '', $media->thumbnail_path);
-    //                     file_put_contents($mediaThumbnailPath.'/'.$mediaThumbnailFile, file_get_contents(storage_path('app/public' . $media->thumbnail_path)));
-    //                     $zip->addFile($mediaThumbnailPath.'/'.$mediaThumbnailFile, 'product_data/media/thumbnail/' . $mediaThumbnailFile);
-    //                 }
-    //             }
-    //             if($video){
-    //                 foreach ($video as $video) {
-    //                     $videoFile = substr($video->file_path, strrpos($video->file_path, '/') + 1);
-    //                     $video->file_path = str_replace('storage/', '', $video->file_path);
-    //                     file_put_contents($mediaPath.'/'.$videoFile, file_get_contents(storage_path('app/public/' . $video->file_path)));
-    //                     $zip->addFile($mediaPath.'/'.$videoFile, 'product_data/media/' . $videoFile);
-    //                 }
-    //             }
-    //             $zip->close();
-    //             // Send the zip file to the user
-    //             $response = response()->download($zipFilePath)->deleteFileAfterSend(true);
-
-    //             unlinkFile($path);
-    //             return $response;
-               
-    //         } else {
-    //             return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
-    //         }
-    //     } catch (\Exception $e) {
-    //         // Handle the exception
-    //         return response()->json(['data' => __('auth.productInventoryDownloadFailed')], __('statusCode.statusCode500'));
-    //     }
-    // }
-
-
-    public function exportProductVariationData(Request $request)
-{
-    try {
-        // Validate the request data
-        $validator = Validator::make($request->all(), [
-            'variation_id' => 'required|array',
-            'variation_id.*' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['data' => [
-                'statusCode' => __('statusCode.statusCode422'),
-                'status' => __('statusCode.status422'),
-                'message' => $validator->errors()->first()
-            ]], __('statusCode.statusCode200'));
-        }
-
-        // Decrypt the product variation IDs
-        $decryptedVariationIds = [];
-        foreach ($request->variation_id as $variationId) {
-            $decryptedVariationIds[] = salt_decrypt($variationId);
-        }
-
-        // Find the product variations
-        $allProductVariations = ProductVariation::whereIn('id', $decryptedVariationIds)->get();
-
-        if ($allProductVariations->isEmpty()) {
-            return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
-        }
-
-        // Initialize CSV data array with headers
-        $csvData = [
-            [
-                'PRODUCT_NAME',
-                'DESCRIPTION',
-                'PRODUCT_KEYWORDS',
-                'PRODUCT_FEATURES',
-                'SKU',
-                'MODEL',
-                'PRODUCT_HSN',
-                'GST_BRACKET',
-                'AVAILABILITY',
-                'UPC',
-                'ISBN',
-                'MPN',
-                'LENGTH',
-                'WIDTH',
-                'HEIGHT',
-                'PRODUCT_DIMENSION_UNIT',
-                'WEIGHT',
-                'PRODUCT_WEIGHT_UNIT',
-                'PACKAGE_LENGTH',
-                'PACKAGE_WIDTH',
-                'PACKAGE_HEIGHT',
-                'PACKAGE_WEIGHT',
-                'PACKAGE_DIMENSION_UNIT',
-                'PACKAGE_WEIGHT_UNIT',
-                'SELLING_PRICE',
-                'POTENTIAL_MRP',
-                'COLOR',
-                'SIZE',
-                'PRODUCT_STOCK',
-                'CATEGORY',
-                'SUB_CATEGORY'
-            ]
-        ];
-
-        // Generate a unique base path for storing the files
-        $basePath = 'storage/export/' . auth()->user()->id . '/' . time();
-        if (!file_exists($basePath)) {
-            mkdir($basePath, 0777, true);
-        }
-
-        // Process each product variation
-        foreach ($allProductVariations as $key => $productVariation) {
-            $product = $productVariation->product;
-            $productVariationList = $product->variations;
-            $productCategory = $product->category;
-            $productSubCategory = $product->subCategory;
-            $productKeywords = $product->keywords;
-            $productFeatures = $product->features;
-            $media = $productVariation->media->where('is_compressed', ProductVariationMedia::IS_COMPRESSED_TRUE);
-            $video = $productVariation->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
-
-            // Add data for each product variation
-            foreach ($productVariationList as $variation) {
-                $csvData[] = [
-                    $variation->title,
-                    $variation->description,
-                    implode(', ', $productKeywords->pluck('keyword')->toArray()),
-                    implode(', ', $productFeatures->pluck('feature_name')->toArray()),
-                    $variation->sku,
-                    $product->model,
-                    $product->hsn,
-                    $product->gst_percentage,
-                    ($variation->availability_status == ProductInventory::TILL_STOCK_LAST) ? 'Till Stock Last' : 'Regular Available',
-                    $product->upc,
-                    $product->isbn,
-                    $product->mpn,
-                    $variation->length,
-                    $variation->width,
-                    $variation->height,
-                    $variation->dimension_class,
-                    $variation->weight,
-                    $variation->weight_class,
-                    $variation->package_length,
-                    $variation->package_width,
-                    $variation->package_height,
-                    $variation->package_weight,
-                    $variation->package_dimension_class,
-                    $variation->package_weight_class,
-                    $variation->price_after_tax,
-                    $variation->potential_mrp,
-                    $variation->color,
-                    $variation->size,
-                    $variation->stock,
-                    isset($productCategory->name) ? $productCategory->name : '',
-                    isset($productSubCategory->name) ? $productSubCategory->name : ''
-                ];
-            }
-
-            // Create directories for each product variation
-            $variationPath = $basePath . '/' . $key+1;
-            $mediaPath = $variationPath . '/media';
-            $mediaThumbnailPath = $variationPath . '/media/thumbnail';
-            if (!file_exists($variationPath)) {
-                mkdir($variationPath, 0777, true);
-            }
-            if (!file_exists($mediaPath)) {
-                mkdir($mediaPath, 0777, true);
-            }
-            if (!file_exists($mediaThumbnailPath)) {
-                mkdir($mediaThumbnailPath, 0777, true);
-            }
-
-            foreach ($media as $mediaItem) {
-                $mediaFile = substr($mediaItem->file_path, strrpos($mediaItem->file_path, '/') + 1);
-                $mediaItem->file_path = str_replace('storage/', '', $mediaItem->file_path);
-                file_put_contents($mediaPath . '/' . $mediaFile, file_get_contents(storage_path('app/public/' . $mediaItem->file_path)));
-            }
-
-            foreach ($media as $mediaItem) {
-                $mediaThumbnailFile = substr($mediaItem->thumbnail_path, strrpos($mediaItem->thumbnail_path, '/') + 1);
-                $mediaItem->thumbnail_path = str_replace('storage/', '', $mediaItem->thumbnail_path);
-                file_put_contents($mediaThumbnailPath . '/' . $mediaThumbnailFile, file_get_contents(storage_path('app/public/' . $mediaItem->thumbnail_path)));
-            }
-
-            foreach ($video as $videoItem) {
-                $videoFile = substr($videoItem->file_path, strrpos($videoItem->file_path, '/') + 1);
-                $videoItem->file_path = str_replace('storage/', '', $videoItem->file_path);
-                file_put_contents($mediaPath . '/' . $videoFile, file_get_contents(storage_path('app/public/' . $videoItem->file_path)));
-            }
-        }
-
-        // Create a temporary CSV file
-        $csvFilename = 'product_data_' . time() . '.csv';
-        $csvFilePath = $basePath . '/' . $csvFilename;
-        $file = fopen($csvFilePath, 'w');
-
-        // Write the CSV data to the file
-        foreach ($csvData as $rowData) {
-            fputcsv($file, $rowData);
-        }
-
-        // Close the file
-        fclose($file);
-
-        // Create a zip archive
-        $zipFilePath = $basePath . '.zip';
-        $zip = new ZipArchive();
-        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
-            addFolderToZip($zip, $basePath, '');
-            $zip->close();
-        } else {
-            throw new \Exception('Could not create zip file');
-        }
-
-        // Send the zip file to the user
-        $response = response()->download($zipFilePath)->deleteFileAfterSend(true);
-
-        // Clean up temporary files and folders
-        unlinkFile($basePath);
-        return $response;
-
-    } catch (\Exception $e) {
-        // Handle the exception
-        return response()->json(['data' => __('auth.productInventoryDownloadFailed')], __('statusCode.statusCode500'));
     }
-}
 
+    /**
+     * Export the product variation data to a CSV file.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exportProductVariationData(Request $request)
+    {
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'variation_id' => 'required|array',
+                'variation_id.*' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first()
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Decrypt the product variation IDs
+            $decryptedVariationIds = [];
+            foreach ($request->variation_id as $variationId) {
+                $decryptedVariationIds[] = salt_decrypt($variationId);
+            }
+
+            // Find the product variations
+            $allProductVariations = ProductVariation::whereIn('id', $decryptedVariationIds)->get();
+
+            if ($allProductVariations->isEmpty()) {
+                return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
+            }
+
+            // Initialize CSV data array with headers
+            $csvData = [
+                [
+                    'PRODUCT_NAME',
+                    'DESCRIPTION',
+                    'PRODUCT_KEYWORDS',
+                    'PRODUCT_FEATURES',
+                    'SKU',
+                    'MODEL',
+                    'PRODUCT_HSN',
+                    'GST_BRACKET',
+                    'AVAILABILITY',
+                    'UPC',
+                    'ISBN',
+                    'MPN',
+                    'LENGTH',
+                    'WIDTH',
+                    'HEIGHT',
+                    'PRODUCT_DIMENSION_UNIT',
+                    'WEIGHT',
+                    'PRODUCT_WEIGHT_UNIT',
+                    'PACKAGE_LENGTH',
+                    'PACKAGE_WIDTH',
+                    'PACKAGE_HEIGHT',
+                    'PACKAGE_WEIGHT',
+                    'PACKAGE_DIMENSION_UNIT',
+                    'PACKAGE_WEIGHT_UNIT',
+                    'SELLING_PRICE',
+                    'POTENTIAL_MRP',
+                    'COLOR',
+                    'SIZE',
+                    'PRODUCT_STOCK',
+                    'CATEGORY',
+                    'SUB_CATEGORY'
+                ]
+            ];
+
+            // Generate a unique base path for storing the files
+            $basePath = 'storage/export/' . auth()->user()->id . '/' . time();
+            if (!file_exists($basePath)) {
+                mkdir($basePath, 0777, true);
+            }
+
+            // Process each product variation
+            foreach ($allProductVariations as $key => $productVariation) {
+                $product = $productVariation->product;
+                $productVariationList = $product->variations;
+                $productCategory = $product->category;
+                $productSubCategory = $product->subCategory;
+                $productKeywords = $product->keywords;
+                $productFeatures = $product->features;
+                $media = $productVariation->media->where('is_compressed', ProductVariationMedia::IS_COMPRESSED_TRUE);
+                $video = $productVariation->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
+
+                // Add data for each product variation
+                foreach ($productVariationList as $variation) {
+                    $csvData[] = [
+                        $variation->title,
+                        $variation->description,
+                        implode(', ', $productKeywords->pluck('keyword')->toArray()),
+                        implode(', ', $productFeatures->pluck('feature_name')->toArray()),
+                        $variation->sku,
+                        $product->model,
+                        $product->hsn,
+                        $product->gst_percentage,
+                        ($variation->availability_status == ProductInventory::TILL_STOCK_LAST) ? 'Till Stock Last' : 'Regular Available',
+                        $product->upc,
+                        $product->isbn,
+                        $product->mpn,
+                        $variation->length,
+                        $variation->width,
+                        $variation->height,
+                        $variation->dimension_class,
+                        $variation->weight,
+                        $variation->weight_class,
+                        $variation->package_length,
+                        $variation->package_width,
+                        $variation->package_height,
+                        $variation->package_weight,
+                        $variation->package_dimension_class,
+                        $variation->package_weight_class,
+                        $variation->price_after_tax,
+                        $variation->potential_mrp,
+                        $variation->color,
+                        $variation->size,
+                        $variation->stock,
+                        isset($productCategory->name) ? $productCategory->name : '',
+                        isset($productSubCategory->name) ? $productSubCategory->name : ''
+                    ];
+                }
+
+                // Create directories for each product variation
+                $variationPath = $basePath . '/' . $key + 1;
+                $mediaPath = $variationPath . '/media';
+                $mediaThumbnailPath = $variationPath . '/media/thumbnail';
+                if (!file_exists($variationPath)) {
+                    mkdir($variationPath, 0777, true);
+                }
+                if (!file_exists($mediaPath)) {
+                    mkdir($mediaPath, 0777, true);
+                }
+                if (!file_exists($mediaThumbnailPath)) {
+                    mkdir($mediaThumbnailPath, 0777, true);
+                }
+
+                foreach ($media as $mediaItem) {
+                    if ($mediaItem->file_path == null) {
+                        continue;
+                    }
+                    $mediaFile = substr($mediaItem->file_path, strrpos($mediaItem->file_path, '/') + 1);
+                    $mediaItem->file_path = str_replace('storage/', '', $mediaItem->file_path);
+                    file_put_contents($mediaPath . '/' . $mediaFile, file_get_contents(storage_path('app/public/' . $mediaItem->file_path)));
+                }
+
+                foreach ($media as $mediaItem) {
+                    if ($mediaItem->thumbnail_path == null) {
+                        continue;
+                    }
+                    $mediaThumbnailFile = substr($mediaItem->thumbnail_path, strrpos($mediaItem->thumbnail_path, '/') + 1);
+                    $mediaItem->thumbnail_path = str_replace('storage/', '', $mediaItem->thumbnail_path);
+                    file_put_contents($mediaThumbnailPath . '/' . $mediaThumbnailFile, file_get_contents(storage_path('app/public/' . $mediaItem->thumbnail_path)));
+                }
+
+                foreach ($video as $videoItem) {
+                    if ($videoItem->file_path == null) {
+                        continue;
+                    }
+                    $videoFile = substr($videoItem->file_path, strrpos($videoItem->file_path, '/') + 1);
+                    $videoItem->file_path = str_replace('storage/', '', $videoItem->file_path);
+                    file_put_contents($mediaPath . '/' . $videoFile, file_get_contents(storage_path('app/public/' . $videoItem->file_path)));
+                }
+            }
+
+            // Create a temporary CSV file
+            $csvFilename = 'product_data_' . time() . '.csv';
+            $csvFilePath = $basePath . '/' . $csvFilename;
+            $file = fopen($csvFilePath, 'w');
+
+            // Write the CSV data to the file
+            foreach ($csvData as $rowData) {
+                fputcsv($file, $rowData);
+            }
+
+            // Close the file
+            fclose($file);
+
+            // Create a zip archive
+            $zipFilePath = $basePath . '.zip';
+            $zip = new ZipArchive();
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+                addFolderToZip($zip, $basePath, '');
+                $zip->close();
+            } else {
+                throw new \Exception('Could not create zip file');
+            }
+
+            // Send the zip file to the user
+            $response = response()->download($zipFilePath)->deleteFileAfterSend(true);
+
+            // Clean up temporary files and folders
+            unlinkFile($basePath);
+            return $response;
+        } catch (\Exception $e) {
+            \Log::error('Download Product ---' . $e->getMessage() . '--------' . $e->getFile());
+            // Handle the exception
+            return response()->json(['data' => __('auth.productInventoryDownloadFailed')], __('statusCode.statusCode500'));
+        }
+    }
 }
