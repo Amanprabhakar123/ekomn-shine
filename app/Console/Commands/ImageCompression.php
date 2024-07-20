@@ -60,6 +60,7 @@ class ImageCompression extends Command
             // Handle the exception here
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
         }
+    
     }
 
 
@@ -79,10 +80,21 @@ class ImageCompression extends Command
                 $this->info('No images found for compression.');
                 return;
             }
+            $allowedExtensions = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
             foreach ($imagePaths as $image) {
                 $originalPath = $image->file_path;
 
                 $this->info($image->id);
+
+                // Get the file extension
+                $fileInfo = pathinfo($image->file_path);
+                $fileExtension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
+
+                if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+                    $this->info('Invalid file extension: ' . $fileExtension);
+                    continue;
+                }
+
                 $originalPath = str_replace('storage/', '', $image->file_path);
                 $orignalThumbnailPath = str_replace('storage/', '', $image->thumbnail_path);
 
@@ -147,7 +159,18 @@ class ImageCompression extends Command
                 return;
             }
 
+            $allowedExtensions = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
             foreach ($imagePaths as $image) {
+
+                // Get the file extension
+                $fileInfo = pathinfo($image->file_path);
+                $fileExtension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
+
+                if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
+                    $this->info('Invalid file extension: ' . $fileExtension);
+                    continue;
+                }
+
                 $originalPath = $image->file_path;
 
                 $this->info($image->id);
