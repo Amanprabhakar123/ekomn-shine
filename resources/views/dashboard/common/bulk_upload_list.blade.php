@@ -35,12 +35,12 @@
                         <tr>
                             <th>File Name</th>
                             <th>Upload Time</th>
-                            <th>Processed Records
+                            <th class="h_sorting"  data-sort-field="success_count">Processed Records
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Failed Records
+                            <th class="h_sorting"  data-sort-field="fail_count">Failed Records
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
@@ -48,7 +48,7 @@
                             <th>
                                 Failed Resons
                             </th>
-                            <th>Status
+                            <th class="h_sorting"  data-sort-field="status">Status
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
@@ -136,23 +136,31 @@
             });
 
 
-            const sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-            const sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-            // const selling_price_sort = document.getElementById("selling_price_sort");
-            // selling_price_sort.addEventListener("click", () => {
-            //     alert('asdd');
-            //     sortField = "price_after_tax";
-            //     sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-            //     // alert(sortOrder);
-            //     fetchData();
-            // });
+            let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+            let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+            const h_sorting = document.querySelectorAll(".h_sorting");
+            h_sorting.forEach(element => {
+                element.addEventListener("click", () => {
+                const sortFieldElement = element;
+                sortField = sortFieldElement.getAttribute("data-sort-field");
+                sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+                fetchData();
+                h_sorting.forEach(el => {
+                    el.classList.remove("active");
+                    el.classList.remove("asc");
+                    el.classList.remove("desc");
+                });
+                element.classList.add("active");
+                element.classList.add(sortOrder);
+                });
+            });
             // Function to fetch data from the server
             function fetchData() {
                 // Make an API request to fetch inventory data
                 let apiUrl = `bulk-data?per_page=${rows}&page=${currentPage}`; // change the API endpoint here
 
                 if (sortField && sortOrder) {
-                    apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
+                    apiUrl += `&sort=${sortField}&order=${sortOrder}`;
                 }
 
                 if (searchQuery) {

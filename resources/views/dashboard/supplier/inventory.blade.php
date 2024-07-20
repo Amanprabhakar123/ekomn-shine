@@ -16,8 +16,8 @@
                 <input type="text" class="form-control w_350_f searchicon" id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
                 <div class="filter">
                     <div class="ek_group m-0">
-                        <label class="eklabel w_50_f">Sort by:</label>
-                        <div class="ek_f_input">
+                        <!-- <label class="eklabel w_50_f">Sort by:</label> -->
+                        <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
                                 <option value="1">Active</option>
@@ -33,35 +33,40 @@
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th>Product Image</th>
-                            <th>Product Title</th>
-                            <th>SKU
+                            <th>Image</th>
+                            <th class="h_sorting"  data-sort-field="title">Product Title
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Product ID</th>
-                            <th>Stock
+                            <th class="h_sorting"  data-sort-field="sku">SKU
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Selling Price
+                            <th class="h_sorting" data-sort-field="product_slug_id">Product ID
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Category
+                            <th class="h_sorting"  data-sort-field="stock">Stock
+                                <span class="sort_pos">
+                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                </span>
+                            </th>
+                            <th class="h_sorting" data-sort-field="price_after_tax">Selling Price
+                                <span class="sort_pos">
+                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                </span>
+                            </th>
+                            <th class="h_sorting"  data-sort-field="name">
+                                Category
                                 <span class="sort_pos">
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
                             <th>Availability</th>
-                            <th>Status
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -126,23 +131,31 @@
         });
 
 
-        const sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-        const sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-        // const selling_price_sort = document.getElementById("selling_price_sort");
-        // selling_price_sort.addEventListener("click", () => {
-        //     alert('asdd');
-        //     sortField = "price_after_tax";
-        //     sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-        //     // alert(sortOrder);
-        //     fetchData();
-        // });
+        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+        let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+        const h_sorting = document.querySelectorAll(".h_sorting");
+        h_sorting.forEach(element => {
+            element.addEventListener("click", () => {
+            const sortFieldElement = element;
+            sortField = sortFieldElement.getAttribute("data-sort-field");
+            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+            fetchData();
+            h_sorting.forEach(el => {
+                el.classList.remove("active");
+                el.classList.remove("asc");
+                el.classList.remove("desc");
+            });
+            element.classList.add("active");
+            element.classList.add(sortOrder);
+            });
+        });
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
             let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`;
 
             if (sortField && sortOrder) {
-                apiUrl += `&sort_field=${sortField}&sort_order=${sortOrder}`;
+                apiUrl += `&sort=${sortField}&order=${sortOrder}`;
             }
 
             if (searchQuery) {
