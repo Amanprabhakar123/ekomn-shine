@@ -1488,7 +1488,7 @@ class ProductInvetoryController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['processed_records', 'failed_records', 'status'];
+            $allowedSorts = ['success_count', 'fail_count', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
