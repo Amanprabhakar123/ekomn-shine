@@ -31,7 +31,7 @@ class CategoryService
                         $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->first();
                         $parentCategory1 = Category::where('id', $category1->parent_id)->first();
                         $rootParentCategory2 = Category::where('id', $category2->root_parent_id)->first();
-                        $parentCategory2 = Category::where('id', $category2->parent_id)->first();
+                        // $parentCategory2 = Category::where('id', $category2->parent_id)->first();
 
                         $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
                         $mainCategoryId = $rootParentCategory1->id ?? 0;
@@ -118,6 +118,12 @@ class CategoryService
                         $mainCategoryId = $firstTagCategory->id ?? 0;
                         $subCategoryName = $mainCategoryName;
                         $subCategoryId = $mainCategoryId;
+                    }
+                    else{
+                        $mainCategoryName = 'unknown';
+                        $mainCategoryId = 1;
+                        $subCategoryName = 'unknown';
+                        $subCategoryId = 1;
                     }
 
                     $data = [
