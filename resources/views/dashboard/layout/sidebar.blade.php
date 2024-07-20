@@ -4,7 +4,7 @@
     </div>
     <div class="sidebar-menu">
       <ul class="navbar-nav" id="dashboard_ekomn">
-      @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUPPLIER))
+      @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUPPLIER) || auth()->user()->hasRole(ROLE_BUYER))
         <li class="nav-item">
           <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Inventory" data-bs-parent="#dashboard_ekomn" id="components">
             <i class="fas fa-warehouse menuIcon"></i>
@@ -26,6 +26,12 @@
               <a class="nav-link" href="{{route('bulk-upload.list')}}">Bulk Upload List</a>
             </li>
             @endif
+            @if(auth()->user()->hasRole(ROLE_BUYER))
+            <li>
+              <a class="nav-link" href="{{route('my.inventory')}}">My Inventory</a>
+            </li>
+            @endif
+            <li>
             <li>
               <a class="nav-link" href="www.google.com">Integration Amazon</a>
             </li>

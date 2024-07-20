@@ -274,13 +274,14 @@ if (!function_exists('generateUniqueCompanyUsername')) {
      * @param int $i The counter value.
      * @return string The generated SKU code.
      */
-    function generateSKUCode($sku, $color, $size, $i){
+    function generateSKUCode($sku, $color, $size, $i)
+    {
         $sku = strtoupper(str_replace(' ', '-', $sku));
         // get color first 1 letter in upper case
         $color = strtoupper(substr($color, 0, 1));
         // get size first 1 letter in upper case
         $size = strtoupper(substr($size, 0, 1));
-        $sku = $sku . '-' . $color . $size. '-' . $i;
+        $sku = $sku . '-' . $color . $size . '-' . $i;
         while (ProductVariation::where('sku', $sku)->exists()) {
             // $i++;
             $sku = $sku . '-' . $i;
@@ -496,5 +497,58 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
     $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
     return $volumetricWeight;
 }
+/**
+ * Unlink a file or delete a directory along with its contents.
+ *
+ * @param string $path The path to the file or directory.
+ * @return void
+ */
+function unlinkFile($path)
+{
+    if (file_exists($path)) {
+        if (is_dir($path)) {
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::CHILD_FIRST
+            );
+            foreach ($files as $fileinfo) {
+                if ($fileinfo->isDir()) {
+                    rmdir($fileinfo->getRealPath());
+                } else {
+                    unlink($fileinfo->getRealPath());
+                }
+            }
+            rmdir($path);
+        } else {
+            unlink($path);
+        }
+    }
+}
 
 
+/**
+ * Recursively add a folder to a zip archive
+ *
+ * @param ZipArchive $zip
+ * @param string $folder
+ * @param string $parentFolder
+ * @return void
+ */
+function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
+{
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($folder, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($files as $fileinfo) {
+        $filePath = $fileinfo->getRealPath();
+        $relativePath = $parentFolder . '/' . substr($filePath, strlen($folder) + 1);
+
+        if ($fileinfo->isDir()) {
+            $zip->addEmptyDir($relativePath);
+        } else {
+            $zip->addFile($filePath, $relativePath);
+        }
+    }
+}

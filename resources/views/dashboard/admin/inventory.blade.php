@@ -60,7 +60,12 @@
                                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                                 </span>
                             </th>
-                            <th>Category</th>
+                            <th class="h_sorting"  data-sort-field="name">
+                                Category
+                                <span class="sort_pos">
+                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                </span>
+                            </th>
                             <th>Availability</th>
                             <th>Status</th>
                             <th>Action</th>

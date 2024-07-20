@@ -109,7 +109,8 @@ input:hover,input:focus,select:focus,select:hover,textarea:hover,textarea:focus{
   --primary-background:#FECA40;
   --primary-border:#FECA40;
   --white-text: #ffffff;
-  --dark-text-color: #131A22;
+  --secondary-background:#272B35;
+  --secondary-border:#272B35;
 }
 .a_color,.a_color:hover{color: #FECA40!important;}
 .text_u{text-decoration: none!important;}
@@ -183,7 +184,18 @@ body {
   -ms-transition: .15s ease-in-out;
   -o-transition: .15s ease-in-out;
 }
-.btnekomn:hover,.btnekomn-border:hover{opacity: 0.85;}
+.btnekomn_dark,.btnekomn_dark:hover{
+  box-shadow: none;
+  border-color: var(--secondary-border);
+  background-color: var(--secondary-background);
+  color: var(--white-text);
+  transition: .15s ease-in-out;
+  -webkit-transition: .15s ease-in-out;
+  -moz-transition: .15s ease-in-out;
+  -ms-transition: .15s ease-in-out;
+  -o-transition: .15s ease-in-out;
+}
+.btnekomn:hover,.btnekomn-border:hover,.btnekomn_dark:hover{opacity: 0.85;}
 .btnekomn-border,.btnekomn-border:hover{
   background-color: #FFFFFF;
   box-shadow: none;

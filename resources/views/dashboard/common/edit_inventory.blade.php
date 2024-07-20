@@ -1291,7 +1291,7 @@
       // check if the price is in ascending order
       let isPriceDescending = true;
       for (let i = 1; i < check_bulk_price.length; i++) {
-        if (parseInt(check_bulk_price[i]) >= parseInt(check_bulk_price[i - 1])) {
+        if (parseFloat(check_bulk_price[i]) >= parseFloat(check_bulk_price[i - 1])) {
           isPriceDescending = false;
           break;
         }
@@ -1301,9 +1301,9 @@
       isDropshippingGrater = true;
       if (isPriceDescending) {
         for (let i = 0; i < check_bulk_price.length; i++) {
-            if (parseInt(dropshipRate) < parseInt(check_bulk_price[i])) {
-              isDropshippingGrater = false;
-            }
+        if (parseFloat(dropshipRate) < parseFloat(check_bulk_price[i])) {
+          isDropshippingGrater = false;
+        }
           }
       }
 
