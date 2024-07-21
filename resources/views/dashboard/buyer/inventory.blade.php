@@ -13,15 +13,14 @@
           <div class="d-flex gap-2">
             <div class="ek_group m-0">
               <label class="eklabel eklabel_60 m-0">Status:</label>
-              <div class="ek_f_input">
-                <select class="form-select w_150_f" id="sort_by_status">
-                  <option value="Pending" selected>Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Dispatched">Dispatched</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Delivered">Cancelled</option>
-                </select>
-              </div>
+                <div class="ek_f_input w_150_f">
+                    <select class="form-select" id="sort_by_status">
+                        <option value="0">Select</option>
+                        <option value="1">Active</option>
+                        <option value="2">Inactive</option>
+                        <option value="3">Out of Stock</option>
+                    </select>
+                </div>
             </div>
             <button class="btn btn-sm btnekomn_dark" id="download_product"><i class="fas fa-download me-2"></i>Download</button>
           </div>
@@ -63,6 +62,7 @@
                     </span>
                 </th>
                 <th>Availability</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -307,6 +307,9 @@
             </td>
             <td>
                 <div>${item.availability_status}</div>
+            </td>
+              <td>
+                <div>${item.status}</div>
             </td>
             <td>
                <button class="btn btn-sm btn-danger" onclick="remove('${item.id}')"> Remove</button>

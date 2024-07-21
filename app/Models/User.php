@@ -6,9 +6,11 @@ namespace App\Models;
 use App\Models\CompanyDetail;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\VerifyEmail;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +19,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable,  HasRoles, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable,  HasRoles, SoftDeletes, LogsActivity;
 
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
@@ -55,6 +57,24 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'password',
         'remember_token',
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'name',
+            'email',
+            'password',
+            'picture',
+            'google_id',
+        ])
+        ->logOnlyDirty()
+        ->useLogName('User Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} users with ID: {$this->id}");
+    }
 
     /**
      * The attributes that should be cast.
