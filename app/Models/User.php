@@ -3,12 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Order;
+use App\Models\OrderRefund;
+use App\Models\OrderInvoice;
 use App\Models\CompanyDetail;
+use App\Models\BuyerInventory;
+use App\Models\SupplierPayment;
+use App\Models\ProductInventory;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\OrderCancellations;
 use App\Notifications\VerifyEmail;
 use Spatie\Activitylog\LogOptions;
+use App\Models\OrderItemAndCharges;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\OrderPaymentDistribution;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -233,4 +242,105 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->hasMany(BuyerInventory::class, 'buyer_id', 'id');
     }
+
+    /**
+     * Define a one-to-many relationship with the Ordwer model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'buyer_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderItemAndCharges model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItemAndCharges::class, 'buyer_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderItemAndCharges model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function supplierOrders()
+    {
+        return $this->hasMany(OrderItemAndCharges::class, 'supplier_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderSupplierDistributionPayments()
+    {
+        return $this->hasMany(OrderPaymentDistribution::class, 'supplier_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderCanccellations()
+    {
+        return $this->hasMany(OrderCancellations::class, 'cancelled_by_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderRefunds()
+    {
+        return $this->hasMany(OrderRefund::class, 'buyer_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderSupplierRefunds()
+    {
+        return $this->hasMany(OrderRefund::class, 'supplier_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderBuyerInvoices()
+    {
+        return $this->hasMany(OrderInvoice::class, 'buyer_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderSupplierInvoices()
+    {
+        return $this->hasMany(OrderInvoice::class, 'supplier_id', 'id');
+    }
+
+    /**
+     * Define a one-to-many relationship with the OrderPayment model.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderSupplierPayments()
+    {
+        return $this->hasMany(SupplierPayment::class, 'supplier_id', 'id');
+    }
+    
 }

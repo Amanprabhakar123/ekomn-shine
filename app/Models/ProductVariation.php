@@ -151,5 +151,13 @@ class ProductVariation extends Model
         return $this->hasMany(BuyerInventory::class, 'product_id', 'id');
     }
 
+    /**
+     * Get the ProductVariation's Media.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItemAndCharges::class, 'product_id', 'id');
+    }
+
     
 }

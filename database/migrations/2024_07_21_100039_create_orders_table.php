@@ -34,9 +34,6 @@ return new class extends Migration
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('shipping_address_id')->references('id')->on('order_addresses');
-            $table->foreign('billing_address_id')->references('id')->on('order_addresses');
-            $table->foreign('pickup_address_id')->references('id')->on('order_addresses');
         });
     }
 

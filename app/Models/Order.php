@@ -3,14 +3,24 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Shipment;
+use App\Models\OrderRefund;
 use App\Models\OrderAddress;
+use App\Models\OrderPayment;
+use App\Models\SupplierPayment;
+use App\Models\OrderTransaction;
+use App\Models\OrderCancellations;
+use Spatie\Activitylog\LogOptions;
+use App\Models\OrderItemAndCharges;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OrderPaymentDistribution;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * Constants for order status.
@@ -87,6 +97,55 @@ class Order extends Model
      *
      * @var array
      */
+    protected $casts = [
+        'order_date' => 'datetime',
+        'cancelled_at' => 'datetime',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'deleted_at',
+    ];    
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'order_number',
+            'buyer_id',
+            'supplier_id',
+            'order_date',
+            'status',
+            'total_amount',
+            'discount',
+            'payment_status',
+            'payment_currency',
+            'order_type',
+            'order_channel_type',
+            'payment_method',
+            'shipping_address_id',
+            'billing_address_id',
+            'pickup_address_id',
+            'is_cancelled',
+            'cancelled_at',
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Order Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} order with ID: {$this->id}");
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
     public function buyer()
     {
         return $this->belongsTo(User::class, 'buyer_id', 'id');
@@ -131,7 +190,158 @@ class Order extends Model
     {
         return $this->belongsTo(OrderAddress::class, 'pickup_address_id', 'id');
     }
+    
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderItemsCharges()
+    {
+        return $this->hasMany(OrderItemAndCharges::class);
+    }
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderPayments()
+    {
+        return $this->hasMany(OrderPayment::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderTransactions()
+    {
+        return $this->hasMany(OrderTransaction::class, 'order_id', 'id');
+    }
+
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderTransactionsThrough()
+    {
+        return $this->hasManyThrough(OrderTransaction::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderPaymentDistributions()
+    {
+        return $this->hasMany(OrderPaymentDistribution::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderPaymentDistributionsThrough()
+    {
+        return $this->hasManyThrough(OrderPaymentDistribution::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderCancellations()
+    {
+        return $this->hasMany(OrderCancellations::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderCancellationsThrough()
+    {
+        return $this->hasManyThrough(OrderCancellations::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderRefunds()
+    {
+        return $this->hasMany(OrderRefund::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderRefundsThrough()
+    {
+        return $this->hasManyThrough(OrderRefund::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderInvoices()
+    {
+        return $this->hasMany(OrderInvoice::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function orderInvoicesThrough()
+    {
+        return $this->hasManyThrough(OrderInvoice::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function supplierPayments()
+    {
+        return $this->hasMany(SupplierPayment::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function supplierPaymentsThrough()
+    {
+        return $this->hasManyThrough(SupplierPayment::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+    
     /**
      * Scope a query to only include orders of a particular buyer.
      *
@@ -243,7 +453,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isCancelled()
+    public function isOrderCancelled()
     {
         return $this->is_cancelled;
     }
@@ -253,7 +463,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isNotCancelled()
+    public function isOrderNotCancelled()
     {
         return !$this->is_cancelled;
     }
@@ -281,13 +491,12 @@ class Order extends Model
         $this->cancelled_at = null;
         $this->save();
     }
-
     /**
      * Check if the order is draft.
      *
      * @return bool
      */
-    public function isDraft()
+    public function isDraft(): bool
     {
         return $this->status === self::STATUS_DRAFT;
     }
@@ -297,7 +506,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isPending()
+    public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
     }
@@ -307,7 +516,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isInProgress()
+    public function isInProgress(): bool
     {
         return $this->status === self::STATUS_IN_PROGRESS;
     }
@@ -317,7 +526,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isDispatched()
+    public function isDispatched(): bool
     {
         return $this->status === self::STATUS_DISPATCHED;
     }
@@ -327,7 +536,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isInTransit()
+    public function isInTransit(): bool
     {
         return $this->status === self::STATUS_IN_TRANSIT;
     }
@@ -337,7 +546,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isDelivered()
+    public function isDelivered(): bool
     {
         return $this->status === self::STATUS_DELIVERED;
     }
@@ -347,7 +556,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function is_Cancelled()
+    public function isCancelled(): bool
     {
         return $this->status === self::STATUS_CANCELLED;
     }
@@ -357,7 +566,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isRTO()
+    public function isRTO(): bool
     {
         return $this->status === self::STATUS_RTO;
     }
@@ -367,7 +576,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isPendingPayment()
+    public function isPendingPayment(): bool
     {
         return $this->payment_status === self::PAYMENT_STATUS_PENDING;
     }
@@ -377,7 +586,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isPaid()
+    public function isPaid(): bool
     {
         return $this->payment_status === self::PAYMENT_STATUS_PAID;
     }
@@ -387,7 +596,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isFailed()
+    public function isFailed(): bool
     {
         return $this->payment_status === self::PAYMENT_STATUS_FAILED;
     }
@@ -397,7 +606,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isInr()
+    public function isInr(): bool
     {
         return $this->payment_currency === self::PAYMENT_CURRENCY_INR;
     }
@@ -407,7 +616,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isUsd()
+    public function isUsd(): bool
     {
         return $this->payment_currency === self::PAYMENT_CURRENCY_USD;
     }
@@ -417,7 +626,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isEur()
+    public function isEur(): bool
     {
         return $this->payment_currency === self::PAYMENT_CURRENCY_EUR;
     }
@@ -427,7 +636,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isDropship()
+    public function isDropship(): bool
     {
         return $this->order_type === self::ORDER_TYPE_DROPSHIP;
     }
@@ -437,7 +646,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isBulk()
+    public function isBulk(): bool
     {
         return $this->order_type === self::ORDER_TYPE_BULK;
     }
@@ -447,7 +656,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isResell()
+    public function isResell(): bool
     {
         return $this->order_type === self::ORDER_TYPE_RESELL;
     }
@@ -457,7 +666,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isManual()
+    public function isManual(): bool
     {
         return $this->order_channel_type === self::ORDER_CHANNEL_TYPE_MANUAL;
     }
@@ -467,7 +676,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isStore()
+    public function isStore(): bool
     {
         return $this->order_channel_type === self::ORDER_CHANNEL_TYPE_STORE;
     }
@@ -477,7 +686,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isCOD()
+    public function isCOD(): bool
     {
         return $this->payment_method === self::PAYMENT_METHOD_COD;
     }
@@ -487,7 +696,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function isOnline()
+    public function isOnline(): bool
     {
         return $this->payment_method === self::PAYMENT_METHOD_ONLINE;
     }
@@ -497,7 +706,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function hasShippingAddress()
+    public function hasShippingAddress(): bool
     {
         return $this->shipping_address_id !== null;
     }
@@ -507,7 +716,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function hasBillingAddress()
+    public function hasBillingAddress(): bool
     {
         return $this->billing_address_id !== null;
     }
@@ -517,7 +726,7 @@ class Order extends Model
      *
      * @return bool
      */
-    public function hasPickupAddress()
+    public function hasPickupAddress(): bool
     {
         return $this->pickup_address_id !== null;
     }
@@ -527,7 +736,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         switch ($this->status) {
             case self::STATUS_DRAFT:
@@ -556,7 +765,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getPaymentStatus()
+    public function getPaymentStatus(): string
     {
         switch ($this->payment_status) {
             case self::PAYMENT_STATUS_PENDING:
@@ -575,7 +784,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getPaymentCurrency()
+    public function getPaymentCurrency(): string
     {
         switch ($this->payment_currency) {
             case self::PAYMENT_CURRENCY_INR:
@@ -594,7 +803,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getOrderType()
+    public function getOrderType(): string
     {
         switch ($this->order_type) {
             case self::ORDER_TYPE_DROPSHIP:
@@ -613,7 +822,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getOrderChannelType()
+    public function getOrderChannelType(): string
     {
         switch ($this->order_channel_type) {
             case self::ORDER_CHANNEL_TYPE_MANUAL:
@@ -630,7 +839,7 @@ class Order extends Model
      *
      * @return string
      */
-    public function getPaymentMethod()
+    public function getPaymentMethod(): string
     {
         switch ($this->payment_method) {
             case self::PAYMENT_METHOD_COD:

@@ -4,13 +4,15 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Order;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OrderAddress extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
     * The constant value for billing address type.
@@ -43,6 +45,36 @@ class OrderAddress extends Model
         'country',
         'address_type'
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'deleted_at',
+    ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'order_id',
+            'buyer_id',
+            'street',
+            'city',
+            'state',
+            'postal_code',
+            'country',
+            'address_type'
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Order Address Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} order address with ID: {$this->id}");
+    }
 
     /**
      * The attributes that should be cast to native types.
@@ -113,7 +145,7 @@ class OrderAddress extends Model
      *
      * @return bool
      */
-    public function isBilling()
+    public function isBilling(): bool
     {
         return $this->address_type === self::TYPE_BILLING_ADDRESS;
     }
@@ -123,7 +155,7 @@ class OrderAddress extends Model
      *
      * @return bool
      */
-    public function isShipping()
+    public function isShipping(): bool
     {
         return $this->address_type === self::TYPE_SHIPPING_ADDRESS;
     }
@@ -133,7 +165,7 @@ class OrderAddress extends Model
      *
      * @return bool
      */
-    public function isDelivery()
+    public function isDelivery(): bool
     {
         return $this->address_type === self::TYPE_DELIVERY_ADDRESS;
     }
@@ -143,7 +175,7 @@ class OrderAddress extends Model
      *
      * @return bool
      */
-    public function isPickup()
+    public function isPickup(): bool
     {
         return $this->address_type === self::TYPE_PICKUP_ADDRESS;
     }
@@ -153,7 +185,7 @@ class OrderAddress extends Model
      *
      * @return bool
      */
-    public function isPrimary()
+    public function isPrimary(): bool
     {
         return $this->is_primary;
     }
@@ -164,7 +196,7 @@ class OrderAddress extends Model
      *
      * @return string
      */
-    public function getFullAddress()
+    public function getFullAddress(): string
     {
         return $this->street . ', ' . $this->city . ', ' . $this->state . ', ' . $this->postal_code . ', ' . $this->country;
     }
@@ -174,7 +206,7 @@ class OrderAddress extends Model
      *
      * @return string
      */
-    public function getAddressType()
+    public function getAddressType(): string
     {
         switch ($this->address_type) {
             case self::TYPE_BILLING_ADDRESS:
@@ -195,7 +227,7 @@ class OrderAddress extends Model
      *
      * @return string
      */
-    public function getAddressTypeLabel()
+    public function getAddressTypeLabel(): string
     {
         switch ($this->address_type) {
             case self::TYPE_BILLING_ADDRESS:

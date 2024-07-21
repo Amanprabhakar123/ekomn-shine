@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PlanSeeder::class);
         $this->call(CompanySupplierSeeder::class);
         $this->call(CompanyBuyerSeeder::class);
+        $this->call(ChargesTableSeeder::class);
         // $this->call(ProductSeeder::class);
         // \App\Models\User::factory(10)->create();
 

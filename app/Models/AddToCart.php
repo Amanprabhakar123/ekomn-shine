@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\ProductVariation;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AddToCart extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +33,23 @@ class AddToCart extends Model
     protected $casts = [
         'added_at' => 'datetime',
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'product_id',
+            'buyer_id',
+            'quantity',
+            'added_at',
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Buyer Add to Cart Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} buyer add to cart with ID: {$this->id}");
+    }
 
     /**
      * The relationships that should always be loaded.
