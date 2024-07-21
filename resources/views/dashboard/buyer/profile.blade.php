@@ -352,6 +352,7 @@ Buyer Profile
 </div>
 @include('dashboard.layout.copyright')
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         // Function to clear error messages for all fields
@@ -895,7 +896,28 @@ Buyer Profile
                 success: function(response) {
                     //   console.log(response);
                     if (response.data.statusCode == 200) {
-                        alert('Profile updated successfully');
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'Profile updated successfully',
+                            icon: 'success',
+                            confirmButtonText: 'OK',
+                            didOpen: () => {
+                            // Apply inline CSS to the title
+                            const title = Swal.getTitle();
+                            title.style.color = 'red';
+                            title.style.fontSize = '20px';
+
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            window.location.reload();
+                        });
                     }
                     if (response.data.statusCode == 422) {
                         const field = response.data.key;

@@ -54,7 +54,9 @@ class BuyerInventoryController extends Controller
                 $buyerInventory = BuyerInventory::where('buyer_id', $userId);
 
                 if ($sort_by_status != 0) {
-                    $buyerInventory = $buyerInventory->where('status', $sort_by_status);
+                    $buyerInventory = $buyerInventory->whereHas('product', function ($query) use ($sort_by_status) {
+                        $query->where('status', $sort_by_status);
+                    });
                 }
 
                 if ($searchTerm) {

@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductVariation extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     // Status
     const STATUS_ACTIVE = ProductInventory::STATUS_ACTIVE;
@@ -65,6 +67,52 @@ class ProductVariation extends Model
         'tier_rate' => 'array',
         'tier_shipping_rate' => 'array',
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'product_id',
+            'company_id',
+            'product_slug_id',
+            'slug',
+            'title',
+            'description',
+            'sku',
+            'size',
+            'color',
+            'length',
+            'width',
+            'height',
+            'dimension_class',
+            'weight',
+            'weight_class',
+            'package_volumetric_weight',
+            'package_length',
+            'package_width',
+            'package_height',
+            'package_dimension_class',
+            'package_weight',
+            'package_weight_class',
+            'price_before_tax',
+            'price_after_tax',
+            'stock',    
+            'status',
+            'availability_status',
+            'dropship_rate',
+            'potential_mrp',
+            'tier_rate',
+            'tier_shipping_rate',
+            'allow_editable'
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Product Variation Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} product variation with ID: {$this->id}");
+        // Chain fluent methods for configuration options
+    }
    
     /**
      * Get the product that owns the feature.

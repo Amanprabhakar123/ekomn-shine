@@ -2,22 +2,29 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Models\Import;
 use App\Models\CompanyPlan;
 use App\Models\BuyerInventory;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
 use App\Models\CompanyCanHandle;
 use App\Models\CompanyOperation;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use Spatie\Activitylog\LogOptions;
 use App\Models\CompanyBusinessType;
 use App\Models\CompanySalesChannel;
 use App\Models\CompanyAddressDetail;
 use App\Models\CompanyProductCategory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyDetail extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * @property string $business_name
@@ -70,6 +77,45 @@ class CompanyDetail extends Model
         'signature_image_file_path',
         'bank_account_verified',
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'user_id',
+            'company_serial_id',
+            'business_name',
+            'display_name',
+            'designation',
+            'first_name',
+            'last_name',
+            'email',
+            'mobile_no',
+            'pan_no',
+            'gst_no',
+            'pan_no_file_path',
+            'gst_no_file_path',
+            'pan_verified',
+            'gst_verified',
+            'language_i_can_read',
+            'language_i_can_understand',
+            'alternate_business_contact',
+            'bank_name',
+            'bank_account_no',
+            'ifsc_code',
+            'swift_code',
+            'cancelled_cheque_file_path',
+            'signature_image_file_path',
+            'bank_account_verified',
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Company Details Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} company details with ID: {$this->id}");
+
+    }
     /**
      * Get the addresses associated with the company.
      *

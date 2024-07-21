@@ -857,7 +857,9 @@ class ProductInvetoryController extends Controller
                         $product->save();
 
                         $product_id =  $product->id;
-                        ProductKeyword::where('product_id', $product_id)->delete();
+                        ProductKeyword::where('product_id', $product_id)->get()->each(function ($productKeyword) {
+                            $productKeyword->delete();
+                        });
                         if (count($data['product_keywords']) > 0) {
                             foreach ($data['product_keywords'] as $key => $product_keyword) {
                                 ProductKeyword::create([
@@ -868,7 +870,9 @@ class ProductInvetoryController extends Controller
                             }
                         }
 
-                        ProductFeature::where('product_id', $product_id)->delete();
+                        ProductFeature::where('product_id', $product_id)->get()->each(function ($productFeature) {
+                            $productFeature->delete();
+                        });  
                         if (count($data['feature']) > 0) {
                             foreach ($data['feature'] as $key => $feature) {
                                 ProductFeature::create([
@@ -1065,7 +1069,7 @@ class ProductInvetoryController extends Controller
                                 }
                         }
                     } else {
-                        if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                        // if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
                             $product = ProductInventory::where('id', $product_id)->first();
                             $product->description =  $data['product_description'];
                             $product->product_category =  salt_decrypt($data['product_category_id']);
@@ -1084,7 +1088,9 @@ class ProductInvetoryController extends Controller
                             $product->save();
 
                             $product_id =  $product->id;
-                            ProductKeyword::where('product_id', $product_id)->delete();
+                            ProductKeyword::where('product_id', $product_id)->get()->each(function ($productKeyword) {
+                                $productKeyword->delete();
+                            });      
                             if (count($data['product_keywords']) > 0) {
                                 foreach ($data['product_keywords'] as $key => $product_keyword) {
                                     ProductKeyword::create([
@@ -1095,7 +1101,9 @@ class ProductInvetoryController extends Controller
                                 }
                             }
 
-                            ProductFeature::where('product_id', $product_id)->delete();
+                            ProductFeature::where('product_id', $product_id)->get()->each(function ($productFeature) {
+                                $productFeature->delete();
+                            });                            
                             if (count($data['feature']) > 0) {
                                 foreach ($data['feature'] as $key => $feature) {
                                     ProductFeature::create([
@@ -1106,7 +1114,7 @@ class ProductInvetoryController extends Controller
                                     ]);
                                 }
                             }
-                        }
+                        // }
 
                         $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
                         $vide_ext = ['mp4', 'MP4'];
