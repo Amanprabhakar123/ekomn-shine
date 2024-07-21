@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Models\CompanyDetail;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyAddressDetail extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
     * The constant value for billing address type.
@@ -47,6 +49,31 @@ class CompanyAddressDetail extends Model
         'is_location_verified',
         'is_primary'
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'company_id',
+            'address_line1',
+            'address_line2',
+            'city',
+            'state',
+            'pincode',
+            'country',
+            'landmark',
+            'address_type',
+            'location_link',
+            'is_location_verified',
+            'is_primary'
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Company Address Details Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} company address details with ID: {$this->id}");
+    }
 
     /**
      * The attributes that should be cast to native types.

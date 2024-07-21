@@ -6,12 +6,14 @@ use App\Models\CompanyDetail;
 use App\Models\ProductFeature;
 use App\Models\ProductKeyword;
 use App\Models\ProductVariation;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductInventory extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
@@ -37,6 +39,33 @@ class ProductInventory extends Model
         'product_category',
         'product_subcategory'
     ];
+
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'title',
+            'company_id',
+            'user_id',
+            'description',
+            'model',
+            'gst_percentage',
+            'hsn',
+            'upc',
+            'isbn',
+            'mpin',
+            'availability_status',
+            'status',
+            'product_category',
+            'product_subcategory'
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Product Inventory Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} product inventory log with ID: {$this->id}");
+    }
 
     /**
      * Get the variations for the product.

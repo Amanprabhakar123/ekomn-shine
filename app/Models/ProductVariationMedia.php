@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductVariationMedia extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     const MEDIA_TYPE_IMAGE = 1;
     const MEDIA_TYPE_VIDEO = 2;
@@ -32,6 +36,25 @@ class ProductVariationMedia extends Model
         'is_active',
         'is_compressed',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly([
+            'product_id',
+            'product_variation_id',
+            'media_type',
+            'file_path',
+            'thumbnail_path',
+            'is_master',
+            'desc',
+            'is_active',
+            'is_compressed',
+        ])
+        ->logOnlyDirty()
+        ->useLogName('Product Variation Media Log')
+        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} product variation media with ID: {$this->id}");
+    }
 
 
     /**
