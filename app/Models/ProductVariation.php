@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\CompanyDetail;
+use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -93,4 +94,14 @@ class ProductVariation extends Model
         // ->orderBy('id', 'asc')
         // ->limit(1);
     }
+
+    /**
+     * Get the ProductVariation's Media.
+     */
+    public function buyerInventories()
+    {
+        return $this->hasMany(BuyerInventory::class, 'product_id', 'id');
+    }
+
+    
 }

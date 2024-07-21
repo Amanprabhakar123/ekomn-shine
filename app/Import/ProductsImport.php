@@ -352,7 +352,7 @@ class ProductsImport implements ToModel, WithHeadingRow, WithChunkReading, WithS
             } catch (\Exception $e) {
                 $this->errorCount++;
                 // dd(e->getMessage());
-                \Log::info($e->getMessage());
+                \Log::error($e->getMessage());
                 DB::rollBack();
                 ImportErrorMessage::create([
                     'import_id' => $import->id,

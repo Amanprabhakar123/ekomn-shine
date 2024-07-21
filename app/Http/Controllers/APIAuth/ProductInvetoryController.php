@@ -3,33 +3,33 @@
 namespace App\Http\Controllers\APIAuth;
 
 use App\Models\User;
+use App\Models\Import;
 use Illuminate\Support\Str;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
 use App\Models\ProductFeature;
 use App\Models\ProductKeyword;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\CompanyDetail;
+use Illuminate\Support\Facades\File;
 use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
-use App\Transformers\ProductVariationTransformer;
 use App\Transformers\BulkDataTransformer;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
+use App\Transformers\BuyerInventoryTransformer;
+use App\Transformers\ProductVariationTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use App\Models\Import;
 
 class ProductInvetoryController extends Controller
 {
 
     protected $fractal;
-    protected $BulkDataTransformer;
 
-    public function __construct(Manager $fractal, BulkDataTransformer $BulkDataTransformer)
+    public function __construct(Manager $fractal)
     {
         $this->fractal = $fractal;
     }
@@ -134,7 +134,7 @@ class ProductInvetoryController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock'];
+            $allowedSorts = ['title', 'sku', 'price_after_tax', 'stock', 'product_slug_id', 'name'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
@@ -153,14 +153,23 @@ class ProductInvetoryController extends Controller
                             ->orWhere('sku', 'like', '%' . $searchTerm . '%')
                             ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%');
                     });
-                })
-                    ->with([
+                });
+              
+                  $variations =  $variations->with([
                         'media',
                         'product',
                         'product.category'
-                    ]) // Eager load the product and category relationships
-                    ->orderBy($sort, $sortOrder) // Apply sorting
-                    ->paginate($perPage); // Paginate results
+                  ]); // Eager load the product and category relationships with sorting
+                  if($sort == 'name') {
+                    // Handle sorting by category name
+                    $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')  
+                    ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
+                    ->select('product_variations.*');
+                        $variations = $variations->orderBy('categories.name', $sortOrder);
+                  } else {
+                      $variations = $variations->orderBy($sort, $sortOrder); // Apply other sorts
+                  }
+                $variations = $variations->paginate($perPage); // Paginate results
 
 
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
@@ -169,7 +178,10 @@ class ProductInvetoryController extends Controller
                     $query->where(function ($query) use ($searchTerm) {
                         $query->where('title', 'like', '%' . $searchTerm . '%')
                             ->orWhere('sku', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%');
+                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%')
+                            ->orWhereHas('product.category', function ($query) use ($searchTerm) {
+                                $query->where('name', 'like', '%' . $searchTerm . '%');
+                            });
                     });
                 });
                 if ($sort_by_status != 0) {
@@ -180,9 +192,17 @@ class ProductInvetoryController extends Controller
                     'product',
                     'product.category',
                     'product.company'
-                ]) // Eager load the product and category relationships
-                    ->orderBy($sort, $sortOrder) // Apply sorting
-                    ->paginate($perPage); // Paginate results
+                ]); // Eager load the product and category relationships
+            if($sort == 'name') {
+                  // Handle sorting by category name
+                  $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')  
+                  ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
+                  ->select('product_variations.*');
+                      $variations = $variations->orderBy('categories.name', $sortOrder);
+                } else {
+                    $variations = $variations->orderBy($sort, $sortOrder); // Apply other sorts
+                }
+                $variations = $variations->paginate($perPage); // Paginate results
             } else {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
@@ -197,7 +217,6 @@ class ProductInvetoryController extends Controller
 
             // Return the JSON response with paginated data
             return response()->json($data);
-            dd($data);
         } catch (\Exception $e) {
             // Handle the exception
             return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
@@ -586,6 +605,12 @@ class ProductInvetoryController extends Controller
         }
     }
 
+    /**
+     * Update inventory to the product.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function updateInventory(Request $request)
     {
         // dd($request->all());
@@ -1121,6 +1146,11 @@ class ProductInvetoryController extends Controller
                                         $stock = $data[$variant_key][$key]['stock'][$size_key];
                                     }
                                 }
+                                if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
+                                    $allow_editable = ProductVariation::ALLOW_EDITABLE_TRUE;
+                                } else {
+                                    $allow_editable = ProductVariation::ALLOW_EDITABLE_FALSE;
+                                }
 
                                 if ($productVariation) {
                                     $productVariation->product_id = $product_id;
@@ -1151,6 +1181,7 @@ class ProductInvetoryController extends Controller
                                     $productVariation->potential_mrp = $request->potential_mrp;
                                     $productVariation->tier_rate = json_encode($tierRate);
                                     $productVariation->tier_shipping_rate = json_encode($tierShippingRate);
+                                    $productVariation->allow_editable = $allow_editable;
                                     $productVariation->save();
                                 }
                             }
@@ -1488,7 +1519,7 @@ class ProductInvetoryController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['processed_records', 'failed_records', 'status'];
+            $allowedSorts = ['success_count', 'fail_count', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 

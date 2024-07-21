@@ -19,6 +19,7 @@ use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\ImportErrorMessageController;
 use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
@@ -77,6 +78,10 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
+        Route::get('/my/product/inventory/', [BuyerInventoryController::class, 'index'])->name('product.myinventory');
+        // Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
+        Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
+        Route::delete('/remove/product/inventory/{id}', [BuyerInventoryController::class, 'delete'])->name('product.removeBuyerInventory');
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');
         Route::post('update-inventory', [ProductInvetoryController::class, 'updateInventory'])->name('inventory.update');
@@ -93,6 +98,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
+        Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         // Define routes for jwt token refresh, user details, and logout
     });
 });

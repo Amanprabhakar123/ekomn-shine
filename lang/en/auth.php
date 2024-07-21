@@ -50,4 +50,13 @@ return [
     'supplierNotFound' => 'Supplier not found.',
     'variantNotFound' => 'Product variation not found.',
     'importSuccess' => 'File upload successfully!',
+    'removeBuyerInventory' => 'Buyer inventory removed successfully.',
+    'removeBuyerInventoryFailed' => 'Buyer inventory remove failed.',
+    'productAlreadyInBuyerInventory' => 'Product already in buyer inventory.',
+    'addBuyerInventory' => 'Product added to buyer inventory successfully.',
+    'addBuyerInventoryFailed' => 'Product add to buyer inventory failed.',
+    'productNotFound' => 'Product not found.',
+    'bulkUpload' => 'Bulk upload successfully.',
+    'bulkUploadFailed' => 'Bulk upload failed.',
+    'productInventoryDownloadFailed' => 'Product inventory download failed.',
 ];
