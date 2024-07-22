@@ -41,7 +41,9 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => PERMISSION_ADD_CONNCETION]);
         Permission::create(['name' => PERMISSION_EDIT_CONNCETION]);
         Permission::create(['name' => PERMISSION_ADD_NEW_ORDER]);
+        Permission::create(['name' => PERMISSION_LIST_ORDER]);
         Permission::create(['name' => PERMISSION_EDIT_ORDER]);
+        Permission::create(['name' => PERMISSION_CANCEL_ORDER]);
         Permission::create(['name' => PERMISSION_ADD_NEW_RETURN]);
 
 
@@ -50,14 +52,16 @@ class RolesAndPermissionsSeeder extends Seeder
         $role->givePermissionTo(PERMISSION_ADD_CONNCETION);
         $role->givePermissionTo(PERMISSION_EDIT_CONNCETION);
         $role->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
-        $role->givePermissionTo(PERMISSION_EDIT_ORDER);
+        $role->givePermissionTo(PERMISSION_LIST_ORDER);
+        $role->givePermissionTo(PERMISSION_CANCEL_ORDER);
         $role->givePermissionTo(PERMISSION_ADD_NEW_RETURN);
 
         $role = Role::create(['name' => ROLE_SUPPLIER]);
         $role->givePermissionTo(PERMISSION_ADD_PRODUCT);
         $role->givePermissionTo(PERMISSION_LIST_PRODUCT);
         $role->givePermissionTo(PERMISSION_EDIT_PRODUCT_DETAILS);
-        $role->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
+        $role->givePermissionTo(PERMISSION_LIST_ORDER);
+        $role->givePermissionTo(PERMISSION_CANCEL_ORDER);
         $role->givePermissionTo(PERMISSION_EDIT_ORDER);
 
         $role = Role::create(['name' => ROLE_ADMIN]);
