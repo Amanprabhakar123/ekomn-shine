@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\ChannelProductMap;
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
@@ -294,9 +295,9 @@ class BuyerInventoryController extends Controller
                     'SUB_CATEGORY'
                 ]
             ];
-
+            $time = time();
             // Generate a unique base path for storing the files
-            $basePath = 'storage/export/' . auth()->user()->id . '/' . time();
+            $basePath = 'storage/export/' . auth()->user()->id.'/product_data_' .$time ;
             if (!file_exists($basePath)) {
                 mkdir($basePath, 0777, true);
             }
@@ -351,17 +352,18 @@ class BuyerInventoryController extends Controller
 
                 // Create directories for each product variation
                 $variationPath = $basePath . '/' . $key + 1;
-                $mediaPath = $variationPath . '/media';
-                $mediaThumbnailPath = $variationPath . '/media/thumbnail';
+                $mediaPath = $variationPath;
+                // $mediaPath = $variationPath . '/media';
+                // $mediaThumbnailPath = $variationPath . '/media/thumbnail';
                 if (!file_exists($variationPath)) {
                     mkdir($variationPath, 0777, true);
                 }
                 if (!file_exists($mediaPath)) {
                     mkdir($mediaPath, 0777, true);
                 }
-                if (!file_exists($mediaThumbnailPath)) {
-                    mkdir($mediaThumbnailPath, 0777, true);
-                }
+                // if (!file_exists($mediaThumbnailPath)) {
+                //     mkdir($mediaThumbnailPath, 0777, true);
+                // }
 
                 foreach ($media as $mediaItem) {
                     if ($mediaItem->file_path == null) {
@@ -372,6 +374,7 @@ class BuyerInventoryController extends Controller
                     file_put_contents($mediaPath . '/' . $mediaFile, file_get_contents(storage_path('app/public/' . $mediaItem->file_path)));
                 }
 
+                /*
                 foreach ($media as $mediaItem) {
                     if ($mediaItem->thumbnail_path == null) {
                         continue;
@@ -380,6 +383,7 @@ class BuyerInventoryController extends Controller
                     $mediaItem->thumbnail_path = str_replace('storage/', '', $mediaItem->thumbnail_path);
                     file_put_contents($mediaThumbnailPath . '/' . $mediaThumbnailFile, file_get_contents(storage_path('app/public/' . $mediaItem->thumbnail_path)));
                 }
+                */
 
                 foreach ($video as $videoItem) {
                     if ($videoItem->file_path == null) {
@@ -392,7 +396,7 @@ class BuyerInventoryController extends Controller
             }
 
             // Create a temporary CSV file
-            $csvFilename = 'product_data_' . time() . '.csv';
+            $csvFilename = 'product_data_' . $time . '.csv';
             $csvFilePath = $basePath . '/' . $csvFilename;
             $file = fopen($csvFilePath, 'w');
 
@@ -426,4 +430,124 @@ class BuyerInventoryController extends Controller
             return response()->json(['data' => __('auth.productInventoryDownloadFailed')], __('statusCode.statusCode500'));
         }
     }
+
+    /**
+     * Get the bulk inventory data.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeChannelProductMap(Request $request)
+    {
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'sales_channel_id' => 'required|array',
+                'sales_channel_id.*' => 'required|string',
+                'product_variation_id' => 'required|string',
+                'sales_channel_product_sku' => 'required|array',
+                'sales_channel_product_sku.*' => 'required|string',
+            ]);
+
+            // Check if the request data is valid
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first()
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // check buyer role only
+            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+            
+            $data =  $request->all();
+            $id = [];
+            $variationId = [];
+            foreach ($data['sales_channel_id'] as $key => $value) {
+                $record = ChannelProductMap::updateOrCreate(['product_variation_id' => salt_decrypt($data['product_variation_id'])],[
+                    'sales_channel_id' => salt_decrypt($value),
+                    'product_variation_id' => salt_decrypt($data['product_variation_id']),
+                    'sales_channel_product_sku' => $data['sales_channel_product_sku'][$key]
+                ]);
+                $id[] = $record->sales_channel_id;
+                $variationId[] = $record->product_variation_id;
+            }
+            $deleteRecord = ChannelProductMap::where(['product_variation_id' => $variationId])->whereNotIn('sales_channel_id', $id)->get();
+            foreach ($deleteRecord as $record) {
+                $record->forceDelete();
+            }
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.channelProductMapStored')
+            ]], __('statusCode.statusCode200'));
+
+        } catch (\Exception $e) {
+            // Handle the exception
+            return response()->json(['data' => __('api.channelProductMapStoreFailed')], __('statusCode.statusCode500'));
+        }
+    }
+
+
+    /**
+     * Edit the channel product map.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function editChannelProductMap(Request $request)
+    {
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'product_variation_id' => 'required|string',
+            ]);
+
+            // Check if the request data is valid
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first()
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // check buyer role only
+            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+            // Check if the channel product map exists
+            $channelProductMap = ChannelProductMap::where('product_variation_id', salt_decrypt($request->input('product_variation_id')))->get();
+            if ($channelProductMap->isEmpty()) {
+                return response()->json(['data' => __('auth.channelProductMapNotFound')], __('statusCode.statusCode404'));
+            }
+
+            //create a array data and return in json
+            $data = [];
+            foreach ($channelProductMap as $key => $value) {
+                $data[$key]['id'] = salt_encrypt($value->id);
+                $data[$key]['sales_channel_id'] = salt_encrypt($value->sales_channel_id);
+                $data[$key]['channel_name'] = $value->salesChannel->name;
+                $data[$key]['product_variation_id'] = salt_encrypt($value->product_variation_id);
+                $data[$key]['sales_channel_product_sku'] = $value->sales_channel_product_sku;
+            }
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.channelProductMapList'),
+                'list' => $data
+            ]], __('statusCode.statusCode200'));
+
+        } catch (\Exception $e) {
+            // Handle the exception
+            return response()->json(['data' => __('api.channelProductMapUpdateFailed')], __('statusCode.statusCode500'));
+        }
+    }
+    
+    // write deleteChannelProductMap api here
 }
