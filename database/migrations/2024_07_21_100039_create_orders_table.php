@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('supplier_id');
             $table->foreign('buyer_id')->references('id')->on('users');
             $table->foreign('supplier_id')->references('id')->on('users');
+            $table->string('store_order', 50)->nullable()->comment('Provide the main dropship order ID for store orders, such as marketplace order ID');
             $table->timestamp('order_date')->default(now())->comment('order date when order is placed');
             $table->tinyInteger('status')->default(1)->comment('1-Draft, 2-Pending, 3-In Progress ,4-Dispatched, 5-In Transit, 6-Delivered, 7-Cancelled, 8-RTO');
             $table->decimal('total_amount')->nullable()->comment('total amount of order including tax and shipping');
