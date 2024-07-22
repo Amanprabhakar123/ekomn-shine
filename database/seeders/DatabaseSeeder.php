@@ -13,6 +13,7 @@ use Database\Seeders\BusinessTypeSeeder;
 use Database\Seeders\CompanyBuyerSeeder;
 use Database\Seeders\SalesChannelSeeder;
 use Database\Seeders\AuthUserLoginSeeder;
+use Database\Seeders\ImportWorldSqlSeeder;
 use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CompanySupplierSeeder::class);
         $this->call(CompanyBuyerSeeder::class);
         $this->call(ChargesTableSeeder::class);
+        $this->call(ImportWorldSqlSeeder::class);
         // $this->call(ProductSeeder::class);
         // \App\Models\User::factory(10)->create();
 
