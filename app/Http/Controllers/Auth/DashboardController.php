@@ -107,7 +107,16 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.supplier.inventory');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
-            return view('dashboard.buyer.inventory');
+            $selectData = SalesChannel::all();
+            if($selectData->isNotEmpty()){
+                $selectData = $selectData->map(function ($item) {
+                    return [
+                        'id' => base64_encode($item->id),
+                        'name' => $item->name,
+                    ];
+                })->toArray();
+            }
+            return view('dashboard.buyer.inventory', compact('selectData'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }

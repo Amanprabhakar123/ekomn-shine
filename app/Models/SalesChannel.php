@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ChannelProductMap;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SalesChannel extends Model
 {
@@ -18,4 +19,12 @@ class SalesChannel extends Model
         'name',
         'is_active',
     ];
+
+    /**
+     * Get the channel product maps for the sales channel.
+     */
+    public function channelProductMaps()
+    {
+        return $this->hasMany(ChannelProductMap::class, 'sales_channel_id', 'id');
+    }
 }
