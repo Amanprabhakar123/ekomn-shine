@@ -226,12 +226,15 @@ class DashboardController extends Controller
      */
     public function myOrders()
     {
+        // $var = salt_encrypt(1);
+        // dd($var);
+
         return view('dashboard.common.my_orders');
     }
 
     /**
      * Display the view order.
-     * 
+     *
      * @return \Illuminate\Contracts\View\View
      */
     public function viewOrder()
