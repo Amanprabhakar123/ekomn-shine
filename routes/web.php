@@ -80,6 +80,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
         Route::post('/store/product/mapchannel', [BuyerInventoryController::class, 'storeChannelProductMap'])->name('product.channelMap.store');
         Route::post('/edit/product/mapchannel', [BuyerInventoryController::class, 'editChannelProductMap'])->name('product.channelMap.edit');
+        Route::post('/delete/product/mapchannel', [BuyerInventoryController::class, 'deleteChannelProductMap'])->name('product.channelMap.delete');
         Route::delete('/remove/product/inventory/{id}', [BuyerInventoryController::class, 'delete'])->name('product.removeBuyerInventory');
         Route::post('/update/company-profile', [DashboardController::class, 'updateCompanyDetails'])->name('company-profile.update');
         Route::post('/add-inventory', [ProductInvetoryController::class, 'addInventory'])->name('inventory.store');

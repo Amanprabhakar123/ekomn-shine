@@ -549,5 +549,53 @@ class BuyerInventoryController extends Controller
         }
     }
     
-    // write deleteChannelProductMap api here
+    /**
+     * Delete the channel product map.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteChannelProductMap(Request $request)
+    {
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'product_variation_id' => 'required|string',
+            ]);
+
+            // Check if the request data is valid
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first()
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // check buyer role only
+            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+            // Check if the channel product map exists
+            $channelProductMap = ChannelProductMap::where('product_variation_id', salt_decrypt($request->input('product_variation_id')))->get();
+            if ($channelProductMap->isEmpty()) {
+                return response()->json(['data' => __('auth.channelProductMapNotFound')], __('statusCode.statusCode404'));
+            }
+
+            // Delete the channel product map
+            $channelProductMap->each(function ($map) {
+                $map->forceDelete();
+            });
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.channelProductMapDeleted')
+            ]], __('statusCode.statusCode200'));
+
+        } catch (\Exception $e) {
+            // Handle the exception
+            return response()->json(['data' => __('api.channelProductMapDeleteFailed')], __('statusCode.statusCode500'));
+        }
+    }
 }
