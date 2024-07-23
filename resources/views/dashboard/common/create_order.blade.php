@@ -78,48 +78,10 @@
                         <span>State:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <select class="form-select" id="state">
+                        <select class="form-select" class="state" id="state">
                           <option value="" selected>Select State</option>
-                          <option value="AN">Andaman and Nicobar Islands</option>
-                          <option value="AP">Andhra Pradesh</option>
-                          <option value="AR">Arunachal Pradesh</option>
-                          <option value="AS">Assam</option>
-                          <option value="BR">Bihar</option>
-                          <option value="CH">Chandigarh</option>
-                          <option value="CT">Chhattisgarh</option>
-                          <option value="DN">Dadra and Nagar Haveli</option>
-                          <option value="DD">Daman and Diu</option>
-                          <option value="DL">Delhi</option>
-                          <option value="GA">Goa</option>
-                          <option value="GJ">Gujarat</option>
-                          <option value="HR">Haryana</option>
-                          <option value="HP">Himachal Pradesh</option>
-                          <option value="JK">Jammu and Kashmir</option>
-                          <option value="JH">Jharkhand</option>
-                          <option value="KA">Karnataka</option>
-                          <option value="KL">Kerala</option>
-                          <option value="LA">Ladakh</option>
-                          <option value="LD">Lakshadweep</option>
-                          <option value="MP">Madhya Pradesh</option>
-                          <option value="MH">Maharashtra</option>
-                          <option value="MN">Manipur</option>
-                          <option value="ML">Meghalaya</option>
-                          <option value="MZ">Mizoram</option>
-                          <option value="NL">Nagaland</option>
-                          <option value="OR">Odisha</option>
-                          <option value="PY">Puducherry</option>
-                          <option value="PB">Punjab</option>
-                          <option value="RJ">Rajasthan</option>
-                          <option value="SK">Sikkim</option>
-                          <option value="TN">Tamil Nadu</option>
-                          <option value="TG">Telangana</option>
-                          <option value="TR">Tripura</option>
-                          <option value="UP">Uttar Pradesh</option>
-                          <option value="UT">Uttarakhand</option>
-                          <option value="WB">West Bengal</option>
                         </select>
                         <div id="stateErr" class="invalid-feedback"></div>
-                        <span class="text-danger hide">errr message</span>
                       </div>
                     </div>
                   </div>
@@ -131,6 +93,7 @@
                       <div class="ek_f_input">
                         <select class="form-select" id="city">
                           <option value="" selected>Select City</option>
+                         
                         </select>
                         <div id="cityErr" class="invalid-feedback"></div>
                         <span class="text-danger hide">errr message</span>
@@ -176,45 +139,8 @@
                         <span>State:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <select class="form-select" id="b_state">
+                        <select class="form-select" class="state" id="b_state">
                           <option value="" selected>Select State</option>
-                          <option value="AN">Andaman and Nicobar Islands</option>
-                          <option value="AP">Andhra Pradesh</option>
-                          <option value="AR">Arunachal Pradesh</option>
-                          <option value="AS">Assam</option>
-                          <option value="BR">Bihar</option>
-                          <option value="CH">Chandigarh</option>
-                          <option value="CT">Chhattisgarh</option>
-                          <option value="DN">Dadra and Nagar Haveli</option>
-                          <option value="DD">Daman and Diu</option>
-                          <option value="DL">Delhi</option>
-                          <option value="GA">Goa</option>
-                          <option value="GJ">Gujarat</option>
-                          <option value="HR">Haryana</option>
-                          <option value="HP">Himachal Pradesh</option>
-                          <option value="JK">Jammu and Kashmir</option>
-                          <option value="JH">Jharkhand</option>
-                          <option value="KA">Karnataka</option>
-                          <option value="KL">Kerala</option>
-                          <option value="LA">Ladakh</option>
-                          <option value="LD">Lakshadweep</option>
-                          <option value="MP">Madhya Pradesh</option>
-                          <option value="MH">Maharashtra</option>
-                          <option value="MN">Manipur</option>
-                          <option value="ML">Meghalaya</option>
-                          <option value="MZ">Mizoram</option>
-                          <option value="NL">Nagaland</option>
-                          <option value="OR">Odisha</option>
-                          <option value="PY">Puducherry</option>
-                          <option value="PB">Punjab</option>
-                          <option value="RJ">Rajasthan</option>
-                          <option value="SK">Sikkim</option>
-                          <option value="TN">Tamil Nadu</option>
-                          <option value="TG">Telangana</option>
-                          <option value="TR">Tripura</option>
-                          <option value="UP">Uttar Pradesh</option>
-                          <option value="UT">Uttarakhand</option>
-                          <option value="WB">West Bengal</option>
 
                         </select>
                         <div id="b_stateErr" class="invalid-feedback"></div>
@@ -264,8 +190,10 @@
                   <h4 class="subheading mb-2">Product Details</h4>
                   <div class="upload-original-invoice">
                     <input type="file" id="UploadInvoice" class="upload_invoice" accept=".csv, .xls, .xlsx, image/*, .pdf" style="display: none;">
+                    
                     <div class="d-flex gap-2 align-items-center">
                       <div class="UploadInvoiceName fs-14 opacity-75"></div>
+                      <div id="UploadInvoiceErr" class="text-danger"></div>
                       <label for="UploadInvoice" class="file-label invice m-0">
                         <span class="file-label-text">Upload Original Invoice</span>
                       </label>
@@ -361,7 +289,7 @@
                           <span>Full Name:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="Mohd Imtyaj" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ auth()->user()->companyDetails->business_name }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -370,7 +298,7 @@
                       <div class="ek_group">
                         <label class="eklabel req"><span>Email Address:</span></label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="imtyaj92@gmail.com" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ auth()->user()->companyDetails->email}}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -381,7 +309,7 @@
                           <span>Phone Number:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="7827821676" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{auth()->user()->companyDetails->mobile_no}}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -397,7 +325,7 @@
                           <span>Stareet Address:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="HN. 654, Sectot-17" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->address_line1 : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -408,7 +336,7 @@
                           <span>State:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="Delhi" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->state : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -419,7 +347,7 @@
                           <span>City:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="New Delhi" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->city : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -430,7 +358,7 @@
                           <span>Pin Code:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="122001" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -452,7 +380,7 @@
                           <span>Stareet Address:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="H.N. 23/85 Laxmi Garden sector 11" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($billing_address) ? $billing_address->address_line1 : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -463,7 +391,7 @@
                           <span>State:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="Haryana" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($billing_address) ? $billing_address->state : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -474,7 +402,7 @@
                           <span>City:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="Gurgaon" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($billing_address) ? $billing_address->city : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -485,7 +413,7 @@
                           <span>Pin Code:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="12201" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{ isset($billing_address) ? $billing_address->pincode : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -500,7 +428,7 @@
                           <span>GST Number:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="GST12201ABC" readonly="readonly" />
+                          <input type="text" class="form-control" value="{{auth()->user()->companyDetails->gst_no}}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -940,6 +868,60 @@
 </script>
 
 <script>
+
+ApiRequest('state-city-list', 'GET')
+  .then(res => {
+    const stateList = res.data.state;
+      stateList.forEach(state => {
+        $('#state').append(`<option value="${state.id}">${state.name}</option>`);
+        $('#b_state').append(`<option value="${state.id}">${state.name}</option>`);
+      });
+    
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  
+  $('#state').change(function(){
+    const stateId = $(this).val();
+    $('#city').html('<option value="">Select City</option>');
+    ApiRequest(`state-city-list/?id=${stateId}`, 'GET')
+    .then(res => {
+      const cityList = res.data.city;
+      cityList.forEach(city => {
+        $('#city').append(`<option value="${city.id}">${city.name}</option>`);
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  });
+
+  $('#b_state').change(function(){
+    const stateId = $(this).val();
+    $('#b_city').html('<option value="">Select City</option>');
+    ApiRequest(`state-city-list/?id=${stateId}`, 'GET')
+    .then(res => {
+      const cityList = res.data.city;
+      cityList.forEach(city => {
+        $('#b_city').append(`<option value="${city.id}">${city.name}</option>`);
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  });
+
+
+    const businessNameRegex = /^[a-zA-Z0-9 ,.\\-]+$/;
+    const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    const nameRegex = /^[a-zA-Z\s\-\.']+$/;
+    const addressRegex = /^[a-zA-Z0-9\s,.'\-\/]+$/;
+    const pinCodeRegex = /^[0-9]{6}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[6-9]\d{9}$/;
+
+
   function clearError() {
     const fields = ['full_name', 'email', 'mobile', 'address', 'state', 'city', 'pin_code', 'b_pin_code', 'b_address', 'b_state', 'b_city', 'b_pin_code', 'b_pin_code'];
     fields.forEach(field => {
@@ -954,62 +936,99 @@
     if (!$('#full_name').val()) {
       $('#full_name').addClass('is-invalid');
       $('#full_nameErr').text('Please enter full name');
+      isvalid = false;
+    }else if(!nameRegex.test($('#full_name').val())){
+      $('#full_name').addClass('is-invalid');
+      $('#full_nameErr').text('Please enter valid full name');
+      isvalid = false;
     }
 
     if (!$('#email').val()) {
       $('#email').addClass('is-invalid');
       $('#emailErr').text('Please enter email');
+      isvalid = false;
+    }else if(!emailRegex.test($('#email').val())){
+      $('#email').addClass('is-invalid');
+      $('#emailErr').text('Please enter valid email');
+      isvalid = false;
     }
 
     if (!$('#mobile').val()) {
       $('#mobile').addClass('is-invalid');
       $('#mobileErr').text('Please enter phone');
-    }
+      isvalid = false;
+    }else if(!mobileRegex.test($('#mobile').val())){
+      $('#mobile').addClass('is-invalid');
+      $('#mobileErr').text('Please enter valid phone');
+      isvalid = false;
+    
+  }
 
     if (!$('#address').val()) {
       $('#address').addClass('is-invalid');
       $('#addressErr').text('Please enter address');
+      isvalid = false;
+    }
+    else if(!addressRegex.test($('#address').val())){
+      $('#address').addClass('is-invalid');
+      $('#addressErr').text('Please enter valid address');
+      isvalid = false;
     }
 
     if (!$('#state').val()) {
       $('#state').addClass('is-invalid');
       $('#stateErr').text('Please enter state');
+      isvalid = false;
     }
 
     if (!$('#city').val()) {
       $('#city').addClass('is-invalid');
       $('#cityErr').text('Please enter city');
+      isvalid = false;
     }
 
     if (!$('#pin_code').val()) {
       $('#pin_code').addClass('is-invalid');
       $('#pin_codeErr').text('Please enter pin code');
+      isvalid = false;
+    }else if(!pinCodeRegex.test($('#pin_code').val())){
+      $('#pin_code').addClass('is-invalid');
+      $('#pin_codeErr').text('Please enter valid pin code');
+      isvalid = false;
     }
 
     if (!$('#b_address').val()) {
       $('#b_address').addClass('is-invalid');
       $('#b_addressErr').text('Please enter address');
+      isvalid = false
+    }else if(!addressRegex.test($('#b_address').val())){
+      $('#b_address').addClass('is-invalid');
+      $('#b_addressErr').text('Please enter valid address');
+      isvalid = false;
     }
 
     if (!$('#b_state').val()) {
       $('#b_state').addClass('is-invalid');
       $('#b_stateErr').text('Please enter state');
+      isvalid = false;
     }
 
     if (!$('#b_city').val()) {
       $('#b_city').addClass('is-invalid');
       $('#b_cityErr').text('Please enter city');
+      isvalid = false;
     }
 
     if (!$('#b_pin_code').val()) {
       $('#b_pin_code').addClass('is-invalid');
       $('#b_pin_codeErr').text('Please enter pin code');
+      isvalid = false;
+    }else if(!pinCodeRegex.test($('#b_pin_code').val())){
+      $('#b_pin_code').addClass('is-invalid');
+      $('#b_pin_codeErr').text('Please enter valid pin code');
+      isvalid = false;
     }
-
-
-
-
-
+   
   });
 
 

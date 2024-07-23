@@ -216,7 +216,48 @@ class DashboardController extends Controller
      */
     public function createOrder(Request $request)
     {
-        return view('dashboard.common.create_order');
+        if(auth()->user()->hasRole(User::ROLE_BUYER)){
+            $delivery_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
+            $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+            $business_type = BusinessType::where('type', BusinessType::TYPE_BUYER)->get();
+            $selected_business_type = auth()->user()->companyDetails->businessType->pluck('business_type_id')->toArray();
+            $sales = SalesChannel::where('is_active', true)->get();
+            $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
+            return view('dashboard.common.create_order', get_defined_vars());
+    }
+    }
+    public function getStateCityList(Request $request)
+    {
+        $state = DB::table('states')
+            ->where('country_id', 101)
+            ->get();
+
+        $city = DB::table('cities')
+            ->where('country_id', 101)
+            ->where('state_id', $request->id)
+            ->get();
+            
+
+            if($state->isNotEmpty()){
+                $statsList = [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'state' => $state->toArray(),
+                    'city' => $city->toArray()
+
+                ];
+                return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
+            }else{
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status400'),
+                        'message' =>  'State not found'
+                    ]
+                ], __('statusCode.statusCode200'));
+                
+            }
+
     }
 
     /**

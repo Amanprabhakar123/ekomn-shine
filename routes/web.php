@@ -93,6 +93,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
+        Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
         // Define routes for jwt token refresh, user details, and logout
     });
 });
