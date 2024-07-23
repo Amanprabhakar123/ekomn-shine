@@ -36,7 +36,7 @@ class SalesChannelSeeder extends Seeder
             ],
             [
             'name' => 'Own Store',
-            'is_active' => false,
+            'is_active' => true,
             ],
         ];
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
+use App\Models\ChannelProductMap;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -157,6 +158,14 @@ class ProductVariation extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItemAndCharges::class, 'product_id', 'id');
+    }
+
+    /**
+     * Get the ProductVariation's Sales channel maping.
+     */
+    public function salesChannelProductMaps()
+    {
+        return $this->hasMany(ChannelProductMap::class, 'product_variation_id', 'id');
     }
 
     

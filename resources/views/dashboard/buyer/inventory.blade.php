@@ -64,6 +64,7 @@
                 <th>Availability</th>
                 <th>Status</th>
                 <th>Action</th>
+                <th>Live</th>
               </tr>
             </thead>
             <tbody id="dataContainer">
@@ -313,6 +314,9 @@
             </td>
             <td>
                <button class="btn btn-sm btn-danger" onclick="remove('${item.id}')"> Remove</button>
+            </td>
+             <td>
+               <button class="btn btn-sm btn-primary" onclick=""> Add</button>
             </td>
         </tr>
     `;
