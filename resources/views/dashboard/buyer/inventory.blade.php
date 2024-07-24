@@ -5,7 +5,7 @@
 <div class="ek_content">
       <div class="card ekcard pa shadow-sm">
         <div class="cardhead">
-          <h3 class="cardtitle">Buyer Inventory</h3>
+          <h3 class="cardtitle">Buyer Inventory ({{$inventory_count}})</h3>
           <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">
@@ -64,7 +64,7 @@
                 <th>Availability</th>
                 <th>Status</th>
                 <th>Action</th>
-                <th>Live</th>
+                <th>Platform Live</th>
               </tr>
             </thead>
             <tbody id="dataContainer">
@@ -356,7 +356,7 @@
                 <div>${item.status}</div>
             </td>
             <td>
-               <button class="btn btn-sm btn-danger" onclick="remove('${item.id}')"> Remove</button>
+               <button class="btn btn-sm btn-danger" ${item.live ? "disabled" : ""}  onclick="remove('${item.id}')"> Remove</button>
             </td>
              <td>
                 ${btn}
@@ -567,10 +567,42 @@
 
         $('#popup-save-btn').click(function() {
             let formData = new FormData();
+            let salesChannelIds = [];
+            let duplicateFound = false;
+
             $('#bulkRateTable tbody tr').each(function() {
-                formData.append('sales_channel_id[]', $(this).find('select').val());
+                const salesChannelId = $(this).find('select').val();
+                if (salesChannelIds.includes(salesChannelId)) {
+                    duplicateFound = true;
+                    return false; // exit the loop
+                }
+                salesChannelIds.push(salesChannelId);
+
+                formData.append('sales_channel_id[]', salesChannelId);
                 formData.append('sales_channel_product_sku[]', $(this).find('input').val());
             });
+
+            if (duplicateFound) {
+               Swal.fire({
+                    title: 'Error',
+                    text: 'Duplicate sales channels found. Please select unique sales channels.',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+                return; // stop further execution
+            }
+
             formData.append('product_variation_id', $('#product_variation_id').val());
 
             ApiRequest(`store/product/mapchannel`, 'POST', formData)
