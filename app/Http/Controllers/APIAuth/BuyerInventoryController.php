@@ -74,7 +74,8 @@ class BuyerInventoryController extends Controller
                 $buyerInventory = $buyerInventory->with([
                     'product',
                     'product.media',
-                    'product.product.category'
+                    'product.product.category',
+                    'product.salesChannelProductMaps'
                 ]);
 
                 // Handle sorting by category name
@@ -467,8 +468,8 @@ class BuyerInventoryController extends Controller
             $id = [];
             $variationId = [];
             foreach ($data['sales_channel_id'] as $key => $value) {
-                $record = ChannelProductMap::updateOrCreate(['product_variation_id' => salt_decrypt($data['product_variation_id'])],[
-                    'sales_channel_id' => salt_decrypt($value),
+                $record = ChannelProductMap::updateOrCreate(['product_variation_id' => salt_decrypt($data['product_variation_id']), 'sales_channel_id' => base64_decode($value)],[
+                    'sales_channel_id' => base64_decode($value),
                     'product_variation_id' => salt_decrypt($data['product_variation_id']),
                     'sales_channel_product_sku' => $data['sales_channel_product_sku'][$key]
                 ]);
@@ -530,7 +531,7 @@ class BuyerInventoryController extends Controller
             $data = [];
             foreach ($channelProductMap as $key => $value) {
                 $data[$key]['id'] = salt_encrypt($value->id);
-                $data[$key]['sales_channel_id'] = salt_encrypt($value->sales_channel_id);
+                $data[$key]['sales_channel_id'] = base64_encode($value->sales_channel_id);
                 $data[$key]['channel_name'] = $value->salesChannel->name;
                 $data[$key]['product_variation_id'] = salt_encrypt($value->product_variation_id);
                 $data[$key]['sales_channel_product_sku'] = $value->sales_channel_product_sku;

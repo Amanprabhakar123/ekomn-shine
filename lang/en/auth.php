@@ -75,6 +75,6 @@ return [
     'channelProductMapDeleted' => 'Channel product map deleted successfully.',
     'channelProductMapDeleteFailed' => 'Channel product map delete failed.',
     'channelProductMapList' => 'Channel product map list fetched successfully.',
-    
+    'channelProductMapNotFound' => 'Channel product map not found.',
 
 ];

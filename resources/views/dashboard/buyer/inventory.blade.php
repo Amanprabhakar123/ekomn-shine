@@ -5,7 +5,7 @@
 <div class="ek_content">
       <div class="card ekcard pa shadow-sm">
         <div class="cardhead">
-          <h3 class="cardtitle">Buyer Inventory</h3>
+          <h3 class="cardtitle">Buyer Inventory ({{$inventory_count}})</h3>
           <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">
@@ -64,7 +64,7 @@
                 <th>Availability</th>
                 <th>Status</th>
                 <th>Action</th>
-                <th>Live</th>
+                <th>Platform Live</th>
               </tr>
             </thead>
             <tbody id="dataContainer">
@@ -89,6 +89,41 @@
           </div>
         </div>
         <!-- end pegination -->
+
+          <!-- popup code -->
+
+          <div id="overlay"></div>
+            <div id="popupDialog">
+                <h4 class="text-center">Product variation map with sales channel </h4>
+                <hr>
+                <div class="ek_group">
+                    <!-- <label class="eklabel req"><span>Bulk Rate:<span class="req_star">*</span></span></label> -->
+                    <div class="ek_f_input">
+                      <div class="ekdiv">
+                        <input type="hidden" name="product_variation_id" id="product_variation_id" value="">
+                        <table class="normalTable addrowTable" id="bulkRateTable">
+                          <thead>
+                            <tr>
+                              <th>Sales Channel</th>
+                              <th>Sku</th>
+                              <th style="width: 20px;"></th>
+                            </tr>
+                          </thead>
+                          <tbody id="empty">
+                          </tbody>
+                        </table>
+                        <button class="addNewRow" id="addNewRowButton" type="button">Add More</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                <button class="btn btn-sm popup-btn text-white bg-secondary" style="margin-left:10px" onclick="closeFn()">
+                    Close
+                </button>
+                <button id="popup-save-btn" class="btn btnekomn btn-sm popup-btn">
+                    Save
+                </button>
+            </div>
       </div>
     </div>
 @include('dashboard.layout.copyright')
@@ -273,6 +308,14 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
+        let btn = ``;
+        if(item.live){
+            btn = `<button class="btn btn-sm btnekomn" onclick="popupEditFn('${item.variation_id}')"> Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteFn('${item.variation_id}')"> Delete</button>`;
+        }else{
+            btn = `<button class="btn btn-sm btnekomn" onclick="popupFn('${item.variation_id}')"> Add</button>`;
+        }
+               
         return `
         <tr>
             <td>
@@ -313,10 +356,10 @@
                 <div>${item.status}</div>
             </td>
             <td>
-               <button class="btn btn-sm btn-danger" onclick="remove('${item.id}')"> Remove</button>
+               <button class="btn btn-sm btn-danger" ${item.live ? "disabled" : ""}  onclick="remove('${item.id}')"> Remove</button>
             </td>
              <td>
-               <button class="btn btn-sm btn-primary" onclick=""> Add</button>
+                ${btn}
             </td>
         </tr>
     `;
@@ -381,7 +424,7 @@
         });
     }
     const downloadProduct = document.getElementById("download_product");
-downloadProduct.addEventListener("click", () => {
+    downloadProduct.addEventListener("click", () => {
     const checkboxes = document.querySelectorAll(".form-check-input:checked");
     const variationIds = Array.from(checkboxes).map(checkbox => checkbox.id);
     const data = { variation_id: [] };
@@ -441,4 +484,261 @@ downloadProduct.addEventListener("click", () => {
 });
 
     </script>
+    <!-- popup javascript code here  -->
+
+    <script>
+        function popupFn(id) {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("popupDialog").style.display = "block";
+            document.getElementById("product_variation_id").value = id;
+            document.getElementById("empty").innerHTML = '';
+            let index = $('#bulkRateTable tbody tr').length;
+
+                const newRow = `
+                    <tr>
+                        <td>
+                            <select class="form-select" id="salesChannel" required>
+                                <option value="">Select</option>
+                                @if(is_array($selectData))
+                                    @foreach($selectData as $data)
+                                        <option value="{{ $data['id'] }}">{{ $data['name'] }}</option>
+                                    @endforeach
+                                @else
+                                    <option value="">No data available</option>
+                                @endif
+                            </select>
+                            <div id="salesChannelErr" class="invalid-feedback"></div>
+                        </td>
+                        <td>
+                            <input type="text" class="smallInput_n " id="sku" placeholder="Sku" name="sku" required>
+                        <div id="skuErr" class="invalid-feedback"></div>
+                            </td>
+                        <td>
+                        </td>
+                    </tr>`;
+                        $('#bulkRateTable tbody').append(newRow);
+        }
+                            
+          function closeFn() {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("popupDialog").style.display = "none";
+        }
+
+        document.getElementById("overlay").addEventListener("click", function(event) {
+            if (event.target === this) {
+                closeFn();
+            }
+        });
+
+        $('#addNewRowButton').click(function() {
+    let index = $('#bulkRateTable tbody tr').length;
+
+    const newRow = `
+        <tr>
+            <td>
+                <select class="form-select" id="salesChannel${index}" required>
+                    <option value="">Select</option>
+                    @if(is_array($selectData))
+                        @foreach($selectData as $data)
+                            <option value="{{ $data['id'] }}">{{ $data['name'] }}</option>
+                        @endforeach
+                    @else
+                        <option value="">No data available</option>
+                    @endif
+                </select>
+                <div id="salesChannelErr${index}" class="invalid-feedback"></div>
+            </td>
+            <td>
+                <input type="text" class="smallInput_n " id="sku${index}" placeholder="Sku" name="sku" required>
+            <div id="skuErr${index}" class="invalid-feedback"></div>
+                </td>
+            <td>
+                 <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
+                 
+            </td>
+        </tr>`;
+            $('#bulkRateTable tbody').append(newRow);
+        });
+
+   // Event delegation for dynamically created delete buttons
+        $('#bulkRateTable').on('click', '.deleteRow', function() {
+            $(this).closest('tr').remove();
+        });
+
+        $('#popup-save-btn').click(function() {
+            let formData = new FormData();
+            let salesChannelIds = [];
+            let duplicateFound = false;
+
+            $('#bulkRateTable tbody tr').each(function() {
+                const salesChannelId = $(this).find('select').val();
+                if (salesChannelIds.includes(salesChannelId)) {
+                    duplicateFound = true;
+                    return false; // exit the loop
+                }
+                salesChannelIds.push(salesChannelId);
+
+                formData.append('sales_channel_id[]', salesChannelId);
+                formData.append('sales_channel_product_sku[]', $(this).find('input').val());
+            });
+
+            if (duplicateFound) {
+               Swal.fire({
+                    title: 'Error',
+                    text: 'Duplicate sales channels found. Please select unique sales channels.',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+                return; // stop further execution
+            }
+
+            formData.append('product_variation_id', $('#product_variation_id').val());
+
+            ApiRequest(`store/product/mapchannel`, 'POST', formData)
+                .then(response => {
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.data.message,
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK',
+                            didOpen: () => {
+                                const title = Swal.getTitle();
+                                title.style.fontSize = '25px';
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            closeFn();
+                            window.location.reload();
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding product:', error);
+                });
+        });
+
+        function popupEditFn(id){
+          
+            let formData = new FormData();
+            formData.append('product_variation_id', id);
+            
+            ApiRequest(`edit/product/mapchannel`, 'POST', formData)
+            .then(response => {
+                const data = response.data;
+                document.getElementById("empty").innerHTML = '';
+                if(data.statusCode ==200){
+                    data.list.forEach((item, index)=>{
+                        const selectOptions = <?php echo json_encode($selectData); ?>;
+                        const newRow = `
+                            <tr>
+                                <td>
+                                    <select class="form-select" id="salesChannel${index}" required>
+                                        <option value="">Select</option>
+                                        ${selectOptions.map(option => {
+                                            return `<option value="${option.id}" ${option.id == item.sales_channel_id ? 'selected' : ''}>${option.name}</option>`;
+                                        }).join('')}
+                                    </select>
+                                    <div id="salesChannelErr${index}" class="invalid-feedback"></div>
+                                </td>
+                                <td>
+                                    <input type="text" class="smallInput_n " id="sku${index}" placeholder="Sku" name="sku" value="${item.sales_channel_product_sku}" required>
+                                    <div id="skuErr${index}" class="invalid-feedback"></div>
+                                </td>
+                                <td>
+                                    <button type="button" class="deleteRow deleteBulkRow"><i class="far fa-trash-alt"></i></button>
+                                </td>
+                            </tr>`;
+                            $('#bulkRateTable tbody').append(newRow);
+                    });
+
+                    document.getElementById("overlay").style.display = "block";
+                    document.getElementById("popupDialog").style.display = "block";
+                    document.getElementById("product_variation_id").value = id;
+                }
+            })  
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+            
+        }
+
+        // delete function
+        function deleteFn(id){
+
+            // add swal confirmation popup
+            Swal.fire({
+                title: 'Confirmation',
+                text: 'Are you sure you want to delete this product?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Perform delete operation here
+                    let formData = new FormData();
+                    formData.append('product_variation_id', id);
+                    ApiRequest(`delete/product/mapchannel`, 'POST', formData)
+                        .then(response => {
+                            if (response.data.statusCode == 200) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: response.data.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'OK',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                }).then(() => {
+                                    closeFn();
+                                    window.location.reload();
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error deleting product:', error);
+                        });
+                }
+            });
+        }
+    </script>
+    
 @endsection

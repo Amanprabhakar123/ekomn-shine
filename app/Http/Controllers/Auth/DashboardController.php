@@ -12,6 +12,7 @@ use App\Models\ProductVariation;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\BuyerInventory;
 use App\Models\CompanyAddressDetail;
 use App\Models\Import;
 use App\Models\ProductVariationMedia;
@@ -107,7 +108,24 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.supplier.inventory');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
-            return view('dashboard.buyer.inventory');
+            $selectData = SalesChannel::all();
+            if($selectData->isNotEmpty()){
+                $selectData = $selectData->map(function ($item) {
+                    return [
+                        'id' => base64_encode($item->id),
+                        'name' => $item->name,
+                    ];
+                })->toArray();
+            }
+
+            //
+            $inventory_count = BuyerInventory::join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
+            ->where('buyer_inventories.buyer_id', auth()->user()->id)
+            ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
+            ->groupBy('product_variations.product_id')
+            ->select('product_variations.product_id')
+            ->get()->count();
+            return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }
