@@ -86,6 +86,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
         Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
+        Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
     });
 });
 
@@ -93,7 +94,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
-        Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
         // Define routes for jwt token refresh, user details, and logout
     });
 });
