@@ -595,7 +595,6 @@ class BuyerInventoryController extends Controller
             ]], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
-            dd($e->getMessage());
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapDeleteFailed')], __('statusCode.statusCode500'));
         }
