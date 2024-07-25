@@ -175,14 +175,23 @@
               <section class="sectionspace pb-2">
                 <div class="ek_group mb-1">
                   <label class="eklabel m-0">
-                    <span>Product SKU:<span class="req_star">*</span></span>
+                    <span>Product SKU 1:<span class="req_star">*</span></span>
                   </label>
                   <div class="ek_f_input sku_inline">
+                      <div class="sku_list">
+                          <input type="text" class="form-control" name="sku" id="sku"
+                              value="" placeholder="Enter Product SKU" />
+                          <p id="ErrorSku"></p>
+                      </div>
+                      <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button"
+                          id="addDropshipSKU">Add</button>
+                  </div>
+                  {{--<div class="ek_f_input sku_inline">
                     <div class="sku_list">
                       <input type="text" class="form-control" placeholder="Enter Product SKU" />
                     </div>
                     <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button" id="addDropshipSKU">Add</button>
-                  </div>
+                  </div>--}}
                 </div>
                 <div class="d-flex justify-content-between">
                   <h4 class="subheading mb-2">Product Details</h4>
@@ -211,6 +220,7 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {{--
                       <tr>
                         <td>
                           <div class="productTitle_t3 bold">
@@ -260,6 +270,7 @@
                         <td colspan="6" class="text-right bold">Total Order Cost</td>
                         <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
                       </tr>
+                      --}}
                     </tbody>
                   </table>
                 </div>
@@ -433,7 +444,7 @@
                   </div>
                   <div class="ek_group mb-1">
                     <label class="eklabel m-0">
-                      <span>Product SKU:<span class="req_star">*</span></span>
+                      <span>Product SKU 2:<span class="req_star">*</span></span>
                     </label>
                     <div class="ek_f_input sku_inline">
                       <div class="sku_list">
@@ -674,7 +685,7 @@
               <section class="sectionspace">
                 <div class="ek_group mb-1">
                   <label class="eklabel m-0">
-                    <span>Product SKU:<span class="req_star">*</span></span>
+                    <span>Product SKU 3:<span class="req_star">*</span></span>
                   </label>
                   <div class="ek_f_input sku_inline">
                     <div class="sku_list">
@@ -710,7 +721,8 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                    {{--
+                    <tr>
                         <td>
                           <div class="productTitle_t3 bold">
                             <i class="fas fa-minus-circle removeResellSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse (Resell)
@@ -745,7 +757,7 @@
                       <tr>
                         <td colspan="6" class="text-right bold">Total Order Cost</td>
                         <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
+                      </tr>--}}
                     </tbody>
                   </table>
                 </div>
@@ -756,7 +768,6 @@
             </div>
           </form>
         </div>
-        @include('dashboard.layout.copyright')
     </div>
   </div>
   @include('dashboard.layout.copyright')
@@ -766,6 +777,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   // Add/Remove Dropship SKU
+  /*
   document.addEventListener("DOMContentLoaded", function() {
     const addSKUButton = document.querySelector("#addDropshipSKU");
     addSKUButton.addEventListener("click", function() {
@@ -793,6 +805,7 @@
       }
     });
   });
+  */
   // end
 
 
