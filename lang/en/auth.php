@@ -48,6 +48,7 @@ return [
     'updateStatus' => 'Status updated successfully.',
     'updateStatusFailed' => 'Status update failed.',
     'supplierNotFound' => 'Supplier not found.',
+    'buyerNotFound' => 'Buyer not found.',
     'variantNotFound' => 'Product variation not found.',
     'importSuccess' => 'File upload successfully!',
     'removeBuyerInventory' => 'Buyer inventory removed successfully.',
