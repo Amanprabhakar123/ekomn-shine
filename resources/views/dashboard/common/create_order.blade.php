@@ -179,9 +179,8 @@
                   </label>
                   <div class="ek_f_input sku_inline">
                       <div class="sku_list">
-                          <input type="text" class="form-control" name="sku" id="sku"
-                              value="" placeholder="Enter Product SKU" />
-                          <p id="ErrorSku"></p>
+                          <input type="text" class="form-control" name="sku" id="sku"  value="" placeholder="Enter Product SKU" />
+                          <div id="skuError" class="invalid-feedback"></div>
                       </div>
                       <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button"
                           id="addDropshipSKU">Add</button>
@@ -212,7 +211,8 @@
                       <tr>
                         <th>Product Title</th>
                         <th class="text-center">Stock</th>
-                        <th>SKU</th>
+                        <th class="text-center">SKU</th>
+                        <th class="text-center">HSN</th>
                         <th class="text-center">Qty</th>
                         <th class="text-right">Price/piece</th>
                         <th class="text-right">GST%</th>
@@ -1322,50 +1322,61 @@
         const addSKUButton = document.querySelector("#addDropshipSKU");
         addSKUButton.addEventListener("click", function() {
             var sku = document.getElementById('sku').value;
-            var errorElement = document.getElementById('ErrorSku');
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const url = "{{ route('search.sku') }}"; // Replace with the correct URL
-
-            if (sku) {
-                errorElement.innerHTML = '';
-
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', url, true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRF-TOKEN', token);
-
-                xhr.onload = function() {
-                    console.log(xhr);
-                    if (xhr.status === 200) {
-                        fetchDropshipOrderSku();
-                        document.getElementById('sku').value = '';
-                    } else {
-                        // Handle error
-                        console.error('Error:', xhr.responseText);
-                        Swal.fire({
-                            text: xhr.responseText,
-                            icon: "error",
-                            buttonsStyling: !1,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn btn-light",
-                            },
-                        });
-                    }
-                };
-
-                xhr.onerror = function() {
-                    console.error('Request failed');
-                };
-
-                // Send the request with the SKU data
-                xhr.send(JSON.stringify({
-                    sku: sku
-                }));
-            } else {
-                errorElement.innerHTML = 'This field is Required';
-                errorElement.style.color = 'red';
+            if (sku == '') {
+                $('#sku').addClass('is-invalid');
+                $('#skuError').text('Please enter sku for search product');
+                return;
             }
+            $('#sku').removeClass('is-invalid');
+            $('#skuError').text('');
+            ApiRequest('product/search/sku', 'POST', {
+                sku: sku
+            }).then(response => {
+              console.log(response);
+                if (response.data.statusCode == 200) {
+                    fetchDropshipOrderSku();
+                    document.getElementById('sku').value = '';
+                } else {
+                    // Handle error
+                    Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+                }
+            }).catch(error => {
+                   // Handle error
+                   Swal.fire({
+                    title: 'Error',
+                    text: 'Product out of stock or Something went wrong !',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            });
         });
     });
     // end
@@ -1408,8 +1419,8 @@
                         </div>
                     </td>
                     <td class="text-center">${product.stock}</td>
-                    <td>${product.hsn}</td>
                     <td>${product.sku}</td>
+                    <td>${product.hsn}</td>
                     <td class="text-center"><input type="text" class="stock_t" value="1" /></td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_before_tax}</td>
                     <td class="text-right">${product.gst_percentage} %</td>
@@ -1499,17 +1510,17 @@
         console.log(id);
         var csrfToken = $('input[name="_token"]').val();
         Swal.fire({
-            icon: "success",
-            title: `Are you sure Do You Want to Delete this SKU?`,
-            icon: "error",
-            // buttonsStyling: false,
-            showCancelButton: true,
-            confirmButtonText: "Delete",
-            cancelButtonText: 'Cancel',
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: !0,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
             customClass: {
-                confirmButton: "btn btn-success",
-                cancelButton: 'btn btn-danger'
+                confirmButton: "btn btn-primary",
+                cancelButton: "btn btn-active-light",
             },
+            buttonsStyling: !1,
         }).then((result) => {
             if (result.isConfirmed) {
 

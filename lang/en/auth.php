@@ -57,7 +57,7 @@ return [
     'addToCart' => 'Add To Cart successfully.',
     'addBuyerInventoryFailed' => 'Product add to buyer inventory failed.',
     'addToCartFailed' => 'Add To Cart failed.',
-    'productNotFound' => 'Product not found.',
+    'productNotFound' => 'Some Product not found.',
     'bulkUpload' => 'Bulk upload successfully.',
     'bulkUploadFailed' => 'Bulk upload failed.',
     'productInventoryDownloadFailed' => 'Product inventory download failed.',
@@ -85,5 +85,8 @@ return [
     'channelProductMapDeleteFailed' => 'Channel product map delete failed.',
     'channelProductMapList' => 'Channel product map list fetched successfully.',
     'channelProductMapNotFound' => 'Channel product map not found.',
+    'unauthorizedAction' => 'Unauthorized action.',
+    'productNotFoundBySku' => 'Product not found by SKU.',
+    'productOutOfStock' => 'Product out of stock.',
 
 ];

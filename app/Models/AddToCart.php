@@ -34,6 +34,8 @@ class AddToCart extends Model
         'added_at' => 'datetime',
     ];
 
+    const DEFAULT_QUANTITY = 1;
+
     /**
      * Get the options for logging changes to the model.
      */
