@@ -381,7 +381,7 @@
       <div class="card ekcard pa shadow-sm">
         <div class="cardhead">
           <h3 class="cardtitle">Admin Orders</h3>
-          <a href="{{route('create.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a>
+          <!-- <a href="{{route('create.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">
           <input type="text" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">

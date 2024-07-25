@@ -64,7 +64,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
     Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
-    Route::post('search-sku', [OrderController::class, 'searchSku'])->name('search.sku');
     Route::delete('delete-sku/{id}', [OrderController::class, 'deleteSku'])->name('delete.sku');
     Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
     Route::get('view-order', [DashboardController::class, 'viewOrder'])->name('view.order');
@@ -94,6 +93,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
         Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
         Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
+        Route::post('product/search/sku', [OrderController::class, 'searchProductBySku'])->name('product.search.sku');
+        Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
     });
 });
 
@@ -102,7 +103,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         // Define routes for jwt token refresh, user details, and logout
-        Route::post('/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+        Route::post('/product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
 
     });
 });

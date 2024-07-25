@@ -1314,9 +1314,9 @@ th.h_sorting.active.desc i.fa-caret-up{
   transition: background-color 0.3s, color 0.3s;
 }
 .pager_ a:hover, .pager_ a.active {
-  background-color: #007bff;
+  background-color: #feca40;
   color: #fff;
-  border-color: #007bff;
+  border-color: #feca40;
 }
 .pager_btn:disabled {cursor: not-allowed;color: #ddd;}
 .jumper{padding-left: 10px;color: #808080;font-size: 15px;}
