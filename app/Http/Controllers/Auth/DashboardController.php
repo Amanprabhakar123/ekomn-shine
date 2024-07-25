@@ -10,6 +10,7 @@ use App\Models\CanHandle;
 use App\Models\BusinessType;
 use App\Models\SalesChannel;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
@@ -112,7 +113,7 @@ class DashboardController extends Controller
             return view('dashboard.supplier.inventory');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
             $selectData = SalesChannel::all();
-            if($selectData->isNotEmpty()){
+            if ($selectData->isNotEmpty()) {
                 $selectData = $selectData->map(function ($item) {
                     return [
                         'id' => base64_encode($item->id),
@@ -123,11 +124,11 @@ class DashboardController extends Controller
 
             //
             $inventory_count = BuyerInventory::join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
-            ->where('buyer_inventories.buyer_id', auth()->user()->id)
-            ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
-            ->groupBy('product_variations.product_id')
-            ->select('product_variations.product_id')
-            ->get()->count();
+                ->where('buyer_inventories.buyer_id', auth()->user()->id)
+                ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
+                ->groupBy('product_variations.product_id')
+                ->select('product_variations.product_id')
+                ->get()->count();
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
@@ -144,7 +145,7 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
-        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
         }
         abort('403', 'Unauthorized action.');
@@ -159,7 +160,7 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
-        }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
         }
         abort('403', 'Unauthorized action.');
@@ -184,50 +185,50 @@ class DashboardController extends Controller
      * @return \Illuminate\Contracts\View\View
      */
 
-     public function editInventory(Request $request, $variation_id)
-     {
-         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+    public function editInventory(Request $request, $variation_id)
+    {
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
             $variation_id = salt_decrypt($variation_id);
             $userId = auth()->user()->id;
             // DB::enableQueryLog();
             $variations = ProductVariation::where('id', $variation_id)
                 ->whereHas('product', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })->with([
-                'media',
-                'product',
-                'product.category',
-                'product.subCategory',
-                'product.company',
-                'product.keywords',
-                'product.features',
-            ]) // Eager load the product and category relationships
-            ->first();
+                    $query->where('user_id', $userId);
+                })->with([
+                    'media',
+                    'product',
+                    'product.category',
+                    'product.subCategory',
+                    'product.company',
+                    'product.keywords',
+                    'product.features',
+                ]) // Eager load the product and category relationships
+                ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
             // dd(DB::getQueryLog());
-             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
-         }elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+            return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
 
             $variation_id = salt_decrypt($variation_id);
             // DB::enableQueryLog();
             $variations = ProductVariation::where('id', $variation_id)
-               ->with([
-                'media',
-                'product',
-                'product.category',
-                'product.subCategory',
-                'product.company',
-                'product.keywords',
-                'product.features',
-            ]) // Eager load the product and category relationships
-            ->first();
+                ->with([
+                    'media',
+                    'product',
+                    'product.category',
+                    'product.subCategory',
+                    'product.company',
+                    'product.keywords',
+                    'product.features',
+                ]) // Eager load the product and category relationships
+                ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
-             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
-         }
-         abort('403', 'Unauthorized action.');
-     }
+            return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
+        }
+        abort('403', 'Unauthorized action.');
+    }
 
     /**
      * Place your order.
@@ -237,7 +238,7 @@ class DashboardController extends Controller
      */
     public function createOrder(Request $request)
     {
-        if(auth()->user()->hasRole(User::ROLE_BUYER)){
+        if (auth()->user()->hasRole(User::ROLE_BUYER)) {
             $delivery_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
             $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
             $business_type = BusinessType::where('type', BusinessType::TYPE_BUYER)->get();
@@ -245,8 +246,61 @@ class DashboardController extends Controller
             $sales = SalesChannel::where('is_active', true)->get();
             $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
             return view('dashboard.common.create_order', get_defined_vars());
+        }
     }
+
+    // get buyer api data
+    public function getBuyerId($buyer_id)
+    {
+        $companyDetail = CompanyDetail::where('company_serial_id', $buyer_id)->first();
+        if ($companyDetail) {
+            $delivery_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
+            $billing_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+            if ($companyDetail->user->hasRole(User::ROLE_BUYER)) {
+
+                // $user_id = $companyDetail->user->id;
+                $data = [
+                    'first_name' => $companyDetail->first_name,
+                    'last_name' => $companyDetail->last_name,
+                    'email' => $companyDetail->email,
+                    'mobile' => $companyDetail->mobile_no,
+                    'delevery_address' => $delivery_address->address_line1,
+                    'city' => $delivery_address->city,
+                    'state' => $delivery_address->state,
+                    'pincode' => $delivery_address->pincode,
+                    'biiling_address' => $billing_address->address_line1,
+                    'billing_city' => $billing_address->city,
+                    'billing_state' => $billing_address->state,
+                    'billing_pincode' => $billing_address->pincode,
+                    // 'billing_address' => $billing_address,
+
+                    // Add more data here if needed
+                ];
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => [__('auth.buyerFound')],
+                    'data' => $data
+                ]], __('statusCode.statusCode200'));
+            } else {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => [__('auth.buyerNotFound')],
+                ]], __('statusCode.statusCode200'));
+            }
+        } else {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => [__('auth.buyerNotFound')],
+            ]], __('statusCode.statusCode200'));
+        }
     }
+
+
+
+
     public function getStateCityList(Request $request)
     {
         $state = DB::table('states')
@@ -257,28 +311,26 @@ class DashboardController extends Controller
             ->where('country_id', 101)
             ->where('state_id', $request->id)
             ->get();
-            
 
-            if($state->isNotEmpty()){
-                $statsList = [
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200'),
-                    'state' => $state->toArray(),
-                    'city' => $city->toArray()
 
-                ];
-                return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
-            }else{
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status400'),
-                        'message' =>  'State not found'
-                    ]
-                ], __('statusCode.statusCode200'));
-                
-            }
+        if ($state->isNotEmpty()) {
+            $statsList = [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'state' => $state->toArray(),
+                'city' => $city->toArray()
 
+            ];
+            return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
+        } else {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status400'),
+                    'message' =>  'State not found'
+                ]
+            ], __('statusCode.statusCode200'));
+        }
     }
 
     /**

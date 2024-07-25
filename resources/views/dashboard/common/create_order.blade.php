@@ -282,8 +282,10 @@
           </form>
         </div>
         <div class="tab-pane fade" id="bulk" role="tabpanel" aria-labelledby="bulk-tab" tabindex="0">
-          <form action="">
+          
+          <form action="#">
             <div class="addProductForm">
+          
               <div class="addProductForm">
                 <div class="o_bannerimg">
                   <img src="assets/images/order/order-banner-1.jpg" alt="" style="width: 100%;" />
@@ -1092,29 +1094,6 @@
     
 
     // Bulk Order 
-
-    // const fileInputBulk = $('#UploadInvoiceBulk')[0];
-    // fileInputBulk.addEventListener('change', function() {
-    //   const file = fileInputBulk.files[0];
-    //   let isValid = true;
-    //   // Check if a file is selected
-    //   if (file) {
-    //     $('#UploadInvoiceBulkErr').text('');
-    //     isValid = true;
-    //   }
-    // });
-
-    // $('#bulk-order').click(function() {
-    //   const fileInput = $('#UploadInvoiceBulk')[0];
-    //   const file = fileInput.files[0];
-    //   let isValid = true;
-    //   if(!file){
-    //     $('#UploadInvoiceBulkErr').text('Please upload an invoice file.');
-    //     isValid = false;
-    //   }else{
-    //     $('#UploadInvoiceBulkErr').text('');
-    //   }
-    // });
 
       // Check if a file is selected
 

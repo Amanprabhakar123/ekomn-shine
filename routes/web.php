@@ -94,6 +94,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
         Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
         Route::post('product/search/sku', [OrderController::class, 'searchProductBySku'])->name('product.search.sku');
+        Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
     });
 });
 

@@ -50,8 +50,7 @@
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
                 <ul class="sidenav-second-level collapse" id="Orders" data-bs-parent="#dashboard_ekomn">
-                    @if (auth()->user()->hasRole(ROLE_BUYER) ||
-                            auth()->user()->hasRole(ROLE_ADMIN))
+                    @if (auth()->user()->hasRole(ROLE_BUYER))
                         <li>
                             <a class="nav-link" href="{{ route('create.order') }}">Create Orders</a>
                         </li>
