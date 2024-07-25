@@ -33,10 +33,12 @@ class ShipmentAwb extends Model
      * @var array<int, string>
      */
     const STATUS_CREATED = 1;
-    const STATUS_SHIPPED = 2;
+    const STATUS_SHIPPED_DISPATCHE = 2;
     const STATUS_DELIVERED = 3;
     const STATUS_CANCELLED = 4;
     const STATUS_RETURNED = 5;
+    const STATUS_REFUNDED = 6;
+
 
     /**
      * The attributes that should be cast to native types.
@@ -103,7 +105,7 @@ class ShipmentAwb extends Model
         switch ($this->status) {
             case self::STATUS_CREATED:
                 return 'Created';
-            case self::STATUS_SHIPPED:
+            case self::STATUS_SHIPPED_DISPATCHE:
                 return 'Shipped';
             case self::STATUS_DELIVERED:
                 return 'Delivered';
@@ -151,7 +153,7 @@ class ShipmentAwb extends Model
      */
     public function isShipped(): bool
     {
-        return $this->status === self::STATUS_SHIPPED;
+        return $this->status === self::STATUS_SHIPPED_DISPATCHE;
     }
 
     /**

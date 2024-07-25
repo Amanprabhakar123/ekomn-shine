@@ -662,8 +662,9 @@ class ProductInvetoryController extends Controller
                         'feature' => 'required|array',
                         'feature.*' => 'string',
                     ]);
-                }else if(($request->product_listing_status == ProductInventory::STATUS_DRAFT)){
-                    $rules['sku'] ='required|string|min:3|max:10|unique:product_variations,sku|regex:/^[a-zA-Z0-9_-]+$/';
+                }
+                else if(($request->product_listing_status == ProductInventory::STATUS_DRAFT)){
+                    $rules['sku'] ='required|string|min:3|max:10|regex:/^[a-zA-Z0-9_-]+$/';
                 }
                 $variant_key = "no_variant";
                 if ($request->has('no_variant')) {

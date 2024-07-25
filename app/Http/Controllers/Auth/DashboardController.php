@@ -3,17 +3,19 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Import;
+use App\Models\Pincode;
 use App\Models\Category;
 use App\Models\CanHandle;
 use App\Models\BusinessType;
 use App\Models\SalesChannel;
 use Illuminate\Http\Request;
+use App\Models\BuyerInventory;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
-use App\Models\Import;
 use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
@@ -32,7 +34,9 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             return view('dashboard.supplier.index');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
-            return view('dashboard.buyer.index');
+            $distance = new Pincode();
+            $distance = $distance->calculateDistance('122016', '226018');
+            return view('dashboard.buyer.index', get_defined_vars());
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
             return view('dashboard.admin.index');
         }
@@ -107,7 +111,24 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.supplier.inventory');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
-            return view('dashboard.buyer.inventory');
+            $selectData = SalesChannel::all();
+            if($selectData->isNotEmpty()){
+                $selectData = $selectData->map(function ($item) {
+                    return [
+                        'id' => base64_encode($item->id),
+                        'name' => $item->name,
+                    ];
+                })->toArray();
+            }
+
+            //
+            $inventory_count = BuyerInventory::join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
+            ->where('buyer_inventories.buyer_id', auth()->user()->id)
+            ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
+            ->groupBy('product_variations.product_id')
+            ->select('product_variations.product_id')
+            ->get()->count();
+            return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }
@@ -216,7 +237,48 @@ class DashboardController extends Controller
      */
     public function createOrder(Request $request)
     {
-        return view('dashboard.common.create_order');
+        if(auth()->user()->hasRole(User::ROLE_BUYER)){
+            $delivery_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
+            $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+            $business_type = BusinessType::where('type', BusinessType::TYPE_BUYER)->get();
+            $selected_business_type = auth()->user()->companyDetails->businessType->pluck('business_type_id')->toArray();
+            $sales = SalesChannel::where('is_active', true)->get();
+            $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
+            return view('dashboard.common.create_order', get_defined_vars());
+    }
+    }
+    public function getStateCityList(Request $request)
+    {
+        $state = DB::table('states')
+            ->where('country_id', 101)
+            ->get();
+
+        $city = DB::table('cities')
+            ->where('country_id', 101)
+            ->where('state_id', $request->id)
+            ->get();
+            
+
+            if($state->isNotEmpty()){
+                $statsList = [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'state' => $state->toArray(),
+                    'city' => $city->toArray()
+
+                ];
+                return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
+            }else{
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status400'),
+                        'message' =>  'State not found'
+                    ]
+                ], __('statusCode.statusCode200'));
+                
+            }
+
     }
 
     /**

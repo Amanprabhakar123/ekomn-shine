@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('order_item_charges_id')->nullable();
             $table->timestamp('shipment_date')->nullable();
             $table->timestamp('delivery_date')->nullable();
-            $table->tinyInteger('status')->default(1)->comment('1: Pending, 2: Shipped, 3: Delivered, 4: Cancelled, 5: Returned, 6: Refunded');
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('order_id')->references('id')->on('orders');

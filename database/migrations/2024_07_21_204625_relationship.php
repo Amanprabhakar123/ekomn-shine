@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         if (Schema::hasTable('orders')) {
-            Schema::table('order_addresses', function (Blueprint $table) {
+            Schema::table('orders', function (Blueprint $table) {
                 $table->dropForeign(['shipping_address_id']);
                 $table->dropForeign(['billing_address_id']);
                 $table->dropForeign(['pickup_address_id']);
