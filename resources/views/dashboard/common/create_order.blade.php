@@ -756,13 +756,14 @@
             </div>
           </form>
         </div>
-      </div>
+        @include('dashboard.layout.copyright')
     </div>
   </div>
   @include('dashboard.layout.copyright')
 </div>
 @endsection
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   // Add/Remove Dropship SKU
   document.addEventListener("DOMContentLoaded", function() {
@@ -1300,5 +1301,257 @@
     });
 
   });
+  
+    //----------------------------------------------------------------------
+
+    // Add/Remove Dropship SKU
+    document.addEventListener("DOMContentLoaded", function() {
+        const addSKUButton = document.querySelector("#addDropshipSKU");
+        addSKUButton.addEventListener("click", function() {
+            var sku = document.getElementById('sku').value;
+            var errorElement = document.getElementById('ErrorSku');
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const url = "{{ route('search.sku') }}"; // Replace with the correct URL
+
+            if (sku) {
+                errorElement.innerHTML = '';
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRF-TOKEN', token);
+
+                xhr.onload = function() {
+                    console.log(xhr);
+                    if (xhr.status === 200) {
+                        fetchDropshipOrderSku();
+                        document.getElementById('sku').value = '';
+                    } else {
+                        // Handle error
+                        console.error('Error:', xhr.responseText);
+                        Swal.fire({
+                            text: xhr.responseText,
+                            icon: "error",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-light",
+                            },
+                        });
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Request failed');
+                };
+
+                // Send the request with the SKU data
+                xhr.send(JSON.stringify({
+                    sku: sku
+                }));
+            } else {
+                errorElement.innerHTML = 'This field is Required';
+                errorElement.style.color = 'red';
+            }
+        });
+    });
+    // end
+
+
+    // jquery start
+    $(document).ready(function() {
+        fetchDropshipOrderSku();
+    });
+    // jquery end
+    // functiomn for fetch sku data from add to cart api
+    function fetchDropshipOrderSku() {
+        var url = 'fetch-sku';
+        var gstAmout = 0;
+        var totalCost = 0;
+        ApiRequest(url, 'GET').then(response => {
+            // console.log(response);
+            if (response.data.statusCode == 200) {
+                // Handle the successful response here
+                const $dropshipInvoice = $('#dropshipInvoice tbody');
+
+                var products = response.data.data.data;
+                // console.log(products);
+                // Clear the existing rows if needed
+
+                $dropshipInvoice.empty();
+
+                // Check if response.data exists and is an array
+                if (products) {
+                    products.forEach(product => {
+                        // console.log(product);
+                        var amount = product.gstAmount.toFixed(2) || 0;
+                        gstAmout += parseFloat(amount);
+                        totalCost += parseFloat(product.totalCost) || 0;
+                        // gstAmout += parseFloat(product.gstAmout) || 0;
+                        const $dropshipInvoiceRow = $('<tr></tr>').html(`
+                    <td>
+                        <div class="productTitle_t3 bold">
+                            <i class="fas fa-minus-circle pointer text-danger me-1" onClick="deleteSkuProduct(${product.product_id})"></i>${product.title}
+                        </div>
+                    </td>
+                    <td class="text-center">${product.stock}</td>
+                    <td>${product.hsn}</td>
+                    <td>${product.sku}</td>
+                    <td class="text-center"><input type="text" class="stock_t" value="1" /></td>
+                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_before_tax}</td>
+                    <td class="text-right">${product.gst_percentage} %</td>
+                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst}</td>
+                `);
+                        $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
+                    });
+
+                    const additionalRows = `
+                                        <tr>
+                                            <td colspan="7" class="text-right">Shipping Cost</td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-right">GST</td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-right">Other Charges
+                                                <div class="dropdown info_inline">
+                                                    <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                    <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
+                                                        Package Cost, Labour Charges & Payment Processing Fee
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-right bold">Total Order Cost</td>
+                                            <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${totalCost}</td>
+                                        </tr>`;
+
+                    $dropshipInvoice.append(additionalRows); // Add additional rows at the end
+
+                } else {
+                    const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    $dropshipInvoice.empty();
+
+                    const $dropshipInvoiceRow = $('<tr></tr>').html(
+                        `<tr><td colspan="7" class="text-center">No Record Found</td></tr>`);
+                    $dropshipInvoice.prepend(
+                        $dropshipInvoiceRow); // Add new row at the beginning
+                    const additionalRows = `
+                                    <tr>
+                                        <td colspan="7" class="text-right">Shipping Cost</td>
+                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" class="text-right">GST</td>
+                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" class="text-right">Other Charges
+                                            <div class="dropdown info_inline">
+                                                <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
+                                                    Package Cost, Labour Charges & Payment Processing Fee
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" class="text-right bold">Total Order Cost</td>
+                                        <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                    </tr>`;
+
+                    $dropshipInvoice.append(additionalRows);
+                }
+            }
+        }).catch(data => {
+            const $dropshipInvoice = $('#dropshipInvoice tbody');
+            $dropshipInvoice.empty();
+
+            const $dropshipInvoiceRow = $('<tr></tr>').html(
+                `<td colspan="8" class="text-center">No Record Found</td>`);
+            $dropshipInvoice.prepend(
+                $dropshipInvoiceRow);
+
+        });
+
+    }
+
+    function deleteSkuProduct(id) {
+        // var product_id = element;
+        console.log(id);
+        var csrfToken = $('input[name="_token"]').val();
+        Swal.fire({
+            icon: "success",
+            title: `Are you sure Do You Want to Delete this SKU?`,
+            icon: "error",
+            // buttonsStyling: false,
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: 'btn btn-danger'
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    type: "DELETE",
+                    url: `{{ route('delete.sku', '') }}/${id}`,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken // Include the CSRF token in the headers
+                    },
+
+                    success: function(response) {
+                        // console.log(data.data);
+                        var data = response.data;
+                        if (data.statusCode == '200') {
+                            Swal.fire({
+                                text: data.message,
+                                icon: "success",
+                                buttonsStyling: !1,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-light",
+                                },
+                            });
+                            fetchDropshipOrderSku();
+
+                        } else {
+                            fetchDropshipOrderSku();
+                            Swal.fire({
+                                text: data.message,
+                                icon: "error",
+                                buttonsStyling: !1,
+                                confirmButtonText: "Ok, got it!",
+                                customClass: {
+                                    confirmButton: "btn btn-light",
+                                },
+                            });
+                        }
+
+                    },
+                    error: function(data) {
+                        Swal.fire({
+                            text: "Sorry, looks like there are some errors detected, please try again.",
+                            icon: "error",
+                            buttonsStyling: !1,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn btn-light",
+                            },
+                        });
+                    }
+                });
+            }
+
+        });
+
+    }
 </script>
 @endsection

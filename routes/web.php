@@ -1,22 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BulkUploadController;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\CategoryController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\CategoryController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\BulkUploadController;
+use App\Http\Controllers\Import\ImportController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +49,6 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 
-
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
@@ -64,6 +64,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
     Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
+    Route::post('search-sku', [OrderController::class, 'searchSku'])->name('search.sku');
+    Route::delete('delete-sku/{id}', [OrderController::class, 'deleteSku'])->name('delete.sku');
     Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
     Route::get('view-order', [DashboardController::class, 'viewOrder'])->name('view.order');
 });
@@ -71,6 +73,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
+        Route::get('fetch-sku', [OrderController::class, 'fetchSku'])->name('fetch.sku');
+
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::get('/my/product/inventory/', [BuyerInventoryController::class, 'index'])->name('product.myinventory');
         // Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
@@ -98,6 +102,8 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         // Define routes for jwt token refresh, user details, and logout
+        Route::post('/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+
     });
 });
 
