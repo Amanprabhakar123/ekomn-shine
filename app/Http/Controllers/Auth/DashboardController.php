@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Import;
+use App\Models\Pincode;
 use App\Models\Category;
 use App\Models\CanHandle;
 use App\Models\BusinessType;
 use App\Models\SalesChannel;
 use Illuminate\Http\Request;
+use App\Models\BuyerInventory;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\BuyerInventory;
 use App\Models\CompanyAddressDetail;
-use App\Models\Import;
 use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
@@ -33,7 +34,9 @@ class DashboardController extends Controller
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             return view('dashboard.supplier.index');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
-            return view('dashboard.buyer.index');
+            $distance = new Pincode();
+            $distance = $distance->calculateDistance('122016', '226018');
+            return view('dashboard.buyer.index', get_defined_vars());
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
             return view('dashboard.admin.index');
         }
