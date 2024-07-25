@@ -24,21 +24,8 @@ class Shipment extends Model
         'order_id',
         'order_item_charges_id',
         'shipment_date',
-        'delivery_date',
-        'status',
+        'delivery_date'
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    const STATUS_PENDING = 1;
-    const STATUS_SHIPPED = 2;
-    const STATUS_DELIVERED = 3;
-    const STATUS_CANCELLED = 4;
-    const STATUS_RETURNED = 5;
-    const STATUS_REFUNDED = 6;
 
     /**
      * The attributes that should be cast to native types.
@@ -69,8 +56,7 @@ class Shipment extends Model
             'order_id',
             'order_item_charges_id',
             'shipment_date',
-            'delivery_date',
-            'status',
+            'delivery_date'
         ])
         ->logOnlyDirty()
         ->useLogName('Shipment Log')
@@ -102,67 +88,4 @@ class Shipment extends Model
     {
         return $this->hasMany(ShipmentAwb::class, 'shipment_id', 'id');
     }
-    
-    /**
-     * Check if the shipment is pending.
-     *
-     * @return bool
-     */
-    public function isPending(): bool
-    {
-        return $this->status === self::STATUS_PENDING;
-    }
-
-    /**
-     * Check if the shipment is shipped.
-     *
-     * @return bool
-     */
-    public function isShipped(): bool
-    {
-        return $this->status === self::STATUS_SHIPPED;
-    }
-
-    /**
-     * Check if the shipment is delivered.
-     *
-     * @return bool
-     */
-    public function isDelivered(): bool
-    {
-        return $this->status === self::STATUS_DELIVERED;
-    }
-
-    /**
-     * Check if the shipment is cancelled.
-     *
-     * @return bool
-     */
-    public function isCancelled(): bool
-    {
-        return $this->status === self::STATUS_CANCELLED;
-    }
-    
-
-    /**
-     * Check if the shipment is returned.
-     *
-     * @return bool
-     */
-    public function isReturned(): bool
-    {
-        return $this->status === self::STATUS_RETURNED;
-    }
-
-    /**
-     * Check if the shipment is refunded.
-     *
-     * @return bool
-     */
-    public function isRefunded(): bool
-    {
-        return $this->status === self::STATUS_REFUNDED;
-    }
-    
-
 }

@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
+use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\CanHandleSeeder;
 use Database\Seeders\BusinessTypeSeeder;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CompanyBuyerSeeder::class);
         $this->call(ChargesTableSeeder::class);
         $this->call(ImportWorldSqlSeeder::class);
+        $this->call(PincodeSeeder::class);
         // $this->call(ProductSeeder::class);
         // \App\Models\User::factory(10)->create();
 

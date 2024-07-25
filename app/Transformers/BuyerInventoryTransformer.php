@@ -24,6 +24,10 @@ class BuyerInventoryTransformer extends TransformerAbstract
             }else{
                 $thumbnail  = $media->thumbnail_path;
             }
+            $live = false;
+            if($product->salesChannelProductMaps->isNotEmpty()){
+                $live = true;
+            }
             $data = [
                 'id' => salt_encrypt($buyerInventory->id),
                 'product_image' => $thumbnail,
@@ -36,10 +40,10 @@ class BuyerInventoryTransformer extends TransformerAbstract
                 'variation_id' => salt_encrypt($product->id),
                 'availability_status' => getAvailablityStatusName($product->availability_status),
                 'status' => getStatusName($product->status),
+                'live' => $live,
                 'created_at' => $buyerInventory->created_at->toDateTimeString(),
                 'updated_at' => $buyerInventory->updated_at->toDateTimeString(),
             ];
-
             return $data;
         } catch (\Exception $e) {
             // Handle the exception here

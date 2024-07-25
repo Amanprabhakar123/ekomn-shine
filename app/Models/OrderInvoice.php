@@ -262,4 +262,22 @@ class OrderInvoice extends Model
     {
         return $this->refund_status === self::REFUND_STATUS_FAILED;
     }
+
+    /**
+     * Generate a unique invoice number.
+     *
+     * @return string
+     */
+    public function generateInvoiceNumber(): string
+    {
+        $invoiceNumber = 'INV-' . strtoupper(substr(md5(uniqid()), 0, 10));
+        
+        // Check if the generated invoice number already exists in the OrderInvoice table
+        while (self::where('invoice_number', $invoiceNumber)->exists()) {
+            $invoiceNumber = 'INV-' . strtoupper(substr(md5(uniqid()), 0, 10));
+        }
+        
+        return $invoiceNumber;
+    }
+
 }

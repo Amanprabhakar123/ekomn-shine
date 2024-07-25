@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('awb_date')->default(now());
             $table->tinyInteger('courier_type')->default(1)->comment('1: Surface, 2: Air');
             $table->string('courier_provider_name')->nullable()->comment('Name of the courier service provider');
-            $table->tinyInteger('status')->default(1)->comment('1: Created, 2: Shipped, 3: Delivered, 4: Cancelled, 5: RTO');
+            $table->tinyInteger('status')->default(1)->comment('1: Created, 2: Shipped Or Dispatched, 3: Delivered, 4: Cancelled, 5: RTO');
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('shipment_id')->references('id')->on('shipments');

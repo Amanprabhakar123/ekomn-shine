@@ -852,5 +852,19 @@ class Order extends Model
                 return 'Unknown';
         }
     }
+
+    /**
+     * Generate a unique numeric Order number.
+     *
+     * @return string
+     */
+    public static function generateOrderNumber(): string
+    {
+        $orderNumber = 'EK' . mt_rand(1000000000, 9999999999);
+        while (self::where('order_number', $orderNumber)->exists()) {
+            $orderNumber = 'EK' . mt_rand(1000000000, 9999999999);
+        }
+        return $orderNumber;
+    }
     
 }
