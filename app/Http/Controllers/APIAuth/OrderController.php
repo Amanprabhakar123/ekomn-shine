@@ -145,7 +145,7 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
             // Check if the product variation SKU exists
-            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->product_id)->get();
+            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->id)->get();
 
             // Check if the product variation SKU exists
             if ($checkDuplicate->isEmpty()) {
@@ -156,7 +156,7 @@ class OrderController extends Controller
                         // Create a new Add To Cart record
                         AddToCart::create([
                             'buyer_id' => $user->id,
-                            'product_id' => $productVariationSku->product_id,
+                            'product_id' => $productVariationSku->id,
                             'quantity' => AddToCart::DEFAULT_QUANTITY,
                             'added_at' => now(),
                         ]);

@@ -252,7 +252,12 @@ class DashboardController extends Controller
         }
     }
 
-    // get buyer api data
+    /**
+     * Get the buyer details.
+     * @param  $buyer_id
+     * but not used in the code
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getBuyerId($buyer_id)
     {
         $companyDetail = CompanyDetail::where('company_serial_id', $buyer_id)->first();
@@ -260,8 +265,6 @@ class DashboardController extends Controller
             $delivery_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
             $billing_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
             if ($companyDetail->user->hasRole(User::ROLE_BUYER)) {
-
-                // $user_id = $companyDetail->user->id;
                 $data = [
                     'first_name' => $companyDetail->first_name,
                     'last_name' => $companyDetail->last_name,
@@ -276,8 +279,6 @@ class DashboardController extends Controller
                     'billing_state' => $billing_address->state,
                     'billing_pincode' => $billing_address->pincode,
                     // 'billing_address' => $billing_address,
-
-                    // Add more data here if needed
                 ];
 
                 return response()->json(['data' => [
@@ -302,6 +303,11 @@ class DashboardController extends Controller
         }
     }
 
+    /**
+     * Get the list of states and cities.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getStateCityList(Request $request)
     {
         $state = DB::table('states')
@@ -319,9 +325,7 @@ class DashboardController extends Controller
                 'status' => __('statusCode.status200'),
                 'state' => $state->toArray(),
                 'city' => $city->toArray(),
-
             ];
-
             return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
         } else {
             return response()->json([
@@ -341,9 +345,6 @@ class DashboardController extends Controller
      */
     public function myOrders()
     {
-        // $var = salt_encrypt(1);
-        // dd($var);
-
         return view('dashboard.common.my_orders');
     }
 

@@ -1167,6 +1167,8 @@
         isValid = true;
       }
     });
+  });
+
 
     // update order type script 
     const tabMapping = {
@@ -1175,6 +1177,8 @@
         'resell-tab': 3
     };
 
+    // Check if the quantity is changed
+    let isQuantityChanged = false;
     let hiddenInput = document.getElementById("order_type");
       document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
           tab.addEventListener('shown.bs.tab', function(event) {
@@ -1184,28 +1188,28 @@
                 if (hiddenInput.value == 1) {
                     var getQntyId = document.querySelectorAll('.stockQnty');
                     var uniqueIds = new Set();
-
-                    getQntyId.forEach(function (element) {
-                        var id = element.id;
-                        if (!uniqueIds.has(id)) {
-                            uniqueIds.add(id);
-                            ApiRequest(`product/cart/update/quantity`, 'POST', {
-                                cart_id: id,
-                                quantity: 1,
-                                order_type: hiddenInput.value
-                            }).then(response => {
-                              fetchDropshipOrderSku();
-                            }).catch(error => {
-                                console.error(error);
-                              
-                            });
-                        }
-                    });
+                  if(isQuantityChanged){
+                      getQntyId.forEach(function (element) {
+                          var id = element.id;
+                          if (!uniqueIds.has(id)) {
+                              uniqueIds.add(id);
+                              ApiRequest(`product/cart/update/quantity`, 'POST', {
+                                  cart_id: id,
+                                  quantity: 1,
+                                  order_type: hiddenInput.value
+                              }).then(response => {
+                                fetchDropshipOrderSku();
+                              }).catch(error => {
+                                  console.error(error);
+                                
+                              });
+                          }
+                      });
+                      isQuantityChanged = false;
+                  }
                 }
-          });
-          
-        });
-  });
+          }); 
+    });
   
     //----------------------------------------------------------------------
 
@@ -1304,7 +1308,6 @@
    
     // functiomn for fetch sku data from add to cart api
     function fetchDropshipOrderSku() {
-      
         var url = 'product/cart/list';
         var gstAmout = 0;
         var totalCost = 0;
@@ -1412,6 +1415,9 @@
     function updateQuantity(id, element) {
         let order_type = $('#order_type').val();
         var quantity = element.value;
+        if(order_type != 1){
+            isQuantityChanged = true;
+        }
         ApiRequest(`product/cart/update/quantity`, 'POST', {
             cart_id: id,
             quantity: quantity,
