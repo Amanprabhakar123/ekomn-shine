@@ -1254,40 +1254,40 @@
     });
    
     // functiomn for fetch sku data from add to cart api
-    function fetchDropshipOrderSku() {
-        var url = 'product/cart/list';
-        var gstAmout = 0;
-        var totalCost = 0;
-        var shippingCost = 0;
-        var otherCost = 0;
-        let order_type = $('#order_type').val();
-        let pincode = '';
-        if(order_type == 1){
-          pincode = $('#pin_code').val();
-        }else if(order_type == 3){
-          pincode = $('#resell-b-pincode').val();
-        }
-        ApiRequest(url, 'POST', {
-          pincode: pincode,
-          order_type: order_type
-        }).then(response => {
-            if (response.data.statusCode == 200) {
-                // Handle the successful response here
-                const $dropshipInvoice = $('.payInvoiceTable tbody');
-                var products = response.data.data.data;
+function fetchDropshipOrderSku() {
+   var url = 'product/cart/list';
+   var gstAmout = 0;
+   var totalCost = 0;
+   var shippingCost = 0;
+   var otherCost = 0;
+   let order_type = $('#order_type').val();
+   let pincode = '';
+   if (order_type == 1) {
+      pincode = $('#pin_code').val();
+   } else if (order_type == 3) {
+      pincode = $('#resell-b-pincode').val();
+   }
+   ApiRequest(url, 'POST', {
+      pincode: pincode,
+      order_type: order_type
+   }).then(response => {
+      if (response.data.statusCode == 200) {
+         // Handle the successful response here
+         const $dropshipInvoice = $('.payInvoiceTable tbody');
+         var products = response.data.data.data;
 
-                // Clear the existing rows if needed
-                $dropshipInvoice.empty();
-                // Check if response.data exists and is an array
-                if (products) {
-                    products.forEach(product => {
-                        var amount = product.gstAmount.toFixed(2) || 0;
-                        gstAmout += parseFloat(amount);
-                        overAllCost = parseFloat(product.overAllCost) || 0;
-                        shippingCost += parseFloat(product.shippingCost) || 0;
-                        otherCost += parseFloat(product.otherCost) || 0;
-                        $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>'+overAllCost.toFixed(2)+' Pay');
-                        const $dropshipInvoiceRow = $('<tr></tr>').html(`
+         // Clear the existing rows if needed
+         $dropshipInvoice.empty();
+         // Check if response.data exists and is an array
+         if (products) {
+            products.forEach(product => {
+               var amount = product.gstAmount.toFixed(2) || 0;
+               gstAmout += parseFloat(amount);
+               overAllCost = parseFloat(product.overAllCost) || 0;
+               shippingCost += parseFloat(product.shippingCost) || 0;
+               otherCost += parseFloat(product.otherCost) || 0;
+               $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>' + overAllCost.toFixed(2) + ' Pay');
+               const $dropshipInvoiceRow = $('<tr></tr>').html(`
                     <td>
                         <div class="productTitle_t3 bold">
                             <i class="fas fa-minus-circle pointer text-danger me-1" onClick="deleteSkuProduct('${product.product_id}')"></i>${product.title}
@@ -1301,10 +1301,10 @@
                     <td class="text-right">${product.gst_percentage} %</td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst.toFixed(2)}</td>
                 `);
-                        $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
-                    });
+               $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
+            });
 
-                    const additionalRows = `
+            const additionalRows = `
                                          <tr>
                                             <td colspan="7" class="text-right">GST</td>
                                             <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout.toFixed(2)}</td>
@@ -1330,30 +1330,36 @@
                                             <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${overAllCost.toFixed(2)}</td>
                                         </tr>`;
 
-                    $dropshipInvoice.append(additionalRows); // Add additional rows at the end
+            $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 
-                } else {
-                    const $dropshipInvoice = $('#dropshipInvoice tbody');
-                    $dropshipInvoice.empty();
-                    const $dropshipInvoiceRow = $('<tr></tr>').html(
-                `<td colspan="8" class="text-center">No Record Found</td>`);
-                $dropshipInvoice.prepend(
-                $dropshipInvoiceRow);
-                }
-            }
-        }).catch(data => {
-            const $dropshipInvoice = $('#dropshipInvoice tbody');
+         } else {
+            const $dropshipInvoice = $('.payInvoiceTable tbody');
             $dropshipInvoice.empty();
-
             const $dropshipInvoiceRow = $('<tr></tr>').html(
-                `<td colspan="8" class="text-center">No Record Found</td>`);
+               `<td colspan="8" class="text-center">No Record Found</td>`);
             $dropshipInvoice.prepend(
-                $dropshipInvoiceRow);
+               $dropshipInvoiceRow);
+         }
+      }else{
+        const $dropshipInvoice = $('.payInvoiceTable tbody');
+            $dropshipInvoice.empty();
+            const $dropshipInvoiceRow = $('<tr></tr>').html(
+              `<td colspan="8" class="text-center">No Record Found</td>`);
+            $dropshipInvoice.prepend(
+               $dropshipInvoiceRow);
+      }
+   }).catch(data => {
+      const $dropshipInvoice = $('.payInvoiceTable tbody');
+      $dropshipInvoice.empty();
 
-        });
+      const $dropshipInvoiceRow = $('<tr></tr>').html(
+         `<td colspan="8" class="text-center">No Record Found</td>`);
+      $dropshipInvoice.prepend(
+         $dropshipInvoiceRow);
 
-    }
+   });
 
+}
 
     // function for update quantity
     function updateQuantity(id, order_type, element) {
