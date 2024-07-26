@@ -2,72 +2,79 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Shipment;
-use App\Models\OrderRefund;
-use App\Models\OrderAddress;
-use App\Models\OrderPayment;
-use App\Models\SupplierPayment;
-use App\Models\OrderTransaction;
-use App\Models\OrderCancellations;
-use Spatie\Activitylog\LogOptions;
-use App\Models\OrderItemAndCharges;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\OrderPaymentDistribution;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, Notifiable, SoftDeletes;
 
     /**
      * Constants for order status.
      */
     const STATUS_DRAFT = 1;
+
     const STATUS_PENDING = 2;
+
     const STATUS_IN_PROGRESS = 3;
+
     const STATUS_DISPATCHED = 4;
+
     const STATUS_IN_TRANSIT = 5;
+
     const STATUS_DELIVERED = 6;
+
     const STATUS_CANCELLED = 7;
+
     const STATUS_RTO = 8;
 
     /**
      * Constants for payment status.
      */
     const PAYMENT_STATUS_PENDING = 1;
+
     const PAYMENT_STATUS_PAID = 2;
+
     const PAYMENT_STATUS_FAILED = 3;
 
     /**
      * Constants for payment currency.
      */
     const PAYMENT_CURRENCY_INR = 1;
+
     const PAYMENT_CURRENCY_USD = 2;
+
     const PAYMENT_CURRENCY_EUR = 3;
 
     /**
      * Constants for order type.
      */
     const ORDER_TYPE_DROPSHIP = 1;
+
     const ORDER_TYPE_BULK = 2;
+
     const ORDER_TYPE_RESELL = 3;
 
     /**
      * Constants for order channel type.
      */
     const ORDER_CHANNEL_TYPE_MANUAL = 1;
+
     const ORDER_CHANNEL_TYPE_STORE = 2;
 
     /**
      * Constants for payment method.
      */
     const PAYMENT_METHOD_COD = 1;
+
     const PAYMENT_METHOD_ONLINE = 2;
-    
+
     const DROPSHIP_ORDER_QUANTITY = 2;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -111,7 +118,7 @@ class Order extends Model
      */
     protected $hidden = [
         'deleted_at',
-    ];    
+    ];
 
     /**
      * Get the options for logging changes to the model.
@@ -119,29 +126,29 @@ class Order extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly([
-            'order_number',
-            'buyer_id',
-            'supplier_id',
-            'store_order',
-            'order_date',
-            'status',
-            'total_amount',
-            'discount',
-            'payment_status',
-            'payment_currency',
-            'order_type',
-            'order_channel_type',
-            'payment_method',
-            'shipping_address_id',
-            'billing_address_id',
-            'pickup_address_id',
-            'is_cancelled',
-            'cancelled_at',
-        ])
-        ->logOnlyDirty()
-        ->useLogName('Order Log')
-        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} order with ID: {$this->id}");
+            ->logOnly([
+                'order_number',
+                'buyer_id',
+                'supplier_id',
+                'store_order',
+                'order_date',
+                'status',
+                'total_amount',
+                'discount',
+                'payment_status',
+                'payment_currency',
+                'order_type',
+                'order_channel_type',
+                'payment_method',
+                'shipping_address_id',
+                'billing_address_id',
+                'pickup_address_id',
+                'is_cancelled',
+                'cancelled_at',
+            ])
+            ->logOnlyDirty()
+            ->useLogName('Order Log')
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} order with ID: {$this->id}");
     }
 
     /**
@@ -193,7 +200,7 @@ class Order extends Model
     {
         return $this->belongsTo(OrderAddress::class, 'pickup_address_id', 'id');
     }
-    
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -233,7 +240,6 @@ class Order extends Model
     {
         return $this->hasMany(OrderTransaction::class, 'order_id', 'id');
     }
-
 
     /**
      * The attributes that should be cast to native types.
@@ -344,7 +350,7 @@ class Order extends Model
     {
         return $this->hasManyThrough(SupplierPayment::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
     }
-    
+
     /**
      * Scope a query to only include orders of a particular buyer.
      *
@@ -375,7 +381,7 @@ class Order extends Model
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  int  $status
      * @return \Illuminate\Database\Eloquent\Builder
-     */ 
+     */
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
@@ -468,7 +474,7 @@ class Order extends Model
      */
     public function isOrderNotCancelled()
     {
-        return !$this->is_cancelled;
+        return ! $this->is_cancelled;
     }
 
     /**
@@ -494,10 +500,9 @@ class Order extends Model
         $this->cancelled_at = null;
         $this->save();
     }
+
     /**
      * Check if the order is draft.
-     *
-     * @return bool
      */
     public function isDraft(): bool
     {
@@ -506,8 +511,6 @@ class Order extends Model
 
     /**
      * Check if the order is pending.
-     *
-     * @return bool
      */
     public function isPending(): bool
     {
@@ -516,8 +519,6 @@ class Order extends Model
 
     /**
      * Check if the order is in progress.
-     *
-     * @return bool
      */
     public function isInProgress(): bool
     {
@@ -526,8 +527,6 @@ class Order extends Model
 
     /**
      * Check if the order is dispatched.
-     *
-     * @return bool
      */
     public function isDispatched(): bool
     {
@@ -536,8 +535,6 @@ class Order extends Model
 
     /**
      * Check if the order is in transit.
-     *
-     * @return bool
      */
     public function isInTransit(): bool
     {
@@ -546,8 +543,6 @@ class Order extends Model
 
     /**
      * Check if the order is delivered.
-     *
-     * @return bool
      */
     public function isDelivered(): bool
     {
@@ -556,8 +551,6 @@ class Order extends Model
 
     /**
      * Check if the order is cancelled.
-     *
-     * @return bool
      */
     public function isCancelled(): bool
     {
@@ -566,8 +559,6 @@ class Order extends Model
 
     /**
      * Check if the order is RTO.
-     *
-     * @return bool
      */
     public function isRTO(): bool
     {
@@ -576,8 +567,6 @@ class Order extends Model
 
     /**
      * Check if the order is pending.
-     *
-     * @return bool
      */
     public function isPendingPayment(): bool
     {
@@ -586,8 +575,6 @@ class Order extends Model
 
     /**
      * Check if the order is paid.
-     *
-     * @return bool
      */
     public function isPaid(): bool
     {
@@ -596,8 +583,6 @@ class Order extends Model
 
     /**
      * Check if the order is failed.
-     *
-     * @return bool
      */
     public function isFailed(): bool
     {
@@ -606,8 +591,6 @@ class Order extends Model
 
     /**
      * Check if the order is in INR.
-     *
-     * @return bool
      */
     public function isInr(): bool
     {
@@ -616,8 +599,6 @@ class Order extends Model
 
     /**
      * Check if the order is in USD.
-     *
-     * @return bool
      */
     public function isUsd(): bool
     {
@@ -626,8 +607,6 @@ class Order extends Model
 
     /**
      * Check if the order is in EUR.
-     *
-     * @return bool
      */
     public function isEur(): bool
     {
@@ -636,8 +615,6 @@ class Order extends Model
 
     /**
      * Check if the order is dropship.
-     *
-     * @return bool
      */
     public function isDropship(): bool
     {
@@ -646,8 +623,6 @@ class Order extends Model
 
     /**
      * Check if the order is bulk.
-     *
-     * @return bool
      */
     public function isBulk(): bool
     {
@@ -656,8 +631,6 @@ class Order extends Model
 
     /**
      * Check if the order is resell.
-     *
-     * @return bool
      */
     public function isResell(): bool
     {
@@ -666,8 +639,6 @@ class Order extends Model
 
     /**
      * Check if the order is manual.
-     *
-     * @return bool
      */
     public function isManual(): bool
     {
@@ -676,8 +647,6 @@ class Order extends Model
 
     /**
      * Check if the order is store.
-     *
-     * @return bool
      */
     public function isStore(): bool
     {
@@ -686,8 +655,6 @@ class Order extends Model
 
     /**
      * Check if the order is COD.
-     *
-     * @return bool
      */
     public function isCOD(): bool
     {
@@ -696,8 +663,6 @@ class Order extends Model
 
     /**
      * Check if the order is online.
-     *
-     * @return bool
      */
     public function isOnline(): bool
     {
@@ -706,8 +671,6 @@ class Order extends Model
 
     /**
      * Check if the order has shipping address.
-     *
-     * @return bool
      */
     public function hasShippingAddress(): bool
     {
@@ -716,8 +679,6 @@ class Order extends Model
 
     /**
      * Check if the order has billing address.
-     *
-     * @return bool
      */
     public function hasBillingAddress(): bool
     {
@@ -726,8 +687,6 @@ class Order extends Model
 
     /**
      * Check if the order has pickup address.
-     *
-     * @return bool
      */
     public function hasPickupAddress(): bool
     {
@@ -736,8 +695,6 @@ class Order extends Model
 
     /**
      * Get the order status.
-     *
-     * @return string
      */
     public function getStatus(): string
     {
@@ -765,8 +722,6 @@ class Order extends Model
 
     /**
      * Get the payment status.
-     *
-     * @return string
      */
     public function getPaymentStatus(): string
     {
@@ -784,8 +739,6 @@ class Order extends Model
 
     /**
      * Get the payment currency.
-     *
-     * @return string
      */
     public function getPaymentCurrency(): string
     {
@@ -803,8 +756,6 @@ class Order extends Model
 
     /**
      * Get the order type.
-     *
-     * @return string
      */
     public function getOrderType(): string
     {
@@ -822,8 +773,6 @@ class Order extends Model
 
     /**
      * Get the order channel type.
-     *
-     * @return string
      */
     public function getOrderChannelType(): string
     {
@@ -839,8 +788,6 @@ class Order extends Model
 
     /**
      * Get the payment method.
-     *
-     * @return string
      */
     public function getPaymentMethod(): string
     {
@@ -856,16 +803,14 @@ class Order extends Model
 
     /**
      * Generate a unique numeric Order number.
-     *
-     * @return string
      */
     public static function generateOrderNumber(): string
     {
-        $orderNumber = 'EK' . mt_rand(1000000000, 9999999999);
+        $orderNumber = 'EK'.mt_rand(1000000000, 9999999999);
         while (self::where('order_number', $orderNumber)->exists()) {
-            $orderNumber = 'EK' . mt_rand(1000000000, 9999999999);
+            $orderNumber = 'EK'.mt_rand(1000000000, 9999999999);
         }
+
         return $orderNumber;
     }
-    
 }

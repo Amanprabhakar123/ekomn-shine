@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Mail\OrderCreatedMail;
-use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewOrderBuyerNotification;
+use Illuminate\Support\Facades\Notification;
 
 class NotifySupplierNewOrderListener
 {
@@ -22,7 +22,9 @@ class NotifySupplierNewOrderListener
     {
         $order = $event->order;
         $user = $event->user;
-        Mail::to('khankhallid425@gmail.com')->send(new OrderCreatedMail($order, $user));
+        // Send the notification
+
+        Notification::send($user, new NewOrderBuyerNotification($order, $user));
 
     }
 }

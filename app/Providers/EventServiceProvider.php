@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\ExceptionEvent;
 use App\Events\NewOrderCreatedEvent;
 use App\Events\OrderCanceledEvent;
 use App\Events\OrderStatusChangedEvent;
+use App\Listeners\ExceptionListener;
 use App\Listeners\NotifyBuyerNewOrderListener;
 use App\Listeners\NotifyBuyerOrderCanceledListener;
 use App\Listeners\NotifyChangeOrderStatusListener;
@@ -36,6 +38,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderStatusChangedEvent::class => [
             NotifyChangeOrderStatusListener::class,
+        ],
+        ExceptionEvent::class => [
+            ExceptionListener::class,
+
         ],
     ];
 

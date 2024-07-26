@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Notifications\NewOrderBuyerNotification;
+use Illuminate\Support\Facades\Notification;
 
 class NotifyBuyerOrderCanceledListener
 {
@@ -20,6 +20,11 @@ class NotifyBuyerOrderCanceledListener
      */
     public function handle(object $event): void
     {
-        //
+        $user = $event->user;
+        $order = $event->order;
+        // Send the notification
+
+        Notification::send($user, new NewOrderBuyerNotification($order, $user));
+
     }
 }

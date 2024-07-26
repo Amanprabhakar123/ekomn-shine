@@ -395,7 +395,7 @@ class OrderController extends Controller
         }
     }
 
-    public function getOrder()
+    public function orders()
     {
         try {
             // Retrieve all orders with related models

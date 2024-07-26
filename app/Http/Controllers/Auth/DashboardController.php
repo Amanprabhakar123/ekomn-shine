@@ -32,6 +32,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
+
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             return view('dashboard.supplier.index');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
