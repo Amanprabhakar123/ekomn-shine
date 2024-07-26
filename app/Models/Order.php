@@ -67,6 +67,7 @@ class Order extends Model
     const PAYMENT_METHOD_COD = 1;
     const PAYMENT_METHOD_ONLINE = 2;
     
+    const DROPSHIP_ORDER_QUANTITY = 2;
     /**
      * The attributes that are mass assignable.
      *

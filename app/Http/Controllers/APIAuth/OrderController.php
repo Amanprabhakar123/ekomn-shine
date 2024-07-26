@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
-use App\Transformers\ProductSkuTransformer;
+use App\Transformers\ProductCartListTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class OrderController extends Controller
 {
@@ -49,7 +51,11 @@ class OrderController extends Controller
 
             // Check if the user has the permission to add a new order
             if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
-                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
 
             $cart = [];
@@ -67,7 +73,11 @@ class OrderController extends Controller
                     ];
                 } else {
                     // Return a not found message
-                    return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status403'),
+                        'message' => __('auth.productNotFound'),
+                    ]], __('statusCode.statusCode200'));
                 }
             }
 
@@ -116,7 +126,11 @@ class OrderController extends Controller
 
             // Check if the user has the permission to add a new order
             if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
-                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
 
             // Retrieve the SKU from the request
@@ -139,8 +153,8 @@ class OrderController extends Controller
             if ($checkDuplicate->isEmpty()) {
                 // Check if the product variation SKU exists
                 if (!empty($productVariationSku)) {
-                    
-                    if($productVariationSku->stock > 0){
+
+                    if ($productVariationSku->stock > 0) {
                         // Create a new Add To Cart record
                         AddToCart::create([
                             'buyer_id' => $user->id,
@@ -156,14 +170,13 @@ class OrderController extends Controller
                             'status' => __('statusCode.status200'),
                             'message' => __('auth.addSku'),
                         ]], __('statusCode.statusCode200'));
-                    }else{
+                    } else {
                         return response()->json(['data' => [
-                            'statusCode' => __('statusCode.statusCode404'),
+                            'statusCode' => __('statusCode.statusCode400'),
                             'status' => __('statusCode.status404'),
                             'message' => __('auth.productOutOfStock'),
                         ]], __('statusCode.statusCode200'));
                     }
-                    
                 }
             } else {
                 // Return a duplicate SKU message
@@ -184,30 +197,41 @@ class OrderController extends Controller
         }
     }
 
-    public function fetchSku()
+    /**
+     * Get the products in the cart.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProductInCart(Request $request)
     {
         try {
-            $user = auth()->user();
-
-            // Check if the user has the 'buyer' role
-            if (!$user->hasRole(User::ROLE_BUYER)) {
-                return response()->json(['data' => __('auth.unauthorizedAction')], 403);
+            // Check if the user has the permission to add a new order
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
 
-            $fetchSku = AddToCart::where('buyer_id', $user->id)->get();
-            $products = [];
+            $user = auth()->user();
+            // Fetch the SKU
+            $productCartList = AddToCart::where('buyer_id', $user->id)->with('product')->get();
 
-            if ($fetchSku->isEmpty()) {
-                return response()->json(['data' => __('auth.skuNotFound')], __('statusCode.statusCode404'));
+            // Check if the SKU exists
+            if ($productCartList->isEmpty()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.skuNotFound'),
+                ]], __('statusCode.statusCode200'));
             } else {
-                foreach ($fetchSku as $fetch) {
-                    $product = ProductVariation::where('product_id', $fetch->product_id)->with('product')->first(); // Changed `$fetch->id` to `$fetch->product_id`
-                    if ($product) {
-                        $products[] = $product; // Append product to the array
-                    }
-                }
-                $resource = new Collection($products, new ProductSkuTransformer());
+                // Transform the results using Fractal
+                $resource = new Collection($productCartList, new ProductCartListTransformer($request->all()));
+
+                // Create the data array using Fractal
                 $data = $this->fractal->createData($resource)->toArray();
+                // return response()->json($data);
 
                 return response()->json(['data' => [
                     'data' => $data,
@@ -217,6 +241,7 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
+            dd($e->getMessage(), $e->getLine());
             \Log::error('Add to cart failed: ' . $e->getMessage()); // Log the error message
 
             return response()->json(['data' => __('auth.addSkuFailed')], 500);
@@ -224,39 +249,151 @@ class OrderController extends Controller
     }
 
 
-
-    public function deleteSku($id)
+    /**
+     * Update the quantity of a product in the cart.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateProductQuantityInCart(Request $request)
     {
         try {
-            $user = auth()->user();
-            $product_id = $id;
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'cart_id' => 'required|string',
+                'quantity' => 'required|integer|min:1',
+                'order_type' => 'required|integer',
+            ]);
 
-            // Check if the user has the 'buyer' role
-            if (!$user->hasRole(User::ROLE_BUYER)) {
-                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
             }
 
+            // Check if the user has the permission to add a new order
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // add condition for check the product is available in cart or not
+            $cart = AddToCart::where('id', salt_decrypt($request->cart_id))->first();
+            if (empty($cart)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.productNotFoundCart'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // add condition for check quantity less then product stock
+            $product = ProductVariation::find($cart->product_id);
+            if ($request->quantity > $product->stock) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.quantityExceedsStock'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            if($request->order_type == Order::ORDER_TYPE_DROPSHIP) {
+                if ($request->quantity > Order::DROPSHIP_ORDER_QUANTITY) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.quantityExceedsDropship', ['quantity' => Order::DROPSHIP_ORDER_QUANTITY]),
+                    ]], __('statusCode.statusCode200'));
+                }
+            }   
+
+            // Update the quantity of the product in the cart
+            $cart->quantity = $request->quantity;
+            $cart->save();
+
+            // Return a success message
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.updateProductQuantityInCart'),
+            ]], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Handle the exception
+            Log::error('update quantity failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            return
+                response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.addToCartFailed'),
+                ]], __('statusCode.statusCode200'));
+        }
+    }
+
+    /**
+     * Remove a product from the cart.
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeProductInCart($id)
+    {
+        try {
+            // Check if the ID is a string
+            if (!is_string($id)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status400'),
+                    'message' => __('auth.invalidId'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Decrypt the product ID
+            $product_id = (int) salt_decrypt($id);
+
+            // Check if the user has the permission to add a new order
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Check if the product ID is not empty
             if (!empty($product_id)) {
                 AddToCart::where([
-                    'buyer_id' => $user->id,
-                    'product_id' => $product_id,
+                    'buyer_id' =>  auth()->user()->id,
+                    'product_id' => $product_id
                 ])->delete();
 
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode200'),
-                        'status' => __('statusCode.status200'),
-                        'message' => __('auth.deleteSku'),
-                    ],
-                ], __('statusCode.statusCode200'));
+                // Return a success message
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.deleteSku'),
+                ]], __('statusCode.statusCode200'));
             } else {
-                return response()->json(['data' => __('auth.skuNotFound')], __('statusCode.statusCode404'));
+
+                // Return a not found message
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.skuNotFound'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
             // Handle the exception
-
-            // \Log::error('Add to cart failed: ' . $e->getMessage());
-            return response()->json(['data' => __('auth.deleteSkuFailed')], __('statusCode.statusCode500'));
+            Log::error('Add to cart failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.deleteSkuFailed'),
+            ]], __('statusCode.statusCode200'));
         }
     }
 }

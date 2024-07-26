@@ -17,10 +17,11 @@
       </ul>
       <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="dropship" role="tabpanel" aria-labelledby="dropship-tab" tabindex="0">
+          <input type="hidden" name="order_type" id="order_type" value = "1">
           <form>
             <div class="addProductForm">
               <div class="o_bannerimg">
-                <img src="assets/images/order/order-banner-1.jpg" alt="" style="width: 100%;" />
+                <img src="{{asset('assets/images/order/order-banner-1.jpg')}}" alt="" style="width: 100%;" />
               </div>
               <section class="sectionspace">
                 <h4 class="subheading">Customer Details</h4>
@@ -104,7 +105,7 @@
                         <span>Pin Code:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code" />
+                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code"  value=""/>
                         <div id="pin_codeErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -175,7 +176,7 @@
               <section class="sectionspace pb-2">
                 <div class="ek_group mb-1">
                   <label class="eklabel m-0">
-                    <span>Product SKU 1:<span class="req_star">*</span></span>
+                    <span>Product SKU :<span class="req_star">*</span></span>
                   </label>
                   <div class="ek_f_input sku_inline">
                       <div class="sku_list">
@@ -185,12 +186,6 @@
                       <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button"
                           id="addDropshipSKU">Add</button>
                   </div>
-                  {{--<div class="ek_f_input sku_inline">
-                    <div class="sku_list">
-                      <input type="text" class="form-control" placeholder="Enter Product SKU" />
-                    </div>
-                    <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button" id="addDropshipSKU">Add</button>
-                  </div>--}}
                 </div>
                 <div class="d-flex justify-content-between">
                   <h4 class="subheading mb-2">Product Details</h4>
@@ -220,62 +215,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {{--
-                      <tr>
-                        <td>
-                          <div class="productTitle_t3 bold">
-                            <i class="fas fa-minus-circle removeDropshipSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse
-                          </div>
-                        </td>
-                        <td class="text-center">100</td>
-                        <td>K5944RUR</td>
-                        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-                        <td class="text-right">12%</td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div class="productTitle_t3 bold">
-                            <i class="fas fa-minus-circle removeDropshipSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse
-                          </div>
-                        </td>
-                        <td class="text-center">100</td>
-                        <td>K5944RUR</td>
-                        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00</td>
-                        <td class="text-right">18%</td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">Shipping Cost</td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">GST</td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">Other Charges
-                          <div class="dropdown info_inline">
-                            <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                            <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                              Package Cost, Labour Charges & Payment Processing Fee
-                            </div>
-                          </div>
-                        </td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right bold">Total Order Cost</td>
-                        <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      --}}
+                      <!-- Dynamic table data -->
                     </tbody>
                   </table>
                 </div>
                 <div class="text-right d-flex justify-content-end mt30">
-                  <button type="button" id="dropship-order" class="btn btn-login btnekomn card_f_btn"><i class="fas fa-rupee-sign me-1"></i>454.50 Pay</button>
+                  <button type="button" id="dropship-order" class="btn btn-login btnekomn card_f_btn payment_button"><i class="fas fa-rupee-sign me-1"></i>0.00 Pay</button>
                 </div>
               </section>
             </div>
@@ -475,6 +420,7 @@
                           <th>Product Title</th>
                           <th class="text-center">Stock</th>
                           <th>SKU</th>
+                          <th>HSN</th>
                           <th class="text-center">Qty</th>
                           <th class="text-right">Price/piece</th>
                           <th class="text-right">GST%</th>
@@ -482,47 +428,12 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            <div class="productTitle_t3 bold">
-                              <i class="fas fa-minus-circle removeBulkSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse (Bulk)
-                            </div>
-                          </td>
-                          <td class="text-center">100</td>
-                          <td>K5944RUR</td>
-                          <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-                          <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-                          <td class="text-right">12%</td>
-                          <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                        </tr>
-                        <tr>
-                          <td colspan="6" class="text-right">Shipping Cost</td>
-                          <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                        </tr>
-                        <tr>
-                          <td colspan="6" class="text-right">GST</td>
-                          <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                        </tr>
-                        <tr>
-                          <td colspan="6" class="text-right">Other Charges
-                            <div class="dropdown info_inline">
-                              <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                              <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                Package Cost, Labour Charges & Payment Processing Fee
-                              </div>
-                            </div>
-                          </td>
-                          <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                        </tr>
-                        <tr>
-                          <td colspan="6" class="text-right bold">Total Order Cost</td>
-                          <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                        </tr>
+                        <!-- Dynamic table data -->
                       </tbody>
                     </table>
                   </div>
                   <div class="text-right d-flex justify-content-end mt30">
-                    <button type="button" id="bulk-order" class="btn btn-login btnekomn card_f_btn"><i class="fas fa-rupee-sign me-1"></i>454.50 Pay</button>
+                    <button type="button" id="bulk-order" class="btn btn-login btnekomn card_f_btn payment_button"><i class="fas fa-rupee-sign me-1"></i>0.00 Pay</button>
                   </div>
                 </section>
               </div>
@@ -716,6 +627,7 @@
                         <th>Product Title</th>
                         <th class="text-center">Stock</th>
                         <th>SKU</th>
+                        <th>HSN</th>
                         <th class="text-center">Qty</th>
                         <th class="text-right">Price/piece</th>
                         <th class="text-right">GST%</th>
@@ -723,48 +635,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                    {{--
-                    <tr>
-                        <td>
-                          <div class="productTitle_t3 bold">
-                            <i class="fas fa-minus-circle removeResellSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse (Resell)
-                          </div>
-                        </td>
-                        <td class="text-center">100</td>
-                        <td>K5944RUR</td>
-                        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-                        <td class="text-right">12%</td>
-                        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">Shipping Cost</td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">GST</td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right">Other Charges
-                          <div class="dropdown info_inline">
-                            <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                            <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                              Package Cost, Labour Charges & Payment Processing Fee
-                            </div>
-                          </div>
-                        </td>
-                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="text-right bold">Total Order Cost</td>
-                        <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                      </tr>--}}
+                      <!-- Dynamic table data -->
                     </tbody>
                   </table>
                 </div>
                 <div class="text-right d-flex justify-content-end mt30">
-                  <button type="button" id="resell-order" class="btn btn-login btnekomn card_f_btn next_Tab"><i class="fas fa-rupee-sign me-1"></i>454.50 Pay</button>
+                  <button type="button" id="resell-order" class="btn btn-login btnekomn card_f_btn payment_button"><i class="fas fa-rupee-sign me-1"></i>0.00 Pay</button>
                 </div>
               </section>
             </div>
@@ -1312,7 +1188,6 @@
             ApiRequest('product/search/sku', 'POST', {
                 sku: sku
             }).then(response => {
-              console.log(response);
                 if (response.data.statusCode == 200) {
                     fetchDropshipOrderSku();
                     document.getElementById('sku').value = '';
@@ -1337,6 +1212,7 @@
                 });
                 }
             }).catch(error => {
+              console.error(error);
                    // Handle error
                    Swal.fire({
                     title: 'Error',
@@ -1360,77 +1236,98 @@
     });
     // end
 
-
-    // jquery start
+    // when the page is loaded fetch cart data 
     $(document).ready(function() {
         fetchDropshipOrderSku();
     });
-    // jquery end
+
+    $('#pin_code').on('blur', function() {
+      if (this.value.length == 6) {
+        $('#pin_code').removeClass('is-invalid');
+        $('#pin_codeErr').text('');
+        fetchDropshipOrderSku();
+      } else {
+        $('#pin_code').addClass('is-invalid');
+        $('#pin_codeErr').text('Pincode should be 6 digits');
+        return;
+      }
+    });
+   
     // functiomn for fetch sku data from add to cart api
     function fetchDropshipOrderSku() {
-        var url = 'fetch-sku';
+        var url = 'product/cart/list';
         var gstAmout = 0;
         var totalCost = 0;
-        ApiRequest(url, 'GET').then(response => {
-            // console.log(response);
+        var shippingCost = 0;
+        var otherCost = 0;
+        let order_type = $('#order_type').val();
+        let pincode = '';
+        if(order_type == 1){
+          pincode = $('#pin_code').val();
+        }else if(order_type == 3){
+          pincode = $('#resell-b-pincode').val();
+        }
+        ApiRequest(url, 'POST', {
+          pincode: pincode,
+          order_type: order_type
+        }).then(response => {
             if (response.data.statusCode == 200) {
                 // Handle the successful response here
-                const $dropshipInvoice = $('#dropshipInvoice tbody');
-
+                const $dropshipInvoice = $('.payInvoiceTable tbody');
                 var products = response.data.data.data;
-                // console.log(products);
+
                 // Clear the existing rows if needed
-
                 $dropshipInvoice.empty();
-
                 // Check if response.data exists and is an array
                 if (products) {
                     products.forEach(product => {
-                        // console.log(product);
                         var amount = product.gstAmount.toFixed(2) || 0;
                         gstAmout += parseFloat(amount);
-                        totalCost += parseFloat(product.totalCost) || 0;
-                        // gstAmout += parseFloat(product.gstAmout) || 0;
+                        overAllCost = parseFloat(product.overAllCost) || 0;
+                        shippingCost += parseFloat(product.shippingCost) || 0;
+                        otherCost += parseFloat(product.otherCost) || 0;
+                        $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>'+overAllCost.toFixed(2)+' Pay');
                         const $dropshipInvoiceRow = $('<tr></tr>').html(`
                     <td>
                         <div class="productTitle_t3 bold">
-                            <i class="fas fa-minus-circle pointer text-danger me-1" onClick="deleteSkuProduct(${product.product_id})"></i>${product.title}
+                            <i class="fas fa-minus-circle pointer text-danger me-1" onClick="deleteSkuProduct('${product.product_id}')"></i>${product.title}
                         </div>
                     </td>
                     <td class="text-center">${product.stock}</td>
                     <td>${product.sku}</td>
                     <td>${product.hsn}</td>
-                    <td class="text-center"><input type="text" class="stock_t" value="1" /></td>
-                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_before_tax}</td>
+                    <td class="text-center"><input type="text" class="stock_t" onfocusout="updateQuantity('${product.id}', '${order_type}', this)" value="${product.quantity}" /></td>
+                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_per_piece}</td>
                     <td class="text-right">${product.gst_percentage} %</td>
-                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst}</td>
+                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst.toFixed(2)}</td>
                 `);
                         $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
                     });
 
                     const additionalRows = `
+                                         <tr>
+                                            <td colspan="7" class="text-right">GST</td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout.toFixed(2)}</td>
+                                        </tr>
                                         <tr>
                                             <td colspan="7" class="text-right">Shipping Cost</td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${shippingCost.toFixed(2)}</td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="7" class="text-right">GST</td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout}</td>
-                                        </tr>
+                                       
                                         <tr>
                                             <td colspan="7" class="text-right">Other Charges
                                                 <div class="dropdown info_inline">
                                                     <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                     <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                                        Package Cost, Labour Charges & Payment Processing Fee
+                                                        Package Cost, Labour Charges, Platform Fee & Payment Processing Fee
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${otherCost.toFixed(2)}</td>
                                         </tr>
                                         <tr>
                                             <td colspan="7" class="text-right bold">Total Order Cost</td>
-                                            <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${totalCost}</td>
+                                            <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${overAllCost.toFixed(2)}</td>
                                         </tr>`;
 
                     $dropshipInvoice.append(additionalRows); // Add additional rows at the end
@@ -1438,37 +1335,10 @@
                 } else {
                     const $dropshipInvoice = $('#dropshipInvoice tbody');
                     $dropshipInvoice.empty();
-
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
-                        `<tr><td colspan="7" class="text-center">No Record Found</td></tr>`);
-                    $dropshipInvoice.prepend(
-                        $dropshipInvoiceRow); // Add new row at the beginning
-                    const additionalRows = `
-                                    <tr>
-                                        <td colspan="7" class="text-right">Shipping Cost</td>
-                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="7" class="text-right">GST</td>
-                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="7" class="text-right">Other Charges
-                                            <div class="dropdown info_inline">
-                                                <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                                <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                                    Package Cost, Labour Charges & Payment Processing Fee
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="7" class="text-right bold">Total Order Cost</td>
-                                        <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                    </tr>`;
-
-                    $dropshipInvoice.append(additionalRows);
+                `<td colspan="8" class="text-center">No Record Found</td>`);
+                $dropshipInvoice.prepend(
+                $dropshipInvoiceRow);
                 }
             }
         }).catch(data => {
@@ -1484,73 +1354,142 @@
 
     }
 
-    function deleteSkuProduct(id) {
-        // var product_id = element;
-        console.log(id);
-        var csrfToken = $('input[name="_token"]').val();
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: !0,
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, cancel!",
-            customClass: {
-                confirmButton: "btn btn-primary",
-                cancelButton: "btn btn-active-light",
-            },
-            buttonsStyling: !1,
-        }).then((result) => {
-            if (result.isConfirmed) {
 
-                $.ajax({
-                    type: "DELETE",
-                    url: `{{ route('delete.sku', '') }}/${id}`,
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken // Include the CSRF token in the headers
-                    },
-
-                    success: function(response) {
-                        // console.log(data.data);
-                        var data = response.data;
-                        if (data.statusCode == '200') {
-                            Swal.fire({
-                                text: data.message,
-                                icon: "success",
-                                buttonsStyling: !1,
-                                confirmButtonText: "Ok, got it!",
-                                customClass: {
-                                    confirmButton: "btn btn-light",
-                                },
-                            });
-                            fetchDropshipOrderSku();
-
-                        } else {
-                            fetchDropshipOrderSku();
-                            Swal.fire({
-                                text: data.message,
-                                icon: "error",
-                                buttonsStyling: !1,
-                                confirmButtonText: "Ok, got it!",
-                                customClass: {
-                                    confirmButton: "btn btn-light",
-                                },
-                            });
-                        }
-
-                    },
-                    error: function(data) {
-                        Swal.fire({
-                            text: "Sorry, looks like there are some errors detected, please try again.",
-                            icon: "error",
-                            buttonsStyling: !1,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn btn-light",
-                            },
-                        });
+    // function for update quantity
+    function updateQuantity(id, order_type, element) {
+        var quantity = element.value;
+        ApiRequest(`product/cart/update/quantity`, 'POST', {
+            cart_id: id,
+            quantity: quantity,
+            order_type: order_type
+        }).then(response => {
+            if (response.data.statusCode == 200) {
+                fetchDropshipOrderSku();
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
                     }
                 });
+            }
+        }).catch(error => {
+            console.error(error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Something went wrong !',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+                didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                }
+            });
+        });
+    }
+
+    // function for delete sku product
+    function deleteSkuProduct(id) {
+        var csrfToken = $('input[name="_token"]').val();
+        Swal.fire({
+                title: 'Confirmation',
+                text: 'Are you sure you want to remove this product from your cart?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                }
+            }).then((result) => {
+            if (result.isConfirmed) {
+
+              ApiRequest(`product/remove/cart/${id}`, 'DELETE').then(response => {
+                if (response.data.statusCode == 200) {
+                    fetchDropshipOrderSku();
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK',
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                    });
+                }
+            }).catch(error => {
+                console.error(error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Something went wrong !',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            });
             }
 
         });

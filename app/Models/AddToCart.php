@@ -74,6 +74,52 @@ class AddToCart extends Model
     }
 
     /**
+     * Get the price of the product based on the quantity.
+     *
+     * @param string $ranges
+     * @param int $quantity
+     * @return float
+     */
+    public function getPriceBasedOnQuantity($ranges, $quantity) {
+        $ranges = json_decode($ranges, true);
+        foreach ($ranges as $range) {
+            if ($quantity >= $range['range']['min'] && $quantity <= $range['range']['max']) {
+                return (float) number_format(($range['price']), 2);
+            }
+        }
+        // If the quantity is less than the minimum range, return the price of the minimum range
+        return (float) number_format((end($ranges)['price']), 2);
+    }
+
+    /**
+     * Get the prices of the product based on the quantity.
+     *
+     * @param string $ranges
+     * @param int $quantity
+     * @return array
+     */
+    public function getPricesBasedOnQuantity($ranges, $quantity) {
+        $ranges = json_decode($ranges, true);
+        foreach ($ranges as $range) {
+            if ($quantity >= $range['range']['min'] && $quantity <= $range['range']['max']) {
+                return [
+                    'local' => $range['local'],
+                    'regional' => $range['regional'],
+                    'national' => $range['national'],
+                ];
+            }
+        }
+    
+        // If the quantity exceeds all ranges, return the prices of the maximum range
+        $lastRange = end($ranges);
+        return [
+            'local' => $lastRange['local'],
+            'regional' => $lastRange['regional'],
+            'national' => $lastRange['national'],
+        ];
+    }
+
+    /**
      * The relationships that should always be loaded.
      *
      * @var array

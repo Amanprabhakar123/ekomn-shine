@@ -62,7 +62,7 @@ class Pincode extends Model
         $destination = self::where('pincode', $destinationPincode)->first();
 
         if (!$origin || !$destination) {
-            return 'Invalid pin codes';
+            return ['distance' => 0, 'zone' => self::NATIONAL];
         }
 
         $manage = false;

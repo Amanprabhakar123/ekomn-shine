@@ -16,10 +16,11 @@ class Charges extends Model
     const PACKING_CHARGES = 'Packing charges';
     const LABOUR_CHARGES = 'Labour Charges';
     const PROCESSING_CHARGES = 'Processing Charges';
+    const REFERRAL_CHARGES = 'Referral Charges';
 
     // Constants for Order Types
     const DROPSHIP = 'Dropship';
-    const BULK_ORDER = 'Bulk Order';
+    const BULK = 'Bulk';
     const RESELL = 'Resell';
 
     // GST Bracket Constant
@@ -75,6 +76,61 @@ class Charges extends Model
         ->logOnlyDirty()
         ->useLogName('Charges Log')
         ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} charges with ID: {$this->id}");
+    }
+
+    /**
+     * Get the charges by category.
+     *
+     * @param string $category
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function getValueByOrderTypeAndCharge($orderType, $charge)
+    {
+        return self::where('category', $orderType)->where('other_charges', $charge);
+    }
+
+    /**
+     * Get the charges by category.
+     *
+     * @param string $category
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function getValueBasedOnAmount($ranges, $amount) {
+        foreach ($ranges as $range) {
+            if ($range['range'] === ">1000") {
+                if ($amount > 1000) {
+                    return $range['value'];
+                }
+            } else {
+                list($min, $max) = explode(' to ', $range['range']);
+                if ($amount >= $min && $amount <= $max) {
+                    return $range['value'];
+                }
+            }
+        }
+    
+        // If the amount exceeds all ranges, return the value of the maximum range
+        $lastRange = end($ranges);
+        return $lastRange['value'];
+    }
+
+    /**
+     * Get the order type.
+     *
+     * @return int
+     */
+    public function getOrderType(): int
+    {
+        switch ($this->order_type) {
+            case self::DROPSHIP:
+                return 1;
+            case self::BULK:
+                return 2;
+            case self::RESELL:
+                return 3;
+            default:
+                return 'Unknown';
+        }
     }
 
 
