@@ -64,7 +64,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
     Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
-    Route::delete('delete-sku/{id}', [OrderController::class, 'deleteSku'])->name('delete.sku');
     Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
     Route::get('view-order', [DashboardController::class, 'viewOrder'])->name('view.order');
 });
@@ -72,8 +71,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::get('fetch-sku', [OrderController::class, 'fetchSku'])->name('fetch.sku');
-
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::get('/my/product/inventory/', [BuyerInventoryController::class, 'index'])->name('product.myinventory');
         // Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
@@ -94,6 +91,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
         Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
         Route::post('product/search/sku', [OrderController::class, 'searchProductBySku'])->name('product.search.sku');
+        Route::delete('product/remove/cart/{id}', [OrderController::class, 'removeProductInCart'])->name('product.remove.sku');
+        Route::post('product/cart/list', [OrderController::class, 'getProductInCart'])->name('product.cart.list');
+        Route::post('product/cart/update/quantity', [OrderController::class, 'updateProductQuantityInCart'])->name('product.cart.update.quantity');
         Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
     });
 });
@@ -102,9 +102,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
-        // Define routes for jwt token refresh, user details, and logout
         Route::post('/product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
-
         Route::get('fetch-orders', [OrderController::class, 'getOrder'])->name('fetch.orders');
     });
 });
