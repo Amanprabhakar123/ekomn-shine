@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Events\NewOrderCreatedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\BuyerInventory;
@@ -33,10 +32,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $order = Order::find(1);
-        $user = User::all();
 
-        event(new NewOrderCreatedEvent($order, $user));
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             return view('dashboard.supplier.index');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
