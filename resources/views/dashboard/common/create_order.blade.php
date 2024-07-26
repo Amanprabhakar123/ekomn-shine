@@ -4,6 +4,7 @@
 <div class="ek_dashboard">
   <div class="ek_content">
     <div class="card ekcard pa pt-2 shadow-sm">
+      <input type="hidden" name="order_type" id="order_type" value = "1">
       <ul class="nav nav-underline ekom_tab" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link active" id="dropship-tab" data-bs-toggle="tab" data-bs-target="#dropship" role="tab" aria-controls="dropship" aria-selected="true">Dropship Order</a>
@@ -17,7 +18,6 @@
       </ul>
       <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="dropship" role="tabpanel" aria-labelledby="dropship-tab" tabindex="0">
-          <input type="hidden" name="order_type" id="order_type" value = "1">
           <form>
             <div class="addProductForm">
               <div class="o_bannerimg">
@@ -313,7 +313,7 @@
                           <span>Pin Code:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
-                          <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}" readonly="readonly" />
+                          <input type="text" id="pinCodeBulk" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}" readonly="readonly" />
                           <span class="text-danger hide">errr message</span>
                         </div>
                       </div>
@@ -1168,6 +1168,43 @@
       }
     });
 
+    // update order type script 
+    const tabMapping = {
+        'dropship-tab': 1,
+        'bulk-tab': 2,
+        'resell-tab': 3
+    };
+
+    let hiddenInput = document.getElementById("order_type");
+      document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+          tab.addEventListener('shown.bs.tab', function(event) {
+              const activeTabId = event.target.id;
+              const numericValue = tabMapping[activeTabId];
+                hiddenInput.value = numericValue;
+                if (hiddenInput.value == 1) {
+                    var getQntyId = document.querySelectorAll('.stockQnty');
+                    var uniqueIds = new Set();
+
+                    getQntyId.forEach(function (element) {
+                        var id = element.id;
+                        if (!uniqueIds.has(id)) {
+                            uniqueIds.add(id);
+                            ApiRequest(`product/cart/update/quantity`, 'POST', {
+                                cart_id: id,
+                                quantity: 1,
+                                order_type: hiddenInput.value
+                            }).then(response => {
+                              fetchDropshipOrderSku();
+                            }).catch(error => {
+                                console.error(error);
+                              
+                            });
+                        }
+                    });
+                }
+          });
+          
+        });
   });
   
     //----------------------------------------------------------------------
@@ -1252,42 +1289,57 @@
         return;
       }
     });
+
+    $('#resell-d-pincode').on('blur', function() {
+      if (this.value.length == 6) {
+        $('#resell-d-pincode').removeClass('is-invalid');
+        $('#resell-d-pincodeErr').text('');
+        fetchDropshipOrderSku();
+      } else {
+        $('#resell-d-pincode').addClass('is-invalid');
+        $('#resell-d-pincodeErr').text('Pincode should be 6 digits');
+        return;
+      }
+    });
    
     // functiomn for fetch sku data from add to cart api
-function fetchDropshipOrderSku() {
-   var url = 'product/cart/list';
-   var gstAmout = 0;
-   var totalCost = 0;
-   var shippingCost = 0;
-   var otherCost = 0;
-   let order_type = $('#order_type').val();
-   let pincode = '';
-   if (order_type == 1) {
-      pincode = $('#pin_code').val();
-   } else if (order_type == 3) {
-      pincode = $('#resell-b-pincode').val();
-   }
-   ApiRequest(url, 'POST', {
-      pincode: pincode,
-      order_type: order_type
-   }).then(response => {
-      if (response.data.statusCode == 200) {
-         // Handle the successful response here
-         const $dropshipInvoice = $('.payInvoiceTable tbody');
-         var products = response.data.data.data;
+    function fetchDropshipOrderSku() {
+      
+        var url = 'product/cart/list';
+        var gstAmout = 0;
+        var totalCost = 0;
+        var shippingCost = 0;
+        var otherCost = 0;
+        let order_type = $('#order_type').val();
+        let pincode = '';
+        if(order_type == 1){
+          pincode = $('#pin_code').val();
+        }if(order_type == 2){
+          pincode = $('#pinCodeBulk').val();
+        }else if(order_type == 3){
+          pincode = $('#resell-d-pincode').val();
+        }
+        ApiRequest(url, 'POST', {
+          pincode: pincode,
+          order_type: order_type
+        }).then(response => {
+            if (response.data.statusCode == 200) {
+                // Handle the successful response here
+                const $dropshipInvoice = $('.payInvoiceTable tbody');
+                var products = response.data.data.data;
 
-         // Clear the existing rows if needed
-         $dropshipInvoice.empty();
-         // Check if response.data exists and is an array
-         if (products) {
-            products.forEach(product => {
-               var amount = product.gstAmount.toFixed(2) || 0;
-               gstAmout += parseFloat(amount);
-               overAllCost = parseFloat(product.overAllCost) || 0;
-               shippingCost += parseFloat(product.shippingCost) || 0;
-               otherCost += parseFloat(product.otherCost) || 0;
-               $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>' + overAllCost.toFixed(2) + ' Pay');
-               const $dropshipInvoiceRow = $('<tr></tr>').html(`
+                // Clear the existing rows if needed
+                $dropshipInvoice.empty();
+                // Check if response.data exists and is an array
+                if (products) {
+                    products.forEach(product => {
+                        var amount = product.gstAmount.toFixed(2) || 0;
+                        gstAmout += parseFloat(amount);
+                        overAllCost = parseFloat(product.overAllCost) || 0;
+                        shippingCost += parseFloat(product.shippingCost) || 0;
+                        otherCost += parseFloat(product.otherCost) || 0;
+                        $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>'+overAllCost.toFixed(2)+' Pay');
+                        const $dropshipInvoiceRow = $('<tr></tr>').html(`
                     <td>
                         <div class="productTitle_t3 bold">
                             <i class="fas fa-minus-circle pointer text-danger me-1" onClick="deleteSkuProduct('${product.product_id}')"></i>${product.title}
@@ -1296,15 +1348,16 @@ function fetchDropshipOrderSku() {
                     <td class="text-center">${product.stock}</td>
                     <td>${product.sku}</td>
                     <td>${product.hsn}</td>
-                    <td class="text-center"><input type="text" class="stock_t" onfocusout="updateQuantity('${product.id}', '${order_type}', this)" value="${product.quantity}" /></td>
+                    <td class="text-center"><input type="text" class="stock_t" onfocusout="updateQuantity('${product.id}', this)" value="${product.quantity}" /></td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_per_piece}</td>
                     <td class="text-right">${product.gst_percentage} %</td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst.toFixed(2)}</td>
+                    <input type="hidden" id="${product.id}" class="stockQnty" value="">
                 `);
-               $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
-            });
+                        $dropshipInvoice.prepend($dropshipInvoiceRow); // Add new row at the beginning
+                    });
 
-            const additionalRows = `
+                    const additionalRows = `
                                          <tr>
                                             <td colspan="7" class="text-right">GST</td>
                                             <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout.toFixed(2)}</td>
@@ -1330,39 +1383,34 @@ function fetchDropshipOrderSku() {
                                             <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${overAllCost.toFixed(2)}</td>
                                         </tr>`;
 
-            $dropshipInvoice.append(additionalRows); // Add additional rows at the end
+                    $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 
-         } else {
-            const $dropshipInvoice = $('.payInvoiceTable tbody');
+                } else {
+                    const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    $dropshipInvoice.empty();
+                    const $dropshipInvoiceRow = $('<tr></tr>').html(
+                `<td colspan="8" class="text-center">No Record Found</td>`);
+                $dropshipInvoice.prepend(
+                $dropshipInvoiceRow);
+                }
+            }
+        }).catch(data => {
+            const $dropshipInvoice = $('#dropshipInvoice tbody');
             $dropshipInvoice.empty();
+
             const $dropshipInvoiceRow = $('<tr></tr>').html(
-               `<td colspan="8" class="text-center">No Record Found</td>`);
+                `<td colspan="8" class="text-center">No Record Found</td>`);
             $dropshipInvoice.prepend(
-               $dropshipInvoiceRow);
-         }
-      }else{
-        const $dropshipInvoice = $('.payInvoiceTable tbody');
-            $dropshipInvoice.empty();
-            const $dropshipInvoiceRow = $('<tr></tr>').html(
-              `<td colspan="8" class="text-center">No Record Found</td>`);
-            $dropshipInvoice.prepend(
-               $dropshipInvoiceRow);
-      }
-   }).catch(data => {
-      const $dropshipInvoice = $('.payInvoiceTable tbody');
-      $dropshipInvoice.empty();
+                $dropshipInvoiceRow);
 
-      const $dropshipInvoiceRow = $('<tr></tr>').html(
-         `<td colspan="8" class="text-center">No Record Found</td>`);
-      $dropshipInvoice.prepend(
-         $dropshipInvoiceRow);
+        });
 
-   });
+    }
 
-}
 
     // function for update quantity
-    function updateQuantity(id, order_type, element) {
+    function updateQuantity(id, element) {
+        let order_type = $('#order_type').val();
         var quantity = element.value;
         ApiRequest(`product/cart/update/quantity`, 'POST', {
             cart_id: id,
