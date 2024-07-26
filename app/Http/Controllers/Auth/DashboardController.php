@@ -34,11 +34,13 @@ class DashboardController extends Controller
      */
     public function index()
     {
+
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
             return view('dashboard.supplier.index');
         } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
             $distance = new Pincode();
             $distance = $distance->calculateDistance('122016', '226018');
+
             return view('dashboard.buyer.index', get_defined_vars());
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
             return view('dashboard.admin.index');
@@ -51,17 +53,16 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-
     public function editProfile()
     {
         $product_category = Category::where([
             'root_parent_id' => 0,
             'is_active' => true,
-            'depth' => 0
+            'depth' => 0,
         ])->get();
         $selected_product_category = auth()->user()->companyDetails->productCategory->pluck('product_category_id')->toArray();
         $alternate_business_contact = json_decode(auth()->user()->companyDetails->alternate_business_contact);
-        $languages =  ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
+        $languages = ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
         $read_selected_languages = json_decode(auth()->user()->companyDetails->language_i_can_read, true) ?? [];
         $understand_selected_languages = json_decode(auth()->user()->companyDetails->language_i_can_understand, true) ?? [];
         $billing_address = auth()->user()->companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
@@ -81,6 +82,7 @@ class DashboardController extends Controller
             $selected_business_type = auth()->user()->companyDetails->businessType->pluck('business_type_id')->toArray();
             $sales = SalesChannel::where('is_active', true)->get();
             $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
+
             return view('dashboard.buyer.profile', get_defined_vars());
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
             return view('dashboard.admin.profile', get_defined_vars());
@@ -91,13 +93,13 @@ class DashboardController extends Controller
     /**
      * Update the user's profile.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateCompanyDetails(Request $request)
     {
         try {
             $response = (new CompanyService())->updateCompanyDetails($request);
+
             return successResponse(null, $response['data']);
         } catch (\Exception $e) {
             return errorResponse($e->getMessage());
@@ -131,6 +133,7 @@ class DashboardController extends Controller
                 ->groupBy('product_variations.product_id')
                 ->select('product_variations.product_id')
                 ->get()->count();
+
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
@@ -186,7 +189,6 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-
     public function editInventory(Request $request, $variation_id)
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
@@ -208,6 +210,7 @@ class DashboardController extends Controller
                 ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
+
             // dd(DB::getQueryLog());
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
         } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
@@ -227,6 +230,7 @@ class DashboardController extends Controller
                 ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
+
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
         }
         abort('403', 'Unauthorized action.');
@@ -235,7 +239,6 @@ class DashboardController extends Controller
     /**
      * Place your order.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function createOrder(Request $request)
@@ -247,11 +250,17 @@ class DashboardController extends Controller
             $selected_business_type = auth()->user()->companyDetails->businessType->pluck('business_type_id')->toArray();
             $sales = SalesChannel::where('is_active', true)->get();
             $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
+
             return view('dashboard.common.create_order', get_defined_vars());
         }
     }
 
-    // get buyer api data
+    /**
+     * Get the buyer details.
+     * @param  $buyer_id
+     * but not used in the code
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getBuyerId($buyer_id)
     {
         $companyDetail = CompanyDetail::where('company_serial_id', $buyer_id)->first();
@@ -259,8 +268,6 @@ class DashboardController extends Controller
             $delivery_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
             $billing_address = $companyDetail->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
             if ($companyDetail->user->hasRole(User::ROLE_BUYER)) {
-
-                // $user_id = $companyDetail->user->id;
                 $data = [
                     'first_name' => $companyDetail->first_name,
                     'last_name' => $companyDetail->last_name,
@@ -275,14 +282,13 @@ class DashboardController extends Controller
                     'billing_state' => $billing_address->state,
                     'billing_pincode' => $billing_address->pincode,
                     // 'billing_address' => $billing_address,
-
-                    // Add more data here if needed
                 ];
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => [__('auth.buyerFound')],
-                    'data' => $data
+                    'data' => $data,
                 ]], __('statusCode.statusCode200'));
             } else {
                 return response()->json(['data' => [
@@ -300,9 +306,11 @@ class DashboardController extends Controller
         }
     }
 
-
-
-
+    /**
+     * Get the list of states and cities.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getStateCityList(Request $request)
     {
         $state = DB::table('states')
@@ -314,14 +322,12 @@ class DashboardController extends Controller
             ->where('state_id', $request->id)
             ->get();
 
-
         if ($state->isNotEmpty()) {
             $statsList = [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
                 'state' => $state->toArray(),
-                'city' => $city->toArray()
-
+                'city' => $city->toArray(),
             ];
             return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
         } else {
@@ -329,8 +335,8 @@ class DashboardController extends Controller
                 'data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
-                    'message' =>  'State not found'
-                ]
+                    'message' => 'State not found',
+                ],
             ], __('statusCode.statusCode200'));
         }
     }

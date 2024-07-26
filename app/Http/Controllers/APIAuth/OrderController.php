@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Models\User;
-use App\Models\AddToCart;
-use League\Fractal\Manager;
-use Illuminate\Http\Request;
-use App\Models\ProductVariation;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\AddToCart;
 use App\Models\Order;
-use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
+use App\Models\ProductVariation;
+use App\Models\User;
 use App\Transformers\ProductCartListTransformer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 
 class OrderController extends Controller
 {
@@ -27,7 +26,6 @@ class OrderController extends Controller
     /**
      * Add a product to the cart.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function addToCart(Request $request)
@@ -50,7 +48,7 @@ class OrderController extends Controller
             }
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -63,7 +61,7 @@ class OrderController extends Controller
             foreach ($request->product_id as $key => $product_id) {
                 // Decrypt the product ID
                 $product = ProductVariation::find(salt_decrypt($product_id));
-                if (!empty($product)) {
+                if (! empty($product)) {
                     // Create a new Add To Cart record
                     $cart[] = [
                         'buyer_id' => auth()->user()->id,
@@ -81,7 +79,7 @@ class OrderController extends Controller
                 }
             }
 
-            if (!empty($cart)) {
+            if (! empty($cart)) {
                 // Create a new Add To Cart record
                 AddToCart::insert($cart);
             }
@@ -94,7 +92,8 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('Add to cart failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -106,7 +105,6 @@ class OrderController extends Controller
     /**
      * Search for a product by SKU.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function searchProductBySku(Request $request)
@@ -125,7 +123,7 @@ class OrderController extends Controller
             }
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -147,18 +145,18 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
             // Check if the product variation SKU exists
-            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->product_id)->get();
+            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->id)->get();
 
             // Check if the product variation SKU exists
             if ($checkDuplicate->isEmpty()) {
                 // Check if the product variation SKU exists
-                if (!empty($productVariationSku)) {
+                if (! empty($productVariationSku)) {
 
                     if ($productVariationSku->stock > 0) {
                         // Create a new Add To Cart record
                         AddToCart::create([
                             'buyer_id' => $user->id,
-                            'product_id' => $productVariationSku->product_id,
+                            'product_id' => $productVariationSku->id,
                             'quantity' => AddToCart::DEFAULT_QUANTITY,
                             'added_at' => now(),
                         ]);
@@ -188,7 +186,8 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('Search product by sku failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('Search product by sku failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -206,7 +205,7 @@ class OrderController extends Controller
     {
         try {
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -241,18 +240,16 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
-            dd($e->getMessage(), $e->getLine());
-            \Log::error('Add to cart failed: ' . $e->getMessage()); // Log the error message
+
+            \Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
 
             return response()->json(['data' => __('auth.addSkuFailed')], 500);
         }
     }
 
-
     /**
      * Update the quantity of a product in the cart.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateProductQuantityInCart(Request $request)
@@ -274,7 +271,7 @@ class OrderController extends Controller
             }
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -302,7 +299,7 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
-            if($request->order_type == Order::ORDER_TYPE_DROPSHIP) {
+            if ($request->order_type == Order::ORDER_TYPE_DROPSHIP) {
                 if ($request->quantity > Order::DROPSHIP_ORDER_QUANTITY) {
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode400'),
@@ -310,7 +307,7 @@ class OrderController extends Controller
                         'message' => __('auth.quantityExceedsDropship', ['quantity' => Order::DROPSHIP_ORDER_QUANTITY]),
                     ]], __('statusCode.statusCode200'));
                 }
-            }   
+            }
 
             // Update the quantity of the product in the cart
             $cart->quantity = $request->quantity;
@@ -324,7 +321,8 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('update quantity failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('update quantity failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return
                 response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode500'),
@@ -337,14 +335,13 @@ class OrderController extends Controller
     /**
      * Remove a product from the cart.
      *
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function removeProductInCart($id)
     {
         try {
             // Check if the ID is a string
-            if (!is_string($id)) {
+            if (! is_string($id)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
@@ -356,7 +353,7 @@ class OrderController extends Controller
             $product_id = (int) salt_decrypt($id);
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -365,10 +362,10 @@ class OrderController extends Controller
             }
 
             // Check if the product ID is not empty
-            if (!empty($product_id)) {
+            if (! empty($product_id)) {
                 AddToCart::where([
-                    'buyer_id' =>  auth()->user()->id,
-                    'product_id' => $product_id
+                    'buyer_id' => auth()->user()->id,
+                    'product_id' => $product_id,
                 ])->delete();
 
                 // Return a success message
@@ -388,7 +385,8 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('Add to cart failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -396,4 +394,64 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
     }
+
+    public function orders()
+    {
+        try {
+            // Retrieve all orders with related models
+            $orderList = Order::with('buyer', 'supplier', 'shippingAddress', 'billingAddress', 'pickupAddress', 'orderItemsCharges', 'shipments', 'orderPayments', 'orderTransactions')->get();
+
+            // Check if the authenticated user has the permission to list orders
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_ORDER)) {
+                // If not, return a 403 unauthorized response
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+
+            if ($orderList) {
+                // If the order list is found, return it with a success message
+                return response()->json(['data' => [
+                    'data' => $orderList,
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.listOrder'),
+                ]], __('statusCode.statusCode200'));
+            } else {
+                // If the order list is not found, return a 404 not found response
+                return response()->json(['data' => __('auth.orderNotFound')], __('statusCode.statusCode404'));
+            }
+        } catch (\Exception $e) {
+            // Log the error message and line number if an exception occurs
+            Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
+
+            // Return a 500 internal server error response with a failure message
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderListFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+
+
+    /**
+     * Store a new order.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        try {
+
+        }catch(\Exception $e){
+            // Handle the exception
+            Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderStoreFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+                
 }

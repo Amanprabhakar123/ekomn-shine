@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Events\ExceptionEvent;
+use App\Events\NewOrderCreatedEvent;
+use App\Events\OrderCanceledEvent;
+use App\Events\OrderStatusChangedEvent;
+use App\Listeners\ExceptionListener;
+use App\Listeners\NotifyBuyerNewOrderListener;
+use App\Listeners\NotifyBuyerOrderCanceledListener;
+use App\Listeners\NotifyChangeOrderStatusListener;
+use App\Listeners\NotifySupplierNewOrderListener;
+use App\Listeners\NotifySupplierOrderCanceledListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +27,21 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        NewOrderCreatedEvent::class => [
+            NotifyBuyerNewOrderListener::class,
+            NotifySupplierNewOrderListener::class,
+        ],
+        OrderCanceledEvent::class => [
+            NotifySupplierOrderCanceledListener::class,
+            NotifyBuyerOrderCanceledListener::class,
+        ],
+        OrderStatusChangedEvent::class => [
+            NotifyChangeOrderStatusListener::class,
+        ],
+        ExceptionEvent::class => [
+            ExceptionListener::class,
+
         ],
     ];
 

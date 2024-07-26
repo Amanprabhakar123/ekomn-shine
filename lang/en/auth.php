@@ -93,5 +93,8 @@ return [
     'unauthorizedAction' => 'Unauthorized action.',
     'productNotFoundBySku' => 'Product not found by SKU.',
     'productOutOfStock' => 'Product out of stock.',
+    'listOrder' => 'Fetch Orders SuccessFully.',
+    'orderListFailed' => 'Fetch Orders Failed.',
+    'orderNotFound' => 'Orders Not Found.',
 
 ];

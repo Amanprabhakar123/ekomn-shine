@@ -95,15 +95,16 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('product/cart/list', [OrderController::class, 'getProductInCart'])->name('product.cart.list');
         Route::post('product/cart/update/quantity', [OrderController::class, 'updateProductQuantityInCart'])->name('product.cart.update.quantity');
         Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
+        Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
     });
 });
 
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
-        Route::post('/product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
-        // Define routes for jwt token refresh, user details, and logout
+        Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
+        Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+        Route::get('orders', [OrderController::class, 'orders'])->name('orders');
     });
 });
 
