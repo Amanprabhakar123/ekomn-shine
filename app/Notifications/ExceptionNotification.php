@@ -6,21 +6,18 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewOrderBuyerNotification extends Notification
+class ExceptionNotification extends Notification
 {
     use Queueable;
 
     protected $order;
 
-    protected $email;
-
     /**
      * Create a new notification instance.
      */
-    public function __construct($order, $email)
+    public function __construct($order)
     {
         $this->order = $order;
-        $this->email = $email;
     }
 
     /**
@@ -39,9 +36,9 @@ class NewOrderBuyerNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Order Notification')
+        // ->greeting($this->order[])
             ->line('The introduction to the notification.')
-            ->action('View Order', url('my-orders'))
+            ->action('Notification Action', url('/'))
             ->line('Thank you for using our application!');
     }
 
@@ -53,17 +50,7 @@ class NewOrderBuyerNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            // Add your custom data here if needed
+            //
         ];
-    }
-
-    /**
-     * Override the routeNotificationForMail method to dynamically set the recipient email.
-     *
-     * @return string
-     */
-    public function routeNotificationForMail($notifiable)
-    {
-        return $this->email;
     }
 }

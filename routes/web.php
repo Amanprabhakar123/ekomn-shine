@@ -103,7 +103,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         Route::post('/product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
-        Route::get('fetch-orders', [OrderController::class, 'getOrder'])->name('fetch.orders');
+        Route::get('orders', [OrderController::class, 'orders'])->name('orders');
     });
 });
 

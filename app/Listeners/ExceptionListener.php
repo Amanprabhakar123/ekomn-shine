@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Notifications\ChangeOrderStatusNotification;
+use App\Notifications\ExceptionNotification;
 use Illuminate\Support\Facades\Notification;
 
-class NotifyChangeOrderStatusListener
+class ExceptionListener
 {
     /**
      * Create the event listener.
@@ -20,10 +20,11 @@ class NotifyChangeOrderStatusListener
      */
     public function handle(object $event): void
     {
-        $user = $event->user;
         $order = $event->order;
+        $user = $event->user;
         // Send the notification
 
-        Notification::send($user, new ChangeOrderStatusNotification($order, $user));
+        Notification::send($user, new ExceptionNotification($order, $user));
+
     }
 }
