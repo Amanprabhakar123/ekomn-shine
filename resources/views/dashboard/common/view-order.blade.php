@@ -16,7 +16,7 @@
                     <div class="col-sm-4 col-md-2">
                     <div class="mt10">
                         <label class="bold">eKomn Order No</label>
-                        <input type="text" class="form-control" value="EK1050IND" readonly>
+                        <input type="text" class="form-control" value="{{$orderTable->order_number}}" readonly>
                     </div>
                     </div>
                     <div class="col-sm-4 col-md-2">
@@ -52,17 +52,18 @@
                     <div class="col-sm-12 col-md-6 mt15">
                     <h4 class="subheading mb-1">Delivery Address</h4>
                     <div class="addressbox">
+
                         <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                        <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                        <div>Grugram, Haryana, 122001</div>
+                        <div>{{$billing_address->street}}</div>
+                        <div>{{$billing_address->city}}, {{$billing_address->state}}, {{$billing_address->postal_code}}</div>
                     </div>
                     </div>
                     <div class="col-sm-12 col-md-6 mt15">
                     <h4 class="subheading mb-1">Billing Address</h4>
                     <div class="addressbox">
                         <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                        <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                        <div>Grugram, Haryana, 122001</div>
+                        <div>{{$delivery_address->street}}</div>
+                        <div>{{$delivery_address->city}}, {{$delivery_address->state}}, {{$delivery_address->postal_code}}</div>
                     </div>
                     </div>
                 </div>

@@ -78,7 +78,7 @@
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="{{route('view.order')}}" class="a_link">Cushion covers</a>
+                    <a href="{{route('view.order', ['myOrderId' => $orderId])}}" class="a_link">Cushion covers</a>
                   </div>
                 </td>
                 <td>Junaid Khan</td>

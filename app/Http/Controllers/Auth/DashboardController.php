@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Import;
 use App\Models\Pincode;
 use App\Models\Category;
@@ -17,6 +18,7 @@ use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Models\OrderAddress;
 use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
@@ -340,10 +342,9 @@ class DashboardController extends Controller
      */
     public function myOrders()
     {
-        // $var = salt_encrypt(1);
-        // dd($var);
+        $orderId = salt_encrypt(1);
 
-        return view('dashboard.common.my_orders');
+        return view('dashboard.common.my_orders', compact('orderId'));
     }
 
     /**
@@ -351,8 +352,18 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function viewOrder()
+    public function viewOrder(Request $request)
     {
-        return view('dashboard.common.view-order');
+        $myOrderId = $request->myOrderId;
+        $orderData = OrderAddress::where('order_id', salt_decrypt($myOrderId))->first();
+        $orderTable = Order::where('id', salt_decrypt($myOrderId))->first();
+        $billing_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Billing()->first();
+        // $shipping_address = OrderAddress::where('id', salt_decrypt($myOrderId))->Shipping()->first();
+        $delivery_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Delivery()->first();
+        // dd($delivery_address);
+
+        $pickup_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Pickup()->first();
+        // dd($pickup_address);
+        return view('dashboard.common.view-order', get_defined_vars());
     }
 }
