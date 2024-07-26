@@ -431,4 +431,27 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
     }
+
+
+    /**
+     * Store a new order.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        try {
+
+        }catch(\Exception $e){
+            // Handle the exception
+            Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderStoreFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+                
 }

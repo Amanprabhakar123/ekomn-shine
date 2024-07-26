@@ -95,6 +95,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('product/cart/list', [OrderController::class, 'getProductInCart'])->name('product.cart.list');
         Route::post('product/cart/update/quantity', [OrderController::class, 'updateProductQuantityInCart'])->name('product.cart.update.quantity');
         Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
+        Route::post('api/orders', [OrderController::class, 'store'])->name('orders.store');
     });
 });
 
