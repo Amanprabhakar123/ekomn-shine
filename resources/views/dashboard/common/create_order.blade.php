@@ -32,7 +32,7 @@
                         <span>Full Name:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
+                        <input type="text" class="form-control" id="full_name" value="Peter parker"placeholder="Enter Full Name" />
                         <div id="full_nameErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="ek_group">
                       <label class="eklabel req"><span>Email Address:</span></label>
                       <div class="ek_f_input">
-                        <input type="text" id="email" class="form-control" placeholder="Email Address" />
+                        <input type="text" id="email" class="form-control" placeholder="Email Address" value="peterparker@gmail.com"/>
                         <div id="emailErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -52,7 +52,7 @@
                         <span>Phone Number:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="mobile" class="form-control" placeholder="Phone Number" />
+                        <input type="text" id="mobile" value="7384758394" class="form-control" placeholder="Phone Number" />
                         <div id="mobileErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -68,7 +68,7 @@
                         <span>Stareet Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="address" class="form-control" placeholder="Enter Stareet Address" />
+                        <input type="text" value="H No 23/23, Gali No B6, Vidya Apartment" id="address" class="form-control" placeholder="Enter Stareet Address" />
                         <div id="addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -105,7 +105,7 @@
                         <span>Pin Code:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code"  value=""/>
+                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code"  value="282001"/>
                         <div id="pin_codeErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -127,7 +127,7 @@
                         <span>Stareet Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="b_address" class="form-control" placeholder="Enter Stareet Address" />
+                        <input type="text" id="b_address"  value="H No 23/23, Gali No B6, Vidya Apartment" class="form-control" placeholder="Enter Stareet Address" />
                         <div id="b_addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -391,13 +391,15 @@
                   </div>
                   <div class="ek_group mb-1">
                     <label class="eklabel m-0">
-                      <span>Product SKU 2:<span class="req_star">*</span></span>
+                      <span>Product SKU :<span class="req_star">*</span></span>
                     </label>
                     <div class="ek_f_input sku_inline">
                       <div class="sku_list">
-                        <input type="text" class="form-control" placeholder="Enter Product SKU" />
+                          <input type="text" class="form-control" name="sku2" id="sku2"  value="" placeholder="Enter Product SKU" />
+                          <div id="sku2Error" class="invalid-feedback"></div>
                       </div>
-                      <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button" id="addBulkSKU">Add</button>
+                      <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button"
+                          id="addBulkSKU">Add</button>
                     </div>
                   </div>
                   <div class="d-flex justify-content-between">
@@ -688,6 +690,7 @@
 
 
   // Add/Remove Bulk SKU
+  /*
   document.addEventListener("DOMContentLoaded", function() {
     const addSKUButton = document.querySelector("#addBulkSKU");
     addSKUButton.addEventListener("click", function() {
@@ -714,7 +717,7 @@
         dropshipInvoiceBody.removeChild(newSKUInput);
       }
     });
-  });
+  });*/
   // end
 
   // Add/Remove Resell SKU
@@ -943,35 +946,48 @@
 
       const fileInput = $('#UploadInvoice')[0];
       const file = fileInput.files[0];
-      let isValid = true;
-
       // Check if a file is selected
       if (!file) {
         $('#UploadInvoiceErr').text('Please upload an invoice file.');
-        isValid = false;
-      }else{
-        $('#UploadInvoiceErr').text('');
+        isvalid = false;
+      }
+      fileInput.addEventListener('change', function() {
+        const file = fileInput.files[0];
+        // Check if a file is selected
+        if (file) {
+          $('#UploadInvoiceErr').text('');
+          isvalid = true;
+        }
+      });
+
+      //--------------------Dropship Order Submit--------------------
+      
+      if(isvalid){
+        var formData = new FormData();
+        formData.append('full_name', $('#full_name').val());
+        formData.append('email', $('#email').val());
+        formData.append('mobile', $('#mobile').val());
+        formData.append('address', $('#address').val());
+        formData.append('state', $('#state').val());
+        formData.append('city', $('#city').val());
+        formData.append('pin_code', $('#pin_code').val());
+        formData.append('b_address', $('#b_address').val());
+        formData.append('b_state', $('#b_state').val());
+        formData.append('b_city', $('#b_city').val());
+        formData.append('b_pin_code', $('#b_pin_code').val());
+        formData.append('invoice', file);
+        formData.append('order_type', $('#order_type').val());
+        ApiRequest('orders', 'POST', formData)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       }
     });
-
-
-    const fileInput = $('#UploadInvoice')[0];
-    fileInput.addEventListener('change', function() {
-      const file = fileInput.files[0];
-      let isValid = true;
-      // Check if a file is selected
-      if (file) {
-        $('#UploadInvoiceErr').text('');
-        isValid = true;
-      }
-    });
-
-  
-    
 
     // Bulk Order 
-
-      // Check if a file is selected
 
     // Resell Order 
 
@@ -1048,8 +1064,9 @@
       });
     }
 
-
+    // Resell Order Validation
     $('#resell-order').click(function() {
+      var isvalid = true;
       clearErrorResell();
       if (!$('#resell-full-name').val()) {
         $('#resell-full-name').addClass('is-invalid');
@@ -1147,29 +1164,48 @@
 
       const fileInputResell = $('#UploadInvoiceResell')[0];
       const file = fileInputResell.files[0];
-      let isValid = true;
-
-      if(!file){
-        $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
-        isValid = false;
-      }else{
-        $('#UploadInvoiceResellErr').text('');
-      }
-    });
-
-    const fileInputResell = $('#UploadInvoiceResell')[0];
-    fileInputResell.addEventListener('change', function() {
-      const file = fileInputResell.files[0];
-      let isValid = true;
       // Check if a file is selected
-      if (file) {
-        $('#UploadInvoiceResellErr').text('');
-        isValid = true;
+      if (!file) {
+        $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
+        isvalid = false;
       }
-    });
+      fileInputResell.addEventListener('change', function() {
+        const file = fileInputResell.files[0];
+        // Check if a file is selected
+        if (file) {
+          $('#UploadInvoiceResellErr').text('');
+          isvalid = true;
+        }
+      });
+
+      //--------------------Resell Order Submit--------------------
+
+      if(isvalid){
+        var formData = new FormData();
+        formData.append('full_name', $('#resell-full-name').val());
+        formData.append('email', $('#resell-email').val());
+        formData.append('mobile', $('#resell-mobile').val());
+        formData.append('address', $('#resell-d-address').val());
+        formData.append('state', $('#resell-d-state').val());
+        formData.append('city', $('#resell-d-city').val());
+        formData.append('pin_code', $('#resell-d-pincode').val());
+        formData.append('b_address', $('#resell-b-address').val());
+        formData.append('b_state', $('#resell-b-state').val());
+        formData.append('b_city', $('#resell-b-city').val());
+        formData.append('b_pin_code', $('#resell-b-pincode').val());
+        formData.append('invoice', file);
+        formData.append('order_type', $('#order_type').val());
+        ApiRequest('orders', 'POST', formData)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
   });
 
-
+  });
     // update order type script 
     const tabMapping = {
         'dropship-tab': 1,
@@ -1226,6 +1262,69 @@
             }
             $('#sku').removeClass('is-invalid');
             $('#skuError').text('');
+            ApiRequest('product/search/sku', 'POST', {
+                sku: sku
+            }).then(response => {
+                if (response.data.statusCode == 200) {
+                    fetchDropshipOrderSku();
+                    document.getElementById('sku').value = '';
+                } else {
+                    // Handle error
+                    Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+                }
+            }).catch(error => {
+              console.error(error);
+                   // Handle error
+                   Swal.fire({
+                    title: 'Error',
+                    text: 'Product out of stock or Something went wrong !',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            });
+        });
+    });
+
+    // Add/Remove Dropship SKU
+    document.addEventListener("DOMContentLoaded", function() {
+        const addSKUButton = document.querySelector("#addBulkSKU");
+        addSKUButton.addEventListener("click", function() {
+            var sku = document.getElementById('sku2').value;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if (sku == '') {
+                $('#sku2').addClass('is-invalid');
+                $('#sku2Error').text('Please enter sku for search product');
+                return;
+            }
+            $('#sku2').removeClass('is-invalid');
+            $('#sku2Error').text('');
             ApiRequest('product/search/sku', 'POST', {
                 sku: sku
             }).then(response => {
@@ -1396,6 +1495,13 @@
                 $dropshipInvoice.prepend(
                 $dropshipInvoiceRow);
                 }
+            }else{
+              const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    $dropshipInvoice.empty();
+                    const $dropshipInvoiceRow = $('<tr></tr>').html(
+                `<td colspan="8" class="text-center">No Record Found</td>`);
+                $dropshipInvoice.prepend(
+                $dropshipInvoiceRow);
             }
         }).catch(data => {
             const $dropshipInvoice = $('#dropshipInvoice tbody');
