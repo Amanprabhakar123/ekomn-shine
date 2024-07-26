@@ -152,7 +152,7 @@ class ProductCartListTransformer extends TransformerAbstract
                 $this->referalChargesPerCharges = (float) number_format(($priceBeforeTaxWIthQantity * (int) $this->referalChargesPer) / 100, 2);
                 $this->referalChargesPerGst = (float) number_format(($this->referalChargesPerCharges * (int) $referal_charges[0]['gst_bracket']) / 100, 2);
                 $this->totalCost = $priceWithGst + $this->shippingCost + $this->shippingCostGst + (float) $this->packingCharges + $this->packingChargesGst + (float) $this->labourCharges + $this->labourChargesGst + $this->referalChargesPerCharges + $this->referalChargesPerGst;
-                // Process Charges
+                // Process Charges Payment Gateway
                 $process_charges_per = 0;
                 $process_charges_amount = 0;
                 $process_charges = Charges::getValueByOrderTypeAndCharge(Charges::RESELL, Charges::PROCESSING_CHARGES)->first();
@@ -177,12 +177,24 @@ class ProductCartListTransformer extends TransformerAbstract
                 'stock' => $product_variation->stock,
                 'hsn' => $product_variation->product->hsn,
                 'sku' => $product_variation->sku,
-                'quantity' => $cartList->quantity,
-                'price_per_piece' => $priceBeforeTaxPerPiece,
-                'gstAmount' => $gstAmount,
-                'gst_percentage' => $gst,
-                'priceWithGst' => $priceWithGst,
+                'quantity' => $cartList->quantity, // quantity
+                'price_per_piece' => $priceBeforeTaxPerPiece, // per_item_price
+                'gstAmount' => $gstAmount, // gst_amount
+                'gst_percentage' => $gst, // gst_percentage
+                'total_price_exc_gst' => $priceBeforeTaxWIthQantity, // total_price_exc_gst
+                'priceWithGst' => $priceWithGst, // total_price_inc_gst
                 'shippingCost' => (float) $this->shippingCost + $this->shippingCostGst,
+                'shipping_gst_percent' => isset($shipping->gst_bracket) ? (int) $shipping->gst_bracket: 18, // shipping_gst_percent
+                'shipping_charges' => (float) $this->shippingCost + $this->shippingCostGst,
+                'packing_gst_percent' => isset($packing_charges[0]['gst_bracket']) ? (int) $packing_charges[0]['gst_bracket'] : 18, // packaging_gst_percent
+                'packing_charges' => (float) $this->packingCharges + $this->packingChargesGst,
+                'labour_gst_percent' => isset($labour_charges[0]['gst_bracket']) ? (int) $labour_charges[0]['gst_bracket'] : 18, // labour_gst_percent
+                'labour_charges' => (float) $this->labourCharges + $this->labourChargesGst,
+                'processing_charges' => (float) $this->referalChargesPerCharges, // referal_charges_perecent
+                'processing_gst_percent' => (float) $this->referalChargesPerGst,
+                'payment_gateway_charges' => $this->processingCost,
+                'payment_gateway_gst_percent' => isset($process_charges->gst_bracket)  ? (int) $process_charges->gst_bracket : 18,
+                'payment_gateway_percentage' => $process_charges_per,
                 'otherCost' =>  $this->packingCharges + $this->packingChargesGst + $this->labourCharges + $this->labourChargesGst + $this->referalChargesPerCharges + $this->referalChargesPerGst + $this->processingCost,
                 'totalCost' => (float) $this->totalCost, // excluding processing cost  // including shipping and other charges
                 'processingCost' => (float) $this->processingCost, // including GST
