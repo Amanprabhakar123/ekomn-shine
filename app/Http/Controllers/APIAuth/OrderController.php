@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Models\User;
-use App\Models\AddToCart;
-use League\Fractal\Manager;
-use Illuminate\Http\Request;
-use App\Models\ProductVariation;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
+use App\Models\AddToCart;
+use App\Models\Order;
+use App\Models\ProductVariation;
+use App\Models\User;
 use App\Transformers\ProductSkuTransformer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use League\Fractal\Manager;
+use League\Fractal\Resource\Collection;
 
 class OrderController extends Controller
 {
@@ -25,9 +26,46 @@ class OrderController extends Controller
     /**
      * Add a product to the cart.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    public function getOrder()
+    {
+        try {
+            // Retrieve all orders with related models
+            $orderList = Order::with('buyer', 'supplier', 'shippingAddress', 'billingAddress', 'pickupAddress', 'orderItemsCharges', 'shipments', 'orderPayments', 'orderTransactions')->get();
+
+            // Check if the authenticated user has the permission to list orders
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_ORDER)) {
+                // If not, return a 403 unauthorized response
+                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+            }
+
+            if ($orderList) {
+                // If the order list is found, return it with a success message
+                return response()->json(['data' => [
+                    'data' => $orderList,
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.listOrder'),
+                ]], __('statusCode.statusCode200'));
+            } else {
+                // If the order list is not found, return a 404 not found response
+                return response()->json(['data' => __('auth.orderNotFound')], __('statusCode.statusCode404'));
+            }
+        } catch (\Exception $e) {
+            // Log the error message and line number if an exception occurs
+            Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
+
+            // Return a 500 internal server error response with a failure message
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderListFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+
     public function addToCart(Request $request)
     {
         try {
@@ -48,7 +86,7 @@ class OrderController extends Controller
             }
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
 
@@ -57,7 +95,7 @@ class OrderController extends Controller
             foreach ($request->product_id as $key => $product_id) {
                 // Decrypt the product ID
                 $product = ProductVariation::find(salt_decrypt($product_id));
-                if (!empty($product)) {
+                if (! empty($product)) {
                     // Create a new Add To Cart record
                     $cart[] = [
                         'buyer_id' => auth()->user()->id,
@@ -71,7 +109,7 @@ class OrderController extends Controller
                 }
             }
 
-            if (!empty($cart)) {
+            if (! empty($cart)) {
                 // Create a new Add To Cart record
                 AddToCart::insert($cart);
             }
@@ -84,7 +122,8 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('Add to cart failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -96,7 +135,6 @@ class OrderController extends Controller
     /**
      * Search for a product by SKU.
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function searchProductBySku(Request $request)
@@ -115,7 +153,7 @@ class OrderController extends Controller
             }
 
             // Check if the user has the permission to add a new order
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
 
@@ -138,9 +176,9 @@ class OrderController extends Controller
             // Check if the product variation SKU exists
             if ($checkDuplicate->isEmpty()) {
                 // Check if the product variation SKU exists
-                if (!empty($productVariationSku)) {
-                    
-                    if($productVariationSku->stock > 0){
+                if (! empty($productVariationSku)) {
+
+                    if ($productVariationSku->stock > 0) {
                         // Create a new Add To Cart record
                         AddToCart::create([
                             'buyer_id' => $user->id,
@@ -156,14 +194,14 @@ class OrderController extends Controller
                             'status' => __('statusCode.status200'),
                             'message' => __('auth.addSku'),
                         ]], __('statusCode.statusCode200'));
-                    }else{
+                    } else {
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode404'),
                             'status' => __('statusCode.status404'),
                             'message' => __('auth.productOutOfStock'),
                         ]], __('statusCode.statusCode200'));
                     }
-                    
+
                 }
             } else {
                 // Return a duplicate SKU message
@@ -175,7 +213,8 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             // Handle the exception
-            Log::error('Search product by sku failed: ' . $e->getMessage() . 'Line:- ' . $e->getLine());
+            Log::error('Search product by sku failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -190,7 +229,7 @@ class OrderController extends Controller
             $user = auth()->user();
 
             // Check if the user has the 'buyer' role
-            if (!$user->hasRole(User::ROLE_BUYER)) {
+            if (! $user->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], 403);
             }
 
@@ -217,13 +256,11 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
-            \Log::error('Add to cart failed: ' . $e->getMessage()); // Log the error message
+            \Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
 
             return response()->json(['data' => __('auth.addSkuFailed')], 500);
         }
     }
-
-
 
     public function deleteSku($id)
     {
@@ -232,11 +269,11 @@ class OrderController extends Controller
             $product_id = $id;
 
             // Check if the user has the 'buyer' role
-            if (!$user->hasRole(User::ROLE_BUYER)) {
+            if (! $user->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
 
-            if (!empty($product_id)) {
+            if (! empty($product_id)) {
                 AddToCart::where([
                     'buyer_id' => $user->id,
                     'product_id' => $product_id,

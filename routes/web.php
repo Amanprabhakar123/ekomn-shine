@@ -105,6 +105,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
         // Define routes for jwt token refresh, user details, and logout
         Route::post('/product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
 
+        Route::get('fetch-orders', [OrderController::class, 'getOrder'])->name('fetch.orders');
     });
 });
 
