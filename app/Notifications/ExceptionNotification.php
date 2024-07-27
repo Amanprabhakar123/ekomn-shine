@@ -10,14 +10,20 @@ class ExceptionNotification extends Notification
 {
     use Queueable;
 
-    protected $order;
+    protected $message;
+
+    protected $file;
+
+    protected $line;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($order)
+    public function __construct($message, $line, $file)
     {
-        $this->order = $order;
+        $this->message = $message;
+        $this->line = $line;
+        $this->file = $file;
     }
 
     /**
@@ -36,10 +42,11 @@ class ExceptionNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-        // ->greeting($this->order[])
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('Exception Notification')
+            ->line('An exception has occurred.')
+            ->line('Message: '.$this->message)
+            ->line('File: '.$this->file)
+            ->line('Line: '.$this->line);
     }
 
     /**

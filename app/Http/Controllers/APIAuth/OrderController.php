@@ -5,17 +5,22 @@ namespace App\Http\Controllers\APIAuth;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\AddToCart;
-use League\Fractal\Manager;
+use App\Events\ExceptionEvent;
+use App\Models\OrderItemAndCharges;
+use App\Models\Shipment;
+use App\Models\ShipmentAwb;
+use App\Transformers\ProductCartListTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use League\Fractal\Manager;
 use App\Services\OrderService;
 use App\Models\ProductVariation;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderDataTransformer;
 use Illuminate\Validation\ValidationException;
-use App\Transformers\ProductCartListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class OrderController extends Controller
@@ -95,6 +100,18 @@ class OrderController extends Controller
                 'message' => __('auth.addToCart'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
 
@@ -189,6 +206,18 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             Log::error('Search product by sku failed: '.$e->getMessage().'Line:- '.$e->getLine());
 
@@ -245,6 +274,17 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
 
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             \Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
 
             return response()->json(['data' => __('auth.addSkuFailed')], 500);
@@ -259,6 +299,7 @@ class OrderController extends Controller
     public function updateProductQuantityInCart(Request $request)
     {
         try {
+
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'cart_id' => 'required|string',
@@ -324,6 +365,18 @@ class OrderController extends Controller
                 'message' => __('auth.updateProductQuantityInCart'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             Log::error('update quantity failed: '.$e->getMessage().'Line:- '.$e->getLine());
 
@@ -388,6 +441,18 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
 
@@ -441,8 +506,19 @@ class OrderController extends Controller
             return response()->json($data);
 
         } catch (\Exception $e) {
-            // Handle the exception
-            Log::error('Get Orders failed: '.$e->getMessage().'Line:- '.$e->getLine());
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            // Log the exception details and trigger an ExceptionEvent
+
+            Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
 
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
@@ -451,7 +527,6 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
     }
-
 
     /**
      * Store a new order.
@@ -563,5 +638,89 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode422'));
         }
     }
-                
+        
+    /**
+     * Update the order status.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateOrder(Request $request)
+    {
+        try {
+            // Decrypt the order ID from the request and fetch the associated order items and charges
+            $orderID = salt_decrypt($request->orderID);
+            $orderItems = OrderItemAndCharges::where('order_id', $orderID)->get();
+
+            // Parse the dates using Carbon
+            $shippingDate = Carbon::parse($request->shippingDate);
+            $deliveryDate = Carbon::parse($request->deliveryDate);
+
+            // Prepare data for updating or creating a shipment record
+            $shipmentData = [
+                'shipment_date' => $shippingDate,
+                'delivery_date' => $deliveryDate,
+            ];
+
+            // Iterate over each order item to update or create a shipment record
+            foreach ($orderItems as $item) {
+                // Update or create a shipment record for each order item
+                $shipment = Shipment::updateOrCreate(
+                    [
+                        'order_id' => $item->order_id,
+                        'order_item_charges_id' => $item->id,
+                    ],
+                    $shipmentData
+                );
+
+                // Prepare data for updating or creating a shipment AWB (Air Waybill) record
+                $awbData = [
+                    'shipment_id' => $shipment->id,
+                    'awb_number' => $request->trackingNo,
+                    'awb_date' => $shippingDate,
+                    'courier_provider_name' => $request->courierName,
+                    'status' => ShipmentAwb::STATUS_SHIPPED_DISPATCHE, // Corrected constant value
+                ];
+
+                // Update or create a shipment AWB record
+                $shipmentAwb = ShipmentAwb::updateOrCreate(
+                    ['shipment_id' => $shipment->id],
+                    $awbData
+                );
+            }
+
+            // Return a success response
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.orderUpdate'),
+                ],
+            ], __('statusCode.statusCode200'));
+
+        } catch (\Exception $e) {
+            // Handle any exceptions that occur during the database operations
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            // Log the error message for debugging purposes
+            \Log::error('Error updating or creating shipment records: '.$e->getMessage());
+
+            // Return an error response with a message
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.orderUpdateFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
 }

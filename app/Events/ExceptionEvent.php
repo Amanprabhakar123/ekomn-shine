@@ -2,11 +2,8 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -17,9 +14,17 @@ class ExceptionEvent
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public $message;
+
+    public $line;
+
+    public $file;
+
+    public function __construct($params)
     {
-        //
+        $this->message = $params['message'];
+        $this->line = $params['line'];
+        $this->file = $params['file'];
     }
 
     /**

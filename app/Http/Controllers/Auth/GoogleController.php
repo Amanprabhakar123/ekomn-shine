@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -41,19 +41,19 @@ class GoogleController extends Controller
             if ($finduser) {
                 // Generate a JWT token for the existing user
                 $token = JWTAuth::fromUser($finduser);
-                
-                if(config('app.front_end_tech') == false){
+
+                if (config('app.front_end_tech') == false) {
                     Auth::login($finduser);
                 }
 
                 return redirect()->intended(route('dashboard'))->with([
                     'user_details' => [
-                            "id" => salt_encrypt($finduser->id),
-                            "name" => $finduser->name,
-                            "email" => $finduser->email,
-                            "email_verified_at" => $finduser->email_verified_at,
-                            "picture" => $user->avatar,
-                    ], 'token' =>  $token]);
+                        'id' => salt_encrypt($finduser->id),
+                        'name' => $finduser->name,
+                        'email' => $finduser->email,
+                        'email_verified_at' => $finduser->email_verified_at,
+                        'picture' => $user->avatar,
+                    ], 'token' => $token]);
 
                 // Return the token in the response
                 // return response()->json(['data' => [
@@ -72,7 +72,7 @@ class GoogleController extends Controller
                 //         ]
                 //     ],
                 // ]], __('statusCode.statusCode200'));
-            } else{
+            } else {
                 return redirect()->back()->with('error', 'User not found');
             }
             // else {
@@ -104,25 +104,37 @@ class GoogleController extends Controller
             //                 "picture" => $user->avatar,
             //         ], 'token' =>  $token]);
 
-                 // Return the token in the response
-                // return response()->json(['data' => [
-                //     'statusCode' => __('statusCode.statusCode200'),
-                //     'status' => __('statusCode.status200'),
-                //     'message' => trans(__('auth.loginSuccess')),
-                //     'auth' => [
-                //         'access_token' => $token,
-                //         'token_type' => 'bearer',
-                //         'expires_in' => auth('api')->factory()->getTTL() * 60,
-                //         'user' => [
-                //             "id" => salt_encrypt($finduser->id),
-                //             "name" => $finduser->name,
-                //             "email" => $finduser->email,
-                //             "email_verified_at" => $finduser->email_verified_at,
-                //         ]
-                //     ],
-                // ]], __('statusCode.statusCode200'));
+            // Return the token in the response
+            // return response()->json(['data' => [
+            //     'statusCode' => __('statusCode.statusCode200'),
+            //     'status' => __('statusCode.status200'),
+            //     'message' => trans(__('auth.loginSuccess')),
+            //     'auth' => [
+            //         'access_token' => $token,
+            //         'token_type' => 'bearer',
+            //         'expires_in' => auth('api')->factory()->getTTL() * 60,
+            //         'user' => [
+            //             "id" => salt_encrypt($finduser->id),
+            //             "name" => $finduser->name,
+            //             "email" => $finduser->email,
+            //             "email_verified_at" => $finduser->email_verified_at,
+            //         ]
+            //     ],
+            // ]], __('statusCode.statusCode200'));
             // }
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle any exceptions that occur during the authentication process
             return response()->json(['error' => $e->getMessage(), '-Line'.$e->getLine()], 500);
         }

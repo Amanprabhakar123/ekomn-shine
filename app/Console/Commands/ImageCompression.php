@@ -2,16 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Exception;
-use Illuminate\Console\Command;
+use App\Events\ExceptionEvent;
 use App\Models\ProductVariationMedia;
 use App\Services\ImageService;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+use Exception;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
-use function PHPUnit\Framework\throwException;
+use Illuminate\Support\Str;
 
 class ImageCompression extends Command
 {
@@ -36,7 +35,6 @@ class ImageCompression extends Command
      */
     protected $imageService;
 
-
     public function __construct(ImageService $imageService)
     {
         parent::__construct();
@@ -50,25 +48,35 @@ class ImageCompression extends Command
     {
         try {
             $start = microtime(true);
-            $this->info('Image Compression started at: ' . now());
+            $this->info('Image Compression started at: '.now());
             $this->fetchAndCompressSameVariantImages();
 
             $end = microtime(true);
             $executionTime = round($end - $start, 2);
-            $this->info('Image Compression. Total execution time: ' . $executionTime . ' seconds.');
+            $this->info('Image Compression. Total execution time: '.$executionTime.' seconds.');
         } catch (\Exception $e) {
             // Handle the exception here
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
         }
-    
+
     }
-
-
 
     /**
      * Fetches and compresses all images.
      *
      * @return void
+     *
      * @throws Exception
      */
     private function fetchAndCompressAllImages()
@@ -78,6 +86,7 @@ class ImageCompression extends Command
             $imagePaths = ProductVariationMedia::where(['is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE, 'media_type' => ProductVariationMedia::MEDIA_TYPE_IMAGE])->get();
             if ($imagePaths->isEmpty()) {
                 $this->info('No images found for compression.');
+
                 return;
             }
             $allowedExtensions = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
@@ -90,11 +99,12 @@ class ImageCompression extends Command
                 $fileInfo = pathinfo($image->file_path);
                 $fileExtension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
 
-                if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
-                    $this->info('Invalid file extension: ' . $fileExtension);
+                if (! in_array(strtolower($fileExtension), $allowedExtensions)) {
+                    $this->info('Invalid file extension: '.$fileExtension);
                     ProductVariationMedia::where('id', $image->id)->update([
-                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE
+                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE,
                     ]);
+
                     continue;
                 }
 
@@ -102,17 +112,18 @@ class ImageCompression extends Command
                 $orignalThumbnailPath = str_replace('storage/', '', $image->thumbnail_path);
 
                 // Verify the original path and adjust if needed
-                $originalFullPath = storage_path('app/public/' . $originalPath);
-                if (!File::exists($originalFullPath)) {
-                    Log::info('Original image not found at path: ' . $originalFullPath);
-                    $this->info('Original image not found at path: ' . $originalFullPath);
+                $originalFullPath = storage_path('app/public/'.$originalPath);
+                if (! File::exists($originalFullPath)) {
+                    Log::info('Original image not found at path: '.$originalFullPath);
+                    $this->info('Original image not found at path: '.$originalFullPath);
+
                     continue;
                 }
 
-                $filename = Str::random(40) . '.webp';
-                $thumbnail_file_name = Str::random(40) . '.webp';
-                $destinationPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/{$filename}";
-                $thumbnailPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/thumbnails/" . $thumbnail_file_name;
+                $filename = Str::random(40).'.webp';
+                $thumbnail_file_name = Str::random(40).'.webp';
+                $destinationPath = "company_{$image->product->company_id}/".$image->product_id."/images/{$filename}";
+                $thumbnailPath = "company_{$image->product->company_id}/".$image->product_id.'/images/thumbnails/'.$thumbnail_file_name;
 
                 // Convert and compress image to WebP format
                 $this->imageService->convertAndCompressToWebP($originalFullPath, $destinationPath);
@@ -126,7 +137,7 @@ class ImageCompression extends Command
                     File::delete($originalFullPath);
                 }
 
-                if (File::exists($orignalThumbnailPath) && !empty($orignalThumbnailPath)) {
+                if (File::exists($orignalThumbnailPath) && ! empty($orignalThumbnailPath)) {
                     // $this->info($originalFullPath);
                     File::delete($orignalThumbnailPath);
                 }
@@ -136,10 +147,21 @@ class ImageCompression extends Command
                 $image->update([
                     'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE,
                     'file_path' => Storage::url($destinationPath),
-                    'thumbnail_path' => Storage::url($thumbnailPath)
+                    'thumbnail_path' => Storage::url($thumbnailPath),
                 ]);
             }
         } catch (Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }
@@ -148,6 +170,7 @@ class ImageCompression extends Command
      * Fetches and compresses images that have the same variant.
      *
      * @return void
+     *
      * @throws Exception
      */
     private function fetchAndCompressSameVariantImages()
@@ -159,6 +182,7 @@ class ImageCompression extends Command
                 ->get();
             if ($imagePaths->isEmpty()) {
                 $this->info('No images found for compression.');
+
                 return;
             }
 
@@ -170,11 +194,12 @@ class ImageCompression extends Command
                 $fileInfo = pathinfo($image->file_path);
                 $fileExtension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
 
-                if (!in_array(strtolower($fileExtension), $allowedExtensions)) {
-                    $this->info('Invalid file extension: ' . $fileExtension);
+                if (! in_array(strtolower($fileExtension), $allowedExtensions)) {
+                    $this->info('Invalid file extension: '.$fileExtension);
                     ProductVariationMedia::where('id', $image->id)->update([
-                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE
+                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE,
                     ]);
+
                     continue;
                 }
 
@@ -185,16 +210,17 @@ class ImageCompression extends Command
                 $orignalThumbnailPath = str_replace('storage/', '', $image->thumbnail_path);
 
                 // Verify the original path and adjust if needed
-                $originalFullPath = storage_path('app/public/' . $originalPath);
-                if (!File::exists($originalFullPath)) {
-                    $this->info('Original image not found at path: ' . $originalFullPath);
+                $originalFullPath = storage_path('app/public/'.$originalPath);
+                if (! File::exists($originalFullPath)) {
+                    $this->info('Original image not found at path: '.$originalFullPath);
+
                     continue;
                 }
 
-                $filename = Str::random(40) . '.webp';
-                $thumbnail_file_name = Str::random(40) . '.webp';
-                $destinationPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/{$filename}";
-                $thumbnailPath = "company_{$image->product->company_id}/" . $image->product_id . "/images/thumbnails/" . $thumbnail_file_name;
+                $filename = Str::random(40).'.webp';
+                $thumbnail_file_name = Str::random(40).'.webp';
+                $destinationPath = "company_{$image->product->company_id}/".$image->product_id."/images/{$filename}";
+                $thumbnailPath = "company_{$image->product->company_id}/".$image->product_id.'/images/thumbnails/'.$thumbnail_file_name;
 
                 // Convert and compress image to WebP format
                 $this->imageService->convertAndCompressToWebP($originalFullPath, $destinationPath);
@@ -208,7 +234,7 @@ class ImageCompression extends Command
                     File::delete($originalFullPath);
                 }
 
-                if (File::exists($orignalThumbnailPath) && !empty($orignalThumbnailPath)) {
+                if (File::exists($orignalThumbnailPath) && ! empty($orignalThumbnailPath)) {
                     // $this->info($originalFullPath);
                     File::delete($orignalThumbnailPath);
                 }
@@ -218,10 +244,21 @@ class ImageCompression extends Command
                 ProductVariationMedia::where('file_path', $originalPath)->update([
                     'is_compressed' => ProductVariationMedia::IS_COMPRESSED_TRUE,
                     'file_path' => Storage::url($destinationPath),
-                    'thumbnail_path' => Storage::url($thumbnailPath)
+                    'thumbnail_path' => Storage::url($thumbnailPath),
                 ]);
             }
         } catch (Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             throw new Exception($e->getMessage(), $e->getCode());
         }
     }

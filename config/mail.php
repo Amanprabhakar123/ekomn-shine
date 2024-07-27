@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('MAIL_MAILER', 'smtp'),
+    'MAIL_IDs' => env('MAIL_IDs', ['default@example.com']),
 
     /*
     |--------------------------------------------------------------------------

@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use ZipArchive;
-use App\Models\User;
-use League\Fractal\Manager;
-use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
+use App\Http\Controllers\Controller;
 use App\Models\BuyerInventory;
+use App\Models\ChannelProductMap;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\ChannelProductMap;
-use App\Http\Controllers\Controller;
 use App\Models\ProductVariationMedia;
-use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 use App\Transformers\BuyerInventoryTransformer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
+use ZipArchive;
 
 class BuyerInventoryController extends Controller
 {
-
     protected $fractal;
+
     protected $BulkDataTransformer;
 
     public function __construct(Manager $fractal)
@@ -31,7 +32,6 @@ class BuyerInventoryController extends Controller
     /**
      * Retrieve the paginated buyer inventory data.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
@@ -62,11 +62,11 @@ class BuyerInventoryController extends Controller
 
                 if ($searchTerm) {
                     $buyerInventory = $buyerInventory->whereHas('product', function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%')
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('product_slug_id', 'like', '%'.$searchTerm.'%')
                             ->orWhereHas('product.category', function ($query) use ($searchTerm) {
-                                $query->where('name', 'like', '%' . $searchTerm . '%');
+                                $query->where('name', 'like', '%'.$searchTerm.'%');
                             });
                     });
                 }
@@ -75,7 +75,7 @@ class BuyerInventoryController extends Controller
                     'product',
                     'product.media',
                     'product.product.category',
-                    'product.salesChannelProductMaps'
+                    'product.salesChannelProductMaps',
                 ]);
 
                 // Handle sorting by category name
@@ -87,7 +87,7 @@ class BuyerInventoryController extends Controller
                 if ($sort == 'name') {
                     $buyerInventory = $buyerInventory->orderBy('categories.name', $sortOrder);
                 } else {
-                    $buyerInventory = $buyerInventory->orderBy('product_variations.' . $sort, $sortOrder);
+                    $buyerInventory = $buyerInventory->orderBy('product_variations.'.$sort, $sortOrder);
                 }
 
                 // Paginate results
@@ -108,6 +108,17 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
         }
@@ -116,7 +127,6 @@ class BuyerInventoryController extends Controller
     /**
      * Add a product to the buyer's inventory.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
@@ -131,7 +141,7 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
@@ -139,7 +149,7 @@ class BuyerInventoryController extends Controller
             $userId = auth()->user()->id;
 
             // check buyer role only
-            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+            if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
             // Find the product variation
@@ -149,14 +159,14 @@ class BuyerInventoryController extends Controller
                 // Check if the product is already in the buyer's inventory
                 $buyerInventory = BuyerInventory::where([
                     'buyer_id' => $userId,
-                    'product_id' => $product->id
+                    'product_id' => $product->id,
                 ])->first();
 
                 if ($buyerInventory) {
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode400'),
                         'status' => __('statusCode.status400'),
-                        'message' => __('auth.productAlreadyInBuyerInventory')
+                        'message' => __('auth.productAlreadyInBuyerInventory'),
                     ]], __('statusCode.statusCode200'));
                 }
 
@@ -172,12 +182,23 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
-                    'message' => __('auth.addBuyerInventory')
+                    'message' => __('auth.addBuyerInventory'),
                 ]], __('statusCode.statusCode200'));
             } else {
                 return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
             }
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('auth.addBuyerInventoryFailed')], __('statusCode.statusCode500'));
         }
@@ -186,7 +207,7 @@ class BuyerInventoryController extends Controller
     /**
      * Get the inventory data.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function delete($id)
@@ -194,14 +215,14 @@ class BuyerInventoryController extends Controller
         try {
             // Validate the request data
             $validator = Validator::make(['id' => $id], [
-                'id' => 'required|string'
+                'id' => 'required|string',
             ]);
             $id = salt_decrypt($id);
             if ($validator->fails()) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode400'));
             }
             // Find the product variation
@@ -219,6 +240,17 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('auth.removeBuyerInventoryFailed')], __('statusCode.statusCode500'));
         }
@@ -227,7 +259,6 @@ class BuyerInventoryController extends Controller
     /**
      * Export the product variation data to a CSV file.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportProductVariationData(Request $request)
@@ -243,7 +274,7 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
@@ -293,13 +324,13 @@ class BuyerInventoryController extends Controller
                     'SIZE',
                     'PRODUCT_STOCK',
                     'CATEGORY',
-                    'SUB_CATEGORY'
-                ]
+                    'SUB_CATEGORY',
+                ],
             ];
             $time = time();
             // Generate a unique base path for storing the files
-            $basePath = 'storage/export/' . auth()->user()->id.'/product_data_' .$time ;
-            if (!file_exists($basePath)) {
+            $basePath = 'storage/export/'.auth()->user()->id.'/product_data_'.$time;
+            if (! file_exists($basePath)) {
                 mkdir($basePath, 0777, true);
             }
 
@@ -347,19 +378,19 @@ class BuyerInventoryController extends Controller
                         $variation->size,
                         $variation->stock,
                         isset($productCategory->name) ? $productCategory->name : '',
-                        isset($productSubCategory->name) ? $productSubCategory->name : ''
+                        isset($productSubCategory->name) ? $productSubCategory->name : '',
                     ];
                 }
 
                 // Create directories for each product variation
-                $variationPath = $basePath . '/' . $key + 1;
+                $variationPath = $basePath.'/'.$key + 1;
                 $mediaPath = $variationPath;
                 // $mediaPath = $variationPath . '/media';
                 // $mediaThumbnailPath = $variationPath . '/media/thumbnail';
-                if (!file_exists($variationPath)) {
+                if (! file_exists($variationPath)) {
                     mkdir($variationPath, 0777, true);
                 }
-                if (!file_exists($mediaPath)) {
+                if (! file_exists($mediaPath)) {
                     mkdir($mediaPath, 0777, true);
                 }
                 // if (!file_exists($mediaThumbnailPath)) {
@@ -372,7 +403,7 @@ class BuyerInventoryController extends Controller
                     }
                     $mediaFile = substr($mediaItem->file_path, strrpos($mediaItem->file_path, '/') + 1);
                     $mediaItem->file_path = str_replace('storage/', '', $mediaItem->file_path);
-                    file_put_contents($mediaPath . '/' . $mediaFile, file_get_contents(storage_path('app/public/' . $mediaItem->file_path)));
+                    file_put_contents($mediaPath.'/'.$mediaFile, file_get_contents(storage_path('app/public/'.$mediaItem->file_path)));
                 }
 
                 /*
@@ -392,13 +423,13 @@ class BuyerInventoryController extends Controller
                     }
                     $videoFile = substr($videoItem->file_path, strrpos($videoItem->file_path, '/') + 1);
                     $videoItem->file_path = str_replace('storage/', '', $videoItem->file_path);
-                    file_put_contents($mediaPath . '/' . $videoFile, file_get_contents(storage_path('app/public/' . $videoItem->file_path)));
+                    file_put_contents($mediaPath.'/'.$videoFile, file_get_contents(storage_path('app/public/'.$videoItem->file_path)));
                 }
             }
 
             // Create a temporary CSV file
-            $csvFilename = 'product_data_' . $time . '.csv';
-            $csvFilePath = $basePath . '/' . $csvFilename;
+            $csvFilename = 'product_data_'.$time.'.csv';
+            $csvFilePath = $basePath.'/'.$csvFilename;
             $file = fopen($csvFilePath, 'w');
 
             // Write the CSV data to the file
@@ -410,9 +441,9 @@ class BuyerInventoryController extends Controller
             fclose($file);
 
             // Create a zip archive
-            $zipFilePath = $basePath . '.zip';
+            $zipFilePath = $basePath.'.zip';
             $zip = new ZipArchive();
-            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
                 addFolderToZip($zip, $basePath, '');
                 $zip->close();
             } else {
@@ -424,9 +455,22 @@ class BuyerInventoryController extends Controller
 
             // Clean up temporary files and folders
             unlinkFile($basePath);
+
             return $response;
         } catch (\Exception $e) {
-            \Log::error('Download Product ---' . $e->getMessage() . '--------' . $e->getFile());
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            \Log::error('Download Product ---'.$e->getMessage().'--------'.$e->getFile());
+
             // Handle the exception
             return response()->json(['data' => __('auth.productInventoryDownloadFailed')], __('statusCode.statusCode500'));
         }
@@ -435,7 +479,6 @@ class BuyerInventoryController extends Controller
     /**
      * Get the bulk inventory data.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function storeChannelProductMap(Request $request)
@@ -455,23 +498,23 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
             // check buyer role only
-            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+            if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
-            
-            $data =  $request->all();
+
+            $data = $request->all();
             $id = [];
             $variationId = [];
             foreach ($data['sales_channel_id'] as $key => $value) {
-                $record = ChannelProductMap::updateOrCreate(['product_variation_id' => salt_decrypt($data['product_variation_id']), 'sales_channel_id' => base64_decode($value)],[
+                $record = ChannelProductMap::updateOrCreate(['product_variation_id' => salt_decrypt($data['product_variation_id']), 'sales_channel_id' => base64_decode($value)], [
                     'sales_channel_id' => base64_decode($value),
                     'product_variation_id' => salt_decrypt($data['product_variation_id']),
-                    'sales_channel_product_sku' => $data['sales_channel_product_sku'][$key]
+                    'sales_channel_product_sku' => $data['sales_channel_product_sku'][$key],
                 ]);
                 $id[] = $record->sales_channel_id;
                 $variationId[] = $record->product_variation_id;
@@ -484,20 +527,29 @@ class BuyerInventoryController extends Controller
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
-                'message' => __('auth.channelProductMapStored')
+                'message' => __('auth.channelProductMapStored'),
             ]], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapStoreFailed')], __('statusCode.statusCode500'));
         }
     }
 
-
     /**
      * Edit the channel product map.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function editChannelProductMap(Request $request)
@@ -513,12 +565,12 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
             // check buyer role only
-            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+            if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
             // Check if the channel product map exists
@@ -541,19 +593,29 @@ class BuyerInventoryController extends Controller
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
                 'message' => __('auth.channelProductMapList'),
-                'list' => $data
+                'list' => $data,
             ]], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapUpdateFailed')], __('statusCode.statusCode500'));
         }
     }
-    
+
     /**
      * Delete the channel product map.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteChannelProductMap(Request $request)
@@ -569,12 +631,12 @@ class BuyerInventoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
             // check buyer role only
-            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+            if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
             // Check if the channel product map exists
@@ -591,10 +653,21 @@ class BuyerInventoryController extends Controller
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
-                'message' => __('auth.channelProductMapDeleted')
+                'message' => __('auth.channelProductMapDeleted'),
             ]], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapDeleteFailed')], __('statusCode.statusCode500'));
         }

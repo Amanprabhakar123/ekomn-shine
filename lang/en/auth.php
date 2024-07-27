@@ -100,5 +100,7 @@ return [
     'orderStore' => 'Order Placed Successfully.',
     'orderCreatedSuccesfully' => 'Order Created Successfully.',
     'duplicatSupplierOrder' => 'You can not order from multiple suppliers in a single order.',
+    'orderUpdateFailed' => 'Order Update Failed.',
+    'orderUpdate' => 'Order Update Successfully.',
 
 ];

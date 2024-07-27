@@ -2,33 +2,37 @@
 
 namespace App\Mail;
 
-use App\Models\Order;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderCreatedMail extends Mailable
+class ExceptionHandleMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $order;
+    public $text;
 
-    public $user;
+    public $file;
 
-    public function __construct(Order $order, User $user)
+    public $line;
+
+    public function __construct($message, $line, $file)
     {
-        $this->order = $order;
-        $this->user = $user;
+        $this->text = (string) $message;
+        $this->line = (string) $line;
+        $this->file = (string) $file;
     }
 
     public function build()
     {
-        return $this->view('email.welcome')->with([
-            'name' => $this->order->order_number,
-        ]);
+        return $this->view('email.exception')->subject('Exception Notification')
+            ->with([
+                'text' => $this->text,
+                'line' => $this->line,
+                'file' => $this->file,
+            ]);
     }
 
     /**
@@ -46,11 +50,7 @@ class OrderCreatedMail extends Mailable
      */
     public function content(): Content
     {
-        $content = new Content(view: 'email.welcome');
-        $role = $this->user->hasRole(User::ROLE_SUPPLIER) ? User::ROLE_SUPPLIER : User::ROLE_BUYER;
-        $content->with(['role' => $role, 'user' => $this->order]);
-
-        return $content;
+        return new Content(view: 'email.exception');
     }
 
     /**

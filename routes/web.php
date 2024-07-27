@@ -71,6 +71,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we need blade file data and update directory in blade that time we will use this route
 Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
+        Route::post('/update-order', [OrderController::class, 'updateOrder'])->name('update.order');
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::get('/my/product/inventory/', [BuyerInventoryController::class, 'index'])->name('product.myinventory');
         // Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
