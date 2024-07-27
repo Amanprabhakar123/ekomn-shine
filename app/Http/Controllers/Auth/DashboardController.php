@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Import;
-use App\Models\Pincode;
-use App\Models\Category;
-use App\Models\CanHandle;
-use App\Models\BusinessType;
-use App\Models\SalesChannel;
-use Illuminate\Http\Request;
-use App\Models\CompanyDetail;
-use App\Models\BuyerInventory;
-use App\Models\ProductVariation;
-use App\Services\CompanyService;
-use Illuminate\Support\Facades\DB;
+use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
+use App\Models\BusinessType;
+use App\Models\BuyerInventory;
+use App\Models\CanHandle;
+use App\Models\Category;
 use App\Models\CompanyAddressDetail;
+use App\Models\CompanyDetail;
+use App\Models\Order;
 use App\Models\OrderAddress;
+use App\Models\Pincode;
+use App\Models\ProductVariation;
 use App\Models\ProductVariationMedia;
+use App\Models\SalesChannel;
+use App\Models\User;
+use App\Services\CompanyService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -102,6 +102,13 @@ class DashboardController extends Controller
 
             return successResponse(null, $response['data']);
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            $message = $e->getMessage(); // Get the error message
+            $file = $e->getFile(); // Get the file
+            $line = $e->getLine(); // Get the line number where the exception occurred
+            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+
             return errorResponse($e->getMessage());
         }
     }
@@ -257,8 +264,9 @@ class DashboardController extends Controller
 
     /**
      * Get the buyer details.
+     *
      * @param  $buyer_id
-     * but not used in the code
+     *                   but not used in the code
      * @return \Illuminate\Http\JsonResponse
      */
     public function getBuyerId($buyer_id)
@@ -329,6 +337,7 @@ class DashboardController extends Controller
                 'state' => $state->toArray(),
                 'city' => $city->toArray(),
             ];
+
             return response()->json(['data' => $statsList], __('statusCode.statusCode200'));
         } else {
             return response()->json([
@@ -369,6 +378,7 @@ class DashboardController extends Controller
         // dd($delivery_address);
 
         $pickup_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Pickup()->first();
+
         // dd($pickup_address);
         return view('dashboard.common.view-order', get_defined_vars());
     }

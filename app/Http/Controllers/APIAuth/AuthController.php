@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-
+use App\Events\ExceptionEvent;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -24,54 +22,68 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'logout']]);
     }
 
-
-    /** 
+    /**
      * @OA\Post(
      *     path="/api/login",
      *     summary="Sign in",
      *     description="Login by email, password",
      *     operationId="authLogin",
      *     tags={"Authentication"},
+     *
      *     @OA\RequestBody(
      *        required=true,
      *        description="Pass user credentials",
+     *
      *        @OA\JsonContent(
      *           required={"email","password"},
+     *
      *           @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
      *           @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
      *        ),
      *     ),
+     *
      *     @OA\Response(
      *        response=200,
      *        description="Success",
+     *
      *        @OA\JsonContent(
+     *
      *           @OA\Property(property="statusCode", type="integer", example="200"),
      *           @OA\Property(property="status", type="string", example="OK"),
      *           @OA\Property(property="message", type="string", example="Logged in successfully"),
      *        )
      *     ),
+     *
      *     @OA\Response(
      *        response=400,
      *        description="Bad Request",
+     *
      *        @OA\JsonContent(
+     *
      *           @OA\Property(property="statusCode", type="integer", example="400"),
      *           @OA\Property(property="status", type="string", example="Bad Request"),
      *           @OA\Property(property="message", type="string", example="Validation Error"),
      *        )
      *     ),
+     *
      *     @OA\Response(
      *        response=401,
      *        description="Unauthorized",
+     *
      *        @OA\JsonContent(
+     *
      *           @OA\Property(property="statusCode", type="integer", example="401"),
      *           @OA\Property(property="status", type="string", example="Unauthorized"),
      *           @OA\Property(property="message", type="string", example="Invalid credentials"),
      *        )
      *     ),
+     *
      *     @OA\Response(
      *        response=500,
      *        description="Server Error",
+     *
      *        @OA\JsonContent(
+     *
      *           @OA\Property(property="statusCode", type="integer", example="500"),
      *           @OA\Property(property="status", type="string", example="Server Error"),
      *           @OA\Property(property="message", type="string", example="Server Error"),
@@ -79,7 +91,6 @@ class AuthController extends Controller
      *     )
      * )
      */
-
     public function login(Request $request)
     {
         try {
@@ -89,41 +100,50 @@ class AuthController extends Controller
             ]);
             if ($validator->fails()) {
                 if (config('app.front_end_tech') == false) {
-                     // Get the first validation error key
+                    // Get the first validation error key
                     $firstErrorKey = $validator->errors()->keys()[0];
+
                     return redirect()->back()->withInput()->withErrors([
                         $firstErrorKey => $validator->errors()->first(),
                     ]);
                 }
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode400'));
             }
-            if (!$token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            if (! $token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 if (config('app.front_end_tech') == false) {
                     return redirect()->back()->withInput()->withErrors(['password' => __('auth.failed')]);
                 }
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode401'),
                     'status' => __('statusCode.status401'),
-                    'message' => __('auth.failed')
+                    'message' => __('auth.failed'),
                 ]], __('statusCode.statusCode401'));
             }
             if (config('app.front_end_tech') == false) {
                 Auth::attempt(['email' => $request->email, 'password' => $request->password]);
             }
+
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            $message = $e->getMessage(); // Get the error message
+            $file = $e->getFile(); // Get the file
+            $line = $e->getLine(); // Get the line number where the exception occurred
+            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ]], __('statusCode.statusCode500'));
         }
     }
-
 
     /**
      * Get the authenticated user information.
@@ -137,10 +157,13 @@ class AuthController extends Controller
      *     operationId="getAuthenticatedUser",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="object",
      *                 @OA\Property(property="statusCode", type="string", example="200"),
      *                 @OA\Property(property="status", type="string", example="OK"),
@@ -153,10 +176,13 @@ class AuthController extends Controller
      *             ),
      *         ),
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated."),
      *         ),
      *     ),
@@ -168,11 +194,11 @@ class AuthController extends Controller
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
             'user' => [
-                "id" => auth()->user()->id,
-                "name" => auth()->user()->name,
-                "email" => auth()->user()->email,
-                "email_verified_at" => auth()->user()->email_verified_at,
-            ]
+                'id' => auth()->user()->id,
+                'name' => auth()->user()->name,
+                'email' => auth()->user()->email,
+                'email_verified_at' => auth()->user()->email_verified_at,
+            ],
         ]], __('statusCode.statusCode200'));
     }
 
@@ -188,10 +214,13 @@ class AuthController extends Controller
      *     operationId="logout",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="object",
      *                 @OA\Property(property="statusCode", type="string", example="200"),
      *                 @OA\Property(property="status", type="string", example="OK"),
@@ -199,10 +228,13 @@ class AuthController extends Controller
      *             ),
      *         ),
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated."),
      *         ),
      *     ),
@@ -210,19 +242,20 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        try{
+        try {
             Auth::logout();
             JWTAuth::parseToken()->invalidate();
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return redirect()->intended('/');
         }
         if (config('app.front_end_tech') == false) {
             return redirect()->intended('/');
         }
+
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
-            'message' => __('auth.logout')
+            'message' => __('auth.logout'),
         ]], __('statusCode.statusCode200'));
     }
 
@@ -238,10 +271,13 @@ class AuthController extends Controller
      *     operationId="refreshToken",
      *     tags={"User"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="object",
      *                 @OA\Property(property="statusCode", type="string", example="200"),
      *                 @OA\Property(property="status", type="string", example="OK"),
@@ -260,10 +296,13 @@ class AuthController extends Controller
      *             ),
      *         ),
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated."),
      *         ),
      *     ),
@@ -273,7 +312,6 @@ class AuthController extends Controller
     {
         return $this->respondWithToken(Auth::refresh());
     }
-
 
     /**
      * Responds with a JSON containing the authentication token and user information.
@@ -285,15 +323,17 @@ class AuthController extends Controller
     {
         if (config('app.front_end_tech') == false) {
             $redirect = route('dashboard');
+
             return redirect()->intended($redirect)->with([
                 'user_details' => [
-                    "id" => salt_encrypt(auth()->user()->id),
-                    "name" => auth()->user()->name,
-                    "email" => auth()->user()->email,
-                    "email_verified_at" => auth()->user()->email_verified_at,
-                    "picture" => auth()->user()->picture,
-                ], 'token' =>  $token]);
+                    'id' => salt_encrypt(auth()->user()->id),
+                    'name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                    'email_verified_at' => auth()->user()->email_verified_at,
+                    'picture' => auth()->user()->picture,
+                ], 'token' => $token]);
         }
+
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => __('statusCode.status200'),
@@ -304,13 +344,13 @@ class AuthController extends Controller
                 'expires_in' => auth('api')->factory()->getTTL() * 60,
                 'redirect' => route('home'),
                 'user' => [
-                    "id" => salt_encrypt(auth()->user()->id),
-                    "name" => auth()->user()->name,
-                    "email" => auth()->user()->email,
-                    "email_verified_at" => auth()->user()->email_verified_at,
-                    "picture" => auth()->user()->picture,
+                    'id' => salt_encrypt(auth()->user()->id),
+                    'name' => auth()->user()->name,
+                    'email' => auth()->user()->email,
+                    'email_verified_at' => auth()->user()->email_verified_at,
+                    'picture' => auth()->user()->picture,
 
-                ]
+                ],
             ],
         ]], __('statusCode.statusCode200'));
     }

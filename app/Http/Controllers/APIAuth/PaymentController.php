@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use Carbon\Carbon;
-use App\Models\Plan;
-use App\Models\User;
-use Razorpay\Api\Api;
-use App\Models\Receipt;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
+use App\Http\Controllers\Controller;
+use App\Models\BuyerRegistrationTemp;
+use App\Models\CompanyAddressDetail;
 use App\Models\CompanyDetail;
 use App\Models\CompanyPlanPayment;
+use App\Models\Plan;
+use App\Models\Receipt;
+use App\Models\User;
 use App\Notifications\VerifyEmail;
 use App\Traits\ReceiptIdGenerator;
-use App\Http\Controllers\Controller;
-use App\Models\CompanyAddressDetail;
-use App\Models\BuyerRegistrationTemp;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Razorpay\Api\Api;
 
 class PaymentController extends Controller
 {
@@ -26,12 +27,10 @@ class PaymentController extends Controller
         //
     }
 
-
     /**
      * Create a payment request.
      *
-     * @param \Illuminate\Http\Request $request The HTTP request object.
-     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
      * @return \Illuminate\Http\JsonResponse The JSON response.
      *
      * @OA\Post(
@@ -39,18 +38,24 @@ class PaymentController extends Controller
      *     summary="Create a payment request",
      *     description="Create a payment request and return the order details.",
      *     tags={"Payment"},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(ref="#/components/schemas/PaymentCreateRequest")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Payment request created",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Invalid request",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
@@ -59,7 +64,7 @@ class PaymentController extends Controller
     {
         $plan = $request->input('plan');
         $plan_details = Plan::where('id', salt_decrypt($plan))->where('status', Plan::STATUS_ACTIVE)->first();
-        if (!empty($plan_details)) {
+        if (! empty($plan_details)) {
             $currency = $request->input('currency', 'INR');
             $hiddenField = salt_decrypt($request->input('hiddenField')) ?? null;
             $user_detail = BuyerRegistrationTemp::find($hiddenField);
@@ -76,7 +81,7 @@ class PaymentController extends Controller
                 ]);
                 CompanyPlanPayment::create([
                     'transaction_id' => $order->id,
-                    'purchase_id' =>  Str::uuid(),
+                    'purchase_id' => Str::uuid(),
                     'plan_id' => $plan_details->id,
                     'amount' => $plan_details->price,
                     'currency' => $currency,
@@ -96,10 +101,10 @@ class PaymentController extends Controller
                     'message' => __('auth.paymentOrder'),
                     'order' => $order->toArray(),
                 ]], __('statusCode.statusCode200'));
-            }else{
-               $payment = CompanyPlanPayment::create([
+            } else {
+                $payment = CompanyPlanPayment::create([
                     'transaction_id' => 'pay_'.Str::random(8),
-                    'purchase_id' =>  Str::uuid(),
+                    'purchase_id' => Str::uuid(),
                     'plan_id' => $plan_details->id,
                     'amount' => $plan_details->price,
                     'currency' => $currency,
@@ -128,8 +133,7 @@ class PaymentController extends Controller
     /**
      * Handle the successful payment request.
      *
-     * @param \Illuminate\Http\Request $request The HTTP request object.
-     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse The JSON response or redirect response.
      *
      * @throws \Exception If an error occurs during the payment process.
@@ -139,18 +143,24 @@ class PaymentController extends Controller
      *     summary="Handle successful payment",
      *     description="Handle the successful payment request and perform necessary actions.",
      *     tags={"Payment"},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(ref="#/components/schemas/PaymentSuccessRequest")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Payment success",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Payment failed",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
      *     )
      * )
@@ -158,7 +168,7 @@ class PaymentController extends Controller
     public function paymentSuccess(Request $request)
     {
         // Store request all value in logs
-        \Log::info('Request data: ' . json_encode($request->all()));
+        \Log::info('Request data: '.json_encode($request->all()));
         $paymentId = $request->input('razorpay_payment_id');
         $orderId = $request->input('razorpay_order_id');
         $signature = $request->input('razorpay_signature');
@@ -179,10 +189,18 @@ class PaymentController extends Controller
 
             return $this->storePaymentDetails($payment);
         } catch (\Exception $e) {
-            \Log::info('Request data: ' . $e->getMessage() . '---- ' . $e->getLine());
+
+            // Log the exception details and trigger an ExceptionEvent
+            $message = $e->getMessage(); // Get the error message
+            $file = $e->getFile(); // Get the file
+            $line = $e->getLine(); // Get the line number where the exception occurred
+            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+
+            \Log::info('Request data: '.$e->getMessage().'---- '.$e->getLine());
             if (config('app.front_end_tech') == false) {
                 return redirect()->route('payment.failed');
             }
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -194,27 +212,27 @@ class PaymentController extends Controller
     /**
      * Handle the failed payment request.
      *
-     * @param \Illuminate\Http\Request $request The HTTP request object.
-     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
      * @return \Illuminate\Http\JsonResponse The JSON response.
      */
-    private function storePaymentDetails($payment){
+    private function storePaymentDetails($payment)
+    {
         try {
             // Delete receipt information because that is used for the next receipt id
             Receipt::where('last_receipt_id', $payment->receipt_id)->delete();
-    
+
             $user = BuyerRegistrationTemp::where('id', $payment->buyer_id)->first();
-    
+
             // Register User
             $buyer = User::create([
-                'name' => $user->first_name . ' ' . $user->last_name,
+                'name' => $user->first_name.' '.$user->last_name,
                 'email' => $user->email,
                 'password' => $user->password,
             ]);
-    
+
             // assign role to the buyer
             $buyer->assignRole(User::ROLE_BUYER);
-    
+
             // Register Business
             $company_detail = CompanyDetail::create([
                 'user_id' => $buyer->id,
@@ -231,18 +249,18 @@ class PaymentController extends Controller
             $payment->company_id = $company_detail->id;
             $payment->save();
 
-            $company_detail->company_serial_id = generateCompanySerialId($company_detail->id, 'B');   
+            $company_detail->company_serial_id = generateCompanySerialId($company_detail->id, 'B');
             $company_detail->save();
-    
+
             $plan_details = Plan::where(['id' => $payment->plan_id, 'status' => Plan::STATUS_ACTIVE])->first();
-            // Register Company Subscription Details 
+            // Register Company Subscription Details
             $company_detail->subscription()->create([
                 'company_id' => $company_detail->id,
                 'plan_id' => $payment->plan_id,
                 'subscription_start_date' => Carbon::now(),
                 'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
             ]);
-    
+
             // Register Business Address Details
             $company_detail->address()->create([
                 'company_id' => $company_detail->id,
@@ -253,28 +271,38 @@ class PaymentController extends Controller
                 'address_type' => CompanyAddressDetail::TYPE_SHIPPING_ADDRESS,
                 'is_primary' => true,
             ]);
-    
+
             // Register Business Operation Details
             $company_detail->operation()->create([
                 'company_id' => $company_detail->id,
                 'product_channel' => $user->product_channel,
             ]);
-    
+
             if (config('app.front_end_tech') == false) {
                 // Trigger email verification notification
                 $buyer->notify(new VerifyEmail);
+
                 return redirect()->route('thankyou');
             }
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
                 'message' => __('auth.paymentSuccess'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-            \Log::error('Error in storePaymentDetails: ' . $e->getMessage());
+
+            // Log the exception details and trigger an ExceptionEvent
+            $message = $e->getMessage(); // Get the error message
+            $file = $e->getFile(); // Get the file
+            $line = $e->getLine(); // Get the line number where the exception occurred
+            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+
+            \Log::error('Error in storePaymentDetails: '.$e->getMessage());
             if (config('app.front_end_tech') == false) {
                 return redirect()->route('payment.failed');
             }
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -282,5 +310,4 @@ class PaymentController extends Controller
             ]], __('statusCode.statusCode422'));
         }
     }
-
 }

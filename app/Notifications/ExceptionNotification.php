@@ -5,19 +5,26 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 class ExceptionNotification extends Notification
 {
     use Queueable;
 
-    protected $order;
+    protected $message;
+
+    protected $file;
+
+    protected $line;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($order)
+    public function __construct($message, $line, $file)
     {
-        $this->order = $order;
+        $this->message = $message;
+        $this->line = $line;
+        $this->file = $file;
     }
 
     /**
@@ -36,9 +43,10 @@ class ExceptionNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-        // ->greeting($this->order[])
+            ->greeting('Ecom Server') // Add a custom greeting if needed
             ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->line(new HtmlString($this->message)) // Display the exception message
+            // ->action('Notification Action', url('/'))
             ->line('Thank you for using our application!');
     }
 
