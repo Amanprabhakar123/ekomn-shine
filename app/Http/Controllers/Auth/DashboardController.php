@@ -315,11 +315,13 @@ class DashboardController extends Controller
     {
         $state = DB::table('states')
             ->where('country_id', 101)
+            ->orderBy('name', 'asc')
             ->get();
 
         $city = DB::table('cities')
             ->where('country_id', 101)
             ->where('state_id', $request->id)
+            ->orderBy('name', 'asc')
             ->get();
 
         if ($state->isNotEmpty()) {

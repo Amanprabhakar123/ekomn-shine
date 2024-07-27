@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Http\Controllers\Controller;
-use App\Models\AddToCart;
-use App\Models\Order;
-use App\Models\ProductVariation;
 use App\Models\User;
-use App\Transformers\ProductCartListTransformer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Order;
+use App\Models\AddToCart;
 use League\Fractal\Manager;
+use Illuminate\Http\Request;
+use App\Models\ProductVariation;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Services\OrderService;
 use League\Fractal\Resource\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use App\Transformers\ProductCartListTransformer;
 
 class OrderController extends Controller
 {
@@ -441,16 +443,106 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
+            // Check if the user has the permission to add a new order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADD_NEW_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            if($request->order_type != Order::ORDER_TYPE_BULK){
+                $validator = Validator::make($request->all(), [
+                    'full_name' => 'required|string',
+                    'email' => 'required|email',
+                    'mobile' => 'required|string|max:10|min:10',
+                    'order_type' => 'required|integer',
+                    'store_order' => 'nullable|string',
+                    'invoice' => 'nullable|mimes:pdf',
+                    'address' => 'required|string',
+                    'state' => 'required|string',
+                    'city' => 'required|string',
+                    'pincode' => 'required|string|max:6|min:6',
+                    'b_address' => 'required|string',
+                    'b_state' => 'required|string',
+                    'b_city' => 'required|string',
+                    'b_pincode' => 'required|string|max:6|min:6',
+                ]);
+            }else{
+                $validator = Validator::make($request->all(), [
+                    'full_name' => 'required|string',
+                    'email' => 'required|email',
+                    'mobile' => 'required|string',
+                    'order_type' => 'required|integer',
+                    'store_order' => 'nullable|string',
+                    'invoice' => 'nullable|mimes:pdf',
+                ]);
+            }
 
-        }catch(\Exception $e){
+            try {
+                $validator->validate();
+            } catch (ValidationException $e) {
+                $errors = $validator->errors();
+                $field = $errors->keys()[0]; // Get the first field that failed validation
+                $errorMessage = $errors->first($field);
+                return errorResponse($errorMessage.'-'.$field);
+            }
+            // Fetch the Cart Data
+            $productCartList = AddToCart::where('buyer_id', auth()->user()->id)->with('product')->get();
+            // Check if the SKU exists
+            if ($productCartList->isEmpty()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.skuNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Transform the results using Fractal
+            $resource = new Collection($productCartList, new ProductCartListTransformer($request->all()));
+
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
+
+            $OrderService = new OrderService();
+            return $OrderService->createOrder($request->all(), $data, $productCartList);
+        } catch(\Exception $e){
             // Handle the exception
-            Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine());
-
+            Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine().'File:- '.$e->getFile());
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
                 'message' => __('auth.orderStoreFailed'),
             ]], __('statusCode.statusCode200'));
+        }
+    }
+
+    /**
+     * Order Payment Success
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function orderPaymentSuccess(Request $request){
+        // Store request all value in logs
+        Log::info('Request data: ' . json_encode($request->all()));
+        try {
+            $OrderService = new OrderService();
+            $success = $OrderService->confirmOrder($request->all());
+            if($success){
+                return redirect()->route('my.orders');
+            }else{
+                return redirect()->route('payment.failed');
+            }
+        } catch (\Exception $e) {
+            Log::info('Request data: ' . $e->getMessage() . '---- ' . $e->getLine());
+            if (config('app.front_end_tech') == false) {
+                return redirect()->route('payment.failed');
+            }
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.paymentFailed'),
+            ]], __('statusCode.statusCode422'));
         }
     }
                 

@@ -27,4 +27,6 @@ return [
     'statusCode200' => '200',
     'statusCode500' => '500',
     'status500' => 'Server Error',
+    'status201' => 'Created',
+    'statusCode201' => '201',
 ];

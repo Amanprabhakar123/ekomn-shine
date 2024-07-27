@@ -57,6 +57,17 @@
                       </div>
                     </div>
                   </div>
+                  <div class="col-sm-12 col-md-4">
+                    <div class="ek_group">
+                      <label class="eklabel req">
+                        <span>Store Order:</span>
+                      </label>
+                      <div class="ek_f_input">
+                        <input type="text" id="storeOrder"  class="form-control" placeholder="Channel Order ID like Amazon" />
+                        <div id="storeOrderErr" class="invalid-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
               <section class="sectionspace">
@@ -655,101 +666,9 @@
 @endsection
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
-  // Add/Remove Dropship SKU
-  /*
-  document.addEventListener("DOMContentLoaded", function() {
-    const addSKUButton = document.querySelector("#addDropshipSKU");
-    addSKUButton.addEventListener("click", function() {
-      const dropshipInvoice = document.querySelector('#dropshipInvoice tbody');
-      const dropshipInvoiceRow = document.createElement('tr');
-      dropshipInvoiceRow.innerHTML = `
-        <td>
-          <div class="productTitle_t3 bold">
-            <i class="fas fa-minus-circle removeDropshipSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse
-          </div>
-        </td>
-        <td class="text-center">100</td>
-        <td>K5944RUR</td>
-        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-        <td class="text-right">12%</td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>`;
-      dropshipInvoice.prepend(dropshipInvoiceRow);
-    });
-    const dropshipInvoiceBody = document.querySelector("#dropshipInvoice tbody");
-    dropshipInvoiceBody.addEventListener("click", function(event) {
-      if (event.target.closest(".removeDropshipSKU")) {
-        const newSKUInput = event.target.closest("tr");
-        dropshipInvoiceBody.removeChild(newSKUInput);
-      }
-    });
-  });
-  */
-  // end
-
-
-  // Add/Remove Bulk SKU
-  /*
-  document.addEventListener("DOMContentLoaded", function() {
-    const addSKUButton = document.querySelector("#addBulkSKU");
-    addSKUButton.addEventListener("click", function() {
-      const dropshipInvoice = document.querySelector('#bulkInvoice tbody');
-      const dropshipInvoiceRow = document.createElement('tr');
-      dropshipInvoiceRow.innerHTML = `
-        <td>
-          <div class="productTitle_t3 bold">
-            <i class="fas fa-minus-circle removeBulkSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse (Bulk)
-          </div>
-        </td>
-        <td class="text-center">100</td>
-        <td>K5944RUR</td>
-        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-        <td class="text-right">12%</td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>`;
-      dropshipInvoice.prepend(dropshipInvoiceRow);
-    });
-    const dropshipInvoiceBody = document.querySelector("#bulkInvoice tbody");
-    dropshipInvoiceBody.addEventListener("click", function(event) {
-      if (event.target.closest(".removeBulkSKU")) {
-        const newSKUInput = event.target.closest("tr");
-        dropshipInvoiceBody.removeChild(newSKUInput);
-      }
-    });
-  });*/
-  // end
-
-  // Add/Remove Resell SKU
-  document.addEventListener("DOMContentLoaded", function() {
-    const addSKUButton = document.querySelector("#addResellSKU");
-    addSKUButton.addEventListener("click", function() {
-      const dropshipInvoice = document.querySelector('#resellInvoice tbody');
-      const dropshipInvoiceRow = document.createElement('tr');
-      dropshipInvoiceRow.innerHTML = `
-        <td>
-          <div class="productTitle_t3 bold">
-            <i class="fas fa-minus-circle removeResellSKU pointer text-danger me-1"></i>Dell WM126 Wireless Mouse (Resell)
-          </div>
-        </td>
-        <td class="text-center">100</td>
-        <td>K5944RUR</td>
-        <td class="text-center"><input type="text" class="stock_t" value="5" /></td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99</td>
-        <td class="text-right">12%</td>
-        <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>`;
-      dropshipInvoice.prepend(dropshipInvoiceRow);
-    });
-    const dropshipInvoiceBody = document.querySelector("#resellInvoice tbody");
-    dropshipInvoiceBody.addEventListener("click", function(event) {
-      if (event.target.closest(".removeResellSKU")) {
-        const newSKUInput = event.target.closest("tr");
-        dropshipInvoiceBody.removeChild(newSKUInput);
-      }
-    });
-  });
-  // end
-
   // Upload Invoice 
   document.addEventListener('change', function(event) {
     if (event.target.classList.contains('upload_invoice')) {
@@ -845,8 +764,8 @@
       });
     }
 
-    var isvalid = true;
     $('#dropship-order').click(function() {
+      var isvalid = true;
       clearError();
       if (!$('#full_name').val()) {
         $('#full_name').addClass('is-invalid');
@@ -876,7 +795,6 @@
         $('#mobile').addClass('is-invalid');
         $('#mobileErr').text('Please enter valid phone');
         isvalid = false;
-
       }
 
       if (!$('#address').val()) {
@@ -967,19 +885,69 @@
         formData.append('full_name', $('#full_name').val());
         formData.append('email', $('#email').val());
         formData.append('mobile', $('#mobile').val());
+        formData.append('store_order', $('#storeOrder').val());
         formData.append('address', $('#address').val());
         formData.append('state', $('#state').val());
         formData.append('city', $('#city').val());
-        formData.append('pin_code', $('#pin_code').val());
+        formData.append('pincode', $('#pin_code').val());
         formData.append('b_address', $('#b_address').val());
         formData.append('b_state', $('#b_state').val());
         formData.append('b_city', $('#b_city').val());
-        formData.append('b_pin_code', $('#b_pin_code').val());
+        formData.append('b_pincode', $('#b_pin_code').val());
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
         ApiRequest('orders', 'POST', formData)
           .then(response => {
-            console.log(response);
+            if (response.data.statusCode == 200) {
+              const payment = response.data.data;
+              var options = {
+                  "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+                  "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                  "currency": payment.currency,
+                  "name": "{{env('APP_NAME')}}", //your business name
+                  "description": "Create payment for order by Ekomn Platform",
+                  "image": "{{asset('assets/images/Logo.svg')}}",
+                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "callback_url": "{{route('order.payment.success')}}",
+                  "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                      "name": payment.full_name, //your customer's name
+                      "email": payment.email, //your customer's email
+                      "contact": payment.mobile_number //Provide the customer's phone number for better conversion rates 
+                  },
+                  "notes": {
+                      "address": "Gurugram, Haryana India"
+                  },
+                  "theme": {
+                      "color": "#FECA40"
+                  }
+              };
+              var rzp1 = new Razorpay(options);
+              rzp1.open();
+            }
+            else if (response.data.statusCode == 422) {
+                const field = response.data.key;
+                $(`#${field}`).addClass('is-invalid');
+                $(`#${field}Err`).text(response.data.message);
+            } else if(response.data.statusCode == 201){
+               // Handle error
+               Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
           })
           .catch(error => {
             console.error(error);
@@ -1184,15 +1152,15 @@
         var formData = new FormData();
         formData.append('full_name', $('#resell-full-name').val());
         formData.append('email', $('#resell-email').val());
-        formData.append('mobile', $('#resell-mobile').val());
+        formData.append('mobile', parseInt(('#resell-mobile').val()));
         formData.append('address', $('#resell-d-address').val());
         formData.append('state', $('#resell-d-state').val());
         formData.append('city', $('#resell-d-city').val());
-        formData.append('pin_code', $('#resell-d-pincode').val());
+        formData.append('pincode', parseInt($('#resell-d-pincode').val()));
         formData.append('b_address', $('#resell-b-address').val());
         formData.append('b_state', $('#resell-b-state').val());
         formData.append('b_city', $('#resell-b-city').val());
-        formData.append('b_pin_code', $('#resell-b-pincode').val());
+        formData.append('b_pin_code', parseInt($('#resell-b-pincode').val()));
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
         ApiRequest('orders', 'POST', formData)

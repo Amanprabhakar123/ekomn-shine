@@ -96,5 +96,9 @@ return [
     'listOrder' => 'Fetch Orders SuccessFully.',
     'orderListFailed' => 'Fetch Orders Failed.',
     'orderNotFound' => 'Orders Not Found.',
+    'orderStoreFailed' => 'Order Store Failed.',
+    'orderStore' => 'Order Placed Successfully.',
+    'orderCreatedSuccesfully' => 'Order Created Successfully.',
+    'duplicatSupplierOrder' => 'You can not order from multiple suppliers in a single order.',
 
 ];

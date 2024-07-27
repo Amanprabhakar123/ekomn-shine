@@ -124,6 +124,7 @@ Route::group(['prefix' => 'api'], function () {
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+    Route::post('order/payment-success/callback', [OrderController::class, 'orderPaymentSuccess'])->name('order.payment.success');
 });
 
 // Define routes for authenticated API routes

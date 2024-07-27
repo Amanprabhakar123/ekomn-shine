@@ -1,12 +1,13 @@
 <?php
 
 use App\Models\User;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
-use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -564,6 +565,47 @@ function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
             $zip->addEmptyDir($relativePath);
         } else {
             $zip->addFile($filePath, $relativePath);
+        }
+    }
+}
+
+
+
+if (!function_exists('storage')) {
+
+    /**
+     * Store or retrieve or delete data file from storage.
+     *
+     * @param string     $key   The storage key.
+     * @param mixed|null $data  The data to store. Pass `null` to retrieve data.
+     * @param array      $args  Additional arguments for formatting the storage path.
+     * @param string|null $name The name of the file to store.
+     *
+     * @return mixed Returns the stored file path or content, or `null` if retrieval fails.
+     */
+
+    function storage(string $key, $data = null, array $args = [], $name = null)
+    {
+        $isFileOnS3 = config('app.FILE_STORAGE_PLACE');
+        if (is_null($data)) {
+            // get the file from local storage or s3 depends on environment
+            return Storage::disk($isFileOnS3 ? 's3' : 'local')->get($key);
+        } elseif ($data == 'delete') {
+            // delete the file from local storage or s3 depends on environment
+            return Storage::disk($isFileOnS3 ? 's3' : 'local')->delete($key);
+        } else {
+            $config = config('paths.' . $key);
+            if (is_string($data)) {
+                $path = vsprintf($config['path'], $args) . '/' . $name;
+                $visibility = $config['visibility'];
+            } else {
+                $path = vsprintf($config['path'], $args);
+                $visibility = $config['assets_visibility'];
+            }
+
+            // store the file from local storage or s3 depends on environment
+            $file = Storage::disk($isFileOnS3 ? 's3' : 'local')->put($path, $data, $visibility);
+            return is_string($data) ? $path : $file;
         }
     }
 }

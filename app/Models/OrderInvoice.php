@@ -21,6 +21,7 @@ class OrderInvoice extends Model
      */
     protected $fillable = [
         'order_id',
+        'buyer_id',
         'supplier_id',
         'invoice_number',
         'invoice_date',
@@ -47,6 +48,7 @@ class OrderInvoice extends Model
      *
      * @var array<int, string>
      */
+    const STATUS_DUE = 0;
     const STATUS_PAID = 1;
     const STATUS_CANCELLED= 2;
     const STATUS_REFUNDED = 3;
@@ -151,6 +153,8 @@ class OrderInvoice extends Model
     public function getStatus(): ?string
     {
         switch ($this->status) {
+            case self::STATUS_DUE:
+                return 'Due';
             case self::STATUS_PAID:
                 return 'Paid';
             case self::STATUS_CANCELLED:
@@ -200,6 +204,16 @@ class OrderInvoice extends Model
     public function isCancelled(): bool
     {
         return $this->status === self::STATUS_CANCELLED;
+    }
+
+    /**
+     * Check if the order invoice is Due.
+     *
+     * @return bool
+     */
+    public function isDue(): bool
+    {
+        return $this->status === self::STATUS_DUE;
     }
 
     /**

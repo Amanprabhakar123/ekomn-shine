@@ -73,6 +73,9 @@ class Order extends Model
 
     const PAYMENT_METHOD_ONLINE = 2;
 
+    /**
+     * Constants for dropship order quantity.
+     */
     const DROPSHIP_ORDER_QUANTITY = 2;
 
     /**
@@ -84,6 +87,9 @@ class Order extends Model
         'order_number',
         'buyer_id',
         'supplier_id',
+        'full_name',
+        'email',
+        'mobile_number',
         'store_order',
         'order_date',
         'status',

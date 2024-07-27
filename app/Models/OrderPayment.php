@@ -23,7 +23,7 @@ class OrderPayment extends Model
      */
     protected $fillable = [
         'order_id',
-        'razorpay_payment_id',
+        'razorpay_payment_id', // Payment ID from Razorpay or Transaction ID 
         'payment_date',
         'payment_method',
         'amount',
