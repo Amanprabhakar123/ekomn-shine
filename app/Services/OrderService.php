@@ -74,6 +74,7 @@ class OrderService
                     'full_name' => $user->first_name.' '.$user->last_name,
                     'email' => $user->email,
                     'mobile_number' => $user->mobile_no,
+                    'gst_number' => $user->gst_no,
                     'store_order' => isset($orderData['store_order']) ? $orderData['store_order'] : '',
                     'order_date' => Carbon::now()->toDateTimeString(),
                     'status' => Order::STATUS_DRAFT,
