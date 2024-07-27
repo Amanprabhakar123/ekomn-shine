@@ -96,5 +96,7 @@ return [
     'listOrder' => 'Fetch Orders SuccessFully.',
     'orderListFailed' => 'Fetch Orders Failed.',
     'orderNotFound' => 'Orders Not Found.',
+    'orderUpdateFailed' => 'Order Update Failed.',
+    'orderUpdate' => 'Order Update Successfully.',
 
 ];

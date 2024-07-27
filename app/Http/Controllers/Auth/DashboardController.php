@@ -372,19 +372,21 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function viewOrder(Request $request)
+    public function viewOrder(Request $request, $id)
     {
-        $myOrderId = $request->myOrderId;
+
+        $myOrderId = $id;
         $orderData = OrderAddress::where('order_id', salt_decrypt($myOrderId))->first();
-        $orderTable = Order::where('id', salt_decrypt($myOrderId))->first();
+        $orderUpdate = Order::where('id', salt_decrypt($myOrderId))->update([
+            'status' => Order::STATUS_IN_PROGRESS,
+        ]);
+        $orderTable = Order::find(salt_decrypt($myOrderId));
         $billing_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Billing()->first();
         // $shipping_address = OrderAddress::where('id', salt_decrypt($myOrderId))->Shipping()->first();
         $delivery_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Delivery()->first();
-        // dd($delivery_address);
 
         $pickup_address = OrderAddress::where('order_id', salt_decrypt($myOrderId))->Pickup()->first();
 
-        // dd($pickup_address);
         return view('dashboard.common.view-order', get_defined_vars());
     }
 }
