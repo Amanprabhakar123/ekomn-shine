@@ -65,7 +65,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
     Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
     Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
-    Route::get('view-orders', [DashboardController::class, 'viewOrder'])->name('view.order');
+    Route::get('view-orders/{id}', [DashboardController::class, 'viewOrder'])->name('view.order');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -96,6 +96,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('product/cart/update/quantity', [OrderController::class, 'updateProductQuantityInCart'])->name('product.cart.update.quantity');
         Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
         Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::get('orders', [OrderController::class, 'orders'])->name('orders');
     });
 });
 
@@ -104,7 +105,6 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
-        Route::get('orders', [OrderController::class, 'orders'])->name('orders');
     });
 });
 

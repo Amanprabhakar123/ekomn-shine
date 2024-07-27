@@ -11,11 +11,11 @@
           <a href="{{route('create.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a>
         </div>
         <div class="tableTop mt10">
-          <input type="text" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
+          <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
           <div class="ek_group m-0">
             <label class="eklabel eklabel_60 m-0">Status:</label>
             <div class="ek_f_input">
-              <select class="form-select w_150_f">
+              <select id="sort_by_status" class="form-select w_150_f">
                 <option value="Pending" selected>Pending</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Dispatched">Dispatched</option>
@@ -70,157 +70,8 @@
                 <th class="text-center">Action</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="{{route('view.order', ['myOrderId' => $orderId])}}" class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="view-order-bb.html" class="a_link">Dell WM126 Wireless Mouse</a>
-                  </div>
-                </td>
-                <td>Mohd Imtyaj</td>
-                <td>25</td>
-                <td>
-                  <div>30 June 2014 23:30</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 5000</div>
-                </td>
-                <td>Bulk Order</td>
-                <td>Store Order</td>
-                <td>In Progress</td>
-                <td class="text-center" title="Order can be cancelled only in 'Pending' Status">
-                  <button class="btn btn-sm btn-danger" disabled>Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="view-order-bb.html" class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="" class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="" class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>EK1050IND</td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="" class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
+            <tbody id="dataContainer">
+              <!--  -->
             </tbody>
           </table>
         </div>
@@ -251,12 +102,12 @@
           <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">
-          <input type="text" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
+          <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
           <div class="d-flex gap-2">
             <div class="ek_group m-0">
               <label class="eklabel eklabel_60 m-0">Status:</label>
               <div class="ek_f_input">
-                <select class="form-select w_150_f">
+                <select id="sort_by_status" class="form-select w_150_f">
                   <option value="Pending" selected>Pending</option>
                   <option value="In Progress">In Progress</option>
                   <option value="Dispatched">Dispatched</option>
@@ -306,53 +157,8 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="form-check">
-                    <input type="checkbox" id="EK1050IND" class="form-check-input">
-                    <label for="EK1050IND" class="ms-1">EK1048IND</label>
-                  </div>
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                   <a href="{{route('view.order')}}"  class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Pending</td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check">
-                    <input type="checkbox" id="EK1051IND" class="form-check-input">
-                    <label for="EK1051IND" class="ms-1">EK1050IND</label>
-                  </div>
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="view-order-supplier.html" class="a_link">Dell WM126 Wireless Mouse</a>
-                  </div>
-                </td>
-                <td>Mohd Imtyaj</td>
-                <td>25</td>
-                <td>
-                  <div>30 June 2014 23:30</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 5000</div>
-                </td>
-                <td>Bulk Order</td>
-                <td>In Progress</td>
-              </tr>
+            <tbody id="dataContainer">
+              <!--  -->
             </tbody>
           </table>
         </div>
@@ -384,12 +190,12 @@
           <!-- <a href="{{route('create.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">
-          <input type="text" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
+          <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
           <div class="d-flex gap-2">
             <div class="ek_group m-0">
               <label class="eklabel eklabel_60 m-0">Status:</label>
               <div class="ek_f_input">
-                <select class="form-select w_150_f">
+                <select id="sort_by_status" class="form-select w_150_f">
                   <option value="Pending" selected>Pending</option>
                   <option value="In Progress">In Progress</option>
                   <option value="Dispatched">Dispatched</option>
@@ -440,71 +246,8 @@
                 <th class="text-center">Action</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="form-check">
-                    <input type="checkbox" id="EK1048IND" class="form-check-input">
-                    <label for="EK1048IND" class="ms-1">EK1048IND</label>
-                  </div>
-                </td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="{{route('view.order')}}"  class="a_link">Cushion covers</a>
-                  </div>
-                </td>
-                <td>Junaid Khan</td>
-                <td>EK501IND</td>
-                <td>EK501IND</td>
-                <td>5</td>
-                <td>
-                  <div>30 June 2014 18:36</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 1000</div>
-                </td>
-                <td>Dropship</td>
-                <td>Manual Order</td>
-                <td>Pending</td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check">
-                    <input type="checkbox" id="EK1050IND" class="form-check-input">
-                    <label for="EK1050IND" class="ms-1">EK1050IND</label>
-                  </div>
-                </td>
-                <td>
-                  EK501IND
-                </td>
-                <td>
-                  <div class="productTitle_t">
-                    <a href="view-order-admin.html" class="a_link">Dell WM126 Wireless Mouse</a>
-                  </div>
-                </td>
-                <td>Mohd Imtyaj</td>
-                <td>EK501IND</td>
-                <td>EK501IND</td>
-                <td>25</td>
-                <td>
-                  <div>30 June 2014 23:30</div>
-                </td>
-                <td>
-                  <div class="sell_t"><i class="fas fa-rupee-sign"></i> 5000</div>
-                </td>
-                <td>Bulk Order</td>
-                <td>Store Order</td>
-                <td>In Progress</td>
-                <td class="text-center" title="Order can be cancelled only in 'Pending' Status">
-                  <button class="btn btn-sm btn-danger" disabled>Cancel</button>
-                </td>
-              </tr>
+            <tbody id="dataContainer">
+              <!--  -->
             </tbody>
           </table>
         </div>
@@ -535,109 +278,233 @@
 
 @section('scripts')
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const rowsPerPage = document.getElementById("rowsPerPage");
-    const rowInfo = document.getElementById("rowInfo");
-    const pagination = document.getElementById("pagination");
-    const prevPage = document.getElementById("prevPage");
-    const nextPage = document.getElementById("nextPage");
-    const dataContainer = document.getElementById("dataContainer");
-    // if API use then comment this part and enable the commented part
-    let currentPage = 1;
-    let rows = parseInt(rowsPerPage.value, 10);
-    let totalRows = 80;
-    const staticData = Array.from({ length: totalRows }, (_, i) => ({ id: i + 1, name: `Item ${i + 1}` }));
-    function fetchData() {
-      const start = (currentPage - 1) * rows;
-      const end = start + rows;
-      const data = staticData.slice(start, end);
-      updatePagination();
-      displayData(data);
-    }
-    // let currentPage = 1;
-    // let rows = parseInt(rowsPerPage.value, 10);
-    // let totalRows = 0;
-    // function fetchData() {
-    //   fetch(`https://api.example.com/data?limit=${rows}&page=${currentPage}`)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     totalRows = data.total;
-    //     updatePagination();
-    //     displayData(data.items);
-    //   })
-    //   .catch(error => console.error('Error fetching data:', error));
-    // }
-    // end
-    function updatePagination() {
-      const totalPages = Math.ceil(totalRows / rows);
-      pagination.innerHTML = "";
-      let pageList = "";
-      if (totalPages <= 5) {
-        for (let i = 1; i <= totalPages; i++) {
-          pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+
+document.addEventListener("DOMContentLoaded", () => {
+        const rowsPerPage = document.getElementById("rowsPerPage");
+        const rowInfo = document.getElementById("rowInfo");
+        const pagination = document.getElementById("pagination");
+        const prevPage = document.getElementById("prevPage");
+        const nextPage = document.getElementById("nextPage");
+        const dataContainer = document.getElementById("dataContainer");
+        let currentPage = 1;
+        let rows = parseInt(rowsPerPage.value, 10);
+        let totalRows = 0;
+
+        // Event listener for the search input field
+        const searchQuery = document.getElementById("searchQuery");
+        searchQuery.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                fetchData();
+            }
+        });
+
+        // Event listener for clicking outside the search input field
+        searchQuery.addEventListener("blur", (e) => {
+            fetchData();
+        });
+
+        const sortByStatus = document.getElementById("sort_by_status");
+        sortByStatus.addEventListener("change", () => {
+            fetchData();
+        });
+
+
+        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+        let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+        const h_sorting = document.querySelectorAll(".h_sorting");
+        h_sorting.forEach(element => {
+            element.addEventListener("click", () => {
+            const sortFieldElement = element;
+            sortField = sortFieldElement.getAttribute("data-sort-field");
+            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+            fetchData();
+            h_sorting.forEach(el => {
+                el.classList.remove("active");
+                el.classList.remove("asc");
+                el.classList.remove("desc");
+            });
+            element.classList.add("active");
+            element.classList.add(sortOrder);
+            });
+        });
+        // Function to fetch data from the server
+        function fetchData() {
+            // Make an API request to fetch inventory data
+            let apiUrl = `orders?per_page=${rows}&page=${currentPage}`;
+
+            if (sortField && sortOrder) {
+                apiUrl += `&sort=${sortField}&order=${sortOrder}`;
+            }
+
+            if (searchQuery) {
+                apiUrl += `&query=${searchQuery.value}`;
+            }
+
+            if (sortByStatus) {
+                apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            }
+
+            ApiRequest(apiUrl, 'GET')
+                .then(response => {
+                    const data = (response.data);
+                    if (data.length === 0) {
+                        dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                    } else {
+                        response = (response.meta.pagination);
+                        totalRows = response.total;
+                        updatePagination();
+                        displayData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
-      } else {
-        if (currentPage <= 3) {
-          for (let i = 1; i <= 4; i++) {
-            pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
-          }
-          pageList += `<li>...</li>`;
-          pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
-        } else if (currentPage >= totalPages - 2) {
-          pageList += `<li><a href="#" data-page="1">1</a></li>`;
-          pageList += `<li>...</li>`;
-          for (let i = totalPages - 3; i <= totalPages; i++) {
-            pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
-          }
-        } else {
-          pageList += `<li><a href="#" data-page="1">1</a></li>`;
-          pageList += `<li>...</li>`;
-          for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-            pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
-          }
-          pageList += `<li>...</li>`;
-          pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+
+        // Function to update the pagination UI
+        function updatePagination() {
+            const totalPages = Math.ceil(totalRows / rows);
+            pagination.innerHTML = "";
+            let pageList = "";
+            if (totalPages <= 5) {
+                for (let i = 1; i <= totalPages; i++) {
+                    pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                }
+            } else {
+                if (currentPage <= 3) {
+                    for (let i = 1; i <= 4; i++) {
+                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                    }
+                    pageList += `<li>...</li>`;
+                    pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+                } else if (currentPage >= totalPages - 2) {
+                    pageList += `<li><a href="#" data-page="1">1</a></li>`;
+                    pageList += `<li>...</li>`;
+                    for (let i = totalPages - 3; i <= totalPages; i++) {
+                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                    }
+                } else {
+                    pageList += `<li><a href="#" data-page="1">1</a></li>`;
+                    pageList += `<li>...</li>`;
+                    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                    }
+                    pageList += `<li>...</li>`;
+                    pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+                }
+            }
+            pagination.innerHTML = pageList;
+            updateRowInfo();
+            prevPage.disabled = currentPage === 1;
+            nextPage.disabled = currentPage === totalPages;
         }
-      }
-      pagination.innerHTML = pageList;
-      updateRowInfo();
-      prevPage.disabled = currentPage === 1;
-      nextPage.disabled = currentPage === totalPages;
-    }
-    function updateRowInfo() {
-      const startRow = (currentPage - 1) * rows + 1;
-      const endRow = Math.min(currentPage * rows, totalRows);
-      rowInfo.textContent = `Showing ${startRow} to ${endRow} of ${totalRows}`;
-    }
-    function displayData(items) {
-      dataContainer.innerHTML = items.map((item) => `<div>${item.name}</div>`).join("");
-    }
-    rowsPerPage.addEventListener("change", (e) => {
-      rows = parseInt(e.target.value, 10);
-      currentPage = 1;
-      fetchData();
-    });
-    pagination.addEventListener("click", (e) => {
-      if (e.target.tagName === "A") {
-        currentPage = parseInt(e.target.dataset.page, 10);
+
+        // Function to update the row information
+        function updateRowInfo() {
+            const startRow = (currentPage - 1) * rows + 1;
+            const endRow = Math.min(currentPage * rows, totalRows);
+            rowInfo.textContent = `Showing ${startRow} to ${endRow} of ${totalRows}`;
+        }
+
+        // Function to display the inventory data in the table
+        function displayData(items) {
+            dataContainer.innerHTML = items.map(generateTableRow).join("");
+        }
+
+        // Event listener for the "rowsPerPage" select element
+        rowsPerPage.addEventListener("change", (e) => {
+            rows = parseInt(e.target.value, 10);
+            currentPage = 1;
+            fetchData();
+        });
+
+        // Event listener for the pagination links
+        pagination.addEventListener("click", (e) => {
+            if (e.target.tagName === "A") {
+                currentPage = parseInt(e.target.dataset.page, 10);
+                fetchData();
+            }
+        });
+
+        // Event listener for the "prevPage" button
+        prevPage.addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchData();
+            }
+        });
+
+        // Event listener for the "nextPage" button
+        nextPage.addEventListener("click", () => {
+            const totalPages = Math.ceil(totalRows / rows);
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchData();
+            }
+        });
+
+        // Initial fetch of data
         fetchData();
-      }
+
     });
-    prevPage.addEventListener("click", () => {
-      if (currentPage > 1) {
-        currentPage--;
-        fetchData();
-      }
-    });
-    nextPage.addEventListener("click", () => {
-      const totalPages = Math.ceil(totalRows / rows);
-      if (currentPage < totalPages) {
-        currentPage++;
-        fetchData();
-      }
-    });
-    fetchData();
-  });
+
+        /**
+         * Generates a table row HTML markup for a given item.
+         *
+         * @param {Object} item - The item object containing the details.
+         * @returns {string} - The HTML markup for the table row.
+         */
+
+         function generateTableRow(item) {
+          var orderType='';
+
+            let a = status(item);
+            return `
+               <tr>
+                <td>${item.order_no}</td>
+                <td>
+                  ${item.store_order}
+                </td>
+                <td>
+                  <div class="productTitle_t">
+                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                  </div>
+                </td>
+                <td>${item.customer_name}</td>
+                <td>${item.quantity}</td>
+                <td>
+                  <div>${item.order_date}</div>
+                </td>
+                <td>
+                  <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
+                </td>
+                <td>${item.order_type}</td>
+                <td>${item.order_channel_type}</td>
+                <td>${item.status}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-danger">Cancel</button>
+                </td>
+              </tr>
+    `;
+        }
+
+        function status(item) {
+            if (item.status === 1) {
+                return "Pending";
+            } else if (item.status === 2) {
+                return "Processing";
+            } else if (item.status === 3) {
+                return "Completed";
+            } else if (item.status === 4) {
+                return "Failed";
+            } else if (item.status === 5) {
+                return "Queued";
+            } else if (item.status === 6) {
+                return "Validation Error";
+            } else {
+                return "Unknown";
+            }
+        }
 </script>
 
 @endsection
