@@ -109,10 +109,15 @@ class BuyerInventoryController extends Controller
             }
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
@@ -184,10 +189,15 @@ class BuyerInventoryController extends Controller
             }
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('auth.addBuyerInventoryFailed')], __('statusCode.statusCode500'));
@@ -231,10 +241,15 @@ class BuyerInventoryController extends Controller
             }
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('auth.removeBuyerInventoryFailed')], __('statusCode.statusCode500'));
@@ -444,10 +459,15 @@ class BuyerInventoryController extends Controller
             return $response;
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             \Log::error('Download Product ---'.$e->getMessage().'--------'.$e->getFile());
 
@@ -512,10 +532,15 @@ class BuyerInventoryController extends Controller
 
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapStoreFailed')], __('statusCode.statusCode500'));
@@ -573,10 +598,15 @@ class BuyerInventoryController extends Controller
 
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapUpdateFailed')], __('statusCode.statusCode500'));
@@ -628,10 +658,15 @@ class BuyerInventoryController extends Controller
 
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             return response()->json(['data' => __('api.channelProductMapDeleteFailed')], __('statusCode.statusCode500'));

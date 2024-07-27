@@ -125,10 +125,15 @@ class GoogleController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle any exceptions that occur during the authentication process
             return response()->json(['error' => $e->getMessage(), '-Line'.$e->getLine()], 500);

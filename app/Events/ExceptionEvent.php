@@ -14,17 +14,17 @@ class ExceptionEvent
     /**
      * Create a new event instance.
      */
-    protected $message;
+    public $message;
 
-    protected $line;
+    public $line;
 
-    protected $file;
+    public $file;
 
-    public function __construct($message, $line, $file)
+    public function __construct($params)
     {
-        $this->$message;
-        $this->$line;
-        $this->$file;
+        $this->message = $params['message'];
+        $this->line = $params['line'];
+        $this->file = $params['file'];
     }
 
     /**

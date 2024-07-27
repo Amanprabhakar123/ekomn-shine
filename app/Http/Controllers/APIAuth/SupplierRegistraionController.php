@@ -63,10 +63,15 @@ class SupplierRegistraionController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             return $this->errorResponse($e->getMessage());
         }
@@ -100,10 +105,15 @@ class SupplierRegistraionController extends Controller
         } catch (ValidationException $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Get the validation errors and throw the exception with modified error message
             $errors = $validator->errors();
@@ -154,10 +164,15 @@ class SupplierRegistraionController extends Controller
         } catch (ValidationException $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
@@ -195,10 +210,15 @@ class SupplierRegistraionController extends Controller
             $validator->validate();
         } catch (ValidationException $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
@@ -231,10 +251,15 @@ class SupplierRegistraionController extends Controller
         } catch (ValidationException $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation

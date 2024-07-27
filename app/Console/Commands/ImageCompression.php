@@ -47,7 +47,6 @@ class ImageCompression extends Command
     public function handle()
     {
         try {
-            // dfdfd
             $start = microtime(true);
             $this->info('Image Compression started at: '.now());
             $this->fetchAndCompressSameVariantImages();
@@ -58,10 +57,15 @@ class ImageCompression extends Command
         } catch (\Exception $e) {
             // Handle the exception here
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
         }
@@ -148,10 +152,15 @@ class ImageCompression extends Command
             }
         } catch (Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             throw new Exception($e->getMessage(), $e->getCode());
         }
@@ -240,10 +249,15 @@ class ImageCompression extends Command
             }
         } catch (Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             throw new Exception($e->getMessage(), $e->getCode());
         }

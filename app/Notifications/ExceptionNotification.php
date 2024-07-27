@@ -5,7 +5,6 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
 class ExceptionNotification extends Notification
 {
@@ -43,11 +42,11 @@ class ExceptionNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->greeting('Ecom Server') // Add a custom greeting if needed
-            ->line('The introduction to the notification.')
-            ->line(new HtmlString($this->message)) // Display the exception message
-            // ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('Exception Notification')
+            ->line('An exception has occurred.')
+            ->line('Message: '.$this->message)
+            ->line('File: '.$this->file)
+            ->line('Line: '.$this->line);
     }
 
     /**

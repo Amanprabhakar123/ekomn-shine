@@ -94,10 +94,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
@@ -195,10 +200,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             Log::error('Search product by sku failed: '.$e->getMessage().'Line:- '.$e->getLine());
@@ -257,10 +267,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             \Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
 
@@ -276,6 +291,7 @@ class OrderController extends Controller
     public function updateProductQuantityInCart(Request $request)
     {
         try {
+
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'cart_id' => 'required|string',
@@ -343,10 +359,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             Log::error('update quantity failed: '.$e->getMessage().'Line:- '.$e->getLine());
@@ -414,10 +435,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             Log::error('Add to cart failed: '.$e->getMessage().'Line:- '.$e->getLine());
@@ -433,9 +459,7 @@ class OrderController extends Controller
     public function orders()
     {
         try {
-            // Retrieve all orders with related models
             $orderList = Order::with('buyer', 'supplier', 'shippingAddress', 'billingAddress', 'pickupAddress', 'orderItemsCharges', 'shipments', 'orderPayments', 'orderTransactions')->get();
-
             // Check if the authenticated user has the permission to list orders
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_ORDER)) {
                 // If not, return a 403 unauthorized response
@@ -456,13 +480,17 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
 
-            // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
 
-            // Log the error message and line number if an exception occurs
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            // Log the exception details and trigger an ExceptionEvent
+
             Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
 
             // Return a 500 internal server error response with a failure message
@@ -486,10 +514,15 @@ class OrderController extends Controller
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
-            $message = $e->getMessage(); // Get the error message
-            $file = $e->getFile(); // Get the file
-            $line = $e->getLine(); // Get the line number where the exception occurred
-            event(new ExceptionEvent($message, $line, $file)); // Trigger an event with exception details
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
             Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine());
