@@ -377,6 +377,7 @@ class DashboardController extends Controller
         $myOrderId = salt_decrypt($id);
         $orderData = OrderAddress::where('order_id', $myOrderId)->first();
         $orderTable = Order::where('id', $myOrderId)->first();
+        $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])->where('id', $myOrderId)->first();
         $billing_address = OrderAddress::where('order_id', $myOrderId)->Billing()->first();
         // $shipping_address = OrderAddress::where('id', salt_decrypt($myOrderId))->Shipping()->first();
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();

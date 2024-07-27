@@ -27,7 +27,7 @@ class OrderDataTransformer extends TransformerAbstract
                 'title' => $title,
                 'order_no' => $order->order_number,
                 'store_order' => !is_null($order->store_order) ? $order->store_order : '' ,
-                'customer_name' => $order->customer_name,
+                'customer_name' => $order->full_name,
                 'quantity' => $quantity,
                 'order_date' => $order->order_date,
                 'total_amount' => $order->total_amount,

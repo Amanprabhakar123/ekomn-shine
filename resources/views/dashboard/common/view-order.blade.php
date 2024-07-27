@@ -42,12 +42,10 @@
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
-                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">Mohd
-                                            Imtyaj</span></div>
+                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderTable->full_name}}</span></div>
                                     <div><strong class="me-2">Email Address:</strong><span
-                                            class="opacity-75">imtyaj92@outlook.com</span></div>
-                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91
-                                            7827821676</span></div>
+                                            class="opacity-75">{{$orderTable->email}}</span></div>
+                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">{{$orderTable->mobile_number}}</span></div>
                                 </div>
                             </section>
                             <section class="mt5">
@@ -56,7 +54,7 @@
                                         <h4 class="subheading mb-1">Delivery Address</h4>
                                         <div class="addressbox">
 
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
+                                            <h6 class="m-0 pb-1">{{$orderTable->full_name}}</h6>
                                             <div>{{ $billing_address->street }}</div>
                                             <div>{{ $billing_address->city }}, {{ $billing_address->state }},
                                                 {{ $billing_address->postal_code }}</div>
@@ -65,7 +63,7 @@
                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Billing Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
+                                            <h6 class="m-0 pb-1">{{$orderTable->full_name}}</h6>
                                             <div>{{ $delivery_address->street }}</div>
                                             <div>{{ $delivery_address->city }}, {{ $delivery_address->state }},
                                                 {{ $delivery_address->postal_code }}</div>
