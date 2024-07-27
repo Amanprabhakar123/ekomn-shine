@@ -8,11 +8,13 @@ use App\Models\Order;
 use App\Models\ProductVariation;
 use App\Models\User;
 use App\Transformers\ProductCartListTransformer;
+use App\Transformers\OrderDataTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class OrderController extends Controller
 {
@@ -395,35 +397,53 @@ class OrderController extends Controller
         }
     }
 
-    public function orders()
+    /**
+     * Get the orders.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function orders(Request $request)
     {
         try {
-            // Retrieve all orders with related models
-            $orderList = Order::with('buyer', 'supplier', 'shippingAddress', 'billingAddress', 'pickupAddress', 'orderItemsCharges', 'shipments', 'orderPayments', 'orderTransactions')->get();
+            $perPage = $request->input('per_page', 10);
+            $searchTerm = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
+            $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
-            // Check if the authenticated user has the permission to list orders
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_ORDER)) {
-                // If not, return a 403 unauthorized response
-                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
-            }
+            // Allowed sort fields to prevent SQL injection
+            $allowedSorts = ['success_count', 'fail_count', 'status'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
-            if ($orderList) {
-                // If the order list is found, return it with a success message
-                return response()->json(['data' => [
-                    'data' => $orderList,
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200'),
-                    'message' => __('auth.listOrder'),
-                ]], __('statusCode.statusCode200'));
-            } else {
-                // If the order list is not found, return a 404 not found response
-                return response()->json(['data' => __('auth.orderNotFound')], __('statusCode.statusCode404'));
-            }
+            $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])
+                ->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('filename', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                    });
+                })->orderBy($sort, $sortOrder) // Apply sorting
+                    ->paginate($perPage); // Paginate results
+
+                // dd($orderList);
+          
+            // Transform the paginated results using Fractal
+            $resource = new Collection($orderList, new OrderDataTransformer());
+
+            // Add pagination information to the resource
+            $resource->setPaginator(new IlluminatePaginatorAdapter($orderList));
+
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
+
+            // Return the JSON response with paginated data
+            return response()->json($data);
+
         } catch (\Exception $e) {
-            // Log the error message and line number if an exception occurs
-            Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
+            // Handle the exception
+            Log::error('Get Orders failed: '.$e->getMessage().'Line:- '.$e->getLine());
 
-            // Return a 500 internal server error response with a failure message
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
