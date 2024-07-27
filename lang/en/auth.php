@@ -91,7 +91,7 @@ return [
     'channelProductMapList' => 'Channel product map list fetched successfully.',
     'channelProductMapNotFound' => 'Channel product map not found.',
     'unauthorizedAction' => 'Unauthorized action.',
-    'productNotFoundBySku' => 'Product not found by SKU.',
+    'productNotFoundBySku' => 'Product not found by sku. Please check the sku and try again.',
     'productOutOfStock' => 'Product out of stock.',
     'listOrder' => 'Fetch Orders SuccessFully.',
     'orderListFailed' => 'Fetch Orders Failed.',

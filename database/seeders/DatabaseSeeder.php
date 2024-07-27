@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ChargesTableSeeder::class);
         $this->call(ImportWorldSqlSeeder::class);
         $this->call(PincodeSeeder::class);
-        $this->call(OrdersTableSeeder::class);
+        // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);
         // \App\Models\User::factory(10)->create();

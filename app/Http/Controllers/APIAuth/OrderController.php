@@ -156,7 +156,7 @@ class OrderController extends Controller
             $sku = $request->input('sku');
             $user = auth()->user();
 
-            $productVariationSku = ProductVariation::where(['sku' => $sku])->first();
+            $productVariationSku = ProductVariation::where(['sku' => $sku, 'status' => ProductVariation::STATUS_ACTIVE])->first();
 
             if (empty($productVariationSku)) {
                 return response()->json(['data' => [
@@ -483,14 +483,20 @@ class OrderController extends Controller
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
-            $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])
+            $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'buyer', 'supplier'])
                 ->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
                         $query->where('filename', 'like', '%' . $searchTerm . '%')
                             ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
                             ->orWhere('type', 'like', '%' . $searchTerm . '%');
                     });
-                })->orderBy($sort, $sortOrder) // Apply sorting
+                });
+                if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+                    $orderList = $orderList->where('supplier_id', auth()->user()->id);
+                }else if(auth()->user()->hasRole(User::ROLE_BUYER)){
+                    $orderList = $orderList->where('buyer_id', auth()->user()->id);
+                }
+                $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
                 ->paginate($perPage); // Paginate results
           
             // Transform the paginated results using Fractal
@@ -563,12 +569,7 @@ class OrderController extends Controller
                 ]);
             }else{
                 $validator = Validator::make($request->all(), [
-                    'full_name' => 'required|string',
-                    'email' => 'required|email',
-                    'mobile' => 'required|string',
                     'order_type' => 'required|integer',
-                    'store_order' => 'nullable|string',
-                    'invoice' => 'nullable|mimes:pdf',
                 ]);
             }
 

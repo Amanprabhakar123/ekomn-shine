@@ -67,6 +67,11 @@
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
+                <th>Payment Status
+                  <span class="sort_pos">
+                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                  </span>
+                </th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
@@ -124,6 +129,7 @@
             <thead>
               <tr>
                 <th>eKomn Order</th>
+                <th>Store Order</th>
                 <th>Product Title
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
@@ -150,11 +156,22 @@
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
+                <th>Type
+                  <span class="sort_pos">
+                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                  </span>
+                </th>
                 <th>Status
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
+                <th>Payment Status
+                  <span class="sort_pos">
+                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                  </span>
+                </th>
+                <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody id="dataContainer">
@@ -220,7 +237,7 @@
                 </th>
                 <th>Customer Name</th>
                 <th>Supplier ID</th>
-                <th>B Buyer ID</th>
+                <th>Buyer ID</th>
                 <th>Qty
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
@@ -238,6 +255,11 @@
                 </th>
                 <th>Category</th>
                 <th>Type
+                  <span class="sort_pos">
+                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                  </span>
+                </th>
+                <th>Payment Status
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
@@ -454,7 +476,43 @@ document.addEventListener("DOMContentLoaded", () => {
          * @param {Object} item - The item object containing the details.
          * @returns {string} - The HTML markup for the table row.
          */
+        @if(auth()->user()->hasRole(ROLE_ADMIN))
+        function generateTableRow(item) {
+          var orderType='';
 
+            let a = status(item);
+            return `
+               <tr>
+                <td>${item.order_no}</td>
+                <td>
+                  ${item.store_order}
+                </td>
+                <td>
+                  <div class="productTitle_t">
+                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                  </div>
+                </td>
+                <td>${item.customer_name}</td>
+                <td>${item.supplier_id}</td>
+                <td>${item.buyer_id}</td>
+                <td>${item.quantity}</td>
+                <td>
+                  <div>${item.order_date}</div>
+                </td>
+                <td>
+                  <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
+                </td>
+                <td>${item.order_type}</td>
+                <td>${item.order_channel_type}</td>
+                <td>${item.status}</td>
+                <td>${item.payment_status}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-danger">Cancel</button>
+                </td>
+              </tr>
+    `;
+        }
+        @else
          function generateTableRow(item) {
           var orderType='';
 
@@ -481,12 +539,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${item.order_type}</td>
                 <td>${item.order_channel_type}</td>
                 <td>${item.status}</td>
+                <td>${item.payment_status}</td>
                 <td class="text-center">
                   <button class="btn btn-sm btn-danger">Cancel</button>
                 </td>
               </tr>
     `;
         }
+        @endif
 
         function status(item) {
             if (item.status === 1) {

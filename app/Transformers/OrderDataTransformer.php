@@ -29,17 +29,21 @@ class OrderDataTransformer extends TransformerAbstract
                 'store_order' => !is_null($order->store_order) ? $order->store_order : '' ,
                 'customer_name' => $order->full_name,
                 'quantity' => $quantity,
-                'order_date' => $order->order_date,
+                'order_date' => $order->order_date->toDateString(),
                 'total_amount' => $order->total_amount,
                 'order_type' => $order->order_type,
-                'status' => $order->status,
+                'status' => $order->getStatus(),
                 'pickup_address_id' => $order->pickup_address_id,
                 'order_type' => $order->getOrderType(),
-                'status' => $order->getPaymentStatus(),
+                'payment_status' => $order->getPaymentStatus(),
                 'order_channel_type' => $order->getOrderChannelType(),
                 'view_order' => route('view.order', salt_encrypt($order->id)),
     
             ];
+            if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                $data['supplier_id'] = $order->supplier->companyDetails->company_serial_id;
+                $data['buyer_id'] = $order->buyer->companyDetails->company_serial_id;
+            }
             return $data;
         } catch (\Exception $e) {
             // Handle the exception here

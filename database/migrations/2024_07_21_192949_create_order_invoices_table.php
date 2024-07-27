@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('invoice_date')->default(now())->comment('The date when the invoice was issued');
             $table->decimal('total_amount', 8, 2)->nullable()->comment('The total amount charged in the invoice, including products, shipping, and any additional fees.');
             $table->tinyInteger('status')->default(1)->comment('0-> Due, 1: Paid, 2: Cancelled, 3: Refunded');
-            $table->string('uploaded_invoice_path');
+            $table->string('uploaded_invoice_path')->nullable()->comment('The path to the uploaded invoice file');
             $table->decimal('refund_amount', 8, 2)->nullable()->comment('The amount refunded for the invoice');
             $table->tinyInteger('refund_status')->default(0)->comment('0: NA, 1: Initiated, 2: Processing, 3: Completed, 4: Failed');
             $table->timestamps();

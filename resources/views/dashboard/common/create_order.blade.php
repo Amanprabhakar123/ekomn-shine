@@ -32,7 +32,7 @@
                         <span>Full Name:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" class="form-control" id="full_name" value="Peter parker"placeholder="Enter Full Name" />
+                        <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
                         <div id="full_nameErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="ek_group">
                       <label class="eklabel req"><span>Email Address:</span></label>
                       <div class="ek_f_input">
-                        <input type="text" id="email" class="form-control" placeholder="Email Address" value="peterparker@gmail.com"/>
+                        <input type="text" id="email" class="form-control" placeholder="Email Address" />
                         <div id="emailErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -52,7 +52,7 @@
                         <span>Phone Number:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="mobile" value="7384758394" class="form-control" placeholder="Phone Number" />
+                        <input type="text" id="mobile"  class="form-control" placeholder="Phone Number" />
                         <div id="mobileErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -76,10 +76,10 @@
                   <div class="col-sm-12 col-md-12">
                     <div class="ek_group">
                       <label class="eklabel req">
-                        <span>Stareet Address:<span class="req_star">*</span></span>
+                        <span>Street Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" value="H No 23/23, Gali No B6, Vidya Apartment" id="address" class="form-control" placeholder="Enter Stareet Address" />
+                        <input type="text" id="address" class="form-control" placeholder="Enter Street Address" />
                         <div id="addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -116,7 +116,7 @@
                         <span>Pin Code:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code"  value="282001"/>
+                        <input type="text" id="pin_code" class="form-control" placeholder="Enter Pin Code" />
                         <div id="pin_codeErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -135,10 +135,10 @@
                   <div class="col-sm-12 col-md-12">
                     <div class="ek_group">
                       <label class="eklabel req">
-                        <span>Stareet Address:<span class="req_star">*</span></span>
+                        <span>Street Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="b_address"  value="H No 23/23, Gali No B6, Vidya Apartment" class="form-control" placeholder="Enter Stareet Address" />
+                        <input type="text" id="b_address"  class="form-control" placeholder="Enter Street Address" />
                         <div id="b_addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -288,7 +288,7 @@
                     <div class="col-sm-12 col-md-12">
                       <div class="ek_group">
                         <label class="eklabel req">
-                          <span>Stareet Address:<span class="req_star">*</span></span>
+                          <span>Street Address:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
                           <input type="text" class="form-control" value="{{ isset($delivery_address) ? $delivery_address->address_line1 : '' }}" readonly="readonly" />
@@ -334,16 +334,12 @@
                 <section class="sectionspace">
                   <h4 class="subheading subheadingFlex">
                     Billing Address
-                    <!-- <div class="fw-normal">
-                      <input class="form-check-input" type="checkbox" id="sameas_2" />
-                      <label for="sameas_2" class="w-normal m-0">Same as aelivery address</label>
-                    </div> -->
                   </h4>
                   <div class="row">
                     <div class="col-sm-12 col-md-12">
                       <div class="ek_group">
                         <label class="eklabel req">
-                          <span>Stareet Address:<span class="req_star">*</span></span>
+                          <span>Street Address:<span class="req_star">*</span></span>
                         </label>
                         <div class="ek_f_input">
                           <input type="text" class="form-control" value="{{ isset($billing_address) ? $billing_address->address_line1 : '' }}" readonly="readonly" />
@@ -413,7 +409,7 @@
                           id="addBulkSKU">Add</button>
                     </div>
                   </div>
-                  <div class="d-flex justify-content-between">
+                  {{--<div class="d-flex justify-content-between">
                     <h4 class="subheading mb-2">Product Details</h4>
                     <div class="upload-original-invoice">
                       <input type="file" id="UploadInvoiceBulk" class="upload_invoice" accept=".pdf" style="display: none;">
@@ -425,7 +421,7 @@
                         </label>
                       </div>
                     </div>
-                  </div>
+                  </div>--}}
                   <div class="table-responsive">
                     <table class="payInvoiceTable" id="bulkInvoice">
                       <thead>
@@ -493,6 +489,17 @@
                       </div>
                     </div>
                   </div>
+                  <div class="col-sm-12 col-md-4">
+                    <div class="ek_group">
+                      <label class="eklabel req">
+                        <span>Store Order:</span>
+                      </label>
+                      <div class="ek_f_input">
+                        <input type="text" id="storeOrderReseller"  class="form-control" placeholder="Channel Order ID like Amazon" />
+                        <div id="storeOrderResellerErr" class="invalid-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
               <section class="sectionspace">
@@ -501,10 +508,10 @@
                   <div class="col-sm-12 col-md-12">
                     <div class="ek_group">
                       <label class="eklabel req">
-                        <span>Stareet Address:<span class="req_star">*</span></span>
+                        <span>Street Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" id="resell-d-address" class="form-control" placeholder="Enter Stareet Address" />
+                        <input type="text" id="resell-d-address" class="form-control" placeholder="Enter Street Address" />
                         <div id="resell-d-addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -561,10 +568,10 @@
                   <div class="col-sm-12 col-md-12">
                     <div class="ek_group">
                       <label class="eklabel req">
-                        <span>Stareet Address:<span class="req_star">*</span></span>
+                        <span>Street Address:<span class="req_star">*</span></span>
                       </label>
                       <div class="ek_f_input">
-                        <input type="text" class="form-control" id="resell-b-address" placeholder="Enter Stareet Address" />
+                        <input type="text" class="form-control" id="resell-b-address" placeholder="Enter Street Address" />
                         <div id="resell-b-addressErr" class="invalid-feedback"></div>
                       </div>
                     </div>
@@ -610,16 +617,18 @@
               </section>
               <section class="sectionspace">
                 <div class="ek_group mb-1">
-                  <label class="eklabel m-0">
-                    <span>Product SKU 3:<span class="req_star">*</span></span>
-                  </label>
-                  <div class="ek_f_input sku_inline">
-                    <div class="sku_list">
-                      <input type="text" class="form-control" placeholder="Enter Product SKU" />
+                    <label class="eklabel m-0">
+                      <span>Product SKU :<span class="req_star">*</span></span>
+                    </label>
+                    <div class="ek_f_input sku_inline">
+                      <div class="sku_list">
+                          <input type="text" class="form-control" name="sku3" id="sku3"  value="" placeholder="Enter Product SKU" />
+                          <div id="sku3Error" class="invalid-feedback"></div>
+                      </div>
+                      <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button"
+                          id="addResellerSKU">Add</button>
                     </div>
-                    <button class="btn addSkuBtn mt-0 btn-sm px-3 bold" type="button" id="addResellSKU">Add</button>
                   </div>
-                </div>
                 <div class="d-flex justify-content-between">
                   <h4 class="subheading mb-2">Product Details</h4>
                   <div class="upload-original-invoice">
@@ -955,7 +964,70 @@
       }
     });
 
-    // Bulk Order 
+  //--------------------Bulk Order Submit--------------------
+
+    $('#bulk-order').click(function() {
+      clearError();
+      var formData = new FormData();
+      formData.append('order_type', $('#order_type').val());
+      formData.append('pincode', $('#pinCodeBulk').val());
+      ApiRequest('orders', 'POST', formData)
+          .then(response => {
+            if (response.data.statusCode == 200) {
+              const payment = response.data.data;
+              var options = {
+                  "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+                  "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                  "currency": payment.currency,
+                  "name": "{{env('APP_NAME')}}", //your business name
+                  "description": "Create payment for order by Ekomn Platform",
+                  "image": "{{asset('assets/images/Logo.svg')}}",
+                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "callback_url": "{{route('order.payment.success')}}",
+                  "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                      "name": payment.full_name, //your customer's name
+                      "email": payment.email, //your customer's email
+                      "contact": payment.mobile_number //Provide the customer's phone number for better conversion rates 
+                  },
+                  "notes": {
+                      "address": "Gurugram, Haryana India"
+                  },
+                  "theme": {
+                      "color": "#FECA40"
+                  }
+              };
+              var rzp1 = new Razorpay(options);
+              rzp1.open();
+            }
+            else if (response.data.statusCode == 422) {
+                const field = response.data.key;
+                $(`#${field}`).addClass('is-invalid');
+                $(`#${field}Err`).text(response.data.message);
+            } else if(response.data.statusCode == 201){
+               // Handle error
+               Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+    });
 
     // Resell Order 
 
@@ -972,13 +1044,13 @@
         console.error(error);
       });
 
+      
     $('#resell-d-state').change(function() {
       const stateId = $(this).val();
       $('#resell-d-city').html('<option value="">Select City</option>');
       ApiRequest(`state-city-list/?id=${stateId}`, 'GET')
         .then(res => {
           const cityList = res.data.city;
-          console.log(cityList);
           cityList.forEach(city => {
             $('#resell-d-city').append(`<option value="${city.id}">${city.name}</option>`);
           });
@@ -1146,13 +1218,14 @@
         }
       });
 
-      //--------------------Resell Order Submit--------------------
 
+      //--------------------Resell Order Submit--------------------
       if(isvalid){
         var formData = new FormData();
         formData.append('full_name', $('#resell-full-name').val());
         formData.append('email', $('#resell-email').val());
-        formData.append('mobile', parseInt(('#resell-mobile').val()));
+        formData.append('mobile', parseInt($('#resell-mobile').val()));
+        formData.append('store_order', $('#storeOrderReseller').val());
         formData.append('address', $('#resell-d-address').val());
         formData.append('state', $('#resell-d-state').val());
         formData.append('city', $('#resell-d-city').val());
@@ -1160,12 +1233,61 @@
         formData.append('b_address', $('#resell-b-address').val());
         formData.append('b_state', $('#resell-b-state').val());
         formData.append('b_city', $('#resell-b-city').val());
-        formData.append('b_pin_code', parseInt($('#resell-b-pincode').val()));
+        formData.append('b_pincode', parseInt($('#resell-b-pincode').val()));
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
         ApiRequest('orders', 'POST', formData)
-          .then(response => {
-            console.log(response);
+        .then(response => {
+            if (response.data.statusCode == 200) {
+              const payment = response.data.data;
+              var options = {
+                  "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+                  "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                  "currency": payment.currency,
+                  "name": "{{env('APP_NAME')}}", //your business name
+                  "description": "Create payment for order by Ekomn Platform",
+                  "image": "{{asset('assets/images/Logo.svg')}}",
+                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "callback_url": "{{route('order.payment.success')}}",
+                  "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                      "name": payment.full_name, //your customer's name
+                      "email": payment.email, //your customer's email
+                      "contact": payment.mobile_number //Provide the customer's phone number for better conversion rates 
+                  },
+                  "notes": {
+                      "address": "Gurugram, Haryana India"
+                  },
+                  "theme": {
+                      "color": "#FECA40"
+                  }
+              };
+              var rzp1 = new Razorpay(options);
+              rzp1.open();
+            }
+            else if (response.data.statusCode == 422) {
+                const field = response.data.key;
+                $(`#${field}`).addClass('is-invalid');
+                $(`#${field}Err`).text(response.data.message);
+            } else if(response.data.statusCode == 201){
+               // Handle error
+               Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
           })
           .catch(error => {
             console.error(error);
@@ -1211,6 +1333,8 @@
                       });
                       isQuantityChanged = false;
                   }
+                }else {
+                  fetchDropshipOrderSku();
                 }
           }); 
     });
@@ -1280,7 +1404,7 @@
         });
     });
 
-    // Add/Remove Dropship SKU
+    // Add/Remove Bulk SKU
     document.addEventListener("DOMContentLoaded", function() {
         const addSKUButton = document.querySelector("#addBulkSKU");
         addSKUButton.addEventListener("click", function() {
@@ -1289,6 +1413,69 @@
             if (sku == '') {
                 $('#sku2').addClass('is-invalid');
                 $('#sku2Error').text('Please enter sku for search product');
+                return;
+            }
+            $('#sku2').removeClass('is-invalid');
+            $('#sku2Error').text('');
+            ApiRequest('product/search/sku', 'POST', {
+                sku: sku
+            }).then(response => {
+                if (response.data.statusCode == 200) {
+                    fetchDropshipOrderSku();
+                    document.getElementById('sku').value = '';
+                } else {
+                    // Handle error
+                    Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+                }
+            }).catch(error => {
+              console.error(error);
+                   // Handle error
+                   Swal.fire({
+                    title: 'Error',
+                    text: 'Product out of stock or Something went wrong !',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            });
+        });
+    });
+
+    // Add/Remove Reseller SKU
+    document.addEventListener("DOMContentLoaded", function() {
+        const addSKUButton = document.querySelector("#addResellerSKU");
+        addSKUButton.addEventListener("click", function() {
+            var sku = document.getElementById('sku3').value;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if (sku == '') {
+                $('#sku3').addClass('is-invalid');
+                $('#sku3Error').text('Please enter sku for search product');
                 return;
             }
             $('#sku2').removeClass('is-invalid');

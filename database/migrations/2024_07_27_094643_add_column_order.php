@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('full_name')->nullable()->after('supplier_id');
             $table->string('email')->nullable()->after('full_name');
             $table->string('mobile_number')->nullable()->after('email');
+            $table->string('gst_number')->nullable()->after('mobile_number');
         });
     }
 

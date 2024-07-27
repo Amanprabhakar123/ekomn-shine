@@ -62,63 +62,122 @@ class OrderService
             }
 
             $order_number = Order::generateOrderNumber();
-            // Create order array
-            $order = [
-                'order_number' => $order_number,
-                'buyer_id' => auth()->user()->id,
-                'supplier_id' => $supplier_id[0],
-                'full_name' => $orderData['full_name'],
-                'email' => $orderData['email'],
-                'mobile_number' => $orderData['mobile'],
-                'store_order' => $orderData['store_order'],
-                'order_date' => Carbon::now()->toDateTimeString(),
-                'status' => Order::STATUS_DRAFT,
-                'total_amount' => isset($orderItems['data']) ? end($orderItems['data'])['overAllCost'] : 0,
-                'discount' => isset($orderData['data']) ? end($orderData['data'])['discount'] : 0,
-                'payment_status' => Order::PAYMENT_STATUS_PENDING,
-                'payment_currency' => Order::PAYMENT_CURRENCY_INR,
-                'order_type' => $orderData['order_type'],
-                'order_channel_type' => Order::ORDER_CHANNEL_TYPE_MANUAL,
-                'payment_method' => Order::PAYMENT_METHOD_ONLINE,
-            ];
-
-            $order = Order::create($order);
 
             // Create order address array
-            $orderAddress = [
-                // Create order delivery address array
-                'orderDeliveryAddress' => [
-                    'order_id' => $order->id,
+            if($orderData['order_type'] == Order::ORDER_TYPE_BULK){
+                $user = auth()->user()->companyDetails;
+                // Create order array
+                $order = [
+                    'order_number' => $order_number,
                     'buyer_id' => auth()->user()->id,
-                    'street' => $orderData['address'],
-                    'city' => DB::table('cities')->where('id', $orderData['city'])->pluck('name')->first(),
-                    'state' => DB::table('states')->where('id', $orderData['state'])->pluck('name')->first(),
-                    'postal_code' => $orderData['pincode'],
-                    'address_type' => OrderAddress::TYPE_DELIVERY_ADDRESS,
-                ],
+                    'supplier_id' => $supplier_id[0],
+                    'full_name' => $user->first_name.' '.$user->last_name,
+                    'email' => $user->email,
+                    'mobile_number' => $user->mobile_no,
+                    'store_order' => isset($orderData['store_order']) ? $orderData['store_order'] : '',
+                    'order_date' => Carbon::now()->toDateTimeString(),
+                    'status' => Order::STATUS_DRAFT,
+                    'total_amount' => isset($orderItems['data']) ? end($orderItems['data'])['overAllCost'] : 0,
+                    'discount' => isset($orderData['data']) ? end($orderData['data'])['discount'] : 0,
+                    'payment_status' => Order::PAYMENT_STATUS_PENDING,
+                    'payment_currency' => Order::PAYMENT_CURRENCY_INR,
+                    'order_type' => $orderData['order_type'],
+                    'order_channel_type' => Order::ORDER_CHANNEL_TYPE_MANUAL,
+                    'payment_method' => Order::PAYMENT_METHOD_ONLINE,
+                ];
 
-                // Create order billing address array
-                'orderBillingAddress' => [
-                    'order_id' => $order->id,
+                $order = Order::create($order);
+                $delivery = $user->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
+                $billing = $user->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+                $orderAddress = [
+                    // Create order delivery address array
+                    'orderDeliveryAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $delivery->address_line1 . ' ' . $delivery->address_line2,
+                        'city' => $delivery->city,
+                        'state' => $delivery->state,
+                        'postal_code' => $delivery->pincode,
+                        'address_type' => OrderAddress::TYPE_DELIVERY_ADDRESS,
+                    ],
+
+                    // Create order billing address array
+                    'orderBillingAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $billing->address_line1 . ' ' . $billing->address_line2,
+                        'city' => $billing->city,
+                        'state' => $billing->state,
+                        'postal_code' => $billing->pincode,
+                        'address_type' => OrderAddress::TYPE_BILLING_ADDRESS,
+                    ],
+
+                    'pickUpAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $supplierAddress[0]['street'],
+                        'city' => $supplierAddress[0]['city'],
+                        'state' => $supplierAddress[0]['state'],
+                        'postal_code' => $supplierAddress[0]['postal_code'],
+                        'address_type' => $supplierAddress[0]['address_type'],
+                    ]
+                ];
+            }else{
+                // Create order array
+                $order = [
+                    'order_number' => $order_number,
                     'buyer_id' => auth()->user()->id,
-                    'street' => $orderData['b_address'],
-                    'city' => DB::table('cities')->where('id', $orderData['b_city'])->pluck('name')->first(),
-                    'state' => DB::table('states')->where('id', $orderData['b_state'])->pluck('name')->first(),
-                    'postal_code' => $orderData['b_pincode'],
-                    'address_type' => OrderAddress::TYPE_BILLING_ADDRESS,
-                ],
+                    'supplier_id' => $supplier_id[0],
+                    'full_name' => $orderData['full_name'],
+                    'email' => $orderData['email'],
+                    'mobile_number' => $orderData['mobile'],
+                    'store_order' => $orderData['store_order'],
+                    'order_date' => Carbon::now()->toDateTimeString(),
+                    'status' => Order::STATUS_DRAFT,
+                    'total_amount' => isset($orderItems['data']) ? end($orderItems['data'])['overAllCost'] : 0,
+                    'discount' => isset($orderData['data']) ? end($orderData['data'])['discount'] : 0,
+                    'payment_status' => Order::PAYMENT_STATUS_PENDING,
+                    'payment_currency' => Order::PAYMENT_CURRENCY_INR,
+                    'order_type' => $orderData['order_type'],
+                    'order_channel_type' => Order::ORDER_CHANNEL_TYPE_MANUAL,
+                    'payment_method' => Order::PAYMENT_METHOD_ONLINE,
+                ];
 
-                'pickUpAddress' => [
-                    'order_id' => $order->id,
-                    'buyer_id' => auth()->user()->id,
-                    'street' => $supplierAddress[0]['street'],
-                    'city' => $supplierAddress[0]['city'],
-                    'state' => $supplierAddress[0]['state'],
-                    'postal_code' => $supplierAddress[0]['postal_code'],
-                    'address_type' => $supplierAddress[0]['address_type'],
-                ]
-            ];
+                $order = Order::create($order);
+                $orderAddress = [
+                    // Create order delivery address array
+                    'orderDeliveryAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $orderData['address'],
+                        'city' => DB::table('cities')->where('id', $orderData['city'])->pluck('name')->first(),
+                        'state' => DB::table('states')->where('id', $orderData['state'])->pluck('name')->first(),
+                        'postal_code' => $orderData['pincode'],
+                        'address_type' => OrderAddress::TYPE_DELIVERY_ADDRESS,
+                    ],
 
+                    // Create order billing address array
+                    'orderBillingAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $orderData['b_address'],
+                        'city' => DB::table('cities')->where('id', $orderData['b_city'])->pluck('name')->first(),
+                        'state' => DB::table('states')->where('id', $orderData['b_state'])->pluck('name')->first(),
+                        'postal_code' => $orderData['b_pincode'],
+                        'address_type' => OrderAddress::TYPE_BILLING_ADDRESS,
+                    ],
+
+                    'pickUpAddress' => [
+                        'order_id' => $order->id,
+                        'buyer_id' => auth()->user()->id,
+                        'street' => $supplierAddress[0]['street'],
+                        'city' => $supplierAddress[0]['city'],
+                        'state' => $supplierAddress[0]['state'],
+                        'postal_code' => $supplierAddress[0]['postal_code'],
+                        'address_type' => $supplierAddress[0]['address_type'],
+                    ]
+                ];
+            }
             // Create order items charges array
             $orderDeliveryAddress = OrderAddress::create($orderAddress['orderDeliveryAddress']);
             $orderBillingAddress =  OrderAddress::create($orderAddress['orderBillingAddress']);
@@ -195,9 +254,10 @@ class OrderService
             // Create order items charges
             $insertOrderItemsCharges = OrderItemAndCharges::insert($orderItemsCharges);
 
-            $filename = $order_number . '.' . $orderData['invoice']->getClientOriginalExtension();
-            $invocie_path = storage('order_invoices', file_get_contents($orderData['invoice']), [1], $filename, 'public');
-
+            if(isset($orderData['invoice'])){
+                $filename = $order_number . '.' . $orderData['invoice']->getClientOriginalExtension();
+                $invocie_path = storage('order_invoices', file_get_contents($orderData['invoice']), [1], $filename, 'public');
+            }
             $orderInvoiceNumber = new OrderInvoice();
             // create Order Invoice Data
             $orderInvoice = [
@@ -208,7 +268,7 @@ class OrderService
                 'invoice_date' => Carbon::now()->toDateTimeString(),
                 'total_amount' => isset($orderItems['data']) ? end($orderItems['data'])['overAllCost'] : 0,
                 'status' => OrderInvoice::STATUS_DUE,
-                'uploaded_invoice_path' => $invocie_path,
+                'uploaded_invoice_path' => $invocie_path ?? null,
             ];
 
             // Create order invoice
@@ -309,6 +369,7 @@ class OrderService
             // update order payment status
             $order = Order::find($orderPayment->order_id);
             $order->payment_status = Order::PAYMENT_STATUS_PAID;
+            $order->status = Order::STATUS_PENDING;
             $order->save();
 
             // update order payment data
@@ -355,6 +416,7 @@ class OrderService
              // update order payment status
              $order = Order::find($orderPayment->order_id);
              $order->payment_status = Order::PAYMENT_STATUS_FAILED;
+             $order->status = Order::STATUS_DRAFT;
              $order->save();
  
              // update order payment data
