@@ -824,7 +824,7 @@ class OrderController extends Controller
                 'line' => $e->getLine(),
             ];
             // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
+            // event(new ExceptionEvent($exceptionDetails));
             // Log the error message for debugging purposes
             \Log::error('Error cancelling order: '.$e->getMessage().'Line:- '.$e->getLine(). 'File:- '.$e->getFile());
             // Return an error response with a message

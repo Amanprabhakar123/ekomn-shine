@@ -15,27 +15,42 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $orderUpdate->order_number }}" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Status</label>
-                                            <input type="text" class="form-control" value="Dispatched" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
-                                            <input type="text" class="form-control" value="DTDC" readonly>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                 id="courierName" name="courierName" disabled>
+                                            @endif
                                         </div>
+                                        <p id="error_courier"></p>
+
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
-                                            <input type="text" class="form-control" value="DTDC-33484181426" readonly>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                                value="" id="trackingNo" name="trackingNo" disabled>
+                                            @endif
                                         </div>
+                                        <p id="error_tracking"></p>
+
                                     </div>
                                 </div>
                             </section>
@@ -163,7 +178,7 @@
                                 <div class="text-right d-flex justify-content-end mt10">
                                     @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
                                     @else
-                                    <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button>
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
                                 </div>
                             </section>
@@ -410,7 +425,7 @@
                                     @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
-                                    <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button>
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
                                 </div>
                             </section>
@@ -640,7 +655,7 @@
                                     @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
-                                    <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button>
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
                                 </div>
                             </section>
@@ -801,5 +816,83 @@
                 }
             });
         });
+
+
+
+
+        // Cancel Order Function i want first take cancellation reason from user 
+        function cancelOrder(orderId) {
+          Swal.fire({
+              title: "Please give the reason for cancellation.",
+              input: "text",
+              inputAttributes: {
+                autocapitalize: "off"
+              },
+              showCancelButton: true,
+              confirmButtonText: "Submit",
+              confirmButtonColor: '#3085d6',
+              showLoaderOnConfirm: true,
+              didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                },
+              preConfirm: async (login) => {
+                ApiRequest(`orders/cancel`, 'POST', {reason: login, order_id: orderId})
+                .then(response => {
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href = "{{ route('my.orders') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                })
+              }
+            });
+        }
     </script>
 @endsection

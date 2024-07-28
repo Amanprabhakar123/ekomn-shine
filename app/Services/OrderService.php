@@ -505,7 +505,8 @@ class OrderService
                 } elseif ($order->isPaid()) {
                     $orderPayment = OrderPayment::where('order_id', $order_id)->first();
                     $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
-                    $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, ($orderPayment->amount * 100), $orderInvoice->invoice_number);
+                    $refund_amount = (int) round($orderPayment->amount) * 100;
+                    $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, $refund_amount, $orderInvoice->invoice_number);
                     if(isset($refund['error'])){
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode400'),
@@ -542,7 +543,8 @@ class OrderService
                     if ($order->isPaid()) {
                         $orderPayment = OrderPayment::where('order_id', $order_id)->first();
                         $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
-                        $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, ($orderPayment->amount * 100), $orderInvoice->invoice_number);
+                        $refund_amount = (int) round($orderPayment->amount) * 100;
+                        $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, $refund_amount, $orderInvoice->invoice_number);
                         if(isset($refund['error'])){
                             return response()->json(['data' => [
                                 'statusCode' => __('statusCode.statusCode400'),

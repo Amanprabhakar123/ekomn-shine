@@ -259,7 +259,7 @@ class AuthController extends Controller
             ];
 
             // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
+            // event(new ExceptionEvent($exceptionDetails));
 
             return redirect()->intended('/');
         }
