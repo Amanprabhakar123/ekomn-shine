@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Notifications\NewOrderSupplierNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NewOrderBuyerNotification;
 
@@ -21,11 +22,10 @@ class NotifySupplierNewOrderListener implements ShouldQueue
      */
     public function handle(object $event): void
     {
-        $order = $event->order;
-        $user = $event->user;
-        // Send the notification
+        $supplier = $event->supplier;
+        $details = $event->details;
 
-        Notification::send($user, new NewOrderBuyerNotification($order, $user));
+        Notification::send($supplier, new NewOrderSupplierNotification($details));
 
     }
 }

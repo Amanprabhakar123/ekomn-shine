@@ -3,7 +3,7 @@
 @section('content')
     <div class="ek_dashboard">
         <div class="ek_content">
-            @if (auth()->user()->hasRole(ROLE_BUYER))
+            {{-- @if (auth()->user()->hasRole(ROLE_BUYER))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -205,7 +205,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
             <!-- view supplier ordqer -->
             @if (auth()->user()->hasRole(ROLE_SUPPLIER))
                 <div class="card ekcard pa shadow-sm">
@@ -220,13 +220,19 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
-                                            <input type="text" class="form-control" value="EK1050IND" readonly>
+                                            <input type="text" class="form-control" value="" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Category</label>
+                                            <input type="text" class="form-control" value="Dropship" readonly>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Status</label>
-                                            <input type="text" class="form-control" value="In Progress" readonly>
+                                            <input type="text" class="form-control" value="" readonly>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -247,12 +253,6 @@
                                         </div>
                                         <p id="error_tracking"></p>
 
-                                    </div>
-                                    <div class="col-sm-4 col-md-2">
-                                        <div class="mt10">
-                                            <label class="bold">Order Category</label>
-                                            <input type="text" class="form-control" value="Dropship" readonly>
-                                        </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
@@ -441,7 +441,7 @@
                 </div>
             @endif
             <!-- view admin order -->
-            @if (auth()->user()->hasRole(ROLE_ADMIN))
+            {{-- @if (auth()->user()->hasRole(ROLE_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -662,7 +662,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
         @include('dashboard.layout.copyright')
     </div>
@@ -706,6 +706,15 @@
             });
         });
         $(document).ready(function() {
+            $("#shippingDate").datepicker({
+                minDate: 0 // Disable past dates
+
+            });
+            $("#delhiveryDate").datepicker({
+                minDate: 0 // Disable past dates
+
+            });
+
             $("#updateOrder").on('click', function() {
                 var courierName = $("#courierName").val();
                 var trackingNo = $("#trackingNo").val();

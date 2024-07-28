@@ -10,17 +10,14 @@ class NewOrderBuyerNotification extends Notification
 {
     use Queueable;
 
-    protected $order;
-
-    protected $email;
+    protected $details;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($order, $email)
+    public function __construct($details)
     {
-        $this->order = $order;
-        $this->email = $email;
+         $this->details = $details;
     }
 
     /**
@@ -55,15 +52,5 @@ class NewOrderBuyerNotification extends Notification
         return [
             // Add your custom data here if needed
         ];
-    }
-
-    /**
-     * Override the routeNotificationForMail method to dynamically set the recipient email.
-     *
-     * @return string
-     */
-    public function routeNotificationForMail($notifiable)
-    {
-        return $this->email;
     }
 }

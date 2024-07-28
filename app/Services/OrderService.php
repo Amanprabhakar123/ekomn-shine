@@ -8,28 +8,24 @@ use App\Models\Order;
 use Razorpay\Api\Api;
 use App\Models\AddToCart;
 use App\Models\OrderRefund;
+use App\Events\NewOrderCreatedEvent;
+use App\Models\CompanyAddressDetail;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
+use App\Models\OrderItemAndCharges;
 use App\Models\OrderPayment;
-use App\Events\ExceptionEvent;
+use App\Models\OrderPaymentDistribution;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
 use App\Models\OrderCancellations;
 use Illuminate\Support\Facades\DB;
-use App\Models\OrderItemAndCharges;
-use App\Models\CompanyAddressDetail;
-use App\Models\OrderPaymentDistribution;
-use Illuminate\Database\Eloquent\Collection;
+
 
 class OrderService
 {
-
     /**
      * Create Order
      *
-     * @param array $orderData
-     * @param array $orderItems
-     * @param object $productCartList
      * @return void
      */
     public function createOrder(array $orderData, array $orderItems, object $productCartList)
@@ -47,7 +43,7 @@ class OrderService
                     $supplier_id[] = $product->product->company->user_id;
                     $s_address = $product->product->company->address->where('address_type', CompanyAddressDetail::TYPE_PICKUP_ADDRESS)->first();
                     $supplierAddress[] = [
-                        'street' =>  $s_address->address_line1 . ' ' . $s_address->address_line2,
+                        'street' => $s_address->address_line1.' '.$s_address->address_line2,
                         'city' => $s_address->city,
                         'state' => $s_address->state,
                         'postal_code' => $s_address->pincode,
@@ -99,7 +95,7 @@ class OrderService
                     'orderDeliveryAddress' => [
                         'order_id' => $order->id,
                         'buyer_id' => auth()->user()->id,
-                        'street' => $delivery->address_line1 . ' ' . $delivery->address_line2,
+                        'street' => $delivery->address_line1.' '.$delivery->address_line2,
                         'city' => $delivery->city,
                         'state' => $delivery->state,
                         'postal_code' => $delivery->pincode,
@@ -110,7 +106,7 @@ class OrderService
                     'orderBillingAddress' => [
                         'order_id' => $order->id,
                         'buyer_id' => auth()->user()->id,
-                        'street' => $billing->address_line1 . ' ' . $billing->address_line2,
+                        'street' => $billing->address_line1.' '.$billing->address_line2,
                         'city' => $billing->city,
                         'state' => $billing->state,
                         'postal_code' => $billing->pincode,
@@ -125,7 +121,7 @@ class OrderService
                         'state' => $supplierAddress[0]['state'],
                         'postal_code' => $supplierAddress[0]['postal_code'],
                         'address_type' => $supplierAddress[0]['address_type'],
-                    ]
+                    ],
                 ];
             } else {
                 // Create order array
@@ -180,13 +176,13 @@ class OrderService
                         'state' => $supplierAddress[0]['state'],
                         'postal_code' => $supplierAddress[0]['postal_code'],
                         'address_type' => $supplierAddress[0]['address_type'],
-                    ]
+                    ],
                 ];
             }
             // Create order items charges array
             $orderDeliveryAddress = OrderAddress::create($orderAddress['orderDeliveryAddress']);
-            $orderBillingAddress =  OrderAddress::create($orderAddress['orderBillingAddress']);
-            $pickUpAddress =  OrderAddress::create($orderAddress['pickUpAddress']);
+            $orderBillingAddress = OrderAddress::create($orderAddress['orderBillingAddress']);
+            $pickUpAddress = OrderAddress::create($orderAddress['pickUpAddress']);
 
             $order->shipping_address_id = $orderDeliveryAddress->id;
             $order->billing_address_id = $orderBillingAddress->id;
@@ -196,7 +192,7 @@ class OrderService
             $isValidQuantity = false;
             $isOutOfStock = false;
             // check OrderItems is not empty
-            if (isset($orderItems['data']) && !empty($orderItems['data'])) {
+            if (isset($orderItems['data']) && ! empty($orderItems['data'])) {
                 foreach ($orderItems['data'] as $item) {
                     if ($orderData['order_type'] == Order::ORDER_TYPE_DROPSHIP && $item['quantity'] > Order::DROPSHIP_ORDER_QUANTITY) {
                         $isValidQuantity = true;
@@ -238,6 +234,7 @@ class OrderService
             if ($isValidQuantity) {
                 // Rollback transaction
                 DB::rollBack();
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode201'),
                     'status' => __('statusCode.status201'),
@@ -248,13 +245,13 @@ class OrderService
             if ($isOutOfStock) {
                 // Rollback transaction
                 DB::rollBack();
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode201'),
                     'status' => __('statusCode.status201'),
                     'message' => __('auth.quantityExceedsStock'),
                 ]], __('statusCode.statusCode200'));
             }
-
 
             // Create order items charges
             $insertOrderItemsCharges = OrderItemAndCharges::insert($orderItemsCharges);
@@ -263,7 +260,7 @@ class OrderService
                 $filename = $order_number . '.' . $orderData['invoice']->getClientOriginalExtension();
                 $invocie_path = storage('order_invoices', file_get_contents($orderData['invoice']), [1], $filename, 'public');
             }
-            $orderInvoiceNumber = new OrderInvoice();
+            $orderInvoiceNumber = new OrderInvoice;
             // create Order Invoice Data
             $orderInvoice = [
                 'order_id' => $order->id,
@@ -280,10 +277,10 @@ class OrderService
             $orderInvoice = OrderInvoice::create($orderInvoice);
 
             // Create order transaction by razor pay
-            $orderService = new OrderPayment();
+            $orderService = new OrderPayment;
             $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
             $orderPayment = $api->order->create([
-                'amount' => (int) $order->total_amount * 100, // Amount in paise
+                'amount' => (int) round($order->total_amount) * 100, // Amount in paise
                 'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
                 'receipt' => (string) $order_number,
                 'notes' => [
@@ -323,7 +320,7 @@ class OrderService
 
             // crete response array
             $response = [
-                'total_amount' => (string) ($order->total_amount * 100),
+                'total_amount' => (int) (round($order->total_amount) * 100),
                 'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
                 'razorpy_order_id' => $insertorderPaymentData->razorpay_order_id,
                 'full_name' => $order->full_name,
@@ -334,6 +331,7 @@ class OrderService
 
             // Commit transaction
             DB::commit();
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
@@ -349,7 +347,7 @@ class OrderService
     /**
      * Confirm Order Details
      *
-     * @param array $request
+     * @param  array  $request
      * @return void
      */
     public function confirmOrder($request)
@@ -418,6 +416,15 @@ class OrderService
                 // Remove Cart Item
                 AddToCart::where('product_id', $item->product_id)->delete();
             }
+
+            $response = [
+                'total_amount' => round ($order->total_amount),
+                'full_name' => $order->full_name,
+                'email' => $order->email,
+                'mobile_number' => $order->mobile_number,
+                'order_id' => salt_encrypt($order->id),
+            ];
+            event(new NewOrderCreatedEvent($order->supplier->email, auth()->user()->email, $response));
             return true;
         } catch (\Exception $e) {
             // update order payment status
