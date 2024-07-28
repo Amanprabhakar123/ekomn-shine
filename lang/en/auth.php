@@ -102,5 +102,8 @@ return [
     'duplicatSupplierOrder' => 'You can not order from multiple suppliers in a single order.',
     'orderUpdateFailed' => 'Order Update Failed.',
     'orderUpdate' => 'Order Update Successfully.',
+    'orderAlreadyCancelled' => 'Order already cancelled.',
+    'orderCancelled' => 'Order Cancelled Successfully.',
+    'orderCancelFailed' => 'Order cancellation failed after processing.',
 
 ];

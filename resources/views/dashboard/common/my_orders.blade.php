@@ -299,6 +299,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -507,7 +508,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${item.status}</td>
                 <td>${item.payment_status}</td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
+                  <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''} >Cancel</button>
                 </td>
               </tr>
     `;
@@ -541,7 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${item.status}</td>
                 <td>${item.payment_status}</td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-danger">Cancel</button>
+                  <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''}>Cancel</button>
                 </td>
               </tr>
     `;
@@ -565,6 +566,82 @@ document.addEventListener("DOMContentLoaded", () => {
                 return "Unknown";
             }
         }
+
+        // Cancel Order Function i want first take cancellation reason from user 
+        function cancelOrder(orderId) {
+          Swal.fire({
+              title: "Please give the reason for cancellation.",
+              input: "text",
+              inputAttributes: {
+                autocapitalize: "off"
+              },
+              showCancelButton: true,
+              confirmButtonText: "Submit",
+              confirmButtonColor: '#3085d6',
+              showLoaderOnConfirm: true,
+              didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                },
+              preConfirm: async (login) => {
+                ApiRequest(`orders/cancel`, 'POST', {reason: login, order_id: orderId})
+                .then(response => {
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href = "{{ route('my.orders') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                })
+              }
+            });
+        }
+            
 </script>
 
 @endsection

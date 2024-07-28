@@ -295,4 +295,5 @@ class OrderPaymentDistribution extends Model
     {
         return $this->status === self::STATUS_HOLD;
     }
+    
 }

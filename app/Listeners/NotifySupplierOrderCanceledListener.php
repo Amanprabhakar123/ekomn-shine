@@ -2,10 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Notifications\NewOrderSupplierNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewOrderSupplierNotification;
 
-class NotifySupplierOrderCanceledListener
+class NotifySupplierOrderCanceledListener implements ShouldQueue
 {
     /**
      * Create the event listener.

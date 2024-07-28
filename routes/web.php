@@ -98,6 +98,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
         Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
         Route::get('orders', [OrderController::class, 'orders'])->name('orders');
+        Route::post('orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
     });
 });
 

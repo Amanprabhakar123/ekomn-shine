@@ -23,7 +23,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1)->comment('1-Draft, 2-Pending, 3-In Progress ,4-Dispatched, 5-In Transit, 6-Delivered, 7-Cancelled, 8-RTO');
             $table->decimal('total_amount')->nullable()->comment('total amount of order including tax and shipping');
             $table->decimal('discount')->default(0)->comment('Discount amount');
-            $table->tinyInteger('payment_status')->comment('1-Pending, 2-Paid, 3-Failed');
+            $table->tinyInteger('payment_status')->comment('1-Pending, 2-Paid, 3-Failed, 4-Refunded');
             $table->tinyInteger('payment_currency')->default(1)->comment('1-INR, 2-USD, 3-EUR');
             $table->tinyInteger('order_type')->default(1)->comment('1-Dropship, 2-Bulk, 3-Resell');
             $table->tinyInteger('order_channel_type')->default(1)->comment('1-Manual Order, 2-Store order');

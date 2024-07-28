@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers\APIAuth;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
-use App\Models\AddToCart;
-use App\Events\ExceptionEvent;
-use App\Models\OrderItemAndCharges;
 use App\Models\Shipment;
+use App\Models\AddToCart;
 use App\Models\ShipmentAwb;
-use App\Transformers\ProductCartListTransformer;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use League\Fractal\Manager;
+use App\Models\OrderPayment;
+use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
 use App\Services\OrderService;
 use App\Models\ProductVariation;
+use App\Models\OrderItemAndCharges;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
+use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderDataTransformer;
 use Illuminate\Validation\ValidationException;
+use App\Transformers\ProductCartListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class OrderController extends Controller
@@ -493,8 +494,11 @@ class OrderController extends Controller
                 });
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $orderList = $orderList->where('supplier_id', auth()->user()->id);
+                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
                 }else if(auth()->user()->hasRole(User::ROLE_BUYER)){
                     $orderList = $orderList->where('buyer_id', auth()->user()->id);
+                }elseif(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
                 }
                 $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
                 ->paginate($perPage); // Paginate results
@@ -550,6 +554,27 @@ class OrderController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
+            if($request->input('order_id')){
+                $order_id = salt_decrypt($request->input('order_id'));
+                $order = Order::find($order_id);
+                $orderService = new OrderPayment();
+                 // crete response array
+                $response = [
+                    'total_amount' => (string) ($order->total_amount * 100),
+                    'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
+                    'razorpy_order_id' => $order->orderPayments->first()->razorpay_order_id,
+                    'full_name' => $order->full_name,
+                    'email' => $order->email,
+                    'mobile_number' => $order->mobile_number,
+                    'order_id' => salt_encrypt($order->id),
+                ];
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.orderCreatedSuccesfully'),
+                    'data' => $response,
+                ]], __('statusCode.statusCode200'));
+            }
             if($request->order_type != Order::ORDER_TYPE_BULK){
                 $validator = Validator::make($request->all(), [
                     'full_name' => 'required|string',
@@ -603,6 +628,16 @@ class OrderController extends Controller
         } catch(\Exception $e){
             // Handle the exception
             Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine().'File:- '.$e->getFile());
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            // Log the exception details and trigger an ExceptionEvent
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -731,6 +766,62 @@ class OrderController extends Controller
                     'message' => __('auth.orderUpdateFailed'),
                 ],
             ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * Cancel an order.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelOrder(Request $request)
+    {
+        try {
+            // add validation for order id
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_CANCEL_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Decrypt the order ID from the request
+            $order_id = salt_decrypt($request->order_id);
+
+            $OrderService = new OrderService();
+            return $OrderService->cancelOrder($order_id, $request->reason);
+
+        } catch (\Exception $e) {
+            // Handle any exceptions that occur during the database operations
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            // Log the error message for debugging purposes
+            \Log::error('Error cancelling order: '.$e->getMessage().'Line:- '.$e->getLine(). 'File:- '.$e->getFile());
+            // Return an error response with a message
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderCancelFailed'),
+            ]], __('statusCode.statusCode200'));
         }
     }
 }

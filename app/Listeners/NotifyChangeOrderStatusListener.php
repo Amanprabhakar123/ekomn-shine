@@ -2,10 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Notifications\ChangeOrderStatusNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\ChangeOrderStatusNotification;
 
-class NotifyChangeOrderStatusListener
+class NotifyChangeOrderStatusListener implements ShouldQueue
 {
     /**
      * Create the event listener.

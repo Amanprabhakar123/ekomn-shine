@@ -3,15 +3,18 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Order;
 use Razorpay\Api\Api;
 use App\Models\AddToCart;
+use App\Models\OrderRefund;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
 use App\Events\ExceptionEvent;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
+use App\Models\OrderCancellations;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderItemAndCharges;
 use App\Models\CompanyAddressDetail;
@@ -65,14 +68,14 @@ class OrderService
             $order_number = Order::generateOrderNumber();
 
             // Create order address array
-            if($orderData['order_type'] == Order::ORDER_TYPE_BULK){
+            if ($orderData['order_type'] == Order::ORDER_TYPE_BULK) {
                 $user = auth()->user()->companyDetails;
                 // Create order array
                 $order = [
                     'order_number' => $order_number,
                     'buyer_id' => auth()->user()->id,
                     'supplier_id' => $supplier_id[0],
-                    'full_name' => $user->first_name.' '.$user->last_name,
+                    'full_name' => $user->first_name . ' ' . $user->last_name,
                     'email' => $user->email,
                     'mobile_number' => $user->mobile_no,
                     'gst_number' => $user->gst_no,
@@ -124,7 +127,7 @@ class OrderService
                         'address_type' => $supplierAddress[0]['address_type'],
                     ]
                 ];
-            }else{
+            } else {
                 // Create order array
                 $order = [
                     'order_number' => $order_number,
@@ -199,10 +202,10 @@ class OrderService
                         $isValidQuantity = true;
                         break;
                     }
-                     // add condition for check quantity less then product stock
+                    // add condition for check quantity less then product stock
                     $product = ProductVariation::find(salt_decrypt($item['product_id']));
                     if ($item['quantity'] > $product->stock) {
-                       $isOutOfStock = true;
+                        $isOutOfStock = true;
                         break;
                     }
                     $orderItemsCharges[] = [
@@ -242,7 +245,7 @@ class OrderService
                 ]], __('statusCode.statusCode200'));
             }
 
-            if($isOutOfStock) {
+            if ($isOutOfStock) {
                 // Rollback transaction
                 DB::rollBack();
                 return response()->json(['data' => [
@@ -256,7 +259,7 @@ class OrderService
             // Create order items charges
             $insertOrderItemsCharges = OrderItemAndCharges::insert($orderItemsCharges);
 
-            if(isset($orderData['invoice'])){
+            if (isset($orderData['invoice'])) {
                 $filename = $order_number . '.' . $orderData['invoice']->getClientOriginalExtension();
                 $invocie_path = storage('order_invoices', file_get_contents($orderData['invoice']), [1], $filename, 'public');
             }
@@ -280,7 +283,7 @@ class OrderService
             $orderService = new OrderPayment();
             $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
             $orderPayment = $api->order->create([
-                'amount' => (string) $order->total_amount * 100, // Amount in paise
+                'amount' => (int) $order->total_amount * 100, // Amount in paise
                 'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
                 'receipt' => (string) $order_number,
                 'notes' => [
@@ -291,7 +294,7 @@ class OrderService
             // store order payment data
             $orderPaymentData = [
                 'order_id' => $order->id,
-                'razorpay_payment_id' => $orderPayment->id, // transaction id
+                'razorpay_order_id' => $orderPayment->id, // transaction id
                 'payment_method' => OrderPayment::PAYMENT_METHOD_RAZORPAY,
                 'payment_date' => Carbon::now()->toDateTimeString(),
                 'amount' => $order->total_amount,
@@ -304,7 +307,7 @@ class OrderService
             $insertorderPaymentData = OrderPayment::create($orderPaymentData);
 
             // Order Distribute Payment
-            $orderDistribution =[
+            $orderDistribution = [
                 'order_id' => $order->id,
                 'order_payment_id' => $insertorderPaymentData->id,
                 'supplier_id' => $supplier_id[0],
@@ -322,10 +325,11 @@ class OrderService
             $response = [
                 'total_amount' => (string) ($order->total_amount * 100),
                 'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
-                'order_id' => $insertorderPaymentData->razorpay_payment_id,
+                'razorpy_order_id' => $insertorderPaymentData->razorpay_order_id,
                 'full_name' => $order->full_name,
                 'email' => $order->email,
                 'mobile_number' => $order->mobile_number,
+                'order_id' => salt_encrypt($order->id),
             ];
 
             // Commit transaction
@@ -338,13 +342,6 @@ class OrderService
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             DB::rollBack();
-            $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-            // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
             throw $e;
         }
     }
@@ -355,13 +352,14 @@ class OrderService
      * @param array $request
      * @return void
      */
-    public function confirmOrder($request){
+    public function confirmOrder($request)
+    {
         $paymentId = $request['razorpay_payment_id'];
         $razorpay_order_id = $request['razorpay_order_id'];
         $signature = $request['razorpay_signature'];
 
-        $orderPayment = OrderPayment::where('razorpay_payment_id', $razorpay_order_id)->first();
-        if(!$orderPayment){
+        $orderPayment = OrderPayment::where('razorpay_order_id', $razorpay_order_id)->first();
+        if (!$orderPayment) {
             return false;
         }
         $orderPayment->status = OrderPayment::STATUS_AUTHORIZED;
@@ -372,7 +370,7 @@ class OrderService
             'razorpay_payment_id' => $paymentId,
             'razorpay_signature' => $signature,
         ];
-        try{
+        try {
             $api->utility->verifyPaymentSignature($attributes);
 
             // update order payment status
@@ -385,6 +383,7 @@ class OrderService
 
             $orderPayment->status = OrderPayment::STATUS_CAPTURED;
             $orderPayment->razorpay_signature = $signature;
+            $orderPayment->razorpay_payment_id = $paymentId;
             $orderPayment->save();
 
             // update order payment distribution
@@ -411,60 +410,464 @@ class OrderService
 
             // Update product stock
             $order_item = OrderItemAndCharges::where('order_id', $orderPayment->order_id)->get();
-            foreach($order_item as $item){
+            foreach ($order_item as $item) {
                 $product = ProductVariation::find($item->product_id);
                 $product->stock = $product->stock - $item->quantity;
                 $product->save();
 
                 // Remove Cart Item
                 AddToCart::where('product_id', $item->product_id)->delete();
-            }      
+            }
             return true;
-            
-        } catch(\Exception $e){
-             // update order payment status
-             $order = Order::find($orderPayment->order_id);
-             $order->payment_status = Order::PAYMENT_STATUS_FAILED;
-             $order->status = Order::STATUS_DRAFT;
-             $order->save();
- 
-             // update order payment data
- 
-             $orderPayment->status = OrderPayment::STATUS_FAILED;
-             $orderPayment->razorpay_signature = $signature;
-             $orderPayment->save();
- 
-             // update order payment distribution
-             $orderDistribution = OrderPaymentDistribution::where('order_id', $orderPayment->order_id)->first();
-             $orderDistribution->status = OrderPaymentDistribution::STATUS_NA;
-             $orderDistribution->save();
- 
-             // update order invoice status
-             $orderInvoice = OrderInvoice::where('order_id', $orderPayment->order_id)->first();
-             $orderInvoice->status = OrderInvoice::STATUS_DUE;
-             $orderInvoice->save();
- 
-             // create order transaction
-             OrderTransaction::create([
-                 'order_id' => $orderPayment->order_id,
-                 'order_payment_id' => $orderPayment->id,
-                 'transaction_date' => Carbon::now()->toDateTimeString(),
-                 'transaction_type' => OrderTransaction::TRANSACTION_TYPE_PAYMENT,
-                 'transaction_amount' => $orderPayment->amount,
-                 'transaction_currency' => OrderTransaction::CURRENCY_INR,
-                 'razorpay_transaction_id' => $orderPayment->razorpay_payment_id,
-                 'status' => OrderTransaction::STATUS_FAILED,
-             ]);
+        } catch (\Exception $e) {
+            // update order payment status
+            $order = Order::find($orderPayment->order_id);
+            $order->payment_status = Order::PAYMENT_STATUS_FAILED;
+            $order->status = Order::STATUS_DRAFT;
+            $order->save();
 
-             $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-            // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
+            // update order payment data
+
+            $orderPayment->status = OrderPayment::STATUS_FAILED;
+            $orderPayment->razorpay_signature = $signature;
+            $orderPayment->save();
+
+            // update order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $orderPayment->order_id)->first();
+            $orderDistribution->status = OrderPaymentDistribution::STATUS_NA;
+            $orderDistribution->save();
+
+            // update order invoice status
+            $orderInvoice = OrderInvoice::where('order_id', $orderPayment->order_id)->first();
+            $orderInvoice->status = OrderInvoice::STATUS_DUE;
+            $orderInvoice->save();
+
+            // create order transaction
+            OrderTransaction::create([
+                'order_id' => $orderPayment->order_id,
+                'order_payment_id' => $orderPayment->id,
+                'transaction_date' => Carbon::now()->toDateTimeString(),
+                'transaction_type' => OrderTransaction::TRANSACTION_TYPE_PAYMENT,
+                'transaction_amount' => $orderPayment->amount,
+                'transaction_currency' => OrderTransaction::CURRENCY_INR,
+                'razorpay_transaction_id' => $orderPayment->razorpay_payment_id,
+                'status' => OrderTransaction::STATUS_FAILED,
+            ]);
             throw $e;
         }
+    }
 
+    /**
+     * Cancel Order
+     *
+     * @param integer $order_id
+     * @param string $reason
+     * @return void
+     */
+    public function cancelOrder($order_id, $reason = null)
+    {
+        try {
+            // Fetch the order record
+            $order = Order::find($order_id);
+
+            // Check if the order record exists
+            if (empty($order)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.orderNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Check if the order status is not 'Cancelled'
+            if ($order->isOrderCancelled()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status400'),
+                    'message' => __('auth.orderAlreadyCancelled'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Check User Role is buyer order cancel only Pending status
+            if (auth()->user()->hasRole(User::ROLE_BUYER) && ($order->isPending() || $order->isDraft())) 
+            {
+                if ($order->isPendingPayment()) {
+                    // Update the order status to 'Cancelled'
+                    $order->cancel();
+                    $this->cancelDraftOrder($order_id, $reason);
+                } elseif ($order->isPaid()) {
+                    $orderPayment = OrderPayment::where('order_id', $order_id)->first();
+                    $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
+                    $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, ($orderPayment->amount * 100), $orderInvoice->invoice_number);
+                    if(isset($refund['error'])){
+                        return response()->json(['data' => [
+                            'statusCode' => __('statusCode.statusCode400'),
+                            'status' => __('statusCode.status400'),
+                            'message' => $refund['error']['description'],
+                        ]], __('statusCode.statusCode200'));
+                    }
+                    if($refund->status == 'processed'){
+                        // Update the order status to 'Cancelled'
+                        $order->cancelRefund();
+                        $this->cancelPendingOrderSuccefull($order_id, $reason, $refund->id);
+                    }elseif($refund->status == 'pending'){
+                          // Update the order status to 'Cancelled'
+                        $order->cancelRefund();
+                        $this->cancelPendingOrder($order_id, $reason, $refund->id);
+                    }else{
+                        return response()->json(['data' => [
+                            'statusCode' => __('statusCode.statusCode400'),
+                            'status' => __('statusCode.status400'),
+                            'message' => __('auth.orderCancelFailed'),
+                        ]], __('statusCode.statusCode200'));
+                    }
+                }
+
+                // Return a success response
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.orderCancelled'),
+                ]], __('statusCode.statusCode200'));
+
+            } else if (auth()->user()->hasAnyRole([User::ROLE_SUPPLIER, User::ROLE_ADMIN]) && ($order->isBulk() || $order->isResell())) {
+                if ($order->isPending() || $order->isInProgress()) {
+                    if ($order->isPaid()) {
+                        $orderPayment = OrderPayment::where('order_id', $order_id)->first();
+                        $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
+                        $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, ($orderPayment->amount * 100), $orderInvoice->invoice_number);
+                        if(isset($refund['error'])){
+                            return response()->json(['data' => [
+                                'statusCode' => __('statusCode.statusCode400'),
+                                'status' => __('statusCode.status400'),
+                                'message' => $refund['error']['description'],
+                            ]], __('statusCode.statusCode200'));
+                        }
+                        if($refund->status == 'processed'){
+                            // Update the order status to 'Cancelled'
+                            $order->cancelRefund();
+                            $this->cancelPendingOrderSuccefull($order_id, $reason, $refund->id);
+                        }elseif($refund->status == 'pending'){
+                              // Update the order status to 'Cancelled'
+                            $order->cancelRefund();
+                            $this->cancelPendingOrder($order_id, $reason, $refund->id);
+                        }else{
+                            return response()->json(['data' => [
+                                'statusCode' => __('statusCode.statusCode400'),
+                                'status' => __('statusCode.status400'),
+                                'message' => __('auth.orderCancelFailed'),
+                            ]], __('statusCode.statusCode200'));
+                        }
+                    }
+                    // Return a success response
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.orderCancelled'),
+                    ]], __('statusCode.statusCode200'));
+                }
+            } else {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status400'),
+                    'message' => __('auth.orderCancelFailed'),
+                ]], __('statusCode.statusCode200'));
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Cancel Draft Order
+     *
+     * @param integer $order_id
+     * @param string $reason
+     * @return void
+     */
+    protected function cancelDraftOrder($order_id, $reason = null)
+    {
+        try {
+            // $order = Order::find($order_id);
+            $orderPayment = OrderPayment::where('order_id', $order_id)->first();
+            $orderPayment->status = OrderPayment::STATUS_FAILED;
+            $orderPayment->save();
+
+            // update order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_id)->first();
+            $orderDistribution->status = OrderPaymentDistribution::STATUS_NA;
+            $orderDistribution->is_refunded = true;
+            $orderDistribution->refund_status = OrderPaymentDistribution::REFUND_STATUS_NA;
+            $orderDistribution->refunded_amount = Order::DEFAULT_REFUND_AMOUNT;
+            $orderDistribution->refund_initiated_at = Carbon::now()->toDateTimeString();
+            $orderDistribution->refund_completed_at = Carbon::now()->toDateTimeString();
+            $orderDistribution->save();
+
+            // create order cancellation transaction
+            $orderCancellation = OrderCancellations::create([
+                'order_id' => $order_id,
+                'cancelled_by_id' => auth()->user()->id,
+                'cancelled_by' => OrderCancellations::CANCELLED_BY_CUSTOMER,
+                'reason' => $reason,
+                'refund_status' => OrderCancellations::REFUND_STATUS_APPROVED,
+                'refund_amount' => Order::DEFAULT_REFUND_AMOUNT,
+            ]);
+
+            // create entry order refunds
+            $orderRefund = OrderRefund::create([
+                'order_id' => $order_id,
+                'order_payment_id' => $orderPayment->id,
+                'buyer_id' => auth()->user()->id,
+                'amount' => Order::DEFAULT_REFUND_AMOUNT,
+                'currency' => OrderRefund::CURRENCY_INR,
+                'status' => OrderRefund::STATUS_COMPLETED,
+                'reason' => $reason,
+                'initiated_by' => OrderRefund::INITIATED_BY_SYSTEM,
+                'refund_method' => OrderRefund::REFUND_METHOD_RAZORPAY,
+                'refund_date' => Carbon::now()->toDateTimeString(),
+                'completed_at' => Carbon::now()->toDateTimeString(),
+            ]);
+
+            $orderCancellation->refund_id = $orderRefund->id;
+            $orderCancellation->save();
+
+            // update order invoice status
+            $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
+            $orderInvoice->status = OrderInvoice::STATUS_CANCELLED;
+            $orderInvoice->refund_amount = Order::DEFAULT_REFUND_AMOUNT;
+            $orderInvoice->refund_status = OrderInvoice::REFUND_STATUS_COMPLETED;
+            $orderInvoice->save();
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * Cancel Pending Order Refund Successfully
+     *
+     * @param integer $order_id
+     * @param string $reason
+     * @param string $refund_id
+     * @return void
+     */
+    protected function cancelPendingOrderSuccefull($order_id, $reason = null, $refund_id)
+    {
+        try{
+             // update product stock
+            $orderItem = OrderItemAndCharges::where('order_id', $order_id)->get();
+            foreach ($orderItem as $item) {
+                $product = ProductVariation::find($item->product_id);
+                $product->stock = $product->stock + $item->quantity;
+                $product->save();
+            }
+            // update order payment status
+            $orderPayment = OrderPayment::where('order_id', $order_id)->first();
+            $orderPayment->status = OrderPayment::STATUS_REFUNDED;
+            $orderPayment->save();
+
+            // update order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_id)->first();
+            $orderDistribution->status = OrderPaymentDistribution::STATUS_NA;
+            $orderDistribution->is_refunded = true;
+            $orderDistribution->refund_status = OrderPaymentDistribution::REFUND_STATUS_PAID;
+            $orderDistribution->refunded_amount = $orderPayment->amount;
+            $orderDistribution->refund_initiated_at = Carbon::now()->toDateTimeString();
+            $orderDistribution->refund_completed_at = Carbon::now()->toDateTimeString();
+            $orderDistribution->save();
+
+            if(auth()->user()->hasRole(User::ROLE_BUYER)){
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_CUSTOMER;
+            }elseif(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_SUPPLIER;
+            }else{
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_ADMIN;
+            }
+            // create order cancellation transaction
+            $orderCancellation = OrderCancellations::create([
+                'order_id' => $order_id,
+                'cancelled_by_id' => auth()->user()->id,
+                'cancelled_by' => $order_cancelled_by,
+                'reason' => $reason,
+                'refund_status' => OrderCancellations::REFUND_STATUS_APPROVED,
+                'refund_amount' => $orderPayment->amount,
+            ]);
+
+            // create entry order refunds
+            $orderRefund = OrderRefund::create([
+                'order_id' => $order_id,
+                'order_payment_id' => $orderPayment->id,
+                'buyer_id' => auth()->user()->id,
+                'amount' => $orderPayment->amount,
+                'currency' => OrderRefund::CURRENCY_INR,
+                'status' => OrderRefund::STATUS_COMPLETED,
+                'reason' => $reason,
+                'initiated_by' => OrderRefund::INITIATED_BY_SYSTEM,
+                'refund_method' => OrderRefund::REFUND_METHOD_RAZORPAY,
+                'refund_date' => Carbon::now()->toDateTimeString(),
+                'completed_at' => Carbon::now()->toDateTimeString(),
+            ]);
+
+            $orderCancellation->refund_id = $orderRefund->id;
+            $orderCancellation->save();
+
+            // update order invoice status
+            $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
+            $orderInvoice->status = OrderInvoice::STATUS_REFUNDED;
+            $orderInvoice->refund_amount = $orderPayment->amount;
+            $orderInvoice->refund_status = OrderInvoice::REFUND_STATUS_COMPLETED;
+            $orderInvoice->save();
+
+            // create order transaction
+            OrderTransaction::create([
+                'order_id' => $order_id,
+                'order_payment_id' => $orderPayment->id,
+                'transaction_date' => Carbon::now()->toDateTimeString(),
+                'transaction_type' => OrderTransaction::TRANSACTION_TYPE_REFUND,
+                'transaction_amount' => $orderPayment->amount,
+                'transaction_currency' => OrderTransaction::CURRENCY_INR,
+                'razorpay_transaction_id' => $refund_id,
+                'status' => OrderTransaction::STATUS_SUCCESS,
+            ]);
+        }catch(\Exception $e){
+            throw $e;
+        }
+    }
+
+    /**
+     * Cancel Pending Order Refund Pending
+     *
+     * @param integer $order_id
+     * @param string $reason
+     * @param string $refund_id
+     * @return void
+     */
+    protected function cancelPendingOrder($order_id, $reason = null, $refund_id)
+    {
+        try{
+            // update product stock
+            $orderItem = OrderItemAndCharges::where('order_id', $order_id)->get();
+            foreach ($orderItem as $item) {
+                $product = ProductVariation::find($item->product_id);
+                $product->stock = $product->stock + $item->quantity;
+                $product->save();
+            }
+            // update order payment status
+            $orderPayment = OrderPayment::where('order_id', $order_id)->first();
+            $orderPayment->status = OrderPayment::STATUS_REFUNDED;
+            $orderPayment->save();
+
+            // update order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_id)->first();
+            $orderDistribution->status = OrderPaymentDistribution::STATUS_NA;
+            $orderDistribution->is_refunded = true;
+            $orderDistribution->refund_status = OrderPaymentDistribution::REFUND_STATUS_ACCURED;
+            $orderDistribution->refunded_amount = $orderPayment->amount;
+            $orderDistribution->refund_initiated_at = Carbon::now()->toDateTimeString();
+            $orderDistribution->save();
+
+            if(auth()->user()->hasRole(User::ROLE_BUYER)){
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_CUSTOMER;
+            }elseif(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_SUPPLIER;
+            }else{
+                $order_cancelled_by = OrderCancellations::CANCELLED_BY_ADMIN;
+            }
+            // create order cancellation transaction
+            $orderCancellation = OrderCancellations::create([
+            'order_id' => $order_id,
+            'cancelled_by_id' => auth()->user()->id,
+            'cancelled_by' => $order_cancelled_by,
+            'reason' => $reason,
+            'refund_status' => OrderCancellations::REFUND_STATUS_APPROVED,
+            'refund_amount' => $orderPayment->amount,
+            ]);
+
+            // create entry order refunds
+            $orderRefund = OrderRefund::create([
+                'order_id' => $order_id,
+                'order_payment_id' => $orderPayment->id,
+                'buyer_id' => auth()->user()->id,
+                'amount' => $orderPayment->amount,
+                'currency' => OrderRefund::CURRENCY_INR,
+                'status' => OrderRefund::STATUS_PROCESSING,
+                'reason' => $reason,
+                'initiated_by' => OrderRefund::INITIATED_BY_SYSTEM,
+                'refund_method' => OrderRefund::REFUND_METHOD_RAZORPAY,
+                'refund_date' => Carbon::now()->toDateTimeString(),
+            ]);
+            $orderCancellation->refund_id = $orderRefund->id;
+            $orderCancellation->save();
+
+            // update order invoice status
+            $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
+            $orderInvoice->status = OrderInvoice::STATUS_REFUNDED;
+            $orderInvoice->refund_amount = $orderPayment->amount;
+            $orderInvoice->refund_status = OrderInvoice::REFUND_STATUS_PROCESSING;
+            $orderInvoice->save();
+
+             // create order transaction
+             OrderTransaction::create([
+                'order_id' => $order_id,
+                'order_payment_id' => $orderPayment->id,
+                'transaction_date' => Carbon::now()->toDateTimeString(),
+                'transaction_type' => OrderTransaction::TRANSACTION_TYPE_REFUND,
+                'transaction_amount' => $orderPayment->amount,
+                'transaction_currency' => OrderTransaction::CURRENCY_INR,
+                'razorpay_transaction_id' => $refund_id,
+                'status' => OrderTransaction::STATUS_PENDING,
+            ]);
+ 
+
+        }catch(\Exception $e){
+            throw $e;
+        }
+    }
+
+    /**
+     * Change Payment Refund Status
+     *
+     * @param string $refund
+     * @param integer $order_id
+     * @param object $transaction
+     * @return void
+     */
+    public function changePaymentRefundStatus($transaction){
+        OrderPaymentDistribution::where('order_id', $transaction->order_id)
+        ->update([
+            'refund_status' => OrderPaymentDistribution::REFUND_STATUS_PAID,
+            'refund_completed_at' => Carbon::now()->toDateTimeString(),        
+        ]);
+
+        OrderRefund::where('order_id', $transaction->order_id)
+        ->update([
+            'status' => OrderRefund::STATUS_COMPLETED,        
+        ]);
+    
+    }
+
+    /**
+     * Intiate Refund
+     *
+     * @param string $paymentId
+     * @param string $reason
+     * @param integer $amount
+     * @param string $invoice_number
+     * @return void
+     */
+    protected function intiateRefund($paymentId, $reason = null, $amount = 0, $invoice_number)
+    {
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+        $data = [
+            "amount" => $amount,
+            "speed" => OrderPayment::REFUND_SPEED,
+            "notes" => [
+                "notes_key_1" => $reason,
+                "notes_key_1" => "Refund initiated by system",
+            ],
+            "receipt" => $invoice_number
+        ];
+        $refund = $api->payment->fetch($paymentId)->refund($data);
+        return $refund;
     }
 }

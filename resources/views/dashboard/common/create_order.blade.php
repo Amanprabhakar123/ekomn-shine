@@ -5,6 +5,7 @@
   <div class="ek_content">
     <div class="card ekcard pa pt-2 shadow-sm">
       <input type="hidden" name="order_type" id="order_type" value = "1">
+      <input type="hidden" name="order_id" id="order_id" value = "">
       <ul class="nav nav-underline ekom_tab" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link active" id="dropship-tab" data-bs-toggle="tab" data-bs-target="#dropship" role="tab" aria-controls="dropship" aria-selected="true">Dropship Order</a>
@@ -905,10 +906,12 @@
         formData.append('b_pincode', $('#b_pin_code').val());
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
+        formData.append('order_id', $('#order_id').val());
         ApiRequest('orders', 'POST', formData)
           .then(response => {
             if (response.data.statusCode == 200) {
               const payment = response.data.data;
+              $('#order_id').val(payment.order_id);
               var options = {
                   "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
                   "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -916,7 +919,7 @@
                   "name": "{{env('APP_NAME')}}", //your business name
                   "description": "Create payment for order by Ekomn Platform",
                   "image": "{{asset('assets/images/Logo.svg')}}",
-                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "order_id": payment.razorpy_order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                   "callback_url": "{{route('order.payment.success')}}",
                   "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                       "name": payment.full_name, //your customer's name
@@ -971,10 +974,12 @@
       var formData = new FormData();
       formData.append('order_type', $('#order_type').val());
       formData.append('pincode', $('#pinCodeBulk').val());
+      formData.append('order_id', $('#order_id').val());
       ApiRequest('orders', 'POST', formData)
           .then(response => {
             if (response.data.statusCode == 200) {
               const payment = response.data.data;
+              $('#order_id').val(payment.order_id);
               var options = {
                   "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
                   "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -982,7 +987,7 @@
                   "name": "{{env('APP_NAME')}}", //your business name
                   "description": "Create payment for order by Ekomn Platform",
                   "image": "{{asset('assets/images/Logo.svg')}}",
-                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "order_id": payment.razorpy_order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                   "callback_url": "{{route('order.payment.success')}}",
                   "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                       "name": payment.full_name, //your customer's name
@@ -1236,10 +1241,12 @@
         formData.append('b_pincode', parseInt($('#resell-b-pincode').val()));
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
+        formData.append('order_id', $('#order_id').val());
         ApiRequest('orders', 'POST', formData)
-        .then(response => {
+          .then(response => {
             if (response.data.statusCode == 200) {
               const payment = response.data.data;
+              $('#order_id').val(payment.order_id);
               var options = {
                   "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
                   "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -1247,7 +1254,7 @@
                   "name": "{{env('APP_NAME')}}", //your business name
                   "description": "Create payment for order by Ekomn Platform",
                   "image": "{{asset('assets/images/Logo.svg')}}",
-                  "order_id": payment.order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "order_id": payment.razorpy_order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
                   "callback_url": "{{route('order.payment.success')}}",
                   "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                       "name": payment.full_name, //your customer's name
@@ -1675,6 +1682,7 @@
     // function for update quantity
     function updateQuantity(id, element) {
         let order_type = $('#order_type').val();
+        $('#order_id').val('');
         var quantity = element.value;
         if(order_type != 1){
             isQuantityChanged = true;

@@ -3,11 +3,12 @@
 namespace App\Listeners;
 
 use App\Mail\ExceptionHandleMail;
-use App\Notifications\ExceptionNotification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Notifications\ExceptionNotification;
 use Illuminate\Support\Facades\Notification;
 
-class ExceptionListener
+class ExceptionListener implements ShouldQueue
 {
     /**
      * Create the event listener.

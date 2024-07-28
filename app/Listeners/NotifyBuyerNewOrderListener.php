@@ -3,10 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\NewOrderCreatedEvent;
-use App\Notifications\NewOrderBuyerNotification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewOrderBuyerNotification;
 
-class NotifyBuyerNewOrderListener
+class NotifyBuyerNewOrderListener implements ShouldQueue
 {
     /**
      * Create the event listener.

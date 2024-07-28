@@ -33,7 +33,6 @@ class OrderDataTransformer extends TransformerAbstract
                 'total_amount' => $order->total_amount,
                 'order_type' => $order->order_type,
                 'status' => $order->getStatus(),
-                'pickup_address_id' => $order->pickup_address_id,
                 'order_type' => $order->getOrderType(),
                 'payment_status' => $order->getPaymentStatus(),
                 'order_channel_type' => $order->getOrderChannelType(),
@@ -43,6 +42,15 @@ class OrderDataTransformer extends TransformerAbstract
             if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
                 $data['supplier_id'] = $order->supplier->companyDetails->company_serial_id;
                 $data['buyer_id'] = $order->buyer->companyDetails->company_serial_id;
+            }
+            if(auth()->user()->hasRole(User::ROLE_BUYER)){
+                $data['is_cancelled'] = $order->isCancelled();
+            }else{
+                if($order->isDropship()){
+                    $data['is_cancelled'] = true;
+                }else{
+                    $data['is_cancelled'] = $order->isCancelled();
+                }
             }
             return $data;
         } catch (\Exception $e) {

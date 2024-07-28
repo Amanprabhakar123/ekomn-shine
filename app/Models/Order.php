@@ -41,6 +41,8 @@ class Order extends Model
 
     const PAYMENT_STATUS_FAILED = 3;
 
+    const PAYMENT_STATUS_REFUNDED= 4;
+
     /**
      * Constants for payment currency.
      */
@@ -77,6 +79,20 @@ class Order extends Model
      * Constants for dropship order quantity.
      */
     const DROPSHIP_ORDER_QUANTITY = 2;
+
+    // EXCEPT DRAFT CASE FOR SUPPLIER
+    const STATUS_ARRAY = [
+        self::STATUS_PENDING,
+        self::STATUS_IN_PROGRESS,
+        self::STATUS_DISPATCHED,
+        self::STATUS_IN_TRANSIT,
+        self::STATUS_DELIVERED,
+        self::STATUS_CANCELLED,
+        self::STATUS_RTO,
+    ];
+
+    //Default Refund amound Draft Case
+    const DEFAULT_REFUND_AMOUNT = 0;
 
     /**
      * The attributes that are mass assignable.
@@ -495,6 +511,22 @@ class Order extends Model
      */
     public function cancel()
     {
+        $this->status = self::STATUS_CANCELLED;
+        $this->payment_status = self::PAYMENT_STATUS_FAILED;
+        $this->is_cancelled = true;
+        $this->cancelled_at = now();
+        $this->save();
+    }
+
+    /**
+     * Cancel the order.
+     *
+     * @return void
+     */
+    public function cancelRefund()
+    {
+        $this->status = self::STATUS_CANCELLED;
+        $this->payment_status = self::PAYMENT_STATUS_REFUNDED;
         $this->is_cancelled = true;
         $this->cancelled_at = now();
         $this->save();
@@ -598,6 +630,14 @@ class Order extends Model
     public function isFailed(): bool
     {
         return $this->payment_status === self::PAYMENT_STATUS_FAILED;
+    }
+
+    /**
+     * Check if the order is refunded.
+     */
+    public function isRefunded(): bool
+    {
+        return $this->payment_status === self::PAYMENT_STATUS_REFUNDED;
     }
 
     /**
@@ -743,11 +783,13 @@ class Order extends Model
                 return 'Paid';
             case self::PAYMENT_STATUS_FAILED:
                 return 'Failed';
+            case self::PAYMENT_STATUS_REFUNDED:
+                return 'Refunded';
             default:
                 return 'Unknown';
         }
     }
-
+    
     /**
      * Get the payment currency.
      */

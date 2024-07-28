@@ -23,7 +23,8 @@ class OrderPayment extends Model
      */
     protected $fillable = [
         'order_id',
-        'razorpay_payment_id', // Payment ID from Razorpay or Transaction ID 
+        'razorpay_order_id',
+        'razorpay_payment_id',
         'payment_date',
         'payment_method',
         'amount',
@@ -67,6 +68,8 @@ class OrderPayment extends Model
     const STATUS_CAPTURED = 3;
     const STATUS_REFUNDED = 4;
     const STATUS_FAILED = 5;
+
+    const REFUND_SPEED = "normal";
 
     /**
      * The attributes that should be cast to native types.
