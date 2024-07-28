@@ -52,6 +52,7 @@ class OrderCancellations extends Model
      */
     const CANCELLED_BY_CUSTOMER = 1;
     const CANCELLED_BY_ADMIN = 2;
+    const CANCELLED_BY_SUPPLIER = 3;
 
     /**
      * The attributes that should be cast to native types.
@@ -143,6 +144,8 @@ class OrderCancellations extends Model
                 return 'Customer';
             case self::CANCELLED_BY_ADMIN:
                 return 'Admin';
+            case self::CANCELLED_BY_SUPPLIER:
+                return 'Supplier';
             default: 
                 return null;
         }
@@ -216,6 +219,16 @@ class OrderCancellations extends Model
     public function isAdmin(): bool
     {
         return $this->cancelled_by === self::CANCELLED_BY_ADMIN;
+    }
+
+    /**
+     * Check if the refund is rejected.
+     *
+     * @return bool
+     */
+    public function isSupplier(): bool
+    {
+        return $this->cancelled_by === self::CANCELLED_BY_SUPPLIER;
     }
 
     /**

@@ -648,9 +648,19 @@ class OrderController extends Controller
     public function updateOrder(Request $request)
     {
         try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             // Decrypt the order ID from the request and fetch the associated order items and charges
             $orderID = salt_decrypt($request->orderID);
             $orderItems = OrderItemAndCharges::where('order_id', $orderID)->get();
+
+
+            Order::where('id', $orderID)->update(['status' => Order::STATUS_DISPATCHED]);
 
             // Parse the dates using Carbon
             $shippingDate = Carbon::parse($request->shippingDate);
@@ -672,7 +682,6 @@ class OrderController extends Controller
                     ],
                     $shipmentData
                 );
-
                 // Prepare data for updating or creating a shipment AWB (Air Waybill) record
                 $awbData = [
                     'shipment_id' => $shipment->id,

@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\AddToCart;
 use Carbon\Carbon;
 use App\Models\Order;
 use Razorpay\Api\Api;
+use App\Models\AddToCart;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
+use App\Events\ExceptionEvent;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
@@ -337,6 +338,13 @@ class OrderService
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             DB::rollBack();
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
             throw $e;
         }
     }
@@ -447,6 +455,14 @@ class OrderService
                  'razorpay_transaction_id' => $orderPayment->razorpay_payment_id,
                  'status' => OrderTransaction::STATUS_FAILED,
              ]);
+
+             $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
             throw $e;
         }
 

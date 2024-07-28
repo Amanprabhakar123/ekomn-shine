@@ -376,15 +376,19 @@ class DashboardController extends Controller
     {
         $myOrderId = salt_decrypt($id);
         $orderData = OrderAddress::where('order_id', $myOrderId)->first();
+        if(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
+            $orderUpdate = Order::where('id',$myOrderId)->first();
+            if($orderUpdate->status == Order::STATUS_PENDING){
+                $orderUpdate->status = Order::STATUS_IN_PROGRESS;
+                $orderUpdate->save();
+            }
+        }
         $orderTable = Order::where('id', $myOrderId)->first();
         $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])->where('id', $myOrderId)->first();
         $billing_address = OrderAddress::where('order_id', $myOrderId)->Billing()->first();
         // $shipping_address = OrderAddress::where('id', salt_decrypt($myOrderId))->Shipping()->first();
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
-        // dd($delivery_address);
-
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
-        // dd($pickup_address);
         return view('dashboard.common.view-order', get_defined_vars());
     }
 }
