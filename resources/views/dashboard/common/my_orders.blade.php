@@ -108,11 +108,12 @@
               <label class="eklabel eklabel_60 m-0">Status:</label>
               <div class="ek_f_input">
                 <select id="sort_by_status" class="form-select w_150_f">
-                  <option value="Pending" selected>Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Dispatched">Dispatched</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Delivered">Cancelled</option>
+                  <option value="0" selected>Select</option>
+                  <option value="2" >Pending</option>
+                  <option value="3">In Progress</option>
+                  <option value="4">Dispatched</option>
+                  <option value="6">Delivered</option>
+                  <option value="7">Cancelled</option>
                 </select>
               </div>
             </div>
@@ -126,42 +127,36 @@
                 <th>eKomn Order</th>
                 <th>Store Order</th>
                 <th>Product Title
-                  <span class="sort_pos">
-                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                  </span>
                 </th>
                 <th>Customer Name</th>
-                <th>Qty
+                <th class="h_sorting" data-sort-field="quantity">Qty
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Date
+                <th class="h_sorting" data-sort-field="order_date">Date
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
                 <th>Total Amt
+                </th>
+                <th class="h_sorting" data-sort-field="order_type">Category
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Category
+                <th class="h_sorting" data-sort-field="order_channel_type">Type
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Type
+                <th class="h_sorting" data-sort-field="status">Status
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Status
-                  <span class="sort_pos">
-                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                  </span>
-                </th>
-                <th>Payment Status
+                <th class="h_sorting" data-sort-field="payment_status">Payment Status
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
@@ -207,13 +202,14 @@
             <div class="ek_group m-0">
               <label class="eklabel eklabel_60 m-0">Status:</label>
               <div class="ek_f_input">
-                <select id="sort_by_status" class="form-select w_150_f">
-                  <option value="Pending" selected>Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Dispatched">Dispatched</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Delivered">Cancelled</option>
-                </select>
+              <select id="sort_by_status" class="form-select w_150_f">
+                <option value="0" selected>Select</option>
+                <option value="2" >Pending</option>
+                <option value="3">In Progress</option>
+                <option value="4">Dispatched</option>
+                <option value="6">Delivered</option>
+                <option value="7">Cancelled</option>
+              </select>
               </div>
             </div>
             <button class="btn btn-sm btnekomn_dark"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
@@ -226,40 +222,42 @@
                 <th>eKomn Order</th>
                 <th>Store Order</th>
                 <th>Product Title
-                  <span class="sort_pos">
-                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                  </span>
-                </th>
                 <th>Customer Name</th>
                 <th>Supplier ID</th>
                 <th>Buyer ID</th>
-                <th>Qty
+                <th class="h_sorting" data-sort-field="quantity">Qty
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Date
+                <th class="h_sorting" data-sort-field="order_date">Date
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Total Amt.
+
+                <th>Total Amt
+                </th>
+                <th class="h_sorting" data-sort-field="order_type">Category
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Category</th>
-                <th>Type
+                <th class="h_sorting" data-sort-field="order_channel_type">Type
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Payment Status
+                <th class="h_sorting" data-sort-field="status">Status
                   <span class="sort_pos">
                     <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
                   </span>
                 </th>
-                <th>Status</th>
+                <th class="h_sorting" data-sort-field="payment_status">Payment Status
+                  <span class="sort_pos">
+                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                  </span>
+                </th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>

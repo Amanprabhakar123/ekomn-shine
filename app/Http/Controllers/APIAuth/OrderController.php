@@ -499,7 +499,7 @@ class OrderController extends Controller
                     $orderList = $orderList->where('status', $sort_by_status);
                 }
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
-                    $orderList = $orderList->where('supplier_id', auth()->user()->id);
+                    $orderList = $orderList->where('orders.supplier_id', auth()->user()->id);
                     $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
                 }else if(auth()->user()->hasRole(User::ROLE_BUYER)){
                     $orderList = $orderList->where('buyer_id', auth()->user()->id);
@@ -535,6 +535,7 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
+            dd($exceptionDetails);
 
             // Trigger the event
             // event(new ExceptionEvent($exceptionDetails));
