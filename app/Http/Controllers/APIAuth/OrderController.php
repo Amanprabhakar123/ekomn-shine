@@ -480,18 +480,24 @@ class OrderController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['success_count', 'fail_count', 'status'];
+            $allowedSorts = ['order_number', 'quantity', 'order_date', 'order_type', 'order_channel_type' ,'payment_status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'buyer', 'supplier'])
                 ->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('filename', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                        $query->where('order_number', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('store_order', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('full_name', 'like', '%' . $searchTerm . '%')
+                            ->orWhereHas('orderItemsCharges.product', function ($query) use ($searchTerm) {
+                                $query->where('title', 'like', '%' . $searchTerm . '%');
+                            });
                     });
                 });
+                if ($sort_by_status != 0) {
+                    $orderList = $orderList->where('status', $sort_by_status);
+                }
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $orderList = $orderList->where('supplier_id', auth()->user()->id);
                     $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
@@ -499,6 +505,12 @@ class OrderController extends Controller
                     $orderList = $orderList->where('buyer_id', auth()->user()->id);
                 }elseif(auth()->user()->hasRole(User::ROLE_ADMIN)){
                     $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+                }
+
+                if($sort == 'quantity'){
+                    $orderList->join('order_item_and_charges', 'orders.id', '=', 'order_item_and_charges.order_id');
+                    $orderList->select('orders.*', \DB::raw('SUM(order_item_and_charges.quantity) as quantity'));
+                    $orderList->groupBy('orders.id');
                 }
                 $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
                 ->paginate($perPage); // Paginate results
@@ -525,7 +537,7 @@ class OrderController extends Controller
             ];
 
             // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
+            // event(new ExceptionEvent($exceptionDetails));
             // Log the exception details and trigger an ExceptionEvent
 
             Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
