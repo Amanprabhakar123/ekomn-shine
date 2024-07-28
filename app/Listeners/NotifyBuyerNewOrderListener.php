@@ -21,10 +21,8 @@ class NotifyBuyerNewOrderListener
      */
     public function handle(NewOrderCreatedEvent $event): void
     {
-        $order = $event->order;
-        $user = $event->user;
-        // Send the notification
-
-        Notification::send($user, new NewOrderBuyerNotification($order, $user));
+        $buyer = $event->buyer;
+        $details = $event->details;
+        Notification::send($buyer, new NewOrderBuyerNotification($details));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Notifications\NewOrderBuyerNotification;
+use App\Notifications\NewOrderSupplierNotification;
 use Illuminate\Support\Facades\Notification;
 
 class NotifySupplierNewOrderListener
@@ -20,11 +20,10 @@ class NotifySupplierNewOrderListener
      */
     public function handle(object $event): void
     {
-        $order = $event->order;
-        $user = $event->user;
-        // Send the notification
+        $supplier = $event->supplier;
+        $details = $event->details;
 
-        Notification::send($user, new NewOrderBuyerNotification($order, $user));
+        Notification::send($supplier, new NewOrderSupplierNotification($details));
 
     }
 }

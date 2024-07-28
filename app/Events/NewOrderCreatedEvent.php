@@ -11,17 +11,20 @@ class NewOrderCreatedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $order;
+    public $supplier;
 
-    public $user;
+    public $buyer;
+
+    public $details;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($order, $user)
+    public function __construct($supplier, $buyer, $details)
     {
-        $this->order = $order;
-        $this->user = $user;
+        $this->supplier = $supplier;
+        $this->buyer = $buyer;
+        $this->details = $details;
     }
 
     /**
