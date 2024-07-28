@@ -43,13 +43,22 @@ class OrderDataTransformer extends TransformerAbstract
                 $data['supplier_id'] = $order->supplier->companyDetails->company_serial_id;
                 $data['buyer_id'] = $order->buyer->companyDetails->company_serial_id;
             }
+
             if(auth()->user()->hasRole(User::ROLE_BUYER)){
-                $data['is_cancelled'] = $order->isCancelled();
+                if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO()){
+                    $data['is_cancelled'] = true;
+                }else{
+                    $data['is_cancelled'] = $order->isCancelled();
+                }
             }else{
                 if($order->isDropship()){
                     $data['is_cancelled'] = true;
                 }else{
-                    $data['is_cancelled'] = $order->isCancelled();
+                    if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO()){
+                        $data['is_cancelled'] = true;
+                    }else{
+                        $data['is_cancelled'] = $order->isCancelled();
+                    }
                 }
             }
             return $data;

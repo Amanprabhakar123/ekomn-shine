@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Notifications\Notifiable;
+use App\Models\User;
+use App\Models\Shipment;
+use App\Models\OrderRefund;
+use App\Models\OrderAddress;
+use App\Models\OrderInvoice;
+use App\Models\OrderPayment;
+use App\Models\SupplierPayment;
+use App\Models\OrderTransaction;
+use App\Models\OrderCancellations;
 use Spatie\Activitylog\LogOptions;
+use App\Models\OrderItemAndCharges;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\OrderPaymentDistribution;
+use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {

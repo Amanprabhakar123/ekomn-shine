@@ -693,8 +693,6 @@ class OrderController extends Controller
             // Decrypt the order ID from the request and fetch the associated order items and charges
             $orderID = salt_decrypt($request->orderID);
             $orderItems = OrderItemAndCharges::where('order_id', $orderID)->get();
-
-
             Order::where('id', $orderID)->update(['status' => Order::STATUS_DISPATCHED]);
 
             // Parse the dates using Carbon
