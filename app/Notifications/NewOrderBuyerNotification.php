@@ -17,7 +17,7 @@ class NewOrderBuyerNotification extends Notification
      */
     public function __construct($details)
     {
-         $this->details = $details;
+        $this->details = $details;
     }
 
     /**
@@ -35,11 +35,13 @@ class NewOrderBuyerNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+
+        $name = $this->details['full_name'];
+        $order_number = $this->details['order_id'];
+
         return (new MailMessage)
-            ->subject('New Order Notification')
-            ->line('The introduction to the notification.')
-            ->action('View Order', url('my-orders'))
-            ->line('Thank you for using our application!');
+            ->subject('eKomn – New Order '.$order_number.' is created.')
+            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'));
     }
 
     /**
