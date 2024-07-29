@@ -41,7 +41,7 @@ class NewOrderBuyerNotification extends Notification
 
         return (new MailMessage)
             ->subject('eKomn – New Order '.$order_number.' is created.')
-            ->view('email.orderCancellation', compact('name', 'order_number'));
+            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'));
     }
 
     /**
