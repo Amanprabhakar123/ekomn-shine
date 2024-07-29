@@ -14,12 +14,16 @@ class OrderStatusChangedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $buyer;
+    public $details;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($buyer, $details)
     {
-        //
+        $this->buyer = $buyer;
+        $this->details = $details;
     }
 
     /**

@@ -11,13 +11,16 @@ class CancelOrderSupplierNotification extends Notification
 {
     use Queueable;
 
+    protected $details;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($details)
     {
-        //
+        $this->details = $details;
     }
+
 
     /**
      * Get the notification's delivery channels.
@@ -34,10 +37,12 @@ class CancelOrderSupplierNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
+        $order_number = $this->details['order_id'];
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        ->subject('eKomn – Cancelled Order '.$order_number.'.')
+        ->view('email.orderCancellation', compact('name', 'order_number'));
     }
 
     /**

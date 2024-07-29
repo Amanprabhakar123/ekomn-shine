@@ -3,6 +3,7 @@
 @section('content')
     <div class="ek_dashboard">
         <div class="ek_content">
+        <input type="hidden" id="orderID" value="{{ salt_encrypt($myOrderId) }}" name="orderID">
             @if (auth()->user()->hasRole(ROLE_BUYER))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
@@ -220,7 +221,6 @@
                         <h3 class="cardtitle">View Order Details</h3>
                     </div>
                     <div class="row">
-                        <input type="hidden" id="orderID" value="{{ salt_encrypt($myOrderId) }}" name="orderID">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
                                 <div class="row">
@@ -510,6 +510,35 @@
                                             @endif
                                         </div>
                                         <p id="error_tracking"></p>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Shipping Date</label>
+                                            @isset($courier_detatils)
+                                            <input type="date" class="form-control" id="shippingDate"
+                                            name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
+                                            @else
+                                            <input type="date" class="form-control" value="" id="shippingDate"
+                                                name="shippingDate">
+                                            @endif
+
+                                        </div>
+                                        <p id="error_shipping_date"></p>
+
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Delivery Date</label>
+                                            @isset($courier_detatils)
+                                            <input type="date" class="form-control"  id="delhiveryDate" value="{{$delivery_date->toDateString()}}"
+                                                name="delhiveryDate" disabled>
+                                            @else
+                                            <input type="date" class="form-control" value="" id="delhiveryDate"
+                                            name="delhiveryDate">
+                                            @endif
+                                        </div>
+                                        <p id="error_delhivery_date"></p>
+
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">

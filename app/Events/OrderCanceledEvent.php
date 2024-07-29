@@ -14,13 +14,22 @@ class OrderCanceledEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $supplier;
+
+    public $buyer;
+
+    public $details;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($supplier, $buyer, $details)
     {
-        //
+        $this->supplier = $supplier;
+        $this->buyer = $buyer;
+        $this->details = $details;
     }
+
 
     /**
      * Get the channels the event should broadcast on.
