@@ -18,6 +18,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'FILE_STORAGE_PLACE' => env('FILE_STORAGE_PLACE', false),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use App\Models\SupplierRegistrationTemp;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -14,9 +15,6 @@ class SupplierRegistraionController extends Controller
 {
     /**
      * Handle the data setting process for supplier registration.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function supplierPostData(Request $request): JsonResponse
     {
@@ -36,6 +34,7 @@ class SupplierRegistraionController extends Controller
 
                 if ($supplier) {
                     $supplier->update($this->getStep2Data($request));
+
                     return $this->successResponse();
                 }
             } elseif ($request->step_3) {
@@ -43,6 +42,7 @@ class SupplierRegistraionController extends Controller
 
                 if ($supplier) {
                     $supplier->update($this->getStep3Data($request));
+
                     return $this->successResponse();
                 }
             } elseif ($request->step_4) {
@@ -54,23 +54,34 @@ class SupplierRegistraionController extends Controller
                     $supplier->update($this->getStep4Data($request));
                     $supplier->refresh();
                     (new SupplierRegistrationTemp())->makeNewSupplierRegisteration($supplier->toArray());
+
                     return $this->successResponse();
                 }
             }
 
             return $this->errorResponse(__('auth.invalidInputData'));
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return $this->errorResponse($e->getMessage());
         }
     }
 
-   // private function 
+    // private function
 
     /**
      * Validate request data for step 1.
      *
-     * @param Request $request
-     * @return void
      * @throws \Illuminate\Validation\ValidationException
      */
     private function validateStep1(Request $request): void
@@ -92,6 +103,18 @@ class SupplierRegistraionController extends Controller
         try {
             $validator->validate();
         } catch (ValidationException $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Get the validation errors and throw the exception with modified error message
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
@@ -103,9 +126,6 @@ class SupplierRegistraionController extends Controller
 
     /**
      * Get data array for step 1.
-     *
-     * @param Request $request
-     * @return array
      */
     private function getStep1Data(Request $request): array
     {
@@ -124,12 +144,11 @@ class SupplierRegistraionController extends Controller
         ];
     }
 
-
     /**
      * Validate request data for step 2.
      *
-     * @param Request $request
      * @return voidid
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     private function validateStep2(Request $request): void
@@ -143,6 +162,18 @@ class SupplierRegistraionController extends Controller
         try {
             $validator->validate();
         } catch (ValidationException $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
             $errorMessage = $errors->first($field);
@@ -153,9 +184,6 @@ class SupplierRegistraionController extends Controller
 
     /**
      * Get data array for step 2.
-     *
-     * @param Request $request
-     * @return array
      */
     private function getStep2Data(Request $request): array
     {
@@ -167,13 +195,8 @@ class SupplierRegistraionController extends Controller
         ];
     }
 
-
-
     /**
      * Get data array for step 3.
-     *
-     * @param Request $request
-     * @return array
      */
     private function getStep3Data(Request $request): array
     {
@@ -186,6 +209,17 @@ class SupplierRegistraionController extends Controller
         try {
             $validator->validate();
         } catch (ValidationException $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
             $errorMessage = $errors->first($field);
@@ -196,15 +230,13 @@ class SupplierRegistraionController extends Controller
         return [
             'product_qty' => $request->input('product_qty'),
             'product_category' => $request->input('product_category'),
-            'product_channel' => $request->input('product_channel')
+            'product_channel' => $request->input('product_channel'),
         ];
     }
 
     /**
      * Validate request data for step 4.
      *
-     * @param Request $request
-     * @return void
      * @throws \Illuminate\Validation\ValidationException
      */
     private function validateStep4(Request $request): void
@@ -212,11 +244,23 @@ class SupplierRegistraionController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
-            'product_channel' => 'string'
+            'product_channel' => 'string',
         ]);
         try {
             $validator->validate();
         } catch (ValidationException $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             $errors = $validator->errors();
             $field = $errors->keys()[0]; // Get the first field that failed validation
             $errorMessage = $errors->first($field);
@@ -227,9 +271,6 @@ class SupplierRegistraionController extends Controller
 
     /**
      * Get data array for step 4.
-     *
-     * @param Request $request
-     * @return array
      */
     private function getStep4Data(Request $request): array
     {
@@ -241,11 +282,8 @@ class SupplierRegistraionController extends Controller
 
     /**
      * Generate a success response.
-     *
-     * @param int|null $id
-     * @return JsonResponse
      */
-    private function successResponse(int $id = null): JsonResponse
+    private function successResponse(?int $id = null): JsonResponse
     {
         $response = [
             'statusCode' => __('statusCode.statusCode200'),
@@ -257,31 +295,29 @@ class SupplierRegistraionController extends Controller
             $response['id'] = $id;
         }
 
-        return response()->json(['data' => $response],  __('statusCode.statusCode200'));
+        return response()->json(['data' => $response], __('statusCode.statusCode200'));
     }
 
     /**
      * Generate an error response.
-     *
-     * @param string $message
-     * @return JsonResponse
      */
     private function errorResponse(string $message): JsonResponse
     {
-        $parts = explode("-", $message);
+        $parts = explode('-', $message);
         $key = '';
-        if(!empty($parts)){
+        if (! empty($parts)) {
             $message = $parts[0];
             $key = $parts[1] ?? null;
         }
         $response = [
             'statusCode' => __('statusCode.statusCode422'),
             'status' => __('statusCode.status422'),
-            'message' => $message
+            'message' => $message,
         ];
         if ($key) {
             $response['key'] = $key;
         }
+
         return response()->json(['data' => $response], __('statusCode.statusCode200'));
     }
 }

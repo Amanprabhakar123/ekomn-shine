@@ -28,6 +28,9 @@ class AuthViewController extends Controller
      */
     public function loginFormView()
     {
+        if(auth()->check()) {
+            return redirect()->route('dashboard');
+        }
         $product = Category::where([
             'root_parent_id' => 0,
             'is_active' => true,

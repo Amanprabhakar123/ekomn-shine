@@ -11,7 +11,7 @@ const makeHeader = (isFormData = false) => {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     };
     if(token){
-        header['Authorization'] = 'Bearer ' + token; 
+        header['Authorization'] = 'Bearer '+token;
     }
     return header;
 }

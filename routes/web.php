@@ -1,28 +1,23 @@
 <?php
 
-use Razorpay\Api\Product;
-use App\Models\ImportErrorMessage;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ImageController;
-use App\Http\Controllers\BulkUploadController;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\APIAuth\ProductInventory;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\ProfileController;
-use App\Http\Controllers\APIAuth\CategoryController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\ImportErrorMessageController;
-use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\CategoryController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\BulkUploadController;
+use App\Http\Controllers\Import\ImportController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +49,6 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 
-
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
     Route::get('/', [GoogleController::class, 'redirectToGoogle'])->name('redirect');
@@ -69,6 +63,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('bulk-upload', [DashboardController::class, 'bulkUpload'])->name('bulk-upload');
     Route::get('bulk-upload-list', [DashboardController::class, 'bulkUploadList'])->name('bulk-upload.list');
     Route::get('editInventory/{variation_id}', [DashboardController::class, 'editInventory'])->name('edit.inventory');
+    Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
+    Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
+    Route::get('view-orders/{id}', [DashboardController::class, 'viewOrder'])->name('view.order');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -92,14 +89,24 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
         Route::get('import-error-message', [BulkUploadController::class, 'index'])->name('import-error-message'); // This route is not used in the application
+        Route::get('state-city-list', [DashboardController::class, 'getStateCityList'])->name('state-city-list');
+        Route::post('product/search/sku', [OrderController::class, 'searchProductBySku'])->name('product.search.sku');
+        Route::delete('product/remove/cart/{id}', [OrderController::class, 'removeProductInCart'])->name('product.remove.sku');
+        Route::post('product/cart/list', [OrderController::class, 'getProductInCart'])->name('product.cart.list');
+        Route::post('product/cart/update/quantity', [OrderController::class, 'updateProductQuantityInCart'])->name('product.cart.update.quantity');
+        Route::get('buyer-id/{id}', [DashboardController::class, 'getBuyerId'])->name('buyer-id');
+        Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::get('orders', [OrderController::class, 'orders'])->name('orders');
+        Route::post('orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+        Route::post('/update-order', [OrderController::class, 'updateOrder'])->name('update.order');
     });
 });
 
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
-        // Define routes for jwt token refresh, user details, and logout
+        Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
+        Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
     });
 });
 
@@ -119,6 +126,7 @@ Route::group(['prefix' => 'api'], function () {
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+    Route::post('order/payment-success/callback', [OrderController::class, 'orderPaymentSuccess'])->name('order.payment.success');
 });
 
 // Define routes for authenticated API routes

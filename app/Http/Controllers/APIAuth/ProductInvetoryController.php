@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Models\User;
+use App\Events\ExceptionEvent;
+use App\Http\Controllers\Controller;
+use App\Models\CompanyDetail;
 use App\Models\Import;
+use App\Models\ProductFeature;
+use App\Models\ProductInventory;
+use App\Models\ProductKeyword;
+use App\Models\ProductVariation;
+use App\Models\ProductVariationMedia;
+use App\Models\User;
+use App\Transformers\BulkDataTransformer;
+use App\Transformers\ProductVariationTransformer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use League\Fractal\Manager;
-use Illuminate\Http\Request;
-use App\Models\CompanyDetail;
-use App\Models\ProductFeature;
-use App\Models\ProductKeyword;
-use App\Models\ProductInventory;
-use App\Models\ProductVariation;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
-use App\Models\ProductVariationMedia;
-use Illuminate\Support\Facades\Storage;
-use League\Fractal\Resource\Collection;
-use App\Transformers\BulkDataTransformer;
-use Illuminate\Support\Facades\Validator;
-use App\Transformers\BuyerInventoryTransformer;
-use App\Transformers\ProductVariationTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
 
 class ProductInvetoryController extends Controller
 {
-
     protected $fractal;
 
     public function __construct(Manager $fractal)
@@ -37,7 +36,6 @@ class ProductInvetoryController extends Controller
     /**
      * Retrieve a paginated list of product inventories.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -46,56 +44,69 @@ class ProductInvetoryController extends Controller
      *     path="/api/product-inventories",
      *     summary="Retrieve a paginated list of product inventories",
      *     tags={"Product Inventories"},
+     *
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Number of items per page",
      *         required=false,
+     *
      *         @OA\Schema(
      *             type="integer",
      *             default=10
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="query",
      *         in="query",
      *         description="Search term",
      *         required=false,
+     *
      *         @OA\Schema(
      *             type="string"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="sort",
      *         in="query",
      *         description="Sort field",
      *         required=false,
+     *
      *         @OA\Schema(
      *             type="string",
      *             enum={"id", "title", "sku", "price_after_tax", "stock"},
      *             default="id"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="order",
      *         in="query",
      *         description="Sort order",
      *         required=false,
+     *
      *         @OA\Schema(
      *             type="string",
      *             enum={"asc", "desc"},
      *             default="asc"
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
+     *
      *                 @OA\Items(ref="#/components/schemas/ProductInventory")
      *             ),
+     *
      *             @OA\Property(
      *                 property="meta",
      *                 ref="#/components/schemas/Meta"
@@ -106,6 +117,7 @@ class ProductInvetoryController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Unauthorized action"
@@ -113,7 +125,9 @@ class ProductInvetoryController extends Controller
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="string"
@@ -149,38 +163,37 @@ class ProductInvetoryController extends Controller
                 }
                 $variations = $variations->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%');
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('product_slug_id', 'like', '%'.$searchTerm.'%');
                     });
                 });
-              
-                  $variations =  $variations->with([
-                        'media',
-                        'product',
-                        'product.category'
-                  ]); // Eager load the product and category relationships with sorting
-                  if($sort == 'name') {
-                    // Handle sorting by category name
-                    $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')  
-                    ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
-                    ->select('product_variations.*');
-                        $variations = $variations->orderBy('categories.name', $sortOrder);
-                  } else {
-                      $variations = $variations->orderBy($sort, $sortOrder); // Apply other sorts
-                  }
-                $variations = $variations->paginate($perPage); // Paginate results
 
+                $variations = $variations->with([
+                    'media',
+                    'product',
+                    'product.category',
+                ]); // Eager load the product and category relationships with sorting
+                if ($sort == 'name') {
+                    // Handle sorting by category name
+                    $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')
+                        ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
+                        ->select('product_variations.*');
+                    $variations = $variations->orderBy('categories.name', $sortOrder);
+                } else {
+                    $variations = $variations->orderBy($sort, $sortOrder); // Apply other sorts
+                }
+                $variations = $variations->paginate($perPage); // Paginate results
 
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Eager load product variations with product inventory that matches user_id
                 $variations = ProductVariation::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('sku', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('product_slug_id', 'like', '%' . $searchTerm . '%')
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('product_slug_id', 'like', '%'.$searchTerm.'%')
                             ->orWhereHas('product.category', function ($query) use ($searchTerm) {
-                                $query->where('name', 'like', '%' . $searchTerm . '%');
+                                $query->where('name', 'like', '%'.$searchTerm.'%');
                             });
                     });
                 });
@@ -191,14 +204,14 @@ class ProductInvetoryController extends Controller
                     'media',
                     'product',
                     'product.category',
-                    'product.company'
+                    'product.company',
                 ]); // Eager load the product and category relationships
-            if($sort == 'name') {
-                  // Handle sorting by category name
-                  $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')  
-                  ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
-                  ->select('product_variations.*');
-                      $variations = $variations->orderBy('categories.name', $sortOrder);
+                if ($sort == 'name') {
+                    // Handle sorting by category name
+                    $variations = $variations->join('product_inventories', 'product_variations.product_id', '=', 'product_inventories.id')
+                        ->join('categories', 'product_inventories.product_category', '=', 'categories.id')
+                        ->select('product_variations.*');
+                    $variations = $variations->orderBy('categories.name', $sortOrder);
                 } else {
                     $variations = $variations->orderBy($sort, $sortOrder); // Apply other sorts
                 }
@@ -218,15 +231,26 @@ class ProductInvetoryController extends Controller
             // Return the JSON response with paginated data
             return response()->json($data);
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
-            return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
+            return response()->json(['data' => __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
         }
     }
 
     /**
      * Add inventory to the product.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function addInventory(Request $request)
@@ -275,11 +299,11 @@ class ProductInvetoryController extends Controller
                     'package_volumetric_weight' => 'required|numeric',
                     'product_listing_status' => 'required|in:1,2,3,4',
                 ];
-                $variant_key = "no_variant";
+                $variant_key = 'no_variant';
                 if ($request->has('no_variant')) {
-                    $variant_key = "no_variant";
-                } else if ($request->has('yes_variant')) {
-                    $variant_key = "yes_variant";
+                    $variant_key = 'no_variant';
+                } elseif ($request->has('yes_variant')) {
+                    $variant_key = 'yes_variant';
                 }
                 // Define validation rules
                 $rules = array_merge($rules, [
@@ -295,24 +319,24 @@ class ProductInvetoryController extends Controller
 
                 // Define validation messages
                 $messages = [
-                    "feature" => "The feature list field is required",
-                    "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
-                    "$variant_key.*.stock.array" => "The stock must be an array.",
-                    "$variant_key.*.stock.min" => "The stock must have at least one entry.",
-                    "$variant_key.*.stock.*.required" => "Each stock entry is required and must be numeric.",
-                    "$variant_key.*.stock.*.numeric" => "Each stock entry must be a number.",
-                    "$variant_key.*.size.required" => "The size field is required when no variant is present.",
-                    "$variant_key.*.size.array" => "The size must be an array.",
-                    "$variant_key.*.size.min" => "The size must have at least one entry.",
-                    "$variant_key.*.size.*.required" => "Each size entry is required.",
-                    "$variant_key.*.size.*.string" => "Each size entry must be a string.",
-                    "$variant_key.*.media.required" => "The media field is required when no variant is present.",
-                    "$variant_key.*.media.array" => "The media must be an array.",
-                    "$variant_key.*.media.min" => "The media must have at least 5 images including main image.",
-                    "$variant_key.*.media.*.required" => "Each media entry is required.",
-                    "$variant_key.*.media.*.mimes" => "Each media entry must be an image or video (png, jpeg, jpg, mp4).",
-                    "$variant_key.*.color.required" => "The color field is required when no variant is present.",
-                    "$variant_key.*.color.string" => "The color must be a string.",
+                    'feature' => 'The feature list field is required',
+                    "$variant_key.*.stock.required" => 'The stock field is required when no variant is present.',
+                    "$variant_key.*.stock.array" => 'The stock must be an array.',
+                    "$variant_key.*.stock.min" => 'The stock must have at least one entry.',
+                    "$variant_key.*.stock.*.required" => 'Each stock entry is required and must be numeric.',
+                    "$variant_key.*.stock.*.numeric" => 'Each stock entry must be a number.',
+                    "$variant_key.*.size.required" => 'The size field is required when no variant is present.',
+                    "$variant_key.*.size.array" => 'The size must be an array.',
+                    "$variant_key.*.size.min" => 'The size must have at least one entry.',
+                    "$variant_key.*.size.*.required" => 'Each size entry is required.',
+                    "$variant_key.*.size.*.string" => 'Each size entry must be a string.',
+                    "$variant_key.*.media.required" => 'The media field is required when no variant is present.',
+                    "$variant_key.*.media.array" => 'The media must be an array.',
+                    "$variant_key.*.media.min" => 'The media must have at least 5 images including main image.',
+                    "$variant_key.*.media.*.required" => 'Each media entry is required.',
+                    "$variant_key.*.media.*.mimes" => 'Each media entry must be an image or video (png, jpeg, jpg, mp4).',
+                    "$variant_key.*.color.required" => 'The color field is required when no variant is present.',
+                    "$variant_key.*.color.string" => 'The color must be a string.',
                 ];
 
                 if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
@@ -335,7 +359,7 @@ class ProductInvetoryController extends Controller
                         'dropship_rate',
                         'potential_mrp',
                         'bulk',
-                        'shipping'
+                        'shipping',
                     ];
                     $step_3 = [
                         'upc',
@@ -363,13 +387,14 @@ class ProductInvetoryController extends Controller
 
                     if (in_array($validator->errors()->keys()[0], $step_1)) {
                         $step = 1;
-                    } else if (in_array($validator->errors()->keys()[0], $step_2)) {
+                    } elseif (in_array($validator->errors()->keys()[0], $step_2)) {
                         $step = 2;
-                    } else if (in_array($validator->errors()->keys()[0], $step_3)) {
+                    } elseif (in_array($validator->errors()->keys()[0], $step_3)) {
                         $step = 3;
                     } else {
                         $step = 4;
                     }
+
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode422'),
                         'status' => __('statusCode.status422'),
@@ -411,9 +436,9 @@ class ProductInvetoryController extends Controller
                             $tierRate[] = [
                                 'range' => [
                                     'min' => $min, // You might want to adjust this according to your logic
-                                    'max' => (int) $bulk['quantity']
+                                    'max' => (int) $bulk['quantity'],
                                 ],
-                                'price' => $bulk['price']
+                                'price' => $bulk['price'],
                             ];
                             $min = (int) $bulk['quantity'] + 1;
                         }
@@ -429,11 +454,11 @@ class ProductInvetoryController extends Controller
                             $tierShippingRate[] = [
                                 'range' => [
                                     'min' => $minRange, // You might want to adjust this according to your logic
-                                    'max' => (int) $shipping['quantity']
+                                    'max' => (int) $shipping['quantity'],
                                 ],
                                 'local' => $shipping['local'],
                                 'regional' => $shipping['regional'],
-                                'national' => $shipping['national']
+                                'national' => $shipping['national'],
                             ];
                             $minRange = (int) $shipping['quantity'] + 1;
                         }
@@ -441,30 +466,30 @@ class ProductInvetoryController extends Controller
 
                     DB::beginTransaction();
                     $product = ProductInventory::create([
-                        'title' =>  $data['product_name'],
-                        'description' =>  $data['product_description'],
-                        'product_category' =>  salt_decrypt($data['product_category_id']),
+                        'title' => $data['product_name'],
+                        'description' => $data['product_description'],
+                        'product_category' => salt_decrypt($data['product_category_id']),
                         'product_subcategory' => salt_decrypt($data['product_sub_category_id']),
-                        'company_id' =>  $company_id,
+                        'company_id' => $company_id,
                         'user_id' => $user_id,
-                        'model' =>  $data['model'],
-                        'hsn' =>  $data['product_hsn'],
-                        'gst_percentage' =>  $data['gst_bracket'],
-                        'upc' =>  $data['upc'] ?? null,
-                        'isbn' =>  $data['isbn'] ?? null,
-                        'mpin' =>  $data['mpn'] ?? null,
-                        'gst_percentage' =>  $data['gst_bracket'],
+                        'model' => $data['model'],
+                        'hsn' => $data['product_hsn'],
+                        'gst_percentage' => $data['gst_bracket'],
+                        'upc' => $data['upc'] ?? null,
+                        'isbn' => $data['isbn'] ?? null,
+                        'mpin' => $data['mpn'] ?? null,
+                        'gst_percentage' => $data['gst_bracket'],
                         'availability_status' => $data['availability'],
-                        'status' => $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE
+                        'status' => $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE,
                     ]);
 
-                    $product_id =  $product->id;
+                    $product_id = $product->id;
                     if (count($data['product_keywords']) > 0) {
                         foreach ($data['product_keywords'] as $key => $product_keyword) {
                             ProductKeyword::create([
                                 'product_id' => $product_id,
                                 'company_id' => $company_id,
-                                'keyword' => $product_keyword
+                                'keyword' => $product_keyword,
                             ]);
                         }
                     }
@@ -475,7 +500,7 @@ class ProductInvetoryController extends Controller
                                 'product_id' => $product_id,
                                 'company_id' => $company_id,
                                 'feature_name' => $feature,
-                                'value' => $feature
+                                'value' => $feature,
                             ]);
                         }
                     }
@@ -489,33 +514,33 @@ class ProductInvetoryController extends Controller
                         $first_image_processed = false;
                         $media_images = [];
                         foreach ($value['media'] as $k => $med) {
-                            $filename = md5(Str::random(40)) . '.' . $med->getClientOriginalExtension();
+                            $filename = md5(Str::random(40)).'.'.$med->getClientOriginalExtension();
                             // Get the file contents
                             $fileContents = $med->get();
                             // Define the path
-                            $path = "company_{$company_id}/" . $product_id . "/documents/{$filename}";
+                            $path = "company_{$company_id}/".$product_id."/documents/{$filename}";
                             if (in_array($med->getClientOriginalExtension(), $img_ext)) {
-                                $path = "company_{$company_id}/" . $product_id . "/images/{$filename}";
+                                $path = "company_{$company_id}/".$product_id."/images/{$filename}";
                                 $media_type = ProductVariationMedia::MEDIA_TYPE_IMAGE;
                                 // Set $is_master to true only for the first image
-                                if (!$first_image_processed) {
+                                if (! $first_image_processed) {
                                     $is_master = ProductVariationMedia::IS_MASTER_TRUE;
                                     $first_image_processed = true;
                                 } else {
                                     $is_master = ProductVariationMedia::IS_MASTER_FALSE;
                                 }
-                            } else if (in_array($med->getClientOriginalExtension(), $vide_ext)) {
-                                $path = "company_{$company_id}/" . $product_id . "/videos/{$filename}";
+                            } elseif (in_array($med->getClientOriginalExtension(), $vide_ext)) {
+                                $path = "company_{$company_id}/".$product_id."/videos/{$filename}";
                                 $media_type = ProductVariationMedia::MEDIA_TYPE_VIDEO;
                                 $is_master = ProductVariationMedia::IS_MASTER_FALSE;
                             }
                             // Store the file
                             Storage::disk('public')->put($path, $fileContents);
-                            $media_images[] = ['file_path' =>  $path, 'is_image' => $media_type, 'is_master' => $is_master];
+                            $media_images[] = ['file_path' => $path, 'is_image' => $media_type, 'is_master' => $is_master];
                         }
                         foreach ($value['size'] as $size_key => $value1) {
                             $price = calculateInclusivePriceAndTax($data['dropship_rate'], $data['gst_bracket']);
-                            $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
+                            $color = ! empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
                             // check stock array key not exist
                             $stock = 0;
                             if ($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK) {
@@ -530,7 +555,7 @@ class ProductInvetoryController extends Controller
                                 $title = $request->product_name;
                             } else {
                                 $allow_editable = ProductVariation::ALLOW_EDITABLE_FALSE;
-                                $title = $request->product_name . ' ( ' . $color . ', ' . $value1 . ' ) ';
+                                $title = $request->product_name.' ( '.$color.', '.$value1.' ) ';
                             }
                             $productVariation = ProductVariation::create([
                                 'product_id' => $product_id,
@@ -556,15 +581,15 @@ class ProductInvetoryController extends Controller
                                 'package_dimension_class' => $request->package_dimension_class,
                                 'package_weight' => $request->package_weight,
                                 'package_weight_class' => $request->package_weight_class,
-                                'price_before_tax' =>  (float) $price['price_before_tax'],
-                                'price_after_tax' =>   (float) $price['price_after_tax'],
+                                'price_before_tax' => (float) $price['price_before_tax'],
+                                'price_after_tax' => (float) $price['price_after_tax'],
                                 'status' => $data['product_listing_status'] ?? 1,
                                 'availability_status' => $request->availability,
                                 'dropship_rate' => $request->dropship_rate,
                                 'potential_mrp' => $request->potential_mrp,
                                 'tier_rate' => json_encode($tierRate),
                                 'tier_shipping_rate' => json_encode($tierShippingRate),
-                                'allow_editable' => $allow_editable
+                                'allow_editable' => $allow_editable,
                             ]);
 
                             $generateProductID = generateProductID($request->product_name, $productVariation->id);
@@ -580,23 +605,35 @@ class ProductInvetoryController extends Controller
                                     'file_path' => $media['file_path'],
                                     'is_master' => $media['is_master'],
                                     'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                    'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                                    'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE,
                                 ]);
                             }
                         }
                     }
-                    // 
+                    //
                     DB::commit();
                     $response['data'] = [
                         'statusCode' => __('statusCode.statusCode200'),
                         'status' => __('statusCode.status200'),
                         'message' => __('auth.updateStock'),
                     ];
+
                     // Return a success message
                     return response()->json($response);
                 }
             } catch (\Exception $e) {
+
+                // Prepare exception details
+                $exceptionDetails = [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ];
+
+                // Trigger the event
+                event(new ExceptionEvent($exceptionDetails));
                 DB::rollBack();
+
                 // Handle the exception
                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
             }
@@ -608,7 +645,6 @@ class ProductInvetoryController extends Controller
     /**
      * Update inventory to the product.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function updateInventory(Request $request)
@@ -662,15 +698,14 @@ class ProductInvetoryController extends Controller
                         'feature' => 'required|array',
                         'feature.*' => 'string',
                     ]);
+                } elseif (($request->product_listing_status == ProductInventory::STATUS_DRAFT)) {
+                    $rules['sku'] = 'required|string|min:3|max:10|regex:/^[a-zA-Z0-9_-]+$/';
                 }
-                else if(($request->product_listing_status == ProductInventory::STATUS_DRAFT)){
-                    $rules['sku'] ='required|string|min:3|max:10|regex:/^[a-zA-Z0-9_-]+$/';
-                }
-                $variant_key = "no_variant";
+                $variant_key = 'no_variant';
                 if ($request->has('no_variant')) {
-                    $variant_key = "no_variant";
-                } else if ($request->has('yes_variant')) {
-                    $variant_key = "yes_variant";
+                    $variant_key = 'no_variant';
+                } elseif ($request->has('yes_variant')) {
+                    $variant_key = 'yes_variant';
                 }
                 // Define validation rules
                 $rules = array_merge($rules, [
@@ -686,26 +721,26 @@ class ProductInvetoryController extends Controller
 
                 // Define validation messages
                 $messages = [
-                    "feature" => "The feature list field is required",
-                    "sku" => "The sku field is required and must be unique.",
-                    "sku.regex" => "The sku field must be alphanumeric and may contain dashes and underscores.",
-                    "$variant_key.*.stock.required" => "The stock field is required when no variant is present.",
-                    "$variant_key.*.stock.array" => "The stock must be an array.",
-                    "$variant_key.*.stock.min" => "The stock must have at least one entry.",
-                    "$variant_key.*.stock.*.required" => "Each stock entry is required and must be numeric.",
-                    "$variant_key.*.stock.*.numeric" => "Each stock entry must be a number.",
-                    "$variant_key.*.size.required" => "The size field is required when no variant is present.",
-                    "$variant_key.*.size.array" => "The size must be an array.",
-                    "$variant_key.*.size.min" => "The size must have at least one entry.",
-                    "$variant_key.*.size.*.required" => "Each size entry is required.",
-                    "$variant_key.*.size.*.string" => "Each size entry must be a string.",
-                    "$variant_key.*.media.required" => "The media field is required when no variant is present.",
-                    "$variant_key.*.media.array" => "The media must be an array.",
-                    "$variant_key.*.media.min" => "The media must have at least 5 images including main image.",
-                    "$variant_key.*.media.*.required" => "Each media entry is required.",
-                    "$variant_key.*.media.*.mimes" => "Each media entry must be an image or video (png, jpeg, jpg, mp4).",
-                    "$variant_key.*.color.required" => "The color field is required when no variant is present.",
-                    "$variant_key.*.color.string" => "The color must be a string.",
+                    'feature' => 'The feature list field is required',
+                    'sku' => 'The sku field is required and must be unique.',
+                    'sku.regex' => 'The sku field must be alphanumeric and may contain dashes and underscores.',
+                    "$variant_key.*.stock.required" => 'The stock field is required when no variant is present.',
+                    "$variant_key.*.stock.array" => 'The stock must be an array.',
+                    "$variant_key.*.stock.min" => 'The stock must have at least one entry.',
+                    "$variant_key.*.stock.*.required" => 'Each stock entry is required and must be numeric.',
+                    "$variant_key.*.stock.*.numeric" => 'Each stock entry must be a number.',
+                    "$variant_key.*.size.required" => 'The size field is required when no variant is present.',
+                    "$variant_key.*.size.array" => 'The size must be an array.',
+                    "$variant_key.*.size.min" => 'The size must have at least one entry.',
+                    "$variant_key.*.size.*.required" => 'Each size entry is required.',
+                    "$variant_key.*.size.*.string" => 'Each size entry must be a string.',
+                    "$variant_key.*.media.required" => 'The media field is required when no variant is present.',
+                    "$variant_key.*.media.array" => 'The media must be an array.',
+                    "$variant_key.*.media.min" => 'The media must have at least 5 images including main image.',
+                    "$variant_key.*.media.*.required" => 'Each media entry is required.',
+                    "$variant_key.*.media.*.mimes" => 'Each media entry must be an image or video (png, jpeg, jpg, mp4).',
+                    "$variant_key.*.color.required" => 'The color field is required when no variant is present.',
+                    "$variant_key.*.color.string" => 'The color must be a string.',
                 ];
 
                 $validator = Validator::make($request->all(), $rules, $messages);
@@ -719,13 +754,13 @@ class ProductInvetoryController extends Controller
                         'product_sub_category',
                         'feature',
                         'supplier_id',
-                        'varition_id'
+                        'varition_id',
                     ];
                     $step_2 = [
                         'dropship_rate',
                         'potential_mrp',
                         'bulk',
-                        'shipping'
+                        'shipping',
                     ];
                     $step_3 = [
                         'upc',
@@ -753,13 +788,14 @@ class ProductInvetoryController extends Controller
 
                     if (in_array($validator->errors()->keys()[0], $step_1)) {
                         $step = 1;
-                    } else if (in_array($validator->errors()->keys()[0], $step_2)) {
+                    } elseif (in_array($validator->errors()->keys()[0], $step_2)) {
                         $step = 2;
-                    } else if (in_array($validator->errors()->keys()[0], $step_3)) {
+                    } elseif (in_array($validator->errors()->keys()[0], $step_3)) {
                         $step = 3;
                     } else {
                         $step = 4;
                     }
+
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode422'),
                         'status' => __('statusCode.status422'),
@@ -802,9 +838,9 @@ class ProductInvetoryController extends Controller
                             $tierRate[] = [
                                 'range' => [
                                     'min' => $min, // You might want to adjust this according to your logic
-                                    'max' => (int) $bulk['quantity']
+                                    'max' => (int) $bulk['quantity'],
                                 ],
-                                'price' => $bulk['price']
+                                'price' => $bulk['price'],
                             ];
                             $min = (int) $bulk['quantity'] + 1;
                         }
@@ -820,11 +856,11 @@ class ProductInvetoryController extends Controller
                             $tierShippingRate[] = [
                                 'range' => [
                                     'min' => $minRange, // You might want to adjust this according to your logic
-                                    'max' => (int) $shipping['quantity']
+                                    'max' => (int) $shipping['quantity'],
                                 ],
                                 'local' => $shipping['local'],
                                 'regional' => $shipping['regional'],
-                                'national' => $shipping['national']
+                                'national' => $shipping['national'],
                             ];
                             $minRange = (int) $shipping['quantity'] + 1;
                         }
@@ -840,24 +876,24 @@ class ProductInvetoryController extends Controller
                     // add logic if record is draft
                     if (($productVariation->status == ProductInventory::STATUS_DRAFT) && $productVariation->allow_editable) {
                         $product = ProductInventory::where('id', $product_id)->first();
-                        $product->title =  $data['product_name'];
-                        $product->description =  $data['product_description'];
-                        $product->product_category =  salt_decrypt($data['product_category_id']);
+                        $product->title = $data['product_name'];
+                        $product->description = $data['product_description'];
+                        $product->product_category = salt_decrypt($data['product_category_id']);
                         $product->product_subcategory = salt_decrypt($data['product_sub_category_id']);
-                        $product->company_id =  $company_id;
+                        $product->company_id = $company_id;
                         $product->user_id = $user_id;
-                        $product->model =  $data['model'];
-                        $product->hsn =  $data['product_hsn'];
-                        $product->gst_percentage =  $data['gst_bracket'];
-                        $product->upc =  $data['upc'] ?? null;
-                        $product->isbn =  $data['isbn'] ?? null;
-                        $product->mpin =  $data['mpn'] ?? null;
-                        $product->gst_percentage =  $data['gst_bracket'];
+                        $product->model = $data['model'];
+                        $product->hsn = $data['product_hsn'];
+                        $product->gst_percentage = $data['gst_bracket'];
+                        $product->upc = $data['upc'] ?? null;
+                        $product->isbn = $data['isbn'] ?? null;
+                        $product->mpin = $data['mpn'] ?? null;
+                        $product->gst_percentage = $data['gst_bracket'];
                         $product->availability_status = $data['availability'];
                         $product->status = $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE;
                         $product->save();
 
-                        $product_id =  $product->id;
+                        $product_id = $product->id;
                         ProductKeyword::where('product_id', $product_id)->get()->each(function ($productKeyword) {
                             $productKeyword->delete();
                         });
@@ -866,26 +902,25 @@ class ProductInvetoryController extends Controller
                                 ProductKeyword::create([
                                     'product_id' => $product_id,
                                     'company_id' => $company_id,
-                                    'keyword' => $product_keyword
+                                    'keyword' => $product_keyword,
                                 ]);
                             }
                         }
 
                         ProductFeature::where('product_id', $product_id)->get()->each(function ($productFeature) {
                             $productFeature->delete();
-                        });  
+                        });
                         if (count($data['feature']) > 0) {
                             foreach ($data['feature'] as $key => $feature) {
                                 ProductFeature::create([
                                     'product_id' => $product_id,
                                     'company_id' => $company_id,
                                     'feature_name' => $feature,
-                                    'value' => $feature
+                                    'value' => $feature,
                                 ]);
                             }
                         }
 
-                        
                         $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
                         $vide_ext = ['mp4', 'MP4'];
                         $existingMedia = ProductVariationMedia::where('product_id', $product_id)->where('product_variation_id', $productVariation->id)->get();
@@ -898,223 +933,223 @@ class ProductInvetoryController extends Controller
                             $is_master = ProductVariationMedia::IS_MASTER_FALSE;
                             $first_image_processed = false;
                             $media_images = [];
-                                if (isset($value['media'])) {
-                                    foreach ($value['media'] as $k => $med) {
-                                        $filename = md5(Str::random(40)) . '.' . $med->getClientOriginalExtension();
-                                        // Get the file contents
-                                        $fileContents = $med->get();
-                                        // Define the path
-                                        $path = "company_{$company_id}/" . $product_id . "/documents/{$filename}";
-                                        if (in_array($med->getClientOriginalExtension(), $img_ext)) {
-                                            $path = "company_{$company_id}/" . $product_id . "/images/{$filename}";
-                                            $media_type = ProductVariationMedia::MEDIA_TYPE_IMAGE;
-                                            // Set $is_master to true only for the first image
-                                            if (!$first_image_processed) {
-                                                $is_master = ProductVariationMedia::IS_MASTER_TRUE;
-                                                $first_image_processed = true;
-                                            } else {
-                                                $is_master = ProductVariationMedia::IS_MASTER_FALSE;
-                                            }
-                                        } else if (in_array($med->getClientOriginalExtension(), $vide_ext)) {
-                                            $path = "company_{$company_id}/" . $product_id . "/videos/{$filename}";
-                                            $media_type = ProductVariationMedia::MEDIA_TYPE_VIDEO;
+                            if (isset($value['media'])) {
+                                foreach ($value['media'] as $k => $med) {
+                                    $filename = md5(Str::random(40)).'.'.$med->getClientOriginalExtension();
+                                    // Get the file contents
+                                    $fileContents = $med->get();
+                                    // Define the path
+                                    $path = "company_{$company_id}/".$product_id."/documents/{$filename}";
+                                    if (in_array($med->getClientOriginalExtension(), $img_ext)) {
+                                        $path = "company_{$company_id}/".$product_id."/images/{$filename}";
+                                        $media_type = ProductVariationMedia::MEDIA_TYPE_IMAGE;
+                                        // Set $is_master to true only for the first image
+                                        if (! $first_image_processed) {
+                                            $is_master = ProductVariationMedia::IS_MASTER_TRUE;
+                                            $first_image_processed = true;
+                                        } else {
                                             $is_master = ProductVariationMedia::IS_MASTER_FALSE;
                                         }
-                                        // Store the file
-                                        Storage::disk('public')->put($path, $fileContents);
-                                        $media_images[] = ['file_path' =>  $path, 'is_image' => $media_type, 'is_master' => $is_master];
+                                    } elseif (in_array($med->getClientOriginalExtension(), $vide_ext)) {
+                                        $path = "company_{$company_id}/".$product_id."/videos/{$filename}";
+                                        $media_type = ProductVariationMedia::MEDIA_TYPE_VIDEO;
+                                        $is_master = ProductVariationMedia::IS_MASTER_FALSE;
                                     }
+                                    // Store the file
+                                    Storage::disk('public')->put($path, $fileContents);
+                                    $media_images[] = ['file_path' => $path, 'is_image' => $media_type, 'is_master' => $is_master];
                                 }
+                            }
 
-                                // Insert Product Variation table
-                                foreach ($value['size'] as $size_key => $value1) {
-                                    $price = calculateInclusivePriceAndTax($data['dropship_rate'], $data['gst_bracket']);
-                                    $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
-                                    // check stock array key not exist
+                            // Insert Product Variation table
+                            foreach ($value['size'] as $size_key => $value1) {
+                                $price = calculateInclusivePriceAndTax($data['dropship_rate'], $data['gst_bracket']);
+                                $color = ! empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
+                                // check stock array key not exist
+                                $stock = 0;
+                                if ($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK) {
                                     $stock = 0;
-                                    if ($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK) {
-                                        $stock = 0;
-                                    } else {
-                                        if (array_key_exists($size_key, $data[$variant_key][$key]['stock'])) {
-                                            $stock = $data[$variant_key][$key]['stock'][$size_key];
-                                        }
-                                    }
-                                    if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
-                                        $allow_editable = ProductVariation::ALLOW_EDITABLE_TRUE;
-                                    } else {
-                                        $allow_editable = ProductVariation::ALLOW_EDITABLE_FALSE;
-                                    }
-                                    if($productVariation && $update_only_first_record){
-                                        $productVariation->product_id = $product_id;
-                                        $productVariation->company_id = $company_id;
-                                        $productVariation->size = $value1;
-                                        $productVariation->stock = $stock;
-                                        if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
-                                            $productVariation->title = $request->product_name;
-                                            $productVariation->sku = $request->sku;
-                                        }else{
-                                        $productVariation->title = $request->product_name . ' ( ' . $color . ', ' . $value1 . ' ) ';
-                                        $productVariation->sku = generateSKUCode($request->sku, $color, $value1, $sku_counter++);
-                                        }
-                                        $productVariation->description = $request->product_description;
-                                        $productVariation->color = $color;
-                                        $productVariation->length = $request->length;
-                                        $productVariation->width = $request->width;
-                                        $productVariation->height = $request->height;
-                                        $productVariation->dimension_class = $request->dimension_class;
-                                        $productVariation->weight = $request->weight;
-                                        $productVariation->weight_class = $request->weight_class;
-                                        $productVariation->package_volumetric_weight = $request->package_volumetric_weight;
-                                        $productVariation->package_length = $request->package_length;
-                                        $productVariation->package_width = $request->package_width;
-                                        $productVariation->package_height = $request->package_height;
-                                        $productVariation->package_dimension_class = $request->package_dimension_class;
-                                        $productVariation->package_weight = $request->package_weight;
-                                        $productVariation->package_weight_class = $request->package_weight_class;
-                                        $productVariation->price_before_tax = (float) $price['price_before_tax'];
-                                        $productVariation->price_after_tax = (float) $price['price_after_tax'];
-                                        $productVariation->status = $data['product_listing_status'] ?? ProductVariation::STATUS_ACTIVE;
-                                        $productVariation->availability_status = $request->availability;
-                                        $productVariation->dropship_rate = $request->dropship_rate;
-                                        $productVariation->potential_mrp = $request->potential_mrp;
-                                        $productVariation->tier_rate = json_encode($tierRate);
-                                        $productVariation->tier_shipping_rate = json_encode($tierShippingRate);
-                                        $productVariation->allow_editable = $allow_editable;
-                                        $productVariation->save();
-                                        $update_only_first_record = false;
-                                    }else{
-                                        $productVariation = ProductVariation::create([
-                                            'product_id' => $product_id,
-                                            'company_id' => $company_id,
-                                            'product_slug_id' => '',
-                                            'slug' => '',
-                                            'sku' => generateSKUCode($request->sku, $color, $value1, $sku_counter++),
-                                            'size' => $value1,
-                                            'stock' => $stock,
-                                            'title' => $request->product_name . ' ( ' . $color . ', ' . $value1 . ' ) ',
-                                            'description' => $request->product_description,
-                                            'color' => $color,
-                                            'length' => $request->length,
-                                            'width' => $request->width,
-                                            'height' => $request->height,
-                                            'dimension_class' => $request->dimension_class,
-                                            'weight' => $request->weight,
-                                            'weight_class' => $request->weight_class,
-                                            'package_volumetric_weight' => $request->package_volumetric_weight,
-                                            'package_length' => $request->package_length,
-                                            'package_width' => $request->package_width,
-                                            'package_height' => $request->package_height,
-                                            'package_dimension_class' => $request->package_dimension_class,
-                                            'package_weight' => $request->package_weight,
-                                            'package_weight_class' => $request->package_weight_class,
-                                            'price_before_tax' =>  (float) $price['price_before_tax'],
-                                            'price_after_tax' =>   (float) $price['price_after_tax'],
-                                            'status' => $data['product_listing_status'] ?? ProductVariation::STATUS_ACTIVE,
-                                            'availability_status' => $request->availability,
-                                            'dropship_rate' => $request->dropship_rate,
-                                            'potential_mrp' => $request->potential_mrp,
-                                            'tier_rate' => json_encode($tierRate),
-                                            'tier_shipping_rate' => json_encode($tierShippingRate),
-                                            'allow_editable' => $allow_editable
-                                        ]);
-            
-                                        $generateProductID = generateProductID($request->product_name, $productVariation->id);
-                                        $productVariation->product_slug_id = $generateProductID;
-                                        $productVariation->slug = generateSlug($request->product_name, $generateProductID);
-                                        $productVariation->save();
-
-                                    }
-                                    // Insertor Update Product Variation Media table
-                                    if(!empty($media_images)){
-                                        foreach ($media_images as $media_key => $media) {
-                                            $where = [];
-                                            if (isset($existingMedia[$media_key]) && $update_only_first_media_record) {
-                                                $where = ['id' => $existingMedia[$media_key]['id'], 'product_variation_id' => $productVariation->id];
-                                                // Remove the original file
-                                                $img1 = str_replace('storage/', '', $existingMedia[$media_key]['file_path']);
-                                                $img1 = storage_path('app/public/' . $img1);
-                                                $img2 = str_replace('storage/', '', $existingMedia[$media_key]['thumbnail_path']);
-                                                $img2 = storage_path('app/public/' . $img2);
-                                                if (File::exists($img1) && !empty($img1)) {
-                                                    File::delete($img1);
-                                                }
-                                                if (File::exists($img2) && !empty($img2)) {
-                                                    File::delete($img2);
-                                                }
-        
-                                                ProductVariationMedia::where($where)->update([
-                                                    'product_id' => $product_id,
-                                                    'product_variation_id' => $productVariation->id,
-                                                    'media_type' => $media['is_image'],
-                                                    'file_path' => $media['file_path'],
-                                                    'is_master' => $media['is_master'],
-                                                    'thumbnail_path' => null,
-                                                    'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                                    'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
-                                                ]);
-                                            } else {
-                                                ProductVariationMedia::create([
-                                                    'product_id' => $product_id,
-                                                    'product_variation_id' => $productVariation->id,
-                                                    'media_type' => $media['is_image'],
-                                                    'file_path' => $media['file_path'],
-                                                    'is_master' => $media['is_master'],
-                                                    'thumbnail_path' => null,
-                                                    'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                                    'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
-                                                ]);
-                                            }
-                                        }
-                                        $update_only_first_media_record = false;
+                                } else {
+                                    if (array_key_exists($size_key, $data[$variant_key][$key]['stock'])) {
+                                        $stock = $data[$variant_key][$key]['stock'][$size_key];
                                     }
                                 }
+                                if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
+                                    $allow_editable = ProductVariation::ALLOW_EDITABLE_TRUE;
+                                } else {
+                                    $allow_editable = ProductVariation::ALLOW_EDITABLE_FALSE;
+                                }
+                                if ($productVariation && $update_only_first_record) {
+                                    $productVariation->product_id = $product_id;
+                                    $productVariation->company_id = $company_id;
+                                    $productVariation->size = $value1;
+                                    $productVariation->stock = $stock;
+                                    if ($data['product_listing_status'] == ProductInventory::STATUS_DRAFT) {
+                                        $productVariation->title = $request->product_name;
+                                        $productVariation->sku = $request->sku;
+                                    } else {
+                                        $productVariation->title = $request->product_name.' ( '.$color.', '.$value1.' ) ';
+                                        $productVariation->sku = generateSKUCode($request->sku, $color, $value1, $sku_counter++);
+                                    }
+                                    $productVariation->description = $request->product_description;
+                                    $productVariation->color = $color;
+                                    $productVariation->length = $request->length;
+                                    $productVariation->width = $request->width;
+                                    $productVariation->height = $request->height;
+                                    $productVariation->dimension_class = $request->dimension_class;
+                                    $productVariation->weight = $request->weight;
+                                    $productVariation->weight_class = $request->weight_class;
+                                    $productVariation->package_volumetric_weight = $request->package_volumetric_weight;
+                                    $productVariation->package_length = $request->package_length;
+                                    $productVariation->package_width = $request->package_width;
+                                    $productVariation->package_height = $request->package_height;
+                                    $productVariation->package_dimension_class = $request->package_dimension_class;
+                                    $productVariation->package_weight = $request->package_weight;
+                                    $productVariation->package_weight_class = $request->package_weight_class;
+                                    $productVariation->price_before_tax = (float) $price['price_before_tax'];
+                                    $productVariation->price_after_tax = (float) $price['price_after_tax'];
+                                    $productVariation->status = $data['product_listing_status'] ?? ProductVariation::STATUS_ACTIVE;
+                                    $productVariation->availability_status = $request->availability;
+                                    $productVariation->dropship_rate = $request->dropship_rate;
+                                    $productVariation->potential_mrp = $request->potential_mrp;
+                                    $productVariation->tier_rate = json_encode($tierRate);
+                                    $productVariation->tier_shipping_rate = json_encode($tierShippingRate);
+                                    $productVariation->allow_editable = $allow_editable;
+                                    $productVariation->save();
+                                    $update_only_first_record = false;
+                                } else {
+                                    $productVariation = ProductVariation::create([
+                                        'product_id' => $product_id,
+                                        'company_id' => $company_id,
+                                        'product_slug_id' => '',
+                                        'slug' => '',
+                                        'sku' => generateSKUCode($request->sku, $color, $value1, $sku_counter++),
+                                        'size' => $value1,
+                                        'stock' => $stock,
+                                        'title' => $request->product_name.' ( '.$color.', '.$value1.' ) ',
+                                        'description' => $request->product_description,
+                                        'color' => $color,
+                                        'length' => $request->length,
+                                        'width' => $request->width,
+                                        'height' => $request->height,
+                                        'dimension_class' => $request->dimension_class,
+                                        'weight' => $request->weight,
+                                        'weight_class' => $request->weight_class,
+                                        'package_volumetric_weight' => $request->package_volumetric_weight,
+                                        'package_length' => $request->package_length,
+                                        'package_width' => $request->package_width,
+                                        'package_height' => $request->package_height,
+                                        'package_dimension_class' => $request->package_dimension_class,
+                                        'package_weight' => $request->package_weight,
+                                        'package_weight_class' => $request->package_weight_class,
+                                        'price_before_tax' => (float) $price['price_before_tax'],
+                                        'price_after_tax' => (float) $price['price_after_tax'],
+                                        'status' => $data['product_listing_status'] ?? ProductVariation::STATUS_ACTIVE,
+                                        'availability_status' => $request->availability,
+                                        'dropship_rate' => $request->dropship_rate,
+                                        'potential_mrp' => $request->potential_mrp,
+                                        'tier_rate' => json_encode($tierRate),
+                                        'tier_shipping_rate' => json_encode($tierShippingRate),
+                                        'allow_editable' => $allow_editable,
+                                    ]);
+
+                                    $generateProductID = generateProductID($request->product_name, $productVariation->id);
+                                    $productVariation->product_slug_id = $generateProductID;
+                                    $productVariation->slug = generateSlug($request->product_name, $generateProductID);
+                                    $productVariation->save();
+
+                                }
+                                // Insertor Update Product Variation Media table
+                                if (! empty($media_images)) {
+                                    foreach ($media_images as $media_key => $media) {
+                                        $where = [];
+                                        if (isset($existingMedia[$media_key]) && $update_only_first_media_record) {
+                                            $where = ['id' => $existingMedia[$media_key]['id'], 'product_variation_id' => $productVariation->id];
+                                            // Remove the original file
+                                            $img1 = str_replace('storage/', '', $existingMedia[$media_key]['file_path']);
+                                            $img1 = storage_path('app/public/'.$img1);
+                                            $img2 = str_replace('storage/', '', $existingMedia[$media_key]['thumbnail_path']);
+                                            $img2 = storage_path('app/public/'.$img2);
+                                            if (File::exists($img1) && ! empty($img1)) {
+                                                File::delete($img1);
+                                            }
+                                            if (File::exists($img2) && ! empty($img2)) {
+                                                File::delete($img2);
+                                            }
+
+                                            ProductVariationMedia::where($where)->update([
+                                                'product_id' => $product_id,
+                                                'product_variation_id' => $productVariation->id,
+                                                'media_type' => $media['is_image'],
+                                                'file_path' => $media['file_path'],
+                                                'is_master' => $media['is_master'],
+                                                'thumbnail_path' => null,
+                                                'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
+                                                'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE,
+                                            ]);
+                                        } else {
+                                            ProductVariationMedia::create([
+                                                'product_id' => $product_id,
+                                                'product_variation_id' => $productVariation->id,
+                                                'media_type' => $media['is_image'],
+                                                'file_path' => $media['file_path'],
+                                                'is_master' => $media['is_master'],
+                                                'thumbnail_path' => null,
+                                                'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
+                                                'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE,
+                                            ]);
+                                        }
+                                    }
+                                    $update_only_first_media_record = false;
+                                }
+                            }
                         }
                     } else {
                         // if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
-                            $product = ProductInventory::where('id', $product_id)->first();
-                            $product->description =  $data['product_description'];
-                            $product->product_category =  salt_decrypt($data['product_category_id']);
-                            $product->product_subcategory = salt_decrypt($data['product_sub_category_id']);
-                            $product->company_id =  $company_id;
-                            $product->user_id = $user_id;
-                            $product->model =  $data['model'];
-                            $product->hsn =  $data['product_hsn'];
-                            $product->gst_percentage =  $data['gst_bracket'];
-                            $product->upc =  $data['upc'] ?? null;
-                            $product->isbn =  $data['isbn'] ?? null;
-                            $product->mpin =  $data['mpn'] ?? null;
-                            $product->gst_percentage =  $data['gst_bracket'];
-                            $product->availability_status = $data['availability'];
-                            $product->status = $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE;
-                            $product->save();
+                        $product = ProductInventory::where('id', $product_id)->first();
+                        $product->description = $data['product_description'];
+                        $product->product_category = salt_decrypt($data['product_category_id']);
+                        $product->product_subcategory = salt_decrypt($data['product_sub_category_id']);
+                        $product->company_id = $company_id;
+                        $product->user_id = $user_id;
+                        $product->model = $data['model'];
+                        $product->hsn = $data['product_hsn'];
+                        $product->gst_percentage = $data['gst_bracket'];
+                        $product->upc = $data['upc'] ?? null;
+                        $product->isbn = $data['isbn'] ?? null;
+                        $product->mpin = $data['mpn'] ?? null;
+                        $product->gst_percentage = $data['gst_bracket'];
+                        $product->availability_status = $data['availability'];
+                        $product->status = $data['product_listing_status'] ?? ProductInventory::STATUS_INACTIVE;
+                        $product->save();
 
-                            $product_id =  $product->id;
-                            ProductKeyword::where('product_id', $product_id)->get()->each(function ($productKeyword) {
-                                $productKeyword->delete();
-                            });      
-                            if (count($data['product_keywords']) > 0) {
-                                foreach ($data['product_keywords'] as $key => $product_keyword) {
-                                    ProductKeyword::create([
-                                        'product_id' => $product_id,
-                                        'company_id' => $company_id,
-                                        'keyword' => $product_keyword
-                                    ]);
-                                }
+                        $product_id = $product->id;
+                        ProductKeyword::where('product_id', $product_id)->get()->each(function ($productKeyword) {
+                            $productKeyword->delete();
+                        });
+                        if (count($data['product_keywords']) > 0) {
+                            foreach ($data['product_keywords'] as $key => $product_keyword) {
+                                ProductKeyword::create([
+                                    'product_id' => $product_id,
+                                    'company_id' => $company_id,
+                                    'keyword' => $product_keyword,
+                                ]);
                             }
+                        }
 
-                            ProductFeature::where('product_id', $product_id)->get()->each(function ($productFeature) {
-                                $productFeature->delete();
-                            });                            
-                            if (count($data['feature']) > 0) {
-                                foreach ($data['feature'] as $key => $feature) {
-                                    ProductFeature::create([
-                                        'product_id' => $product_id,
-                                        'company_id' => $company_id,
-                                        'feature_name' => $feature,
-                                        'value' => $feature
-                                    ]);
-                                }
+                        ProductFeature::where('product_id', $product_id)->get()->each(function ($productFeature) {
+                            $productFeature->delete();
+                        });
+                        if (count($data['feature']) > 0) {
+                            foreach ($data['feature'] as $key => $feature) {
+                                ProductFeature::create([
+                                    'product_id' => $product_id,
+                                    'company_id' => $company_id,
+                                    'feature_name' => $feature,
+                                    'value' => $feature,
+                                ]);
                             }
+                        }
                         // }
 
                         $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
@@ -1126,26 +1161,26 @@ class ProductInvetoryController extends Controller
                             $media_images = [];
                             if (isset($value['media'])) {
                                 foreach ($value['media'] as $k => $med) {
-                                    $filename = md5(Str::random(40)) . '.' . $med->getClientOriginalExtension();
+                                    $filename = md5(Str::random(40)).'.'.$med->getClientOriginalExtension();
                                     // Get the file contents
                                     $fileContents = $med->get();
                                     // Define the path
-                                    $path = "company_{$company_id}/" . $product_id . "/documents/{$filename}";
+                                    $path = "company_{$company_id}/".$product_id."/documents/{$filename}";
                                     if (in_array($med->getClientOriginalExtension(), $img_ext)) {
-                                        $path = "company_{$company_id}/" . $product_id . "/images/{$filename}";
+                                        $path = "company_{$company_id}/".$product_id."/images/{$filename}";
                                         $media_type = ProductVariationMedia::MEDIA_TYPE_IMAGE;
-                                    } else if (in_array($med->getClientOriginalExtension(), $vide_ext)) {
-                                        $path = "company_{$company_id}/" . $product_id . "/videos/{$filename}";
+                                    } elseif (in_array($med->getClientOriginalExtension(), $vide_ext)) {
+                                        $path = "company_{$company_id}/".$product_id."/videos/{$filename}";
                                         $media_type = ProductVariationMedia::MEDIA_TYPE_VIDEO;
                                     }
                                     // Store the file
                                     Storage::disk('public')->put($path, $fileContents);
-                                    $media_images[$k] = ['file_path' =>  $path, 'is_image' => $media_type];
+                                    $media_images[$k] = ['file_path' => $path, 'is_image' => $media_type];
                                 }
                             }
                             foreach ($value['size'] as $size_key => $value1) {
                                 $price = calculateInclusivePriceAndTax($data['dropship_rate'], $data['gst_bracket']);
-                                $color =  !empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
+                                $color = ! empty($value['color']) ? $value['color'] : $data[$variant_key][$key]['color'][$key];
                                 // check stock array key not exist
                                 $stock = 0;
                                 if ($data['product_listing_status'] == ProductInventory::STATUS_OUT_OF_STOCK) {
@@ -1200,13 +1235,13 @@ class ProductInvetoryController extends Controller
                                     $where = ['id' => $existingMedia[$key]['id'], 'product_variation_id' => $productVariation->id];
                                     // Remove the original file
                                     $img1 = str_replace('storage/', '', $existingMedia[$key]['file_path']);
-                                    $img1 = storage_path('app/public/' . $img1);
+                                    $img1 = storage_path('app/public/'.$img1);
                                     $img2 = str_replace('storage/', '', $existingMedia[$key]['thumbnail_path']);
-                                    $img2 = storage_path('app/public/' . $img2);
-                                    if (File::exists($img1) && !empty($img1)) {
+                                    $img2 = storage_path('app/public/'.$img2);
+                                    if (File::exists($img1) && ! empty($img1)) {
                                         File::delete($img1);
                                     }
-                                    if (File::exists($img2) && !empty($img2)) {
+                                    if (File::exists($img2) && ! empty($img2)) {
                                         File::delete($img2);
                                     }
 
@@ -1217,7 +1252,7 @@ class ProductInvetoryController extends Controller
                                         'file_path' => $media['file_path'],
                                         'thumbnail_path' => null,
                                         'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE,
                                     ]);
                                 } else {
                                     ProductVariationMedia::create([
@@ -1227,7 +1262,7 @@ class ProductInvetoryController extends Controller
                                         'file_path' => $media['file_path'],
                                         'thumbnail_path' => null,
                                         'is_active' => ProductVariationMedia::IS_ACTIVE_TRUE,
-                                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE
+                                        'is_compressed' => ProductVariationMedia::IS_COMPRESSED_FALSE,
                                     ]);
                                 }
                             }
@@ -1240,11 +1275,22 @@ class ProductInvetoryController extends Controller
                         'status' => __('statusCode.status200'),
                         'message' => __('auth.productInventoryUpdate'),
                     ];
+
                     // Return a success message
                     return response()->json($response);
                 }
             } catch (\Exception $e) {
-                dd($e->getMessage(), $e->getLine());
+
+                // Prepare exception details
+                $exceptionDetails = [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ];
+
+                // Trigger the event
+                event(new ExceptionEvent($exceptionDetails));
+
                 // Handle the exception
                 return response()->json(['data' => __('statusCode.status500')], __('statusCode.statusCode500'));
             }
@@ -1256,7 +1302,6 @@ class ProductInvetoryController extends Controller
     /**
      * Update the stock of a product variation.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -1265,43 +1310,53 @@ class ProductInvetoryController extends Controller
      *     path="/api/product-inventories/{variation_id}/update-stock",
      *     summary="Update the stock of a product variation",
      *     tags={"Product Inventories"},
+     *
      *     @OA\Parameter(
      *         name="variation_id",
      *         in="path",
      *         description="ID of the product variation",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="product_id",
      *         in="query",
      *         description="ID of the product",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="stock",
      *         in="query",
      *         description="New stock value",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="message",
      *                 type="string"
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Unauthorized action"
@@ -1309,7 +1364,9 @@ class ProductInvetoryController extends Controller
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="string"
@@ -1324,7 +1381,7 @@ class ProductInvetoryController extends Controller
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
-                'stock' => 'required|integer|min:0'
+                'stock' => 'required|integer|min:0',
             ]);
             $variation_id = salt_decrypt($variation_id);
 
@@ -1332,7 +1389,7 @@ class ProductInvetoryController extends Controller
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
 
@@ -1358,6 +1415,7 @@ class ProductInvetoryController extends Controller
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.updateStock'),
                 ];
+
                 // Return a success message
                 return response()->json($response);
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
@@ -1375,12 +1433,25 @@ class ProductInvetoryController extends Controller
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.updateStock'),
                 ];
+
                 // Return a success message
                 return response()->json($response);
             } else {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('auth.updateStockFailed')], __('statusCode.statusCode500'));
         }
@@ -1389,7 +1460,6 @@ class ProductInvetoryController extends Controller
     /**
      * Update the status of a product variation.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -1398,44 +1468,54 @@ class ProductInvetoryController extends Controller
      *     path="/api/product-inventories/{variation_id}/update-status",
      *     summary="Update the status of a product variation",
      *     tags={"Product Inventories"},
+     *
      *     @OA\Parameter(
      *         name="variation_id",
      *         in="path",
      *         description="ID of the product variation",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="product_id",
      *         in="query",
      *         description="ID of the product",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="integer"
      *         )
      *     ),
+     *
      *     @OA\Parameter(
      *         name="status",
      *         in="query",
      *         description="New status value",
      *         required=true,
+     *
      *         @OA\Schema(
      *             type="string",
      *             enum={"active", "inactive"}
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="message",
      *                 type="string"
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Unauthorized action"
@@ -1443,7 +1523,9 @@ class ProductInvetoryController extends Controller
      *     @OA\Response(
      *         response=500,
      *         description="Internal server error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="data",
      *                 type="string"
@@ -1458,14 +1540,14 @@ class ProductInvetoryController extends Controller
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|string',
-                'status' => 'required|integer'
+                'status' => 'required|integer',
             ]);
             $variation_id = salt_decrypt($variation_id);
             if ($validator->fails()) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status400'),
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode400'));
             }
             // Find the product variation
@@ -1486,6 +1568,7 @@ class ProductInvetoryController extends Controller
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.updateStatus'),
                 ];
+
                 // Return a success message
                 return response()->json($response);
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
@@ -1501,12 +1584,25 @@ class ProductInvetoryController extends Controller
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.updateStatus'),
                 ];
+
                 // Return a success message
                 return response()->json($response);
             } else {
                 return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
             }
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
             return response()->json(['data' => __('auth.updateStatusFailed')], __('statusCode.statusCode500'));
         }
@@ -1515,7 +1611,6 @@ class ProductInvetoryController extends Controller
     /**
      * Get bulk inventory data.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function getDataBulkInventory(Request $request)
@@ -1543,21 +1638,20 @@ class ProductInvetoryController extends Controller
                 }
                 $bulkData = $bulkData->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('filename', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                        $query->where('filename', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('success_count', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('type', 'like', '%'.$searchTerm.'%');
                     });
                 })->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results
-
 
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Eager load product variations with product inventory that matches user_id
                 $bulkData = Import::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('filename', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('success_count', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                        $query->where('filename', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('success_count', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('type', 'like', '%'.$searchTerm.'%');
                     });
                 });
                 if ($sort_by_status != 0) {
@@ -1580,8 +1674,20 @@ class ProductInvetoryController extends Controller
             // Return the JSON response with paginated data
             return response()->json($data);
         } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             // Handle the exception
-            return response()->json(['data' =>  __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
+            return response()->json(['data' => __('auth.productInventoryShowFailed')], __('statusCode.statusCode500'));
         }
     }
 }

@@ -1,12 +1,13 @@
 <?php
 
 use App\Models\User;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
-use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -20,7 +21,9 @@ const PERMISSION_EDIT_PRODUCT_DETAILS = User::PERMISSION_EDIT_PRODUCT_DETAILS;
 const PERMISSION_ADD_CONNCETION = User::PERMISSION_ADD_CONNCETION;
 const PERMISSION_EDIT_CONNCETION = User::PERMISSION_EDIT_CONNCETION;
 const PERMISSION_ADD_NEW_ORDER = User::PERMISSION_ADD_NEW_ORDER;
+const PERMISSION_LIST_ORDER = User::PERMISSION_LIST_ORDER;
 const PERMISSION_EDIT_ORDER = User::PERMISSION_EDIT_ORDER;
+const PERMISSION_CANCEL_ORDER = User::PERMISSION_CANCEL_ORDER;
 const PERMISSION_ADD_NEW_RETURN = User::PERMISSION_ADD_NEW_RETURN;
 
 // Bulk Upload Processing Status
@@ -81,6 +84,7 @@ if (!function_exists('salt_decrypt')) {
     }
 }
 
+
 /**
  * Prints the human-readable representation of a variable and exits the script.
  *
@@ -101,6 +105,13 @@ if (!function_exists('printR')) {
     }
 }
 
+/**
+ * Generate a unique username based on the given name and next number.
+ *
+ * @param string $name The name of the user.
+ * @param int $nextNumber The next number to be appended to the username.
+ * @return string The generated username.
+ */
 if (!function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName = null)
     {
@@ -130,294 +141,299 @@ if (!function_exists('generateUniqueCompanyUsername')) {
             return '';
         }
     }
+}
 
+/**
+ * Generate a unique username based on the given name and next number.
+ *
+ * @param string $name The name of the user.
+ * @param int $nextNumber The next number to be appended to the username.
+ * @return string The generated username.
+ */
+function convertImageToBase64($imagePath)
+{
+    // Check if the file exists
+    if (file_exists($imagePath)) {
+        // Get the image content
+        $imageData = file_get_contents($imagePath);
 
+        // Encode the image content in Base64
+        $base64Image = base64_encode($imageData);
 
-    // Function to convert an image to a Base64-encoded string
-    function convertImageToBase64($imagePath)
-    {
-        // Check if the file exists
-        if (file_exists($imagePath)) {
-            // Get the image content
-            $imageData = file_get_contents($imagePath);
+        // Get the image type
+        $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
 
-            // Encode the image content in Base64
-            $base64Image = base64_encode($imageData);
-
-            // Get the image type
-            $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
-
-            // Return the Base64 encoded image with the appropriate data URL prefix
-            return 'data:image/' . $imageType . ';base64,' . $base64Image;
-        } else {
-            // Handle the error if the file does not exist
-            return null;
-        }
-    }
-
-    /**
-     * Generate an error response.
-     *
-     * @param string $message
-     * @return JsonResponse
-     */
-    function errorResponse(string $message): JsonResponse
-    {
-        $parts = explode("-", $message);
-        $key = '';
-        if (!empty($parts)) {
-            $message = $parts[0];
-            $key = $parts[1] ?? null;
-        }
-        $response = [
-            'statusCode' => __('statusCode.statusCode422'),
-            'status' => __('statusCode.status422'),
-            'message' => $message
-        ];
-        if ($key) {
-            if (strpos($key, '.') !== false) {
-                $a = explode('.', trim($key));
-                $key = $a[0][0] . '_' . $a[1];
-            }
-            $response['key'] = trim($key);
-        }
-        return response()->json(['data' => $response], __('statusCode.statusCode200'));
-    }
-
-    /**
-     * Generate a success response.
-     *
-     * @param int|null $id
-     * @return JsonResponse
-     */
-    function successResponse(int $id = null, array $data = null): JsonResponse
-    {
-        $response = [
-            'statusCode' => __('statusCode.statusCode200'),
-            'status' => __('statusCode.status200'),
-            'message' => __('auth.registerSuccess'),
-        ];
-
-        if ($id) {
-            $response['id'] = $id;
-        }
-        if ($data) {
-            $response['data'] = $data;
-        }
-
-        return response()->json(['data' => $response],  __('statusCode.statusCode200'));
-    }
-
-    /**
-     * Generate a company serial ID based on the given ID and type.
-     *
-     * @param int $id The ID of the company.
-     * @param string $type The type of the company.
-     * @return string The generated company serial ID.
-     */
-    function generateCompanySerialId($id, $type)
-    {
-        // Format the new supplier ID with leading zeros and 's' prefix
-        return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
-    }
-
-
-    /**
-     * Generates a unique SKU for a product based on its name, category and the current time.
-     *
-     * The SKU is composed of:
-     * - The first 2 characters of the product name (uppercase)
-     * - The first 2 characters of the category name (uppercase)
-     * - The last 4 digits of the current Unix timestamp
-     * - A random 4-digit number
-     *
-     * Ensures the generated SKU is unique by checking against existing SKUs in the database.
-     *
-     * @param string $name The name of the product.
-     * @param string $category The category of the product.
-     * @return string The generated SKU, which is a maximum of 10 characters long.
-     */
-    function generateSKU($name, $category)
-    {
-        $namePart = strtoupper(substr($name, 0, 2));
-
-        $categoryPart = strtoupper(substr($category, 0, 2));
-
-        $timePart = substr(time(), -4);
-
-        $randomPart = mt_rand(1000, 9999);
-
-        $sku = $namePart . $categoryPart . $timePart . $randomPart;
-
-        while (ProductVariation::where('sku', $sku)->exists()) {
-            $randomPart = mt_rand(1000, 9999);
-            $sku = $namePart . $categoryPart . $timePart . $randomPart;
-        }
-
-        return substr($sku, 0, 12);
-    }
-
-    /**
-     * Generates a unique SKU code for a product based on its SKU, color, size, and a counter.
-     *
-     * The SKU code is composed of:
-     * - The SKU of the product
-     * - The first letter of the color (uppercase)
-     * - The first letter of the size (uppercase)
-     * - A counter value
-     *
-     * Ensures the generated SKU code is unique by checking against existing SKU codes in the database.
-     *
-     * @param string $sku The SKU of the product.
-     * @param string $color The color of the product.
-     * @param string $size The size of the product.
-     * @param int $i The counter value.
-     * @return string The generated SKU code.
-     */
-    function generateSKUCode($sku, $color, $size, $i)
-    {
-        $sku = strtoupper(str_replace(' ', '-', $sku));
-        // get color first 1 letter in upper case
-        $color = strtoupper(substr($color, 0, 1));
-        // get size first 1 letter in upper case
-        $size = strtoupper(substr($size, 0, 1));
-        $sku = $sku . '-' . $color . $size . '-' . $i;
-        while (ProductVariation::where('sku', $sku)->exists()) {
-            // $i++;
-            $sku = $sku . '-' . $i;
-        }
-        return $sku;
-    }
-
-    /**
-     * Generates a slug from the given product name.
-     *
-     * @param string $name The product name.
-     * @return string The generated slug.
-     */
-    function generateSlug($name, $p_id)
-    {
-        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
-        $p_id = strtolower($p_id);
-        return $slug . '-' . $p_id;
-    }
-
-    /**
-     * Generate a unique product ID based on the given title and next number.
-     *
-     * @param string $title The title of the product.
-     * @param int $nextNumber The next number to be appended to the product ID.
-     * @return string The generated product ID.
-     */
-    function generateProductID($title, $nextNumber)
-    {
-        // Extract and sanitize the first 2 letters of the product title
-        $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 2));
-
-        // Ensure the prefix is exactly 2 characters, padding with 'X' if needed
-        $prefix = str_pad($prefix, 2, 'X');
-
-        // Format the next number as a zero-padded string, ensuring it's 6 digits
-        $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-
-        // Combine prefix and numeric part to form the ProductID
-        return $prefix . $numericPart;
-    }
-
-
-    /**
-     * Print the SQL query along with the parameter bindings for debugging purposes.
-     *
-     * This function takes a query builder instance as input, retrieves the SQL query string,
-     * and the parameter bindings from the query. It then combines them to create a complete
-     * SQL query with actual parameter values for display and debugging purposes.
-     *
-     * @param \Illuminate\Database\Query\Builder $query The query builder instance to print.
-     *
-     * @return string The combined SQL query with actual parameter values.
-     *
-     *
-     * @example
-     * $query = DB::table('users')
-     *            ->where('name', 'John')
-     *            ->orWhere('age', '>', 30);
-     *
-     * $combinedQuery = printQueryWithParameters($query);
-     * echo $combinedQuery;
-     *
-     * // Output:
-     * // select * from `users` where `name` = 'John' or `age` > 30
-     */
-    function printQueryWithParameters($query)
-    {
-        // Get the SQL query string
-        $sql = $query->toSql();
-
-        // Get the parameter bindings
-        $bindings = $query->getBindings();
-
-        // Combine them for display
-        return vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
-    }
-
-    /**
-     * Get the string representation of a status based on its type value.
-     *
-     * @param int $type The type value of the status.
-     * @return string The string representation of the status.
-     */
-    function getStatusName($type)
-    {
-        switch ($type) {
-            case ProductInventory::STATUS_ACTIVE:
-                return 'Active';
-            case ProductInventory::STATUS_INACTIVE:
-                return 'Inactive';
-            case ProductInventory::STATUS_OUT_OF_STOCK:
-                return 'Out of Stock';
-            case ProductInventory::STATUS_DRAFT:
-                return 'Draft';
-            default:
-                return 'Unknown';
-        }
-    }
-
-    /**
-     * Get the string representation of an availability status based on its type value.
-     *
-     * @param int $type The type value of the availability status.
-     * @return string The string representation of the availability status.
-     */
-    function getAvailablityStatusName($type)
-    {
-        switch ($type) {
-            case ProductInventory::TILL_STOCK_LAST:
-                return 'Till Stock Last';
-            case ProductInventory::REGULAR_AVAILABLE:
-                return 'Regular Available';
-            default:
-                return 'Unknown';
-        }
-    }
-
-    /**
-     * Calculate the inclusive price and exclusive tax amount based on GST.
-     *
-     * @param float $exclusivePrice Price before GST.
-     * @param float $gstRate GST rate in percentage.
-     * @return array Associative array containing inclusive price and exclusive tax amount.
-     */
-    function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array
-    {
-        // Calculate inclusive price
-        $inclusivePrice = $exclusivePrice * (1 + $gstRate / 100);
-
-        return [
-            'price_after_tax' => $inclusivePrice,
-            'price_before_tax' => $exclusivePrice
-        ];
+        // Return the Base64 encoded image with the appropriate data URL prefix
+        return 'data:image/' . $imageType . ';base64,' . $base64Image;
+    } else {
+        // Handle the error if the file does not exist
+        return null;
     }
 }
+
+/**
+ * Generate an error response.
+ *
+ * @param string $message
+ * @return JsonResponse
+ */
+function errorResponse(string $message): JsonResponse
+{
+    $parts = explode("-", $message);
+    $key = '';
+    if (!empty($parts)) {
+        $message = $parts[0];
+        $key = $parts[1] ?? null;
+    }
+    $response = [
+        'statusCode' => __('statusCode.statusCode422'),
+        'status' => __('statusCode.status422'),
+        'message' => $message
+    ];
+    if ($key) {
+        if (strpos($key, '.') !== false) {
+            $a = explode('.', trim($key));
+            $key = $a[0][0] . '_' . $a[1];
+        }
+        $response['key'] = trim($key);
+    }
+    return response()->json(['data' => $response], __('statusCode.statusCode200'));
+}
+
+/**
+ * Generate a success response.
+ *
+ * @param int|null $id
+ * @return JsonResponse
+ */
+function successResponse(int $id = null, array $data = null): JsonResponse
+{
+    $response = [
+        'statusCode' => __('statusCode.statusCode200'),
+        'status' => __('statusCode.status200'),
+        'message' => __('auth.registerSuccess'),
+    ];
+
+    if ($id) {
+        $response['id'] = $id;
+    }
+    if ($data) {
+        $response['data'] = $data;
+    }
+
+    return response()->json(['data' => $response],  __('statusCode.statusCode200'));
+}
+
+/**
+ * Generate a company serial ID based on the given ID and type.
+ *
+ * @param int $id The ID of the company.
+ * @param string $type The type of the company.
+ * @return string The generated company serial ID.
+ */
+function generateCompanySerialId($id, $type)
+{
+    // Format the new supplier ID with leading zeros and 's' prefix
+    return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
+}
+
+
+/**
+ * Generates a unique SKU for a product based on its name, category and the current time.
+ *
+ * The SKU is composed of:
+ * - The first 2 characters of the product name (uppercase)
+ * - The first 2 characters of the category name (uppercase)
+ * - The last 4 digits of the current Unix timestamp
+ * - A random 4-digit number
+ *
+ * Ensures the generated SKU is unique by checking against existing SKUs in the database.
+ *
+ * @param string $name The name of the product.
+ * @param string $category The category of the product.
+ * @return string The generated SKU, which is a maximum of 10 characters long.
+ */
+function generateSKU($name, $category)
+{
+    $namePart = strtoupper(substr($name, 0, 2));
+
+    $categoryPart = strtoupper(substr($category, 0, 2));
+
+    $timePart = substr(time(), -4);
+
+    $randomPart = mt_rand(1000, 9999);
+
+    $sku = $namePart . $categoryPart . $timePart . $randomPart;
+
+    while (ProductVariation::where('sku', $sku)->exists()) {
+        $randomPart = mt_rand(1000, 9999);
+        $sku = $namePart . $categoryPart . $timePart . $randomPart;
+    }
+
+    return substr($sku, 0, 12);
+}
+
+/**
+ * Generates a unique SKU code for a product based on its SKU, color, size, and a counter.
+ *
+ * The SKU code is composed of:
+ * - The SKU of the product
+ * - The first letter of the color (uppercase)
+ * - The first letter of the size (uppercase)
+ * - A counter value
+ *
+ * Ensures the generated SKU code is unique by checking against existing SKU codes in the database.
+ *
+ * @param string $sku The SKU of the product.
+ * @param string $color The color of the product.
+ * @param string $size The size of the product.
+ * @param int $i The counter value.
+ * @return string The generated SKU code.
+ */
+function generateSKUCode($sku, $color, $size, $i)
+{
+    $sku = strtoupper(str_replace(' ', '-', $sku));
+    // get color first 1 letter in upper case
+    $color = strtoupper(substr($color, 0, 1));
+    // get size first 1 letter in upper case
+    $size = strtoupper(substr($size, 0, 1));
+    $sku = $sku . '-' . $color . $size . '-' . $i;
+    while (ProductVariation::where('sku', $sku)->exists()) {
+        // $i++;
+        $sku = $sku . '-' . $i;
+    }
+    return $sku;
+}
+
+/**
+ * Generates a slug from the given product name.
+ *
+ * @param string $name The product name.
+ * @return string The generated slug.
+ */
+function generateSlug($name, $p_id)
+{
+    $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
+    $p_id = strtolower($p_id);
+    return $slug . '-' . $p_id;
+}
+
+/**
+ * Generate a unique product ID based on the given title and next number.
+ *
+ * @param string $title The title of the product.
+ * @param int $nextNumber The next number to be appended to the product ID.
+ * @return string The generated product ID.
+ */
+function generateProductID($title, $nextNumber)
+{
+    // Extract and sanitize the first 2 letters of the product title
+    $prefix = strtoupper(substr(preg_replace('/[^A-Za-z0-9]+/', '', $title), 0, 2));
+
+    // Ensure the prefix is exactly 2 characters, padding with 'X' if needed
+    $prefix = str_pad($prefix, 2, 'X');
+
+    // Format the next number as a zero-padded string, ensuring it's 6 digits
+    $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+    // Combine prefix and numeric part to form the ProductID
+    return $prefix . $numericPart;
+}
+
+
+/**
+ * Print the SQL query along with the parameter bindings for debugging purposes.
+ *
+ * This function takes a query builder instance as input, retrieves the SQL query string,
+ * and the parameter bindings from the query. It then combines them to create a complete
+ * SQL query with actual parameter values for display and debugging purposes.
+ *
+ * @param \Illuminate\Database\Query\Builder $query The query builder instance to print.
+ *
+ * @return string The combined SQL query with actual parameter values.
+ *
+ *
+ * @example
+ * $query = DB::table('users')
+ *            ->where('name', 'John')
+ *            ->orWhere('age', '>', 30);
+ *
+ * $combinedQuery = printQueryWithParameters($query);
+ * echo $combinedQuery;
+ *
+ * // Output:
+ * // select * from `users` where `name` = 'John' or `age` > 30
+ */
+function printQueryWithParameters($query)
+{
+    // Get the SQL query string
+    $sql = $query->toSql();
+
+    // Get the parameter bindings
+    $bindings = $query->getBindings();
+
+    // Combine them for display
+    return vsprintf(str_replace(['%', '?'], ['%%', "'%s'"], $sql), $bindings);
+}
+
+/**
+ * Get the string representation of a status based on its type value.
+ *
+ * @param int $type The type value of the status.
+ * @return string The string representation of the status.
+ */
+function getStatusName($type)
+{
+    switch ($type) {
+        case ProductInventory::STATUS_ACTIVE:
+            return 'Active';
+        case ProductInventory::STATUS_INACTIVE:
+            return 'Inactive';
+        case ProductInventory::STATUS_OUT_OF_STOCK:
+            return 'Out of Stock';
+        case ProductInventory::STATUS_DRAFT:
+            return 'Draft';
+        default:
+            return 'Unknown';
+    }
+}
+
+/**
+ * Get the string representation of an availability status based on its type value.
+ *
+ * @param int $type The type value of the availability status.
+ * @return string The string representation of the availability status.
+ */
+function getAvailablityStatusName($type)
+{
+    switch ($type) {
+        case ProductInventory::TILL_STOCK_LAST:
+            return 'Till Stock Last';
+        case ProductInventory::REGULAR_AVAILABLE:
+            return 'Regular Available';
+        default:
+            return 'Unknown';
+    }
+}
+
+/**
+ * Calculate the inclusive price and exclusive tax amount based on GST.
+ *
+ * @param float $exclusivePrice Price before GST.
+ * @param float $gstRate GST rate in percentage.
+ * @return array Associative array containing inclusive price and exclusive tax amount.
+ */
+function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array
+{
+    // Calculate inclusive price
+    $inclusivePrice = $exclusivePrice * (1 + $gstRate / 100);
+
+    return [
+        'price_after_tax' => $inclusivePrice,
+        'price_before_tax' => $exclusivePrice
+    ];
+}
+
 /**
  * Convert weight in kilograms to the specified unit.
  *
@@ -549,6 +565,47 @@ function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
             $zip->addEmptyDir($relativePath);
         } else {
             $zip->addFile($filePath, $relativePath);
+        }
+    }
+}
+
+
+
+if (!function_exists('storage')) {
+
+    /**
+     * Store or retrieve or delete data file from storage.
+     *
+     * @param string     $key   The storage key.
+     * @param mixed|null $data  The data to store. Pass `null` to retrieve data.
+     * @param array      $args  Additional arguments for formatting the storage path.
+     * @param string|null $name The name of the file to store.
+     *
+     * @return mixed Returns the stored file path or content, or `null` if retrieval fails.
+     */
+
+    function storage(string $key, $data = null, array $args = [], $name = null)
+    {
+        $isFileOnS3 = config('app.FILE_STORAGE_PLACE');
+        if (is_null($data)) {
+            // get the file from local storage or s3 depends on environment
+            return Storage::disk($isFileOnS3 ? 's3' : 'local')->get($key);
+        } elseif ($data == 'delete') {
+            // delete the file from local storage or s3 depends on environment
+            return Storage::disk($isFileOnS3 ? 's3' : 'local')->delete($key);
+        } else {
+            $config = config('paths.' . $key);
+            if (is_string($data)) {
+                $path = vsprintf($config['path'], $args) . '/' . $name;
+                $visibility = $config['visibility'];
+            } else {
+                $path = vsprintf($config['path'], $args);
+                $visibility = $config['assets_visibility'];
+            }
+
+            // store the file from local storage or s3 depends on environment
+            $file = Storage::disk($isFileOnS3 ? 's3' : 'local')->put($path, $data, $visibility);
+            return is_string($data) ? $path : $file;
         }
     }
 }

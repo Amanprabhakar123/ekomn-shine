@@ -153,6 +153,14 @@ class ProductVariation extends Model
     }
 
     /**
+     * Get the ProductVariation's Media.
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItemAndCharges::class, 'product_id', 'id');
+    }
+
+    /**
      * Get the ProductVariation's Sales channel maping.
      */
     public function salesChannelProductMaps()
