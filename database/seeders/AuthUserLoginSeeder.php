@@ -17,7 +17,7 @@ class AuthUserLoginSeeder extends Seeder
        $buyer = User::create([
             'id' => 1, // If your table uses auto-increment for ID, you can omit this field
             'name' => 'buyer',
-            'email' => 'buyer@gmail.com',
+            'email' => 'buyer@yopmail.com',
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('Test@123'), // Change to a hashed password
         ]);
@@ -26,7 +26,7 @@ class AuthUserLoginSeeder extends Seeder
         $suppleir = User::create([
             'id' => 2, // If your table uses auto-increment for ID, you can omit this field
             'name' => 'supplier',
-            'email' => 'supplier@gmail.com',
+            'email' => 'supplier@yopmail.com',
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('Test@123'), // Change to a hashed password
         ]);
@@ -35,7 +35,7 @@ class AuthUserLoginSeeder extends Seeder
         $admin = User::create([
             'id' => 3, // If your table uses auto-increment for ID, you can omit this field
             'name' => 'admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@yopmail.com',
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('Test@123'), // Change to a hashed password
         ]);
