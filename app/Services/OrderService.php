@@ -8,17 +8,18 @@ use App\Models\Order;
 use Razorpay\Api\Api;
 use App\Models\AddToCart;
 use App\Models\OrderRefund;
-use App\Events\NewOrderCreatedEvent;
-use App\Models\CompanyAddressDetail;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
-use App\Models\OrderItemAndCharges;
 use App\Models\OrderPayment;
-use App\Models\OrderPaymentDistribution;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
+use App\Events\OrderCanceledEvent;
 use App\Models\OrderCancellations;
 use Illuminate\Support\Facades\DB;
+use App\Models\OrderItemAndCharges;
+use App\Events\NewOrderCreatedEvent;
+use App\Models\CompanyAddressDetail;
+use App\Models\OrderPaymentDistribution;
 
 
 class OrderService
@@ -426,9 +427,10 @@ class OrderService
                 'full_name' => $order->full_name,
                 'email' => $order->email,
                 'mobile_number' => $order->mobile_number,
-                'order_id' => salt_encrypt($order->id),
+                'order_id' => $order->order_number,
+                'order_type' => $order->getOrderType(),
             ];
-            event(new NewOrderCreatedEvent($order->supplier->email, $order->buyer->email, $response));
+            event(new NewOrderCreatedEvent($order->supplier, $order->buyer, $response));
             return true;
         } catch (\Exception $e) {
             // update order payment status
@@ -535,6 +537,15 @@ class OrderService
                     }
                 }
 
+                $mail = [
+                    'order_id' => $order->order_number,
+                    'full_name' => $order->full_name,
+                    'email' => $order->email,
+                    'mobile_number' => $order->mobile_number,
+                    'order_type' => $order->getOrderType(),
+                ];
+                event(new OrderCanceledEvent($order->supplier, $order->buyer, $mail));
+
                 // Return a success response
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -572,6 +583,14 @@ class OrderService
                             ]], __('statusCode.statusCode200'));
                         }
                     }
+                    $mail = [
+                        'order_id' => $order->order_number,
+                        'full_name' => $order->full_name,
+                        'email' => $order->email,
+                        'mobile_number' => $order->mobile_number,
+                        'order_type' => $order->getOrderType(),
+                    ];
+                    event(new OrderCanceledEvent($order->supplier, $order->buyer, $mail));
                     // Return a success response
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode200'),

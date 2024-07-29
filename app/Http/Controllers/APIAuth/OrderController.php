@@ -17,6 +17,7 @@ use App\Models\ProductVariation;
 use App\Models\OrderItemAndCharges;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Events\OrderStatusChangedEvent;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderDataTransformer;
@@ -535,10 +536,9 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            dd($exceptionDetails);
 
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
             // Log the exception details and trigger an ExceptionEvent
 
             Log::error('Get Orders failed: '.$e->getMessage().' Line:- '.$e->getLine());
@@ -665,8 +665,6 @@ class OrderController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function orderPaymentSuccess(Request $request){
-        // Store request all value in logs
-        Log::info('Request data: ' . json_encode($request->all()));
         try {
             $OrderService = new OrderService();
             $success = $OrderService->confirmOrder($request->all());
@@ -705,6 +703,7 @@ class OrderController extends Controller
             }
             // Decrypt the order ID from the request and fetch the associated order items and charges
             $orderID = salt_decrypt($request->orderID);
+            $order_details = Order::find($orderID);
             $orderItems = OrderItemAndCharges::where('order_id', $orderID)->get();
             Order::where('id', $orderID)->update(['status' => Order::STATUS_DISPATCHED]);
 
@@ -743,7 +742,12 @@ class OrderController extends Controller
                     $awbData
                 );
             }
-
+            $mail = [
+                'order_number' => $order_details->order_number,
+                'status' => Order::STATUS_DISPATCHED,
+            ];
+            event(new OrderStatusChangedEvent($order_details->buyer, $mail));
+            
             // Return a success response
             return response()->json([
                 'data' => [
@@ -764,7 +768,7 @@ class OrderController extends Controller
             ];
 
             // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
+            // event(new ExceptionEvent($exceptionDetails));
 
             // Log the error message for debugging purposes
             \Log::error('Error updating or creating shipment records: '.$e->getMessage());

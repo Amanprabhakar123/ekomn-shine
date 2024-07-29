@@ -36,12 +36,12 @@ class NewOrderBuyerNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
 
-        $name = $this->details['full_name'];
+        $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_number = $this->details['order_id'];
 
         return (new MailMessage)
             ->subject('eKomn – New Order '.$order_number.' is created.')
-            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'));
+            ->view('email.orderCancellation', compact('name', 'order_number'));
     }
 
     /**

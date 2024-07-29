@@ -35,7 +35,7 @@ class NewOrderSupplierNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $name = $this->details['supplier_name'];
+        $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_type = $this->details['order_type'];
 
         return (new MailMessage)

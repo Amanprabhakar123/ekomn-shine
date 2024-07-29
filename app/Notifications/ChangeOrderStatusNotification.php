@@ -2,21 +2,24 @@
 
 namespace App\Notifications;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 class ChangeOrderStatusNotification extends Notification
 {
     use Queueable;
+    
+    protected $details;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($details)
     {
-        //
+        $this->details = $details;
     }
 
     /**
@@ -34,10 +37,25 @@ class ChangeOrderStatusNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
+        $order_number = $this->details['order_number'];
+
+        if($this->details['status'] == Order::STATUS_DISPATCHED){ 
+            return (new MailMessage)
+            ->subject('eKomn – Order '.$order_number.' Dispatched.')
+            ->view('email.orderDispatched', compact('name', 'order_number'));
+        }
+        elseif($this->details['status'] == Order::STATUS_DELIVERED){ 
+            return (new MailMessage)
+            ->subject('eKomn – Order '.$order_number.' Delivered.')
+            ->view('email.orderDelivered', compact('name', 'order_number'));
+        }
+        elseif($this->details['status'] == Order::STATUS_RTO){ 
+            return (new MailMessage)
+            ->subject('eKomn – Order '.$order_number.' Cancelled.')
+            ->view('email.orderReturn.blade', compact('name', 'order_number'));
+        }
+        
     }
 
     /**

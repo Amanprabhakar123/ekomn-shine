@@ -42,7 +42,7 @@ class ExceptionNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Exception Notification')
+            ->subject('Server Error Notification')
             ->line('An exception has occurred.')
             ->line('Message: '.$this->message)
             ->line('File: '.$this->file)

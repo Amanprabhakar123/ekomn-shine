@@ -2,9 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Notifications\CancelOrderBuyerNotification;
+use App\Events\OrderCanceledEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\CancelOrderBuyerNotification;
 
 class NotifyBuyerOrderCanceledListener implements ShouldQueue
 {
@@ -19,13 +20,11 @@ class NotifyBuyerOrderCanceledListener implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle(OrderCanceledEvent $event): void
     {
-        $user = $event->user;
-        $order = $event->order;
-        // Send the notification
-
-        Notification::send($user, new CancelOrderBuyerNotification($order, $user));
+        $user = $event->buyer;
+        $details = $event->details;
+        Notification::send($user, new CancelOrderBuyerNotification($details));
 
     }
 }
