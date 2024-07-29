@@ -177,7 +177,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    elseif($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
