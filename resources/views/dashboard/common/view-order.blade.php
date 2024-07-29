@@ -3,7 +3,7 @@
 @section('content')
     <div class="ek_dashboard">
         <div class="ek_content">
-            {{-- @if (auth()->user()->hasRole(ROLE_BUYER))
+            @if (auth()->user()->hasRole(ROLE_BUYER))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -15,37 +15,52 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
-                                            <input type="text" class="form-control"
-                                                value="{{ $orderTable->order_number }}" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Status</label>
-                                            <input type="text" class="form-control" value="Dispatched" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
-                                            <input type="text" class="form-control" value="DTDC" readonly>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                 id="courierName" name="courierName" disabled>
+                                            @endif
                                         </div>
+                                        <p id="error_courier"></p>
+
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
-                                            <input type="text" class="form-control" value="DTDC-33484181426" readonly>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                                value="" id="trackingNo" name="trackingNo" disabled>
+                                            @endif
                                         </div>
+                                        <p id="error_tracking"></p>
+
                                     </div>
                                 </div>
                             </section>
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
-                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderTable->full_name}}</span></div>
+                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderUpdate->full_name}}</span></div>
                                     <div><strong class="me-2">Email Address:</strong><span
-                                            class="opacity-75">{{$orderTable->email}}</span></div>
-                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">{{$orderTable->mobile_number}}</span></div>
+                                            class="opacity-75">{{$orderUpdate->email}}</span></div>
+                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">{{$orderUpdate->mobile_number}}</span></div>
                                 </div>
                             </section>
                             <section class="mt5">
@@ -54,7 +69,7 @@
                                         <h4 class="subheading mb-1">Delivery Address</h4>
                                         <div class="addressbox">
 
-                                            <h6 class="m-0 pb-1">{{$orderTable->full_name}}</h6>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
                                             <div>{{ $billing_address->street }}</div>
                                             <div>{{ $billing_address->city }}, {{ $billing_address->state }},
                                                 {{ $billing_address->postal_code }}</div>
@@ -63,7 +78,7 @@
                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Billing Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">{{$orderTable->full_name}}</h6>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
                                             <div>{{ $delivery_address->street }}</div>
                                             <div>{{ $delivery_address->city }}, {{ $delivery_address->state }},
                                                 {{ $delivery_address->postal_code }}</div>
@@ -74,10 +89,14 @@
                             <section class="mt30">
                                 <h4 class="subheading mb-1 d-flex-ek align-items-center">Order Summery
                                     <div class="detailSku">
-                                        [<strong>SKU:</strong>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>]
+                                        [
+                                        <strong>SKU:</strong>
+                                        @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                        @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                        <span>{{$orderItem->product->sku}},</span>
+                                        @endforeach
+                                        @endif
+                                        ]
                                     </div>
                                 </h4>
                                 <div class="table-responsive">
@@ -94,60 +113,46 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <?php
+                                            $shipping_cost = 0;
+                                            $gst = 0;
+                                            $other_charges = 0;
+                                            $total_order_cost = 0;
+                                            ?>
+                                            @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                            @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                            @php
+                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+                                            $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            @endphp
                                             <tr>
                                                 <td>
                                                     <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
+                                                        {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">2</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99
+                                                <td class="text-center">{{$orderItem->product->stock}}</td>
+                                                <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->quantity}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
+                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
+
                                             </tr>
+                                            @endforeach
+                                            @endif
                                             <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">6</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">18%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">5</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
+                                                <td colspan="6" class="text-right">GST</td>
+                                                <td class="text-right w_200_f"><i
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Shipping Cost</td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Other Charges
@@ -160,19 +165,21 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right bold">Total Order Cost</td>
                                                 <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <!-- <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button> -->
-                                <div class="text-right d-flex justify-content-end">
-                                    <button class="btn CancelOrderbtn btn-sm px-3 mt10">Cancel Order</button>
+                                <div class="text-right d-flex justify-content-end mt10">
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @else
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
+                                    @endif
                                 </div>
                             </section>
                             <section class="mt20">
@@ -205,7 +212,7 @@
                         </div>
                     </div>
                 </div>
-            @endif --}}
+            @endif
             <!-- view supplier ordqer -->
             @if (auth()->user()->hasRole(ROLE_SUPPLIER))
                 <div class="card ekcard pa shadow-sm">
@@ -213,34 +220,38 @@
                         <h3 class="cardtitle">View Order Details</h3>
                     </div>
                     <div class="row">
-                        <input type="hidden" id="orderID" value="{{ get_defined_vars()['id'] }}" name="orderID">
+                        <input type="hidden" id="orderID" value="{{ salt_encrypt($myOrderId) }}" name="orderID">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
                                 <div class="row">
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
-                                            <input type="text" class="form-control" value="" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Category</label>
-                                            <input type="text" class="form-control" value="Dropship" readonly>
+                                            <input type="text" class="form-control" value="Dropship" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Status</label>
-                                            <input type="text" class="form-control" value="" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
+                                            @isset($courier_detatils)
                                             <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                value="" id="courierName" name="courierName">
-
+                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                 id="courierName" name="courierName">
+                                            @endif
                                         </div>
                                         <p id="error_courier"></p>
 
@@ -248,8 +259,13 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                            @else
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
                                                 value="" id="trackingNo" name="trackingNo">
+                                            @endif
                                         </div>
                                         <p id="error_tracking"></p>
 
@@ -257,8 +273,13 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Shipping Date</label>
+                                            @isset($courier_detatils)
+                                            <input type="date" class="form-control" id="shippingDate"
+                                            name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
+                                            @else
                                             <input type="date" class="form-control" value="" id="shippingDate"
                                                 name="shippingDate">
+                                            @endif
 
                                         </div>
                                         <p id="error_shipping_date"></p>
@@ -266,9 +287,14 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
-                                            <label class="bold">Delhivery Date</label>
+                                            <label class="bold">Delivery Date</label>
+                                            @isset($courier_detatils)
+                                            <input type="date" class="form-control"  id="delhiveryDate" value="{{$delivery_date->toDateString()}}"
+                                                name="delhiveryDate" disabled>
+                                            @else
                                             <input type="date" class="form-control" value="" id="delhiveryDate"
-                                                name="delhiveryDate">
+                                            name="delhiveryDate">
+                                            @endif
                                         </div>
                                         <p id="error_delhivery_date"></p>
 
@@ -278,30 +304,30 @@
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
-                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">Mohd
-                                            Imtyaj</span></div>
+                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderUpdate->full_name}}</span></div>
                                     <div><strong class="me-2">Email Address:</strong><span
-                                            class="opacity-75">imtyaj92@outlook.com</span></div>
-                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91
-                                            7827821676</span></div>
+                                            class="opacity-75">{{$orderUpdate->email}}</span></div>
+                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91-{{$orderUpdate->mobile_number}}</span></div>
                                 </div>
                             </section>
                             <section class="mt5">
                                 <div class="row">
-                                    <div class="col-sm-12 col-md-6 mt15">
+                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Delivery Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                                            <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                                            <div>Grugram, Haryana, 122001</div>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
+                                            <div>{{ $billing_address->street }}</div>
+                                            <div>{{ $billing_address->city }}, {{ $billing_address->state }},
+                                                {{ $billing_address->postal_code }}</div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Billing Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                                            <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                                            <div>Grugram, Haryana, 122001</div>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
+                                            <div>{{ $delivery_address->street }}</div>
+                                            <div>{{ $delivery_address->city }}, {{ $delivery_address->state }},
+                                                {{ $delivery_address->postal_code }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -311,9 +337,11 @@
                                     <div class="detailSku">
                                         [
                                         <strong>SKU:</strong>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>
+                                        @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                        @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                        <span>{{$orderItem->product->sku}},</span>
+                                        @endforeach
+                                        @endif
                                         ]
                                     </div>
                                 </h4>
@@ -331,60 +359,46 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <?php
+                                            $shipping_cost = 0;
+                                            $gst = 0;
+                                            $other_charges = 0;
+                                            $total_order_cost = 0;
+                                            ?>
+                                            @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                            @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                            @php
+                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+                                            $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            @endphp
                                             <tr>
                                                 <td>
                                                     <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
+                                                        {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">2</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99
+                                                <td class="text-center">{{$orderItem->product->stock}}</td>
+                                                <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->quantity}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
+                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
+
                                             </tr>
+                                            @endforeach
+                                            @endif
                                             <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">6</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">18%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">5</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
+                                                <td colspan="6" class="text-right">GST</td>
+                                                <td class="text-right w_200_f"><i
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Shipping Cost</td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Other Charges
@@ -397,20 +411,22 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right bold">Total Order Cost</td>
                                                 <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    <button type="button" class="btn  btn-primary btn-sm px-2 ml-5"
-                                        id="updateOrder">Update Order</button>
-                                    <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button>
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @else
+                                    <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
+                                    @endif
                                 </div>
                             </section>
                             <section class="mt30">
@@ -441,7 +457,7 @@
                 </div>
             @endif
             <!-- view admin order -->
-            {{-- @if (auth()->user()->hasRole(ROLE_ADMIN))
+            @if (auth()->user()->hasRole(ROLE_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -450,52 +466,67 @@
                         <div class="col-sm-12 col-md-12">
                             <section class="">
                                 <div class="row">
-                                    <div class="col-sm-4 col-md-2">
+                                <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
-                                            <input type="text" class="form-control" value="EK1050IND" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4 col-md-2">
-                                        <div class="mt10">
-                                            <label class="bold">Order Status</label>
-                                            <input type="text" class="form-control" value="Dispatched" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4 col-md-2">
-                                        <div class="mt10">
-                                            <label class="bold">Courier Name</label>
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4 col-md-2">
-                                        <div class="mt10">
-                                            <label class="bold">Traking No</label>
-                                            <input type="text" class="form-control" placeholder="Enter Traking No">
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Category</label>
-                                            <input type="text" class="form-control" value="Dropship" readonly>
+                                            <input type="text" class="form-control" value="Dropship" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Order Status</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Courier Name</label>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                                 id="courierName" name="courierName">
+                                            @endif
+                                        </div>
+                                        <p id="error_courier"></p>
+
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Traking No</label>
+                                            @isset($courier_detatils)
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                            @else
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                                value="" id="trackingNo" name="trackingNo">
+                                            @endif
+                                        </div>
+                                        <p id="error_tracking"></p>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Type</label>
-                                            <input type="text" class="form-control" value="Manual Order" readonly>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getOrderChannelType()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Supplier ID</label>
-                                            <input type="text" class="form-control" placeholder="Enter Supplier ID">
+                                            <input type="text" class="form-control" placeholder="Enter Supplier ID" value="{{$orderUpdate->supplier->companyDetails->company_serial_id}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Business Buyer ID</label>
-                                            <input type="text" class="form-control" placeholder="Business Buyer ID">
+                                            <input type="text" class="form-control" placeholder="Business Buyer ID" value="{{$orderUpdate->buyer->companyDetails->company_serial_id}}" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -503,30 +534,30 @@
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
-                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">Mohd
-                                            Imtyaj</span></div>
+                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderUpdate->full_name}}</span></div>
                                     <div><strong class="me-2">Email Address:</strong><span
-                                            class="opacity-75">imtyaj92@outlook.com</span></div>
-                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91
-                                            7827821676</span></div>
+                                            class="opacity-75">{{$orderUpdate->email}}</span></div>
+                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91-{{$orderUpdate->mobile_number}}</span></div>
                                 </div>
                             </section>
                             <section class="mt5">
                                 <div class="row">
-                                    <div class="col-sm-12 col-md-6 mt15">
+                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Delivery Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                                            <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                                            <div>Grugram, Haryana, 122001</div>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
+                                            <div>{{ $billing_address->street }}</div>
+                                            <div>{{ $billing_address->city }}, {{ $billing_address->state }},
+                                                {{ $billing_address->postal_code }}</div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-6 mt15">
                                         <h4 class="subheading mb-1">Billing Address</h4>
                                         <div class="addressbox">
-                                            <h6 class="m-0 pb-1">Mohd Imtyaj</h6>
-                                            <div>HN. 564, Second floor, Houshing board colony, Sector 17A</div>
-                                            <div>Grugram, Haryana, 122001</div>
+                                            <h6 class="m-0 pb-1">{{$orderUpdate->full_name}}</h6>
+                                            <div>{{ $delivery_address->street }}</div>
+                                            <div>{{ $delivery_address->city }}, {{ $delivery_address->state }},
+                                                {{ $delivery_address->postal_code }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -536,9 +567,11 @@
                                     <div class="detailSku">
                                         [
                                         <strong>SKU:</strong>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>
-                                        <span>K5944RUR</span>
+                                        @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                        @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                        <span>{{$orderItem->product->sku}},</span>
+                                        @endforeach
+                                        @endif
                                         ]
                                     </div>
                                 </h4>
@@ -556,60 +589,46 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <?php
+                                            $shipping_cost = 0;
+                                            $gst = 0;
+                                            $other_charges = 0;
+                                            $total_order_cost = 0;
+                                            ?>
+                                            @if($orderUpdate->orderItemsCharges->isNotEmpty())
+                                            @foreach($orderUpdate->orderItemsCharges as $orderItem)
+                                            @php
+                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+                                            $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            @endphp
                                             <tr>
                                                 <td>
                                                     <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
+                                                        {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">2</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>80.99
+                                                <td class="text-center">{{$orderItem->product->stock}}</td>
+                                                <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->quantity}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
+                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
+
                                             </tr>
+                                            @endforeach
+                                            @endif
                                             <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">6</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">18%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="productTitle_t3 bold">
-                                                        Dell WM126 Wireless Mouse
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">100</td>
-                                                <td>K5944RUR</td>
-                                                <td class="text-center">5</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>50.00
-                                                </td>
-                                                <td class="text-right">12%</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>454.54
-                                                </td>
+                                                <td colspan="6" class="text-right">GST</td>
+                                                <td class="text-right w_200_f"><i
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Shipping Cost</td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right">Other Charges
@@ -622,18 +641,22 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="text-right bold">Total Order Cost</td>
                                                 <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>454.54</td>
+                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    <button class="btn CancelOrderbtn btn-sm px-2">Cancel Order</button>
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @else
+                                    <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
+                                    @endif
                                 </div>
                             </section>
                             <section class="mt30">
@@ -662,7 +685,7 @@
                         </div>
                     </div>
                 </div>
-            @endif --}}
+            @endif
         </div>
         @include('dashboard.layout.copyright')
     </div>
@@ -706,15 +729,6 @@
             });
         });
         $(document).ready(function() {
-            $("#shippingDate").datepicker({
-                minDate: 0 // Disable past dates
-
-            });
-            $("#delhiveryDate").datepicker({
-                minDate: 0 // Disable past dates
-
-            });
-
             $("#updateOrder").on('click', function() {
                 var courierName = $("#courierName").val();
                 var trackingNo = $("#trackingNo").val();
@@ -745,13 +759,11 @@
                     shippingDate: shippingDate,
                     delhiveryDate: delhiveryDate,
                     orderID: orderID,
-
                 }
                 if (courierName != '' && trackingNo != '' && shippingDate != '' && delhiveryDate != '' &&
                     orderID != '') {
                     ApiRequest("update-order", 'POST', body).then(response => {
-                        console.log(response);
-                        if (response.data.statusCode) {
+                        if (response.data.statusCode == 200) {
                             Swal.fire({
                                 title: 'Success',
                                 text: response.data.message,
@@ -768,6 +780,32 @@
                                     confirmButton.style.backgroundColor = '#feca40';
                                     confirmButton.style.color = 'white';
                                 }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            });
+                        }else{
+                            Swal.fire({
+                                title: 'Error',
+                                text: response.data.message,
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                didOpen: () => {
+                                    const title = Swal.getTitle();
+                                    title.style.fontSize = '25px';
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
                             });
                         }
 
@@ -778,5 +816,83 @@
                 }
             });
         });
+
+
+
+
+        // Cancel Order Function i want first take cancellation reason from user 
+        function cancelOrder(orderId) {
+          Swal.fire({
+              title: "Please give the reason for cancellation.",
+              input: "text",
+              inputAttributes: {
+                autocapitalize: "off"
+              },
+              showCancelButton: true,
+              confirmButtonText: "Submit",
+              confirmButtonColor: '#3085d6',
+              showLoaderOnConfirm: true,
+              didOpen: () => {
+                    const title = Swal.getTitle();
+                    title.style.fontSize = '25px';
+                    // Apply inline CSS to the content
+                    const content = Swal.getHtmlContainer();
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                },
+              preConfirm: async (login) => {
+                ApiRequest(`orders/cancel`, 'POST', {reason: login, order_id: orderId})
+                .then(response => {
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href = "{{ route('my.orders') }}";
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                //   content.style.color = 'blue';
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                })
+              }
+            });
+        }
     </script>
 @endsection

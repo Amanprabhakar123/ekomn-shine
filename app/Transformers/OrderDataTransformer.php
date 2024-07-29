@@ -37,19 +37,30 @@ class OrderDataTransformer extends TransformerAbstract
                 'payment_status' => $order->getPaymentStatus(),
                 'order_channel_type' => $order->getOrderChannelType(),
                 'view_order' => route('view.order', salt_encrypt($order->id)),
+                'created_at' => $order->created_at->toDateTimeString(),
+                'updated_at' => $order->updated_at->toDateTimeString(),
     
             ];
             if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
                 $data['supplier_id'] = $order->supplier->companyDetails->company_serial_id;
                 $data['buyer_id'] = $order->buyer->companyDetails->company_serial_id;
             }
+
             if(auth()->user()->hasRole(User::ROLE_BUYER)){
-                $data['is_cancelled'] = $order->isCancelled();
+                if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO()){
+                    $data['is_cancelled'] = true;
+                }else{
+                    $data['is_cancelled'] = $order->isCancelled();
+                }
             }else{
                 if($order->isDropship()){
                     $data['is_cancelled'] = true;
                 }else{
-                    $data['is_cancelled'] = $order->isCancelled();
+                    if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO()){
+                        $data['is_cancelled'] = true;
+                    }else{
+                        $data['is_cancelled'] = $order->isCancelled();
+                    }
                 }
             }
             return $data;
