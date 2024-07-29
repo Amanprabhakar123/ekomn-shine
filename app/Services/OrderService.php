@@ -359,6 +359,10 @@ class OrderService
         $orderPayment = OrderPayment::where('razorpay_order_id', $razorpay_order_id)->first();
         if (!$orderPayment) {
             return false;
+        }else{
+            if($orderPayment->status == OrderPayment::STATUS_CAPTURED){
+                return true;
+            }
         }
         $orderPayment->status = OrderPayment::STATUS_AUTHORIZED;
         $orderPayment->save();
@@ -424,7 +428,7 @@ class OrderService
                 'mobile_number' => $order->mobile_number,
                 'order_id' => salt_encrypt($order->id),
             ];
-            event(new NewOrderCreatedEvent($order->supplier->email, auth()->user()->email, $response));
+            event(new NewOrderCreatedEvent($order->supplier->email, $order->buyer->email, $response));
             return true;
         } catch (\Exception $e) {
             // update order payment status
