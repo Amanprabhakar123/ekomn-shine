@@ -32,6 +32,7 @@ class ExceptionHandleMail extends Mailable
                 'text' => $this->text,
                 'line' => $this->line,
                 'file' => $this->file,
+                'server' => env('APP_URL'),
             ]);
     }
 
@@ -41,7 +42,7 @@ class ExceptionHandleMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Created Mail',
+            subject: 'Exception Notification',
         );
     }
 

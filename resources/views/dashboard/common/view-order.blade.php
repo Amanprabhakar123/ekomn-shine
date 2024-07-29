@@ -177,9 +177,15 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
+                                   
                                     @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
+                                    @endif
+
+                                    @if($orderUpdate->isDraft())
+                                    <button class="btn btnekomn btn-sm px-2" id="payBtn"><i
+                                    class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}} Pay</button>
                                     @endif
                                 </div>
                             </section>
@@ -722,7 +728,7 @@
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const stars = document.querySelectorAll('.star');
@@ -923,5 +929,75 @@
               }
             });
         }
+
+        // Api Request Function Razarpay Payment
+        
+        $('document').ready(function(){
+            var formData = new FormData();
+            $('#payBtn').on('click', function(){
+                alert('clicked');
+                const formData = new FormData();
+                formData.append('order_id', $('#orderID').val());
+            ApiRequest('orders', 'POST', formData)
+          .then(response => {
+            if (response.data.statusCode == 200) {
+              const payment = response.data.data;
+              $('#order_id').val(payment.order_id);
+              var options = {
+                  "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+                  "amount": payment.total_amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                  "currency": payment.currency,
+                  "name": "{{env('APP_NAME')}}", //your business name
+                  "description": "Create payment for order by Ekomn Platform",
+                  "image": "{{asset('assets/images/Logo.svg')}}",
+                  "order_id": payment.razorpy_order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                  "callback_url": "{{route('order.payment.success')}}",
+                  "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                      "name": payment.full_name, //your customer's name
+                      "email": payment.email, //your customer's email
+                      "contact": payment.mobile_number //Provide the customer's phone number for better conversion rates 
+                  },
+                  "notes": {
+                      "address": "Gurugram, Haryana India"
+                  },
+                  "theme": {
+                      "color": "#FECA40"
+                  }
+              };
+              var rzp1 = new Razorpay(options);
+              rzp1.open();
+            }
+            else if (response.data.statusCode == 422) {
+                const field = response.data.key;
+                $(`#${field}`).addClass('is-invalid');
+                $(`#${field}Err`).text(response.data.message);
+            } else if(response.data.statusCode == 201){
+               // Handle error
+               Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        });
+      
+    });
+    
     </script>
 @endsection

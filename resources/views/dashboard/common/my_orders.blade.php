@@ -17,6 +17,7 @@
             <div class="ek_f_input">
               <select id="sort_by_status" class="form-select w_150_f">
                 <option value="0" selected>Select</option>
+                <option value="1" >Draft</option>
                 <option value="2" >Pending</option>
                 <option value="3">In Progress</option>
                 <option value="4">Dispatched</option>

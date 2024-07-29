@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
-use App\Models\BusinessType;
-use App\Models\BuyerInventory;
-use App\Models\CanHandle;
-use App\Models\Category;
-use App\Models\CompanyAddressDetail;
-use App\Models\CompanyDetail;
-use App\Models\Order;
-use App\Models\OrderAddress;
-use App\Models\Pincode;
-use App\Models\ProductVariation;
-use App\Models\ProductVariationMedia;
-use App\Models\SalesChannel;
 use App\Models\User;
-use App\Services\CompanyService;
+use App\Models\Order;
+use App\Models\Pincode;
+use App\Models\Category;
+use App\Models\CanHandle;
+use App\Models\BusinessType;
+use App\Models\OrderAddress;
+use App\Models\SalesChannel;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use App\Models\BuyerInventory;
+use App\Models\ProductVariation;
+use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Models\CompanyAddressDetail;
+use App\Models\ProductVariationMedia;
 
 class DashboardController extends Controller
 {
@@ -394,9 +394,9 @@ class DashboardController extends Controller
                 $delivery_date = $shipment->delivery_date;
             }
         }
+
         $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])->where('id', $myOrderId)->first();
         $billing_address = OrderAddress::where('order_id', $myOrderId)->Billing()->first();
-        // $shipping_address = OrderAddress::where('id', salt_decrypt($myOrderId))->Shipping()->first();
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
         return view('dashboard.common.view-order', get_defined_vars());
