@@ -768,7 +768,7 @@ class OrderController extends Controller
             ];
 
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
 
             // Log the error message for debugging purposes
             \Log::error('Error updating or creating shipment records: '.$e->getMessage());
