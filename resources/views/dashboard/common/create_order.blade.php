@@ -1317,6 +1317,7 @@
           tab.addEventListener('shown.bs.tab', function(event) {
               const activeTabId = event.target.id;
               const numericValue = tabMapping[activeTabId];
+              $('#order_id').val('');
                 hiddenInput.value = numericValue;
                 if (hiddenInput.value == 1) {
                     var getQntyId = document.querySelectorAll('.stockQnty');
