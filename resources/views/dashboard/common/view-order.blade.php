@@ -219,7 +219,7 @@
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
                                    
-                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
@@ -313,7 +313,7 @@
                                                 @endif
                                             </select>
                                             @else
-                                            <select class="form-select" id="courier_id" name="courier_id">
+                                            <select class="form-select" id="courier_id" name="courier_id" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                                 <option value="">Select Courier</option>
                                                 @if($courierList->isNotEmpty())
                                                 @foreach($courierList as $courier)
@@ -340,7 +340,7 @@
                                     <div class="col-sm-4 col-md-2" id="show_courier">
                                         <div class="mt10">
                                             <label class="bold">Other Courier Name</label>
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                             id="courierName" name="courierName">
                                         </div>
                                         <p id="error_courier_text"></p>
@@ -353,7 +353,7 @@
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
                                             value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
                                             @else
-                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            <input type="text" class="form-control" placeholder="Enter Traking No" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 value="" id="trackingNo" name="trackingNo">
                                             @endif
                                         </div>
@@ -367,7 +367,7 @@
                                             <input type="date" class="form-control" id="shippingDate"
                                             name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate"
+                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -382,7 +382,7 @@
                                             <input type="date" class="form-control"  id="deliveryDate" value="{{$delivery_date->toDateString()}}"
                                                 name="deliveryDate" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="deliveryDate"
+                                            <input type="date" class="form-control" value="" id="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                             name="deliveryDate">
                                             @endif
                                         </div>
@@ -517,7 +517,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
@@ -577,7 +577,7 @@
                                                 @endif
                                             </select>
                                             @else
-                                            <select class="form-select" id="courier_id" name="courier_id">
+                                            <select class="form-select" id="courier_id" name="courier_id" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                                 <option value="">Select Courier</option>
                                                 @if($courierList->isNotEmpty())
                                                 @foreach($courierList as $courier)
@@ -604,7 +604,7 @@
                                     <div class="col-sm-4 col-md-2" id="show_courier">
                                         <div class="mt10">
                                             <label class="bold">Other Courier Name</label>
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                             id="courierName" name="courierName">
                                         </div>
                                         <p id="error_courier_text"></p>
@@ -618,7 +618,7 @@
                                             value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
                                             @else
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
-                                                value="" id="trackingNo" name="trackingNo">
+                                                value="" id="trackingNo" name="trackingNo" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                             @endif
                                         </div>
                                         <p id="error_tracking"></p>
@@ -630,7 +630,7 @@
                                             <input type="date" class="form-control" id="shippingDate"
                                             name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate"
+                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -646,7 +646,7 @@
                                                 name="deliveryDate" disabled>
                                             @else
                                             <input type="date" class="form-control" value="" id="deliveryDate"
-                                            name="deliveryDate">
+                                            name="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                             @endif
                                         </div>
                                         <p id="error_delhivery_date"></p>
@@ -798,7 +798,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
