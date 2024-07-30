@@ -5,7 +5,7 @@
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
-                <h3 class="cardtitle">Order Tracking</h3>
+                <h3 class="cardtitle">Courier List</h3>
             </div>
             <div class="table-responsive tres_border">
 

@@ -5,7 +5,7 @@
 <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
-                <h3 class="cardtitle">Order Tracking</h3>
+                <h3 class="cardtitle">Add Courier Detail</h3>
             </div>
     <form action="#" id="formData">
         <div class="container">
