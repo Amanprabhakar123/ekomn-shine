@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\BulkUploadController;
+use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\Import\ImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('orders', [OrderController::class, 'orders'])->name('orders');
         Route::post('orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
         Route::post('/update-order', [OrderController::class, 'updateOrder'])->name('update.order');
+        Route::post('rating', [FeedBackController::class, 'index'])->name('rating');
     });
 });
 

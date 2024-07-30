@@ -189,8 +189,9 @@
                                     @endif
                                 </div>
                             </section>
+                            @if($orderUpdate->isDispatched())
                             <section class="mt20">
-                                <form action="" class="eklabel_w">
+                                <form action="#" id="ratingForm" class="eklabel_w">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6">
                                             <h4 class="subheading mb-2">Product feedback</h4>
@@ -198,24 +199,28 @@
                                                 <label class="eklabel align-items-center bold">Rate Us:</label>
                                                 <div class="ek_f_input">
                                                     <div class="star-rating">
-                                                        <span class="star active" data-value="1">&#9733;</span>
-                                                        <span class="star active" data-value="2">&#9733;</span>
-                                                        <span class="star active" data-value="3">&#9733;</span>
+                                                        <span class="star" data-value="1">&#9733;</span>
+                                                        <span class="star" data-value="2">&#9733;</span>
+                                                        <span class="star" data-value="3">&#9733;</span>
                                                         <span class="star" data-value="4">&#9733;</span>
                                                         <span class="star" data-value="5">&#9733;</span>
                                                     </div>
+                                                    <input type="hidden" name="rating" id="ratingInput">
                                                 </div>
                                             </div>
                                             <div class="ek_group">
                                                 <label class="eklabel align-items-start bold">Comment:</label>
                                                 <div class="ek_f_input">
-                                                    <textarea rows="3" class="form-control resizer_none" placeholder="Type here..."></textarea>
+                                                    <textarea rows="3" name="comment" id="comment" class="form-control resizer_none" placeholder="Type here..."></textarea>
                                                 </div>
                                             </div>
+                                        
+                                        <button type="submit" class="btn btnekomn btn-sm ml-10" id="submitRating">Submit</button>
                                         </div>
                                     </div>
                                 </form>
                             </section>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -435,19 +440,21 @@
                                     @endif
                                 </div>
                             </section>
+                            @if($orderUpdate->isDispatched())
                             <section class="mt30">
-                                <form action="" class="eklabel_w">
+                                <form action="#" id="ratingForm" class="eklabel_w">
                                     <h4 class="subheading mb-2">Product feedback</h4>
                                     <div class="ek_group mb-1">
                                         <label class="eklabel align-items-center bold">Rate Us:</label>
                                         <div class="ek_f_input">
                                             <div class="star-rating">
-                                                <span class="star active" data-value="1">&#9733;</span>
-                                                <span class="star active" data-value="2">&#9733;</span>
-                                                <span class="star active" data-value="3">&#9733;</span>
+                                                <span class="star " data-value="1">&#9733;</span>
+                                                <span class="star " data-value="2">&#9733;</span>
+                                                <span class="star " data-value="3">&#9733;</span>
                                                 <span class="star" data-value="4">&#9733;</span>
                                                 <span class="star" data-value="5">&#9733;</span>
                                             </div>
+                                            <input type="hidden" name="rating" id="ratingInput">
                                         </div>
                                     </div>
                                     <div class="ek_group">
@@ -458,6 +465,7 @@
                                     </div>
                                 </form>
                             </section>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -694,8 +702,9 @@
                                     @endif
                                 </div>
                             </section>
+                            @if($orderUpdate->isDispatched())
                             <section class="mt30">
-                                <form action="" class="eklabel_w">
+                                <form action="#" id="ratingForm" class="eklabel_w">
                                     <h4 class="subheading mb-2">Product feedback</h4>
                                     <div class="ek_group mb-1">
                                         <label class="eklabel align-items-center bold">Rate Us:</label>
@@ -707,6 +716,7 @@
                                                 <span class="star" data-value="4">&#9733;</span>
                                                 <span class="star" data-value="5">&#9733;</span>
                                             </div>
+                                            <input type="hidden" name="rating" id="ratingInput">
                                         </div>
                                     </div>
                                     <div class="ek_group">
@@ -717,6 +727,7 @@
                                     </div>
                                 </form>
                             </section>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -730,6 +741,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
+        var ratingInput = document.getElementById('ratingInput');
         document.addEventListener('DOMContentLoaded', () => {
             const stars = document.querySelectorAll('.star');
 
@@ -738,6 +750,7 @@
                     const rating = parseInt(star.getAttribute('data-value'));
                     stars.forEach((s, index) => {
                         if (index < rating) {
+                            ratingInput.value = rating;
                             s.classList.add('active');
                         } else {
                             s.classList.remove('active');
@@ -999,5 +1012,55 @@
       
     });
     
+    </script>
+
+    <script>
+        $('document').ready(function(){
+            var formData = new FormData();
+            $('#ratingForm').submit(function(e){
+                e.preventDefault();
+                
+                let rating = $('#ratingInput').val();
+                let comment = $('#comment').val();
+                let order_id = $('#orderID').val();
+
+                formData.append('rating', rating);
+                formData.append('comment', comment);
+                formData.append('order_id', order_id);
+
+                ApiRequest('rating', 'POST', formData)
+                .then(response => {
+                    console.log(response);
+                    if(response.data.statusCode == 200){
+                        Swal.fire({
+                            title: 'Success',
+                            text: '"Thank you so much for your feedback and rating! We’re thrilled to hear that you had a positive experience."',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK',
+                            didOpen: () => {
+                                const title = Swal.getTitle();
+                                title.style.fontSize = '25px';
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            }); 
+        });
+    </script>
+    </script>
     </script>
 @endsection

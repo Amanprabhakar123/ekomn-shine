@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\FeedBack;
 use App\Models\Shipment;
 use App\Models\OrderRefund;
 use App\Models\OrderAddress;
@@ -387,6 +388,17 @@ class Order extends Model
     public function supplierPaymentsThrough()
     {
         return $this->hasManyThrough(SupplierPayment::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+
+    public function feedBack()
+    {
+        return $this->hasMany(FeedBack::class, 'order_id', 'id');
     }
 
     /**
