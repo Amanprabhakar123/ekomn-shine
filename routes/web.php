@@ -100,7 +100,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('orders', [OrderController::class, 'orders'])->name('orders');
         Route::post('orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
         Route::post('/update-order', [OrderController::class, 'updateOrder'])->name('update.order');
-        Route::post('rating', [FeedBackController::class, 'index'])->name('rating');
+        Route::post('rating', [FeedBackController::class, 'store'])->name('rating');
         Route::get('/download-invoice/{id}', [OrderController::class, 'downloadInvoice'])->name('download.invoice');
     });
 });

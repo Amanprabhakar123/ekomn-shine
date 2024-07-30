@@ -192,7 +192,8 @@
                                     @endif
                                 </div>
                             </section>
-                            @if($orderUpdate->isDispatched())
+                            @if($orderUpdate->isDelivered())
+                            @if(empty($orderUpdate->feedBack))
                             <section class="mt20">
                                 <form action="#" id="ratingForm" class="eklabel_w">
                                     <div class="row">
@@ -223,6 +224,7 @@
                                     </div>
                                 </form>
                             </section>
+                            @endif
                             @endif
                         </div>
                     </div>
@@ -446,32 +448,6 @@
                                     @endif
                                 </div>
                             </section>
-                            @if($orderUpdate->isDispatched())
-                            <section class="mt30">
-                                <form action="#" id="ratingForm" class="eklabel_w">
-                                    <h4 class="subheading mb-2">Product feedback</h4>
-                                    <div class="ek_group mb-1">
-                                        <label class="eklabel align-items-center bold">Rate Us:</label>
-                                        <div class="ek_f_input">
-                                            <div class="star-rating">
-                                                <span class="star " data-value="1">&#9733;</span>
-                                                <span class="star " data-value="2">&#9733;</span>
-                                                <span class="star " data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                            <input type="hidden" name="rating" id="ratingInput">
-                                        </div>
-                                    </div>
-                                    <div class="ek_group">
-                                        <label class="eklabel align-items-start bold">Comment:</label>
-                                        <div class="ek_f_input">
-                                            <textarea rows="3" class="form-control w_400_f resizer_none" placeholder="Type here..."></textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </section>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -711,32 +687,6 @@
                                     @endif
                                 </div>
                             </section>
-                            @if($orderUpdate->isDispatched())
-                            <section class="mt30">
-                                <form action="#" id="ratingForm" class="eklabel_w">
-                                    <h4 class="subheading mb-2">Product feedback</h4>
-                                    <div class="ek_group mb-1">
-                                        <label class="eklabel align-items-center bold">Rate Us:</label>
-                                        <div class="ek_f_input">
-                                            <div class="star-rating">
-                                                <span class="star active" data-value="1">&#9733;</span>
-                                                <span class="star active" data-value="2">&#9733;</span>
-                                                <span class="star active" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                            <input type="hidden" name="rating" id="ratingInput">
-                                        </div>
-                                    </div>
-                                    <div class="ek_group">
-                                        <label class="eklabel align-items-start bold">Comment:</label>
-                                        <div class="ek_f_input">
-                                            <textarea rows="3" class="form-control w_400_f resizer_none" placeholder="Type here..."></textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </section>
-                            @endif
                         </div>
                     </div>
                 </div>

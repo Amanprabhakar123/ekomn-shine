@@ -398,7 +398,7 @@ class Order extends Model
 
     public function feedBack()
     {
-        return $this->hasMany(FeedBack::class, 'order_id', 'id');
+        return $this->hasOne(FeedBack::class, 'order_id', 'id');
     }
 
     /**
