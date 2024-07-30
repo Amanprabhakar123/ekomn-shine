@@ -148,7 +148,7 @@
                 @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_COURIER) || auth()->user()->hasPermissionTo(PERMISSION_LIST_COURIER))
                 <ul class="sidenav-second-level collapse" id="SettingControl" data-bs-parent="#dashboard_ekomn">
                     <li>
-                        <a class="nav-link" href="{{ route('courier-details') }}">Courier Details</a>
+                        <a class="nav-link" href="{{ route('courier-details') }}">Add Courier Details</a>
                     </li>
                     </li>
                     <li>
