@@ -42,7 +42,7 @@
                                                 @endif
                                             </select>
                                             @else
-                                            <select class="form-select" id="courier_id" name="courier_id">
+                                            <select class="form-select" id="courier_id" name="courier_id" disabled>
                                                 <option value="">Select Courier</option>
                                                 @if($courierList->isNotEmpty())
                                                 @foreach($courierList as $courier)
