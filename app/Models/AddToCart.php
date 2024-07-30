@@ -42,15 +42,15 @@ class AddToCart extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly([
-            'product_id',
-            'buyer_id',
-            'quantity',
-            'added_at',
-        ])
-        ->logOnlyDirty()
-        ->useLogName('Buyer Add to Cart Log')
-        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} buyer add to cart with ID: {$this->id}");
+            ->logOnly([
+                'product_id',
+                'buyer_id',
+                'quantity',
+                'added_at',
+            ])
+            ->logOnlyDirty()
+            ->useLogName('Buyer Add to Cart Log')
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} buyer add to cart with ID: {$this->id}");
     }
 
     /**
@@ -80,7 +80,8 @@ class AddToCart extends Model
      * @param int $quantity
      * @return float
      */
-    public function getPriceBasedOnQuantity($ranges, $quantity) {
+    public function getPriceBasedOnQuantity($ranges, $quantity)
+    {
         $ranges = json_decode($ranges, true);
         foreach ($ranges as $range) {
             if ($quantity >= $range['range']['min'] && $quantity <= $range['range']['max']) {
@@ -98,25 +99,30 @@ class AddToCart extends Model
      * @param int $quantity
      * @return array
      */
-    public function getPricesBasedOnQuantity($ranges, $quantity) {
-        $ranges = json_decode($ranges, true);
-        foreach ($ranges as $range) {
-            if ($quantity >= $range['range']['min'] && $quantity <= $range['range']['max']) {
-                return [
-                    'local' => $range['local'],
-                    'regional' => $range['regional'],
-                    'national' => $range['national'],
-                ];
+    public function getPricesBasedOnQuantity($ranges, $quantity)
+    {
+        try {
+            $ranges = json_decode($ranges, true);
+            foreach ($ranges as $range) {
+                if ($quantity >= $range['range']['min'] && $quantity <= $range['range']['max']) {
+                    return [
+                        'local' => $range['local'],
+                        'regional' => $range['regional'],
+                        'national' => $range['national'],
+                    ];
+                }
             }
+
+            // If the quantity exceeds all ranges, return the prices of the maximum range
+            $lastRange = end($ranges);
+            return [
+                'local' => $lastRange['local'],
+                'regional' => $lastRange['regional'],
+                'national' => $lastRange['national'],
+            ];
+        } catch (\Exception $e) {
+            throw  $e;
         }
-    
-        // If the quantity exceeds all ranges, return the prices of the maximum range
-        $lastRange = end($ranges);
-        return [
-            'local' => $lastRange['local'],
-            'regional' => $lastRange['regional'],
-            'national' => $lastRange['national'],
-        ];
     }
 
     /**
@@ -215,7 +221,7 @@ class AddToCart extends Model
      *
      * @var array
      */
-    public function scopeByProductAndQuantity($query, $productId, $quantity)    
+    public function scopeByProductAndQuantity($query, $productId, $quantity)
     {
         return $query->where('product_id', $productId)->where('quantity', $quantity);
     }
@@ -229,5 +235,4 @@ class AddToCart extends Model
     {
         return $query->where('product_id', $productId)->where('quantity', $quantity)->where('added_at', $addedAt);
     }
-    
 }

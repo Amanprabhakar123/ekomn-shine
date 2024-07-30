@@ -21,6 +21,7 @@ use App\Events\OrderStatusChangedEvent;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderDataTransformer;
+use App\Transformers\OrderTrackingTransformer;
 use Illuminate\Validation\ValidationException;
 use App\Transformers\ProductCartListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -283,11 +284,10 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
-            \Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
+            Log::error('Add to cart failed: '.$e->getMessage()); // Log the error message
 
             return response()->json(['data' => __('auth.addSkuFailed')], 500);
         }
@@ -694,11 +694,30 @@ class OrderController extends Controller
     public function updateOrder(Request $request)
     {
         try {
+            // Check if the user has the permission to edit an order
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_ORDER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'orderID' => 'required|string',
+                'shippingDate' => 'required|date',
+                'deliveryDate' => 'required|date',
+                'courier_id' => 'required|int',
+                'courierName' => 'nullable|string',
+                'trackingNo' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
             // Decrypt the order ID from the request and fetch the associated order items and charges
@@ -708,13 +727,14 @@ class OrderController extends Controller
             Order::where('id', $orderID)->update(['status' => Order::STATUS_DISPATCHED]);
 
             // Parse the dates using Carbon
-            $shippingDate = Carbon::parse($request->shippingDate);
-            $deliveryDate = Carbon::parse($request->deliveryDate);
+            $shippingDate = Carbon::parse($request->shippingDate)->toDateString();
+            $deliveryDate = Carbon::parse($request->deliveryDate)->toDateString();
 
             // Prepare data for updating or creating a shipment record
             $shipmentData = [
                 'shipment_date' => $shippingDate,
                 'delivery_date' => $deliveryDate,
+                'courier_id' => $request->courier_id,
             ];
 
             // Iterate over each order item to update or create a shipment record
@@ -894,5 +914,180 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
+    }
+
+
+    /**
+     * Get the order details.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function OrderTrackingList(Request $request){
+        try{
+              // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ORDER_TRACKING)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            
+            $perPage = $request->input('per_page', 10);
+            $searchTerm = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
+            $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
+
+            // Allowed sort fields to prevent SQL injection
+            $allowedSorts = ['order_number', 'status'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+
+            $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'shipments', 'shipments.shipmentAwb'])
+                ->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('order_number', 'like', '%' . $searchTerm . '%')
+                            ->orWhereHas('orderItemsCharges.product', function ($query) use ($searchTerm) {
+                                $query->where('title', 'like', '%' . $searchTerm . '%');
+                            });
+                    });
+                });
+                if ($sort_by_status != 0) {
+                    $orderList = $orderList->where('status', $sort_by_status);
+                }
+                if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+                }
+                
+                $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
+                ->paginate($perPage); // Paginate results
+          
+            // Transform the paginated results using Fractal
+            $resource = new Collection($orderList, new OrderTrackingTransformer());
+
+            // Add pagination information to the resource
+            $resource->setPaginator(new IlluminatePaginatorAdapter($orderList));
+
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
+
+            // Return the JSON response with paginated data
+            return response()->json($data);
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.orderTrackingListFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+
+
+    /**
+     * Update the order tracking status.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updatOrderTrackingStatus(Request $request){
+        try {
+            // Check if the user has the permission to edit an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ORDER_TRACKING)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required|string',
+                'status' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+            // Decrypt the order ID from the request and fetch the associated order items and charges
+            $order_id = salt_decrypt($request->order_id);
+            $order = Order::find($order_id);
+            $order->status = $request->status;
+            $order->save();
+
+            if($request->status == Order::STATUS_DELIVERED){
+                $shipment = Shipment::where('order_id', $order_id)->first();
+                $shipment->delivery_date = now();
+                $shipment->save();
+                $update = ['status' => ShipmentAwb::STATUS_DELIVERED];
+                ShipmentAwb::where('shipment_id', $shipment->id)->update($update);
+
+                // Prepare data for send notification
+                $shipment = $order->shipments->first();
+                $courier_name = '';
+                $tracking_number = '';
+                if($shipment){
+                    $courier_name = $shipment->courier->courier_name;
+                    $shipmet_awb = $shipment->shipmentAwb()->first();
+                    if($shipment->courier->id == 1){
+                        $courier_name = $shipmet_awb->courier_provider_name;
+                    }
+                    $tracking_number = $shipmet_awb->awb_number;
+                }
+                $mail = [
+                    'order_number' => $order->order_number,
+                    'status' => (int) $request->status,
+                    'courier_name' => $courier_name,
+                    'tracking_number' => $tracking_number,
+                ];
+                event(new OrderStatusChangedEvent($order->buyer, $mail));
+            }
+           
+            // Return a success response
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.shipmetUpdate'),
+                ],
+            ], __('statusCode.statusCode200'));
+
+        } catch (\Exception $e) {
+            // Handle any exceptions that occur during the database operations
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            // Log the error message for debugging purposes
+            Log::error('Error updating or creating shipment records: '.$e->getMessage());
+
+            // Return an error response with a message
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.orderUpdateFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+        
     }
 }

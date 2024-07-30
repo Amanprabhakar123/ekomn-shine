@@ -5,12 +5,7 @@
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
-                <h3 class="cardtitle">My Inventory</h3>
-                @if(auth()->user()->hasRole(ROLE_ADMIN))
-                @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_PRODUCT))
-                <a class="btn btnekomn btn-sm" href="{{route('add.inventory')}}"><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
-                @endif
-                @endif
+                <h3 class="cardtitle">Order Tracking</h3>
             </div>
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
@@ -20,10 +15,9 @@
                         <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                                <option value="3">Out of Stock</option>
-                                <option value="4">Draft</option>
+                                <option value="4">Dispatched</option>
+                                <option value="5">In Transit</option>
+                                <option value="6">Delivered</option>
                             </select>
                         </div>
                     </div>
@@ -33,40 +27,11 @@
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th>Image</th>
-                            <th class="h_sorting"  data-sort-field="title">Product Title
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
+                            <th data-sort-field="order_number">eKomn Order</th>
+                            <th data-sort-field="title">Product Title
                             </th>
-                            <th class="h_sorting"  data-sort-field="sku">SKU
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
-                            <th class="h_sorting" data-sort-field="product_slug_id">Product ID
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
-                            <th>Supplier ID</th>
-                            <th class="h_sorting"  data-sort-field="stock">Stock
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
-                            <th class="h_sorting" data-sort-field="price_after_tax">Selling Price
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
-                            <th class="h_sorting"  data-sort-field="name">
-                                Category
-                                <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
-                                </span>
-                            </th>
-                            <th>Availability</th>
+                            <th data-sort-field="courier_name">Courier Name</th>
+                            <th data-sort-field="tracking_url">Tracking Url</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -152,7 +117,7 @@
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
-            let apiUrl = `product/inventory?per_page=${rows}&page=${currentPage}`;
+            let apiUrl = `order/tracking/list?per_page=${rows}&page=${currentPage}`;
 
             if (sortField && sortOrder) {
                 apiUrl += `&sort=${sortField}&order=${sortOrder}`;
@@ -277,130 +242,77 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
-        let stock = allowEditable(item)
+        let stock = allowEditable(item);
+        let isDisabled = "";
+        if(item.order_action_status == 6){
+            isDisabled = "disabled";
+        }
         return `
         <tr>
             <td>
-                <div class="productImg_t">
-                    <img src="${item.product_image}" alt="Product Image">
+                 <div class="productTitle_t">
+                    ${item.order_number}
                 </div>
             </td>
             <td>
                 <div class="productTitle_t">
-                    ${item.title}
+                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                </div>
+            </td>
+             <td>
+                <div class="productTitle_t">
+                    ${item.courier_name}
                 </div>
             </td>
             <td>
-                <div class="sku_t">${item.sku}</div>
+                <div class="productTitle_t">
+                 <a href="${item.tracking_url}" class="a_link" target="_blank">${item.tracking_number}</a>
+                </div>
             </td>
             <td>
-                ${item.product_id}
-            </td>
-                    <td>
-                ${item.supplier_id}
+                <div>${item.status}</div>
             </td>
              <td>
-                <input type="text" class="stock_t" value="${item.stock}" onfocusout="handleInput('${item.id}', '${item.product_id}', 1, this)">
-            </td>
-            <td>
-                <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${item.selling_price}</div>
-            </td>
-            <td>
-                <div>${item.product_category}</div>
-            </td>
-            <td>
-                <div>${item.availability_status}</div>
-            </td>
-             <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${item.allow_editable == true ? 'disabled' : '' }>
+                <select class="changeStatus_t form-select" ${isDisabled} onchange="handleInput('${item.id}', 2, this)">
                     ${stock}
                 </select>
-            </td>
-            <td>
-                <a class="nbtn btn-link btn-sm" href="${item.editInventory}" target="_blank">Edit</a>
             </td>
         </tr>
     `;
     }
 
     function allowEditable(item){
-       if(item.allow_editable){
-        
-           return `
-                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
-                `;
-       }
-       else{
-        // console.log(item.allow_editable);
+
         return `
-            <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-            <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-            <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+            <option value="4" ${item.order_action_status == "4" ? "selected" : ""}>Dispatched</option>
+            <option value="5" ${item.order_action_status == "5" ? "selected" : ""}>In Transit</option>
+            <option value="6" ${item.order_action_status == "6" ? "selected" : ""}>Delivered</option>
         `;
-       }
+       
     }
 
-    function handleInput(itemId, productId, type, element) {
-        if (type === 1) {
-            updateStock(itemId, productId, element.value);
-        } else if (type === 2) {
-            updateStatus(itemId, productId, element.value);
-        }
-    }
+
+
     /**
-     * Updates the stock of a product.
+     * Handles the input event for the status dropdown.
      *
-     * @param {number} productId - The ID of the product.
+     * @param {number} itemId - The ID of the item.
+     * @param {number} type - The type of the input.
+     * @param {HTMLElement} element - The input element.
      */
-    function updateStock(itemId, productId, newStock) {
-        // Make an API request to update the stock of the product
-        ApiRequest(`product/updateStock/${itemId}`, 'PATCH', {
-                stock: newStock,
-                product_id: productId
-            })
-            .then(response => {
-
-                Swal.fire({
-                title: "Good job!",
-                text: response.data.message,
-                icon: "success",
-                didOpen: () => {
-                  // Apply inline CSS to the title
-                  const title = Swal.getTitle();
-                  title.style.color = 'red';
-                  title.style.fontSize = '20px';
-
-                  // Apply inline CSS to the content
-                  const content = Swal.getHtmlContainer();
-                //   content.style.color = 'blue';
-
-                  // Apply inline CSS to the confirm button
-                  const confirmButton = Swal.getConfirmButton();
-                  confirmButton.style.backgroundColor = '#feca40';
-                  confirmButton.style.color = 'white';
-                }
-            }).then(() => {
-                // Redirect to the inventory page
-                window.location.href = "{{ route('my.inventory') }}";
-            })
-               
-            })
-            .catch(error => {
-                console.error('Error updating stock:', error);
-            });
+    function handleInput(itemId,  type, element) {
+            updateStatus(itemId, element.value);
     }
 
+    
     /**
      * Updates the status of a product.
      *
      * @param {number} productId - The ID of the product.
      */
-    function updateStatus(itemId, productId, newStatus) {
+    function updateStatus(itemId,  newStatus) {
         Swal.fire({
-            title: "Do you want to save the changes status?",
+            title: "Do you want to update courier tracking status?",
             showCancelButton: true,
             confirmButtonText: "Save",
             denyButtonText: `Don't save`,
@@ -418,9 +330,9 @@
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                   // Make an API request to update the status of the product
-                ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
+                ApiRequest(`order/tracking/update`, 'POST', {
                 status: newStatus,
-                product_id: productId
+                'order_id': itemId
             })
             .then(response => {
                 Swal.fire({
@@ -443,7 +355,7 @@
                     }
                 }).then(() => {
                     // Redirect to the inventory page
-                    window.location.href = "{{ route('my.inventory') }}";
+                    window.location.href = "{{ route('order.tracking') }}";
                 })
             })
             .catch(error => {

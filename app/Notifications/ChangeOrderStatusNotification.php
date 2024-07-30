@@ -46,9 +46,11 @@ class ChangeOrderStatusNotification extends Notification
             ->view('email.orderDispatched', compact('name', 'order_number'));
         }
         elseif($this->details['status'] == Order::STATUS_DELIVERED){ 
+            $tracking_number = $this->details['tracking_number'];
+            $courier_name = $this->details['courier_name'];
             return (new MailMessage)
             ->subject('eKomn – Order '.$order_number.' Delivered.')
-            ->view('email.orderDelivered', compact('name', 'order_number'));
+            ->view('email.orderDelivered', compact('name', 'order_number', 'courier_name', 'tracking_number'));
         }
         elseif($this->details['status'] == Order::STATUS_RTO){ 
             return (new MailMessage)

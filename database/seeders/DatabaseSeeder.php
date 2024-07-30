@@ -7,14 +7,18 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
+use Database\Seeders\CourierList;
 use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\CanHandleSeeder;
+use Database\Seeders\OrdersTableSeeder;
 use Database\Seeders\BusinessTypeSeeder;
+use Database\Seeders\ChargesTableSeeder;
 use Database\Seeders\CompanyBuyerSeeder;
 use Database\Seeders\SalesChannelSeeder;
 use Database\Seeders\AuthUserLoginSeeder;
 use Database\Seeders\ImportWorldSqlSeeder;
+use Database\Seeders\AddCourierPermisssion;
 use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -38,6 +42,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ChargesTableSeeder::class);
         $this->call(ImportWorldSqlSeeder::class);
         $this->call(PincodeSeeder::class);
+        $this->call(CourierList::class);
+        $this->call(AddCourierPermisssion::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);

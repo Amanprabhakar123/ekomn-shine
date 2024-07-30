@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Order;
 use App\Models\ShipmentAwb;
+use App\Models\CourierDetails;
 use Spatie\Activitylog\LogOptions;
 use App\Models\OrderItemAndCharges;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,7 @@ class Shipment extends Model
     protected $fillable = [
         'order_id',
         'order_item_charges_id',
+        'courier_id',
         'shipment_date',
         'delivery_date'
     ];
@@ -87,5 +89,10 @@ class Shipment extends Model
     public function shipmentAwb()
     {
         return $this->hasMany(ShipmentAwb::class, 'shipment_id', 'id');
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(CourierDetails::class, 'courier_id', 'id');
     }
 }

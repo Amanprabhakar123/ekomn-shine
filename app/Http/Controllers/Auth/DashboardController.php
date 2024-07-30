@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
 use App\Events\ExceptionEvent;
 use App\Models\BuyerInventory;
+use App\Models\CourierDetails;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
@@ -398,6 +399,17 @@ class DashboardController extends Controller
         $billing_address = OrderAddress::where('order_id', $myOrderId)->Billing()->first();
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
+        $courierList = CourierDetails::orderBy('id', 'desc')->get();
         return view('dashboard.common.view-order', get_defined_vars());
     }
+
+    /**
+     * Display the user's orders.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function orderTracking(){
+        return view('dashboard.admin.order_tracking');
+    }
+    
 }

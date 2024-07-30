@@ -106,5 +106,7 @@ return [
     'orderCancelled' => 'Order Cancelled Successfully.',
     'orderCancelFailed' => 'Order cancellation failed after processing.',
     'invoiceNotFound' => 'Invoice not found.',
+    'updateSuccess' => 'Courier Details Updated Successfully.',
+    'shipmetUpdate' => 'Shipment Updated Successfully.',
 
 ];

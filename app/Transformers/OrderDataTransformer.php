@@ -31,7 +31,6 @@ class OrderDataTransformer extends TransformerAbstract
                 'quantity' => $quantity,
                 'order_date' => $order->order_date->toDateString(),
                 'total_amount' => $order->total_amount,
-                'order_type' => $order->order_type,
                 'status' => $order->getStatus(),
                 'order_type' => $order->getOrderType(),
                 'payment_status' => $order->getPaymentStatus(),

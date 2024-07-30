@@ -14,7 +14,7 @@
         <p>Your Order  <strong>{{ $order_number }}</strong> is Delivered.</p>
         <br>
         <p><strong>Courier Name - </strong> {{ $courier_name }}</p><br />
-         <p><strong>Tracking No - </strong> {{ $tracking_no }}</p>
+         <p><strong>Tracking No - </strong> {{ $tracking_number }}</p>
         <br>
         <p><em>This is a system generated notification. Please do not reply to this email.</em></p>
     </div>

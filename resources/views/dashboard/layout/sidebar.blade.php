@@ -58,6 +58,11 @@
                     <li>
                         <a class="nav-link" href="{{ route('my.orders') }}">My Oders</a>
                     </li>
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_ORDER_TRACKING) )
+                    <li>
+                        <a class="nav-link" href="{{ route('order.tracking') }}">Order Tracking</a>
+                    </li>
+                    @endif
                     <li>
                         <a class="nav-link" href="#">Platform/Website Orders</a>
                     </li>
@@ -131,6 +136,30 @@
                     </li>
                 </ul>
             </li>
+
+            @if (auth()->user()->hasRole(ROLE_ADMIN) )
+            <li class="nav-item">
+                <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#SettingControl"
+                    data-bs-parent="#dashboard_ekomn" id="components">
+                    <i class="fas fa-cog menuIcon"></i>
+                    <span class="nav-link-text">Setting</span>
+                    <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
+                </a>
+                @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_COURIER) || auth()->user()->hasPermissionTo(PERMISSION_LIST_COURIER))
+                <ul class="sidenav-second-level collapse" id="SettingControl" data-bs-parent="#dashboard_ekomn">
+                    <li>
+                        <a class="nav-link" href="{{ route('courier-details') }}">Courier Details</a>
+                    </li>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="{{ route('courier.list')}}">Courier List</a>
+                    </li>
+                  
+                    </li>
+                </ul>
+                @endif
+            </li>
+            @endif
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-headset menuIcon"></i>
