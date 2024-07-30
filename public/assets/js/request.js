@@ -1,5 +1,5 @@
 /** Set Base url */
-const baseURL = 'http://localhost:8083/api/';
+const baseURL = 'http://65.0.146.172:8081/api/';
 
 /** Set Header Values */
 const makeHeader = (isFormData = false) => {
