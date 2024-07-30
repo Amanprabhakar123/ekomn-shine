@@ -103,6 +103,12 @@ class Order extends Model
         self::STATUS_RTO,
     ];
 
+    const STATUS_ORDER_TRACKING = [
+        self::STATUS_DISPATCHED,
+        self::STATUS_IN_TRANSIT,
+        self::STATUS_DELIVERED,
+    ];
+
     //Default Refund amound Draft Case
     const DEFAULT_REFUND_AMOUNT = 0;
 

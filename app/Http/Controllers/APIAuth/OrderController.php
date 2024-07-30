@@ -957,7 +957,7 @@ class OrderController extends Controller
                     $orderList = $orderList->where('status', $sort_by_status);
                 }
                 if(auth()->user()->hasRole(User::ROLE_ADMIN)){
-                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+                    $orderList = $orderList->whereIn('status', Order::STATUS_ORDER_TRACKING);
                 }
                 
                 $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
