@@ -99,6 +99,9 @@
                                         @endif
                                         ]
                                     </div>
+                                     @if($orderUpdate->isDropship() || $orderUpdate->isResell())
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
+                                    @endif
                                 </h4>
                                 <div class="table-responsive">
                                     <table class="payInvoiceTable">
@@ -244,7 +247,7 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Category</label>
-                                            <input type="text" class="form-control" value="Dropship" value="{{$orderUpdate->getOrderType()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -355,6 +358,9 @@
                                         @endif
                                         ]
                                     </div>
+                                    @if($orderUpdate->isDropship() || $orderUpdate->isResell())
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
+                                    @endif
                                 </h4>
                                 <div class="table-responsive">
                                     <table class="payInvoiceTable">
@@ -489,7 +495,7 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Category</label>
-                                            <input type="text" class="form-control" value="Dropship" value="{{$orderUpdate->getOrderType()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -617,6 +623,9 @@
                                         @endif
                                         ]
                                     </div>
+                                    @if($orderUpdate->isDropship() || $orderUpdate->isResell())
+                                    <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
+                                    @endif
                                 </h4>
                                 <div class="table-responsive">
                                     <table class="payInvoiceTable">
@@ -1012,6 +1021,38 @@
       
     });
     
+
+    function downloadInvoice(orderId) {
+        // Make an API request to download the invoice
+        fetch(`{{env('APP_URL')}}/api/download-invoice/${orderId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.style.display = 'none';
+            link.href = url;
+            link.download = `invoice_${Math.random().toString(36).substring(2)}_${Date.now()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        })
+        .catch(error => {
+            console.error('Error downloading invoice:', error);
+        });
+
+        
+    }
     </script>
 
     <script>

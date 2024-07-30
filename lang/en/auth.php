@@ -105,5 +105,6 @@ return [
     'orderAlreadyCancelled' => 'Order already cancelled.',
     'orderCancelled' => 'Order Cancelled Successfully.',
     'orderCancelFailed' => 'Order cancellation failed after processing.',
+    'invoiceNotFound' => 'Invoice not found.',
 
 ];

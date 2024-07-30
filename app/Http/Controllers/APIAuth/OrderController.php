@@ -828,7 +828,7 @@ class OrderController extends Controller
                 'line' => $e->getLine(),
             ];
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
             // Log the error message for debugging purposes
             \Log::error('Error cancelling order: '.$e->getMessage().'Line:- '.$e->getLine(). 'File:- '.$e->getFile());
             // Return an error response with a message
@@ -838,5 +838,61 @@ class OrderController extends Controller
                 'message' => __('auth.orderCancelFailed'),
             ]], __('statusCode.statusCode200'));
         }
+    }
+
+    /**
+     * Get the order details.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function downloadInvoice($order_id){
+        try {
+            $validator = Validator::make(['order_id' => $order_id], [
+                'order_id' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+            $order_id = salt_decrypt($order_id);
+            $order = Order::find($order_id);
+            if(empty($order)){
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.orderNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+            if($order->isDropship() || $order->isResell()){
+            $orderInvoice = $order->orderInvoices->first();
+            $path = str_replace('public/', 'storage/', $orderInvoice->uploaded_invoice_path);
+            return response()->download($path)->deleteFileAfterSend(false);
+
+            }else{
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.invoiceNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode500'),
+                'status' => __('statusCode.status500'),
+                'message' => __('auth.invoiceDownloadFailed'),
+            ]], __('statusCode.statusCode200'));
+        }
+
     }
 }

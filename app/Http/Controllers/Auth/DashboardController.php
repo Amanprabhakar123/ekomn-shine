@@ -394,8 +394,7 @@ class DashboardController extends Controller
                 $delivery_date = $shipment->delivery_date;
             }
         }
-
-        $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product'])->where('id', $myOrderId)->first();
+        
         $billing_address = OrderAddress::where('order_id', $myOrderId)->Billing()->first();
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
