@@ -21,6 +21,12 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Status</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
                                         </div>
@@ -286,6 +292,12 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Category</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
@@ -546,6 +558,12 @@
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">

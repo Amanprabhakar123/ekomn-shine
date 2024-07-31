@@ -787,15 +787,13 @@
         isvalid = false;
       }
 
-      if (!$('#email').val()) {
-        $('#email').addClass('is-invalid');
-        $('#emailErr').text('Please enter email');
-        isvalid = false;
-      } else if (!emailRegex.test($('#email').val())) {
+      if ($('#email').val()) {
+       if(!emailRegex.test($('#email').val())) {
         $('#email').addClass('is-invalid');
         $('#emailErr').text('Please enter valid email');
         isvalid = false;
       }
+    }
 
       if (!$('#mobile').val()) {
         $('#mobile').addClass('is-invalid');
@@ -1123,15 +1121,13 @@
         isvalid = false;
       }
 
-      if (!$('#resell-email').val()) {
-        $('#resell-email').addClass('is-invalid');
-        $('#resell-emailErr').text('Please enter email address');
-        isvalid = false;
-      } else if (!emailRegex.test($('#resell-email').val())) {
+      if ($('#resell-email').val()) {
+        if (!emailRegex.test($('#resell-email').val())) {
         $('#resell-email').addClass('is-invalid');
         $('#resell-emailErr').text('Please enter valid email address');
         isvalid = false;
       }
+    }
 
       if (!$('#resell-mobile').val()) {
         $('#resell-mobile').addClass('is-invalid');

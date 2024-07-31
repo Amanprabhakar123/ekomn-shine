@@ -591,7 +591,7 @@ class OrderController extends Controller
             if($request->order_type != Order::ORDER_TYPE_BULK){
                 $validator = Validator::make($request->all(), [
                     'full_name' => 'required|string',
-                    'email' => 'required|email',
+                    'email' => 'nullable|string',
                     'mobile' => 'required|string|max:10|min:10',
                     'order_type' => 'required|integer',
                     'store_order' => 'nullable|string',
