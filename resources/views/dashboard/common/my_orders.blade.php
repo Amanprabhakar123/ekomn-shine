@@ -744,66 +744,49 @@
             const allCheckboxes = document.querySelectorAll('.form-check-input');
 
             // Initialize an array to store the IDs of checked checkboxes
-            const orderId = [];
+            const orderId = {
+                data: []
+            };
 
             // Iterate over each checkbox
             allCheckboxes.forEach(checkbox => {
                 // Check if the checkbox is checked
                 if (checkbox.checked) {
                     // Add the value (ID) of the checked checkbox to the array
-                    orderId.push(checkbox.value);
+                    orderId.data.push(checkbox.value);
                 }
             });
 
             // Check if any IDs have been selected
-            if (orderId.length > 0) {
+            if (orderId.data.length > 0) {
                 // Handle the selected IDs (e.g., prepare for CSV download)
-                ApiRequest(`orders-export-csv`, 'POST', {
-                        order_id: orderId
+                // Make an API request to download the selected products
+                fetch('{{ route('orders.export') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderId)
                     })
                     .then(response => {
-                        if (response.data.statusCode == 200) {
-
-                            // Create an invisible link and trigger a click to download the file
-                            var link = document.createElement('a');
-                            link.href = response.data.csv_url;
-                            link.download = 'orders.csv'; // Set the desired file name
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            // Download the zip file
-                            if (response.data.zip_url) {
-                                var zipLink = document.createElement('a');
-                                zipLink.href = response.data.zip_url;
-                                zipLink.download = 'order_invoices.zip'; // Set the desired file name
-                                document.body.appendChild(zipLink);
-                                zipLink.click();
-                                document.body.removeChild(zipLink);
-                            }
-
-                        } else {
-                            Swal.fire({
-                                title: "Error!",
-                                text: response.data.message,
-                                icon: "error",
-                                didOpen: () => {
-                                    // Apply inline CSS to the title
-                                    const title = Swal.getTitle();
-                                    title.style.color = 'red';
-                                    title.style.fontSize = '20px';
-
-                                    // Apply inline CSS to the content
-                                    const content = Swal.getHtmlContainer();
-                                    //   content.style.color = 'blue';
-
-                                    // Apply inline CSS to the confirm button
-                                    const confirmButton = Swal.getConfirmButton();
-                                    confirmButton.style.backgroundColor = '#feca40';
-                                    confirmButton.style.color = 'white';
-                                }
-                            });
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
+                        return response.blob();
                     })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'Orders_' + Date.now() + '.zip';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading products:', error);
+                    });
 
             } else {
                 // Display an error message if no checkboxes are selected

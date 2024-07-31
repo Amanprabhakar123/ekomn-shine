@@ -1018,7 +1018,7 @@ class OrderController extends Controller
     {
         try {
             // Retrieve and validate order IDs
-            $orderIds = $request->input('order_id');
+            $orderIds = $request->data;
             if (! is_array($orderIds)) {
                 throw new \Exception('Invalid order IDs format.');
             }
@@ -1026,15 +1026,15 @@ class OrderController extends Controller
             // Generate a unique filename for the CSV
             $timestamp = time();
             $csvFilename = 'orders-'.$timestamp.'.csv';
-            $csvFilepath = storage_path('app/public/'.$csvFilename);
+            $csvFilepath = storage_path('app/public/export/'.auth()->user()->id.'/'.$csvFilename);
 
             // Create a base path for storing the files
-            $basePath = storage_path('app/public/export/'.auth()->user()->id.'/order_invoice_'.$timestamp);
+            $basePath = storage_path('app/public/export/'.auth()->user()->id);
             if (! file_exists($basePath)) {
                 mkdir($basePath, 0777, true);
             }
 
-            // Create CSV file and populate it
+            // Create and write headers to the CSV file
             $file = fopen($csvFilepath, 'w');
             fputcsv($file, [
                 'ORDER NUMBER', 'STORE ORDER', 'PRODUCT TITLE', 'CUSTOMER NAME',
@@ -1059,6 +1059,7 @@ class OrderController extends Controller
                     ], __('statusCode.statusCode200'));
                 }
 
+                // Collect and write order data to the CSV file
                 $quantity = 0;
                 $title = '';
                 foreach ($order->orderItemsCharges as $itemCharge) {
@@ -1087,14 +1088,13 @@ class OrderController extends Controller
                 // Add order invoice to the base path if available
                 if ($order->isDropship() || $order->isResell()) {
                     $orderInvoice = $order->orderInvoices->first();
-                    if ($orderInvoice && Storage::exists('public/'.$orderInvoice->uploaded_invoice_path)) {
-                        $invoicePath = storage_path('app/public/'.$orderInvoice->uploaded_invoice_path);
+                    $invoicePath = str_replace('public/', 'storage/', $orderInvoice->uploaded_invoice_path);
+
+                    if ($orderInvoice) {
                         $destinationPath = $basePath.'/invoices/'.basename($invoicePath);
-                        // Create directory if it doesn't exist
                         if (! file_exists(dirname($destinationPath))) {
                             mkdir(dirname($destinationPath), 0777, true);
                         }
-                        // Copy invoice file to the destination path
                         copy($invoicePath, $destinationPath);
                     }
                 }
@@ -1102,10 +1102,10 @@ class OrderController extends Controller
 
             fclose($file);
 
-            // Add the entire folder to the ZIP archive
+            // Create a ZIP file containing the CSV and any invoices
             $zip = new ZipArchive;
             $zipFilename = 'invoices_'.$timestamp.'.zip';
-            $zipFilePath = $basePath.'/'.$zipFilename;
+            $zipFilePath = storage_path('app/public/export/').$zipFilename;
 
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
                 addFolderToZip($zip, $basePath, '');
@@ -1114,16 +1114,11 @@ class OrderController extends Controller
                 throw new \Exception('Could not create zip file');
             }
 
-            // Return JSON response with the URLs to the generated files
-            return response()->json([
-                'data' => [
-                    'csv_url' => asset('storage/'.$csvFilename),
-                    'zip_url' => asset('storage/export/'.auth()->user()->id.'/order_invoice_'.$timestamp.'/'.$zipFilename),
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200'),
-                    'message' => __('auth.orderCSV'),
-                ],
-            ], __('statusCode.statusCode200'));
+            // Send the ZIP file to the user and clean up temporary files
+            $response = response()->download($zipFilePath)->deleteFileAfterSend(true);
+            unlinkFile($basePath);
+
+            return $response;
 
         } catch (\Exception $e) {
             // Log exception details
