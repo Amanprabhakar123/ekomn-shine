@@ -1,23 +1,26 @@
 <?php
 
-use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
-use App\Http\Controllers\APIAuth\CategoryController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\BulkUploadController;
-use App\Http\Controllers\Import\ImportController;
+use App\Models\CourierDetails;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FeedBackController;
+use App\Http\Controllers\BulkUploadController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\APIAuth\AuthController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\ResetController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\CategoryController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +69,10 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('create-order', [DashboardController::class, 'createOrder'])->name('create.order');
     Route::get('my-orders', [DashboardController::class, 'myOrders'])->name('my.orders');
     Route::get('view-orders/{id}', [DashboardController::class, 'viewOrder'])->name('view.order');
+    Route::get('courier-details', [CourierDetailsController::class, 'index'])->name('courier-details');
+    Route::get('courier-list', [CourierDetailsController::class, 'show'])->name('courier.list');
+    Route::get('edit-courier/{id}', [CourierDetailsController::class, 'edit'])->name('edit.courier');
+    Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -99,9 +106,14 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('orders', [OrderController::class, 'orders'])->name('orders');
         Route::post('orders/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
         Route::post('/update-order', [OrderController::class, 'updateOrder'])->name('update.order');
+        Route::get('order/tracking/list', [OrderController::class, 'OrderTrackingList'])->name('order.tracking.list');
+        Route::post('order/tracking/update', [OrderController::class, 'updatOrderTrackingStatus'])->name('order.tracking.update');
+        Route::post('rating', [FeedBackController::class, 'store'])->name('rating');
         Route::get('/download-invoice/{id}', [OrderController::class, 'downloadInvoice'])->name('download.invoice');
         Route::post('/orders-invoice', [OrderController::class, 'orderInvoice'])->name('orders.invoice');
         Route::post('orders-export-csv', [OrderController::class, 'exportOrders'])->name('orders.export');
+        Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
+        Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
     });
 });
 

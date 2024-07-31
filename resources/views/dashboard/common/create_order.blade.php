@@ -787,15 +787,13 @@
         isvalid = false;
       }
 
-      if (!$('#email').val()) {
-        $('#email').addClass('is-invalid');
-        $('#emailErr').text('Please enter email');
-        isvalid = false;
-      } else if (!emailRegex.test($('#email').val())) {
+      if ($('#email').val()) {
+       if(!emailRegex.test($('#email').val())) {
         $('#email').addClass('is-invalid');
         $('#emailErr').text('Please enter valid email');
         isvalid = false;
       }
+    }
 
       if (!$('#mobile').val()) {
         $('#mobile').addClass('is-invalid');
@@ -1123,15 +1121,13 @@
         isvalid = false;
       }
 
-      if (!$('#resell-email').val()) {
-        $('#resell-email').addClass('is-invalid');
-        $('#resell-emailErr').text('Please enter email address');
-        isvalid = false;
-      } else if (!emailRegex.test($('#resell-email').val())) {
+      if ($('#resell-email').val()) {
+        if (!emailRegex.test($('#resell-email').val())) {
         $('#resell-email').addClass('is-invalid');
         $('#resell-emailErr').text('Please enter valid email address');
         isvalid = false;
       }
+    }
 
       if (!$('#resell-mobile').val()) {
         $('#resell-mobile').addClass('is-invalid');
@@ -1651,7 +1647,7 @@
                     $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 
                 } else {
-                    const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1659,7 +1655,7 @@
                 $dropshipInvoiceRow);
                 }
             }else{
-              const $dropshipInvoice = $('#dropshipInvoice tbody');
+              const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1667,7 +1663,7 @@
                 $dropshipInvoiceRow);
             }
         }).catch(data => {
-            const $dropshipInvoice = $('#dropshipInvoice tbody');
+            const $dropshipInvoice = $('.payInvoiceTable tbody');
             $dropshipInvoice.empty();
 
             const $dropshipInvoiceRow = $('<tr></tr>').html(

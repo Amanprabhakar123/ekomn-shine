@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Charges extends Model
 {
     use HasFactory, LogsActivity;
-    
+
     // Constants for Other Charges
     const SHIPPING_CHARGES = 'Shipping charges';
     const PACKING_CHARGES = 'Packing charges';
@@ -65,17 +65,17 @@ class Charges extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly([
-            'other_charges',
-            'hsn',
-            'gst_bracket',
-            'category',
-            'range',
-            'value',
-        ])
-        ->logOnlyDirty()
-        ->useLogName('Charges Log')
-        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} charges with ID: {$this->id}");
+            ->logOnly([
+                'other_charges',
+                'hsn',
+                'gst_bracket',
+                'category',
+                'range',
+                'value',
+            ])
+            ->logOnlyDirty()
+            ->useLogName('Charges Log')
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} charges with ID: {$this->id}");
     }
 
     /**
@@ -95,20 +95,31 @@ class Charges extends Model
      * @param string $category
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function getValueBasedOnAmount($ranges, $amount) {
-        foreach ($ranges as $range) {
-            if ($range['range'] === ">1000") {
-                if ($amount > 1000) {
-                    return $range['value'];
-                }
-            } else {
-                list($min, $max) = explode(' to ', $range['range']);
-                if ($amount >= $min && $amount <= $max) {
-                    return $range['value'];
+    public static function getValueBasedOnAmount($ranges, $amount)
+    {
+        try {
+            foreach ($ranges as $range) {
+                if ($range['range'] == ">1000") {
+                    if ($amount > 1000) {
+                        return $range['value'];
+                    }
+                } else {
+                    $array = explode(' to ', $range['range']);
+                    if (count($array) > 1) {
+                        list($min, $max) = explode(' to ', $range['range']);
+                        if ($amount >= $min && $amount <= $max) {
+                            return $range['value'];
+                        }
+                    } else {
+                        if ($amount >= $range['range']) {
+                            return $range['value'];
+                        }
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            throw  $e;
         }
-    
         // If the amount exceeds all ranges, return the value of the maximum range
         $lastRange = end($ranges);
         return $lastRange['value'];
@@ -132,6 +143,4 @@ class Charges extends Model
                 return 'Unknown';
         }
     }
-
-
 }

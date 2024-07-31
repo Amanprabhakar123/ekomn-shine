@@ -43,6 +43,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_EDIT_ORDER = 'edit_order';
     const PERMISSION_CANCEL_ORDER = 'cancel_order';
     const PERMISSION_ADD_NEW_RETURN = 'add_new_return';
+    const PERMISSION_ADD_COURIER = 'add_new_courier';
+    const PERMISSION_LIST_COURIER = 'list_courier';
+    const PERMISSION_EDIT_COURIER = 'edit_courier';
+    const PERMISSION_ORDER_TRACKING = 'order_tracking';
+    
 
 
     

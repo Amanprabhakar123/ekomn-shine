@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\FeedBack;
 use App\Models\Shipment;
 use App\Models\OrderRefund;
 use App\Models\OrderAddress;
@@ -100,6 +101,12 @@ class Order extends Model
         self::STATUS_DELIVERED,
         self::STATUS_CANCELLED,
         self::STATUS_RTO,
+    ];
+
+    const STATUS_ORDER_TRACKING = [
+        self::STATUS_DISPATCHED,
+        self::STATUS_IN_TRANSIT,
+        self::STATUS_DELIVERED,
     ];
 
     //Default Refund amound Draft Case
@@ -387,6 +394,17 @@ class Order extends Model
     public function supplierPaymentsThrough()
     {
         return $this->hasManyThrough(SupplierPayment::class, OrderPayment::class, 'order_id', 'order_payment_id', 'id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+
+    public function feedBack()
+    {
+        return $this->hasOne(FeedBack::class, 'order_id', 'id');
     }
 
     /**

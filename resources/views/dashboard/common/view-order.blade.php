@@ -4,7 +4,7 @@
     <div class="ek_dashboard">
         <div class="ek_content">
         <input type="hidden" id="orderID" value="{{ salt_encrypt($myOrderId) }}" name="orderID">
-            @if (auth()->user()->hasRole(ROLE_BUYER))
+        @if (auth()->user()->hasRole(ROLE_BUYER))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -21,6 +21,12 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Status</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->getStatus()}}" disabled>
                                         </div>
@@ -28,17 +34,53 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
-                                            @isset($courier_detatils)
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @isset($shipment)
+                                            <select class="form-select" id="courier_id" name="courier_id" disabled>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                @if($courier->id == $shipment->courier_id)
+                                                <option selected value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @else
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endif
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @else
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                 id="courierName" name="courierName" disabled>
+                                            <select class="form-select" id="courier_id" name="courier_id" disabled>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @endif
                                         </div>
                                         <p id="error_courier"></p>
 
                                     </div>
+
+                                    @isset($courier_detatils)
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            id="courierName" name="courierName" value="{{$courier_detatils->courier_provider_name}}" disabled>
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @else
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            id="courierName" name="courierName">
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @endif
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
@@ -88,7 +130,8 @@
                                 </div>
                             </section>
                             <section class="mt30">
-                                <h4 class="subheading mb-1 d-flex-ek align-items-center">Order Summery
+                                <h4 class="subheading mb-1 d-flex-ek align-items-center justify-content-between">
+                                    <div class="d-flex-ek align-items-center gap-2">Order Summery
                                     <div class="detailSku">
                                         [
                                         <strong>SKU:</strong>
@@ -99,7 +142,8 @@
                                         @endif
                                         ]
                                     </div>
-                                     @if($orderUpdate->isDropship() || $orderUpdate->isResell())
+                                    </div>
+                                    @if($orderUpdate->isDropship() || $orderUpdate->isResell())
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
                                     @endif
                                 </h4>
@@ -181,7 +225,7 @@
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
                                    
-                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
@@ -192,8 +236,10 @@
                                     @endif
                                 </div>
                             </section>
+                            @if($orderUpdate->isDelivered())    
+                            @if(empty($orderUpdate->feedBack))
                             <section class="mt20">
-                                <form action="" class="eklabel_w">
+                                <form action="#" id="ratingForm" class="eklabel_w">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6">
                                             <h4 class="subheading mb-2">Product feedback</h4>
@@ -201,24 +247,29 @@
                                                 <label class="eklabel align-items-center bold">Rate Us:</label>
                                                 <div class="ek_f_input">
                                                     <div class="star-rating">
-                                                        <span class="star active" data-value="1">&#9733;</span>
-                                                        <span class="star active" data-value="2">&#9733;</span>
-                                                        <span class="star active" data-value="3">&#9733;</span>
+                                                        <span class="star" data-value="1">&#9733;</span>
+                                                        <span class="star" data-value="2">&#9733;</span>
+                                                        <span class="star" data-value="3">&#9733;</span>
                                                         <span class="star" data-value="4">&#9733;</span>
                                                         <span class="star" data-value="5">&#9733;</span>
                                                     </div>
+                                                    <input type="hidden" name="rating" id="ratingInput">
                                                 </div>
                                             </div>
                                             <div class="ek_group">
                                                 <label class="eklabel align-items-start bold">Comment:</label>
                                                 <div class="ek_f_input">
-                                                    <textarea rows="3" class="form-control resizer_none" placeholder="Type here..."></textarea>
+                                                    <textarea rows="3" name="comment" id="comment" class="form-control resizer_none" placeholder="Type here..."></textarea>
                                                 </div>
                                             </div>
+                                        
+                                        <button type="submit" class="btn btnekomn btn-sm ml-10" id="submitRating">Submit</button>
                                         </div>
                                     </div>
                                 </form>
                             </section>
+                            @endif
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -241,6 +292,12 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Category</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->getOrderType()}}" disabled>
                                         </div>
@@ -254,17 +311,53 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
-                                            @isset($courier_detatils)
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @isset($shipment)
+                                            <select class="form-select" id="courier_id" name="courier_id" disabled>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                @if($courier->id == $shipment->courier_id)
+                                                <option selected value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @else
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endif
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @else
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                 id="courierName" name="courierName">
+                                            <select class="form-select" id="courier_id" name="courier_id" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @endif
                                         </div>
                                         <p id="error_courier"></p>
 
                                     </div>
+
+                                    @isset($courier_detatils)
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            id="courierName" name="courierName" value="{{$courier_detatils->courier_provider_name}}" disabled>
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @else
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            id="courierName" name="courierName">
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @endif
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
@@ -272,7 +365,7 @@
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
                                             value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
                                             @else
-                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            <input type="text" class="form-control" placeholder="Enter Traking No" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 value="" id="trackingNo" name="trackingNo">
                                             @endif
                                         </div>
@@ -286,7 +379,7 @@
                                             <input type="date" class="form-control" id="shippingDate"
                                             name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate"
+                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -298,11 +391,11 @@
                                         <div class="mt10">
                                             <label class="bold">Delivery Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control"  id="delhiveryDate" value="{{$delivery_date->toDateString()}}"
-                                                name="delhiveryDate" disabled>
+                                            <input type="date" class="form-control"  id="deliveryDate" value="{{$delivery_date->toDateString()}}"
+                                                name="deliveryDate" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="delhiveryDate"
-                                            name="delhiveryDate">
+                                            <input type="date" class="form-control" value="" id="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            name="deliveryDate">
                                             @endif
                                         </div>
                                         <p id="error_delhivery_date"></p>
@@ -342,7 +435,8 @@
                                 </div>
                             </section>
                             <section class="mt30">
-                                <h4 class="subheading mb-1 d-flex-ek align-items-center">Order Summery
+                                <h4 class="subheading mb-1 d-flex-ek align-items-center justify-content-between">
+                                    <div class="d-flex-ek align-items-center gap-2">Order Summery
                                     <div class="detailSku">
                                         [
                                         <strong>SKU:</strong>
@@ -352,6 +446,7 @@
                                         @endforeach
                                         @endif
                                         ]
+                                    </div>
                                     </div>
                                     @if($orderUpdate->isDropship() || $orderUpdate->isResell())
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
@@ -434,42 +529,23 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
                                 </div>
                             </section>
-                            <section class="mt30">
-                                <form action="" class="eklabel_w">
-                                    <h4 class="subheading mb-2">Product feedback</h4>
-                                    <div class="ek_group mb-1">
-                                        <label class="eklabel align-items-center bold">Rate Us:</label>
-                                        <div class="ek_f_input">
-                                            <div class="star-rating">
-                                                <span class="star active" data-value="1">&#9733;</span>
-                                                <span class="star active" data-value="2">&#9733;</span>
-                                                <span class="star active" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ek_group">
-                                        <label class="eklabel align-items-start bold">Comment:</label>
-                                        <div class="ek_f_input">
-                                            <textarea rows="3" class="form-control w_400_f resizer_none" placeholder="Type here..."></textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </section>
                         </div>
                     </div>
                 </div>
             @endif
             <!-- view admin order -->
-            @if (auth()->user()->hasRole(ROLE_ADMIN))
+
+ 
+ 
+ 
+ @if (auth()->user()->hasRole(ROLE_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">View Order Details</h3>
@@ -482,6 +558,12 @@
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -499,17 +581,53 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
-                                            @isset($courier_detatils)
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                value="{{$courier_detatils->courier_provider_name}}" id="courierName" name="courierName" disabled>
+                                            @isset($shipment)
+                                            <select class="form-select" id="courier_id" name="courier_id" disabled>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                @if($courier->id == $shipment->courier_id)
+                                                <option selected value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @else
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endif
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @else
-                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
-                                                 id="courierName" name="courierName">
+                                            <select class="form-select" id="courier_id" name="courier_id" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
                                             @endif
                                         </div>
                                         <p id="error_courier"></p>
 
                                     </div>
+
+                                    @isset($courier_detatils)
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            id="courierName" name="courierName" value="{{$courier_detatils->courier_provider_name}}" disabled>
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @else
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            id="courierName" name="courierName">
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @endif
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
@@ -518,7 +636,7 @@
                                             value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
                                             @else
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
-                                                value="" id="trackingNo" name="trackingNo">
+                                                value="" id="trackingNo" name="trackingNo" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                             @endif
                                         </div>
                                         <p id="error_tracking"></p>
@@ -530,7 +648,7 @@
                                             <input type="date" class="form-control" id="shippingDate"
                                             name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate"
+                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -542,11 +660,11 @@
                                         <div class="mt10">
                                             <label class="bold">Delivery Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control"  id="delhiveryDate" value="{{$delivery_date->toDateString()}}"
-                                                name="delhiveryDate" disabled>
+                                            <input type="date" class="form-control"  id="deliveryDate" value="{{$delivery_date->toDateString()}}"
+                                                name="deliveryDate" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="delhiveryDate"
-                                            name="delhiveryDate">
+                                            <input type="date" class="form-control" value="" id="deliveryDate"
+                                            name="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                             @endif
                                         </div>
                                         <p id="error_delhivery_date"></p>
@@ -604,7 +722,8 @@
                                 </div>
                             </section>
                             <section class="mt30">
-                                <h4 class="subheading mb-1 d-flex-ek align-items-center">Order Summery
+                                <h4 class="subheading mb-1 d-flex-ek align-items-center justify-content-between">
+                                    <div class="d-flex-ek align-items-center gap-2">Order Summery
                                     <div class="detailSku">
                                         [
                                         <strong>SKU:</strong>
@@ -614,6 +733,7 @@
                                         @endforeach
                                         @endif
                                         ]
+                                    </div>
                                     </div>
                                     @if($orderUpdate->isDropship() || $orderUpdate->isResell())
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="downloadInvoice('{{salt_encrypt($orderUpdate->id)}}')">Download Invoice</button> 
@@ -696,40 +816,18 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
                                 </div>
                             </section>
-                            <section class="mt30">
-                                <form action="" class="eklabel_w">
-                                    <h4 class="subheading mb-2">Product feedback</h4>
-                                    <div class="ek_group mb-1">
-                                        <label class="eklabel align-items-center bold">Rate Us:</label>
-                                        <div class="ek_f_input">
-                                            <div class="star-rating">
-                                                <span class="star active" data-value="1">&#9733;</span>
-                                                <span class="star active" data-value="2">&#9733;</span>
-                                                <span class="star active" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ek_group">
-                                        <label class="eklabel align-items-start bold">Comment:</label>
-                                        <div class="ek_f_input">
-                                            <textarea rows="3" class="form-control w_400_f resizer_none" placeholder="Type here..."></textarea>
-                                        </div>
-                                    </div>
-                                </form>
-                            </section>
                         </div>
                     </div>
                 </div>
             @endif
+           
         </div>
         @include('dashboard.layout.copyright')
     </div>
@@ -739,6 +837,27 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
+
+$(document).ready(function() {
+    @isset($shipment)
+    @if($shipment->courier_id == 1)
+    $('#show_courier').show();
+    @else
+    $('#show_courier').hide();
+    @endif
+    @else
+    $('#show_courier').hide();
+    @endif
+});
+        $('#courier_id').change(function() {
+            var courier_id = $('#courier_id').val();
+            if (courier_id == '1') {
+                $('#show_courier').show();
+            } else {
+                $('#show_courier').hide();
+            }
+        });
+        var ratingInput = document.getElementById('ratingInput');
         document.addEventListener('DOMContentLoaded', () => {
             const stars = document.querySelectorAll('.star');
 
@@ -747,6 +866,7 @@
                     const rating = parseInt(star.getAttribute('data-value'));
                     stars.forEach((s, index) => {
                         if (index < rating) {
+                            ratingInput.value = rating;
                             s.classList.add('active');
                         } else {
                             s.classList.remove('active');
@@ -775,36 +895,49 @@
         $(document).ready(function() {
             $("#updateOrder").on('click', function() {
                 var courierName = $("#courierName").val();
+                var courier_id = $("#courier_id").val();
                 var trackingNo = $("#trackingNo").val();
                 var shippingDate = $("#shippingDate").val();
-                var delhiveryDate = $("#delhiveryDate").val();
+                var deliveryDate = $("#deliveryDate").val();
                 var orderID = $('#orderID').val();
-
-                if (courierName == '') {
-                    $("#error_courier").html('This Field is Required');
-                    $("#error_courier").css('color', 'red');
-                }
                 if (trackingNo == '') {
                     $("#error_tracking").html('This Field is Required');
                     $("#error_tracking").css('color', 'red');
+                }else{
+                    $("#error_tracking").html('');
                 }
                 if (shippingDate == '') {
                     $("#error_shipping_date").html('This Field is Required');
                     $("#error_shipping_date").css('color', 'red');
+                }else{
+                    $("#error_shipping_date").html('');
                 }
-                if (delhiveryDate == '') {
+                if (deliveryDate == '') {
                     $("#error_delhivery_date").html('This Field is Required');
                     $("#error_delhivery_date").css('color', 'red');
-
+                }else{
+                    $("#error_delhivery_date").html('');
+                }
+                if (courier_id == '1') {
+                    if (courierName == '') {
+                        $("#error_courier_text").html('This Field is Required');
+                        $("#error_courier_text").css('color', 'red');
+                    }else{
+                        $("#error_courier_text").html('');
+                    }
+                }else{
+                    courierName ='';
+                    $("#error_courier_text").html('');
                 }
                 const body = {
                     courierName: courierName,
                     trackingNo: trackingNo,
                     shippingDate: shippingDate,
-                    delhiveryDate: delhiveryDate,
+                    deliveryDate: deliveryDate,
                     orderID: orderID,
+                    courier_id: courier_id
                 }
-                if (courierName != '' && trackingNo != '' && shippingDate != '' && delhiveryDate != '' &&
+                if (courier_id != '' && trackingNo != '' && shippingDate != '' && deliveryDate != '' &&
                     orderID != '') {
                     ApiRequest("update-order", 'POST', body).then(response => {
                         if (response.data.statusCode == 200) {
@@ -944,7 +1077,6 @@
         $('document').ready(function(){
             var formData = new FormData();
             $('#payBtn').on('click', function(){
-                alert('clicked');
                 const formData = new FormData();
                 formData.append('order_id', $('#orderID').val());
             ApiRequest('orders', 'POST', formData)
@@ -1040,5 +1172,54 @@
 
         
     }
+    </script>
+
+    <script>
+        $('document').ready(function(){
+            var formData = new FormData();
+            $('#ratingForm').submit(function(e){
+                e.preventDefault();
+                
+                let rating = $('#ratingInput').val();
+                let comment = $('#comment').val();
+                let order_id = $('#orderID').val();
+
+                formData.append('rating', rating);
+                formData.append('comment', comment);
+                formData.append('order_id', order_id);
+
+                ApiRequest('rating', 'POST', formData)
+                .then(response => {
+                    if(response.data.statusCode == 200){
+                        Swal.fire({
+                            title: 'Success',
+                            text: '"Thank you so much for your feedback and rating! We’re thrilled to hear that you had a positive experience."',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK',
+                            didOpen: () => {
+                                const title = Swal.getTitle();
+                                title.style.fontSize = '25px';
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            }); 
+        });
+    </script>
+    </script>
     </script>
 @endsection

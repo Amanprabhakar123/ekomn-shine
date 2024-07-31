@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\FeedBack;
 use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
