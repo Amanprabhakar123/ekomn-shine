@@ -1647,7 +1647,7 @@
                     $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 
                 } else {
-                    const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1655,7 +1655,7 @@
                 $dropshipInvoiceRow);
                 }
             }else{
-              const $dropshipInvoice = $('#dropshipInvoice tbody');
+              const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1663,7 +1663,7 @@
                 $dropshipInvoiceRow);
             }
         }).catch(data => {
-            const $dropshipInvoice = $('#dropshipInvoice tbody');
+            const $dropshipInvoice = $('.payInvoiceTable tbody');
             $dropshipInvoice.empty();
 
             const $dropshipInvoiceRow = $('<tr></tr>').html(
