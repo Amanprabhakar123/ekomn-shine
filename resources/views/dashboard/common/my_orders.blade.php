@@ -618,42 +618,33 @@
         }
         // download the invoice pdf
         function downloadInvoice(orderId) {
-            ApiRequest(`orders-invoice`, 'POST', {
-                    order_id: orderId
+            fetch('{{ route('orders.invoice') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderId)
                 })
                 .then(response => {
-                    if (response.data.statusCode == 200) {
-                        // window.location.href = response.data.url;
-                        var link = document.createElement('a');
-                        link.href = response.data.url;
-                        link.download = response.data.fileName; // Optional: specify a filename
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-
-                    } else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: "Order Invoice Failed",
-                            icon: "error",
-                            didOpen: () => {
-                                // Apply inline CSS to the title
-                                const title = Swal.getTitle();
-                                title.style.color = 'red';
-                                title.style.fontSize = '20px';
-
-                                // Apply inline CSS to the content
-                                const content = Swal.getHtmlContainer();
-                                //   content.style.color = 'blue';
-
-                                // Apply inline CSS to the confirm button
-                                const confirmButton = Swal.getConfirmButton();
-                                confirmButton.style.backgroundColor = '#feca40';
-                                confirmButton.style.color = 'white';
-                            }
-                        });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
+                    return response.blob();
                 })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Invoice_' + Date.now() + '.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error downloading products:', error);
+                });
+
 
         }
 

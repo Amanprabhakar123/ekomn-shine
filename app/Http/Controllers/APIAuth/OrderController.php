@@ -21,7 +21,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use League\Fractal\Manager;
@@ -920,7 +919,7 @@ class OrderController extends Controller
     {
         try {
             // Decrypt the order ID from the request
-            $orderId = salt_decrypt($request->order_id);
+            $orderId = salt_decrypt($request->all()[0]);
 
             // Find the order by the decrypted ID
             $order = Order::find($orderId);
@@ -959,25 +958,8 @@ class OrderController extends Controller
                 $pdf = Pdf::loadView('pdf.invoice', $invoiceData);
                 $fileName = 'invoice_'.$invoice->invoice_number.'.pdf';
 
-                // Define the path to save the PDF
-                $pdfPath = 'orderInvoice/'.$fileName;
-
-                // Save the PDF to the storage path
-                Storage::disk('public')->put($pdfPath, $pdf->output());
-
-                // Get the URL to the stored file
-                $fileUrl = Storage::url($pdfPath);
-
-                // Return the URL and file details in the response
-                return response()->json([
-                    'data' => [
-                        'url' => $fileUrl,
-                        'fileName' => $fileName,
-                        'statusCode' => __('statusCode.statusCode200'),
-                        'status' => __('statusCode.status200'),
-                        'message' => __('auth.orderInvoice'),
-                    ],
-                ], __('statusCode.statusCode200'));
+                // Return the PDF as a download
+                return $pdf->download($fileName);
             } else {
                 // Return error response if invoice is not found
                 return response()->json([
@@ -988,7 +970,6 @@ class OrderController extends Controller
                     ],
                 ], __('statusCode.statusCode200'));
             }
-
         } catch (\Exception $e) {
             // Capture and log exception details
             $exceptionDetails = [
