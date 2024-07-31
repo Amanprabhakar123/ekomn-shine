@@ -19,10 +19,17 @@
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateTimeString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -292,8 +299,14 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateTimeString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -562,8 +575,14 @@
                                     </div>
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateTimeString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">

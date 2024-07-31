@@ -34,7 +34,6 @@
                         <table class="normalTable tableSorting whitespace">
                             <thead>
                                 <tr>
-                                    <th>Select</th>
                                     <th data-sort-field="order_number">eKomn Order</th>
                                     <th data-sort-field="store_order">Store Order</th>
                                     <th data-sort-field="title">Product Title
@@ -562,11 +561,6 @@
                 let a = status(item);
                 return `
                <tr>
-                <td> <div
-                        class="form-check form-check-sm form-check-custom form-check-solid mt-3">
-                        <input class="form-check-input" type="checkbox"
-                            value="${item.id}">
-                    </div></td>
                 <td>${item.order_no}</td>
                 <td>
                   ${item.store_order}
