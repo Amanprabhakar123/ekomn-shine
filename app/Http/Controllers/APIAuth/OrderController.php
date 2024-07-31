@@ -27,6 +27,7 @@ use Illuminate\Validation\ValidationException;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection;
+use ZipArchive;
 
 class OrderController extends Controller
 {
@@ -910,6 +911,11 @@ class OrderController extends Controller
 
     }
 
+    /**
+     * Get the order details for download invoice.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function orderInvoice(Request $request)
     {
         try {
@@ -1003,6 +1009,11 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * Get the order details for Export Ordders and download CSV.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function exportOrders(Request $request)
     {
         try {
@@ -1013,81 +1024,101 @@ class OrderController extends Controller
             }
 
             // Generate a unique filename for the CSV
-            $filename = 'orders-'.time().'.csv';
-            $filepath = storage_path('app/public/'.$filename);
+            $timestamp = time();
+            $csvFilename = 'orders-'.$timestamp.'.csv';
+            $csvFilepath = storage_path('app/public/'.$csvFilename);
 
-            // Define the CSV file generation logic
-            $generateCsv = function () use ($filepath, $orderIds) {
-                $file = fopen($filepath, 'w');
+            // Create a base path for storing the files
+            $basePath = storage_path('app/public/export/'.auth()->user()->id.'/order_invoice_'.$timestamp);
+            if (! file_exists($basePath)) {
+                mkdir($basePath, 0777, true);
+            }
 
-                // Write CSV headers
-                fputcsv($file, [
-                    'ORDER NUMBER',
-                    'STORE ORDER',
-                    'PRODUCT TITLE',
-                    'CUSTOMER NAME',
-                    'DELIVERY ADDRESS',
-                    'BILLING ADDRESS',
-                    'QUANTITY',
-                    'DATE',
-                    'TOTAL AMOUNT',
-                    'CATEGORY',
-                    'TYPE',
-                    'STATUS',
-                    'PAYMENT STATUS',
-                ]);
+            // Create CSV file and populate it
+            $file = fopen($csvFilepath, 'w');
+            fputcsv($file, [
+                'ORDER NUMBER', 'STORE ORDER', 'PRODUCT TITLE', 'CUSTOMER NAME',
+                'CUSTOMER EMAIL', 'CUSTOMER PHONE', 'DELIVERY ADDRESS',
+                'BILLING ADDRESS', 'QUANTITY', 'DATE', 'TOTAL AMOUNT',
+                'CATEGORY', 'TYPE', 'STATUS', 'PAYMENT STATUS',
+            ]);
 
-                // Populate CSV with order details
-                foreach ($orderIds as $encryptedId) {
-                    $orderId = salt_decrypt($encryptedId);
-                    $order = Order::find($orderId);
+            foreach ($orderIds as $encryptedId) {
+                $orderId = salt_decrypt($encryptedId);
+                $order = Order::find($orderId);
 
-                    if (! $order) {
-                        fclose($file);
+                if (! $order) {
+                    fclose($file);
 
-                        return response()->json([
-                            'data' => [
-                                'statusCode' => __('statusCode.statusCode400'),
-                                'status' => __('statusCode.status404'),
-                                'message' => __('auth.orderNotFound'),
-                            ],
-                        ], __('statusCode.statusCode200'));
-                    }
-
-                    $quantity = 0;
-                    $title = '';
-                    foreach ($order->orderItemsCharges as $itemCharge) {
-                        $quantity += $itemCharge->quantity;
-                        $title = $itemCharge->product->title;
-                    }
-
-                    fputcsv($file, [
-                        $order->order_number,
-                        $order->store_order ?? '',
-                        $title,
-                        $order->full_name,
-                        $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
-                        $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
-                        $quantity,
-                        $order->order_date->toDateString(),
-                        $order->total_amount,
-                        $order->getOrderType(),
-                        $order->getOrderChannelType(),
-                        $order->getStatus(),
-                        $order->getPaymentStatus(),
-                    ]);
+                    return response()->json([
+                        'data' => [
+                            'statusCode' => __('statusCode.statusCode400'),
+                            'status' => __('statusCode.status404'),
+                            'message' => __('auth.orderNotFound'),
+                        ],
+                    ], __('statusCode.statusCode200'));
                 }
 
-                fclose($file);
-            };
+                $quantity = 0;
+                $title = '';
+                foreach ($order->orderItemsCharges as $itemCharge) {
+                    $quantity += $itemCharge->quantity;
+                    $title = $itemCharge->product->title;
+                }
 
-            // Execute CSV file generation
-            $generateCsv();
+                fputcsv($file, [
+                    $order->order_number,
+                    $order->store_order ?? '',
+                    $title,
+                    $order->full_name,
+                    $order->email,
+                    $order->mobile_number,
+                    $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                    $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                    $quantity,
+                    $order->order_date->toDateString(),
+                    $order->total_amount,
+                    $order->getOrderType(),
+                    $order->getOrderChannelType(),
+                    $order->getStatus(),
+                    $order->getPaymentStatus(),
+                ]);
 
-            // Return JSON response with the URL to the generated CSV
+                // Add order invoice to the base path if available
+                if ($order->isDropship() || $order->isResell()) {
+                    $orderInvoice = $order->orderInvoices->first();
+                    if ($orderInvoice && Storage::exists('public/'.$orderInvoice->uploaded_invoice_path)) {
+                        $invoicePath = storage_path('app/public/'.$orderInvoice->uploaded_invoice_path);
+                        $destinationPath = $basePath.'/invoices/'.basename($invoicePath);
+                        // Create directory if it doesn't exist
+                        if (! file_exists(dirname($destinationPath))) {
+                            mkdir(dirname($destinationPath), 0777, true);
+                        }
+                        // Copy invoice file to the destination path
+                        copy($invoicePath, $destinationPath);
+                    }
+                }
+            }
+
+            fclose($file);
+
+            // Add the entire folder to the ZIP archive
+            $zip = new ZipArchive;
+            $zipFilename = 'invoices_'.$timestamp.'.zip';
+            $zipFilePath = $basePath.'/'.$zipFilename;
+
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                addFolderToZip($zip, $basePath, '');
+                $zip->close();
+            } else {
+                throw new \Exception('Could not create zip file');
+            }
+
+            // Return JSON response with the URLs to the generated files
             return response()->json([
                 'data' => [
-                    'url' => asset('storage/'.$filename),
+                    'csv_url' => asset('storage/'.$csvFilename),
+                    'zip_url' => asset('storage/export/'.auth()->user()->id.'/order_invoice_'.$timestamp.'/'.$zipFilename),
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.orderCSV'),

@@ -766,11 +766,20 @@
 
                             // Create an invisible link and trigger a click to download the file
                             var link = document.createElement('a');
-                            link.href = response.data.url;
+                            link.href = response.data.csv_url;
                             link.download = 'orders.csv'; // Set the desired file name
                             document.body.appendChild(link);
                             link.click();
                             document.body.removeChild(link);
+                            // Download the zip file
+                            if (response.data.zip_url) {
+                                var zipLink = document.createElement('a');
+                                zipLink.href = response.data.zip_url;
+                                zipLink.download = 'order_invoices.zip'; // Set the desired file name
+                                document.body.appendChild(zipLink);
+                                zipLink.click();
+                                document.body.removeChild(zipLink);
+                            }
 
                         } else {
                             Swal.fire({
