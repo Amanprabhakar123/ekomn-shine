@@ -20,6 +20,7 @@ use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\OrderPaymentController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 /*
@@ -73,6 +74,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('courier-list', [CourierDetailsController::class, 'show'])->name('courier.list');
     Route::get('edit-courier/{id}', [CourierDetailsController::class, 'edit'])->name('edit.courier');
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
+    Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route

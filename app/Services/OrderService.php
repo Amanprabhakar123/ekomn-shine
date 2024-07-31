@@ -20,7 +20,7 @@ use App\Models\OrderItemAndCharges;
 use App\Events\NewOrderCreatedEvent;
 use App\Models\CompanyAddressDetail;
 use App\Models\OrderPaymentDistribution;
-
+use App\Models\SupplierPayment;
 
 class OrderService
 {
@@ -901,5 +901,31 @@ class OrderService
         ];
         $refund = $api->payment->fetch($paymentId)->refund($data);
         return $refund;
+    }
+
+    /**
+     * Get Supplier Payment
+     * 
+     * @param integer $supplier_id
+     * 
+     * @return void
+     */
+    public function getSupplierPayment($order_details){
+        
+        $supplierPayment = SupplierPayment::create([
+            'distribution_id' => 1,
+            'supplier_id' => 1,
+            'order_id' => 1,
+            'adjustment_amount' => 0,
+            'disburse_amount' => 0,
+            'statement_date' => Carbon::now()->toDateTimeString(),
+            'payment_date' => Carbon::now()->toDateTimeString(),
+            'payment_status' => 1,
+            'payment_method' => 1,
+            'transaction_id' => 1,
+            'invoice_generated' => 1,
+        ]);
+         
+        dd($supplierPayment);
     }
 }
