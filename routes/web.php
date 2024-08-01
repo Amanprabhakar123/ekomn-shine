@@ -112,6 +112,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('order/tracking/update', [OrderController::class, 'updatOrderTrackingStatus'])->name('order.tracking.update');
         Route::post('rating', [FeedBackController::class, 'store'])->name('rating');
         Route::get('/download-invoice/{id}', [OrderController::class, 'downloadInvoice'])->name('download.invoice');
+        Route::post('/orders-invoice', [OrderController::class, 'orderInvoice'])->name('orders.invoice');
+        Route::post('orders-export-csv', [OrderController::class, 'exportOrders'])->name('orders.export');
         Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
         Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
     });

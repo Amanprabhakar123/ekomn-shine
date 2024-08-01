@@ -106,6 +106,8 @@ return [
     'orderCancelled' => 'Order Cancelled Successfully.',
     'orderCancelFailed' => 'Order cancellation failed after processing.',
     'invoiceNotFound' => 'Invoice not found.',
+    'orderCSV' => 'Download CSV Successfully.',
+    'orderInvoice' => 'Order Invoice Download Successfully.',
     'updateSuccess' => 'Courier Details Updated Successfully.',
     'shipmetUpdate' => 'Shipment Updated Successfully.',
 

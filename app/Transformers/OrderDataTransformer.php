@@ -46,7 +46,7 @@ class OrderDataTransformer extends TransformerAbstract
             }
 
             if(auth()->user()->hasRole(User::ROLE_BUYER)){
-                if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO()){
+                if($order->isDispatched() || $order->isDelivered() || $order->isInTransit() || $order->isRTO() || $order->isInProgress()){
                     $data['is_cancelled'] = true;
                 }else{
                     $data['is_cancelled'] = $order->isCancelled();
