@@ -129,7 +129,7 @@
                   Billing Address
                   <div class="fw-normal">
                     <input class="form-check-input" type="checkbox" id="sameas" />
-                    <label for="sameas" class="w-normal m-0">Same as aelivery address</label>
+                    <label for="sameas" class="w-normal m-0">Same as delivery address</label>
                   </div>
                 </h4>
                 <div class="row">
@@ -562,7 +562,7 @@
                   <div class="fw-normal">
                     <input class="form-check-input" type="checkbox" id="sameas_3" />
                     <div id="resell-b-addressErr" class="invalid-feedback"></div>
-                    <label for="sameas_3" class="fw-normal m-0">Same as aelivery address</label>
+                    <label for="sameas_3" class="fw-normal m-0">Same as delivery address</label>
                   </div>
                 </h4>
                 <div class="row">
@@ -841,11 +841,12 @@
         $('#b_address').addClass('is-invalid');
         $('#b_addressErr').text('Please enter address');
         isvalid = false
-      } else if (!addressRegex.test($('#b_address').val())) {
-        $('#b_address').addClass('is-invalid');
-        $('#b_addressErr').text('Please enter valid address');
-        isvalid = false;
-      }
+      } 
+      // else if (!addressRegex.test($('#b_address').val())) {
+      //   $('#b_address').addClass('is-invalid');
+      //   $('#b_addressErr').text('Please enter valid address');
+      //   isvalid = false;
+      // }
 
       if (!$('#b_state').val()) {
         $('#b_state').addClass('is-invalid');
@@ -1143,11 +1144,12 @@
         $('#resell-d-address').addClass('is-invalid');
         $('#resell-d-addressErr').text('Please enter address');
         isvalid = false;
-      } else if (!addressRegex.test($('#resell-d-address').val())) {
-        $('#resell-d-address').addClass('is-invalid');
-        $('#resell-d-addressErr').text('Please enter valid address');
-        isvalid = false;
-      }
+      } 
+      // else if (!addressRegex.test($('#resell-d-address').val())) {
+      //   $('#resell-d-address').addClass('is-invalid');
+      //   $('#resell-d-addressErr').text('Please enter valid address');
+      //   isvalid = false;
+      // }
 
       if (!$('#resell-d-state').val()) {
         $('#resell-d-state').addClass('is-invalid');
@@ -1203,21 +1205,21 @@
         isvalid = false;
       }
 
-      const fileInputResell = $('#UploadInvoiceResell')[0];
-      const file = fileInputResell.files[0];
-      // Check if a file is selected
-      if (!file) {
-        $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
-        isvalid = false;
-      }
-      fileInputResell.addEventListener('change', function() {
-        const file = fileInputResell.files[0];
-        // Check if a file is selected
-        if (file) {
-          $('#UploadInvoiceResellErr').text('');
-          isvalid = true;
-        }
-      });
+      // const fileInputResell = $('#UploadInvoiceResell')[0];
+      // const file = fileInputResell.files[0];
+      // // Check if a file is selected
+      // if (!file) {
+      //   $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
+      //   isvalid = false;
+      // }
+      // fileInputResell.addEventListener('change', function() {
+      //   const file = fileInputResell.files[0];
+      //   // Check if a file is selected
+      //   if (file) {
+      //     $('#UploadInvoiceResellErr').text('');
+      //     isvalid = true;
+      //   }
+      // });
 
 
       //--------------------Resell Order Submit--------------------

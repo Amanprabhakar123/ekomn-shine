@@ -522,13 +522,13 @@
                         <input class="form-check-input" type="checkbox"
                             value="${item.id}">
                     </div></td>
-                <td>${item.order_no}</td>
+                <td> <a href="${item.view_order}" class="a_link">${item.order_no}</a></td>
                 <td>
                   ${item.store_order}
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                    <a href="#" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
@@ -561,13 +561,13 @@
                 let a = status(item);
                 return `
                <tr>
-                <td>${item.order_no}</td>
+                <td>  <a href="${item.view_order}" class="a_link">${item.order_no}</a></td>
                 <td>
                   ${item.store_order}
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                    <a href="#" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
