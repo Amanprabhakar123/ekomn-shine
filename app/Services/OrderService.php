@@ -911,21 +911,22 @@ class OrderService
      * @return void
      */
     public function getSupplierPayment($order_details){
-        
-        $supplierPayment = SupplierPayment::create([
-            'distribution_id' => 1,
-            'supplier_id' => 1,
-            'order_id' => 1,
-            'adjustment_amount' => 0,
-            'disburse_amount' => 0,
-            'statement_date' => Carbon::now()->toDateTimeString(),
-            'payment_date' => Carbon::now()->toDateTimeString(),
-            'payment_status' => 1,
-            'payment_method' => 1,
-            'transaction_id' => 1,
-            'invoice_generated' => 1,
-        ]);
-         
-        dd($supplierPayment);
+        try{
+            // get order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_details->id)->first();
+            // Create supplier payment
+            $supplierPayment = SupplierPayment::firstOrCreate([
+                'distribution_id' => $orderDistribution->id,
+                'supplier_id' => $order_details->supplier_id,
+                'order_id' => $order_details->id,
+                'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
+                'disburse_amount' => ($orderDistribution->amount - $orderDistribution->refunded_amount - OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                'payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD,
+                'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
+            ]);
+            return $supplierPayment;
+        }catch(\Exception $e){
+            throw $e;
+        }
     }
 }

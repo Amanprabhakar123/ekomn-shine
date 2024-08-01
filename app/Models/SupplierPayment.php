@@ -80,6 +80,16 @@ class SupplierPayment extends Model
     const PAYMENT_METHOD_WALLET = 7;
     const PAYMENT_METHOD_BANK_TRANSFER = 8;
 
+      
+    // Order Status Payment Status
+    // Pending Hold
+    // Dispatched Hold
+    // Intransit Hold
+    // Delivered Accrued
+    // Delivered+7 Days Due
+    // Paid (Updated by Adin when payment is realesd)
+    // RTO Hold
+
      /**
      * Get the options for logging changes to the model.
      */

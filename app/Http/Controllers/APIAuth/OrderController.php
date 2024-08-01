@@ -773,8 +773,6 @@ class OrderController extends Controller
             }
             $OrderService = new OrderService();
             $OrderService->getSupplierPayment($order_details);
-            dd($OrderService);
-            // dd($order_details->buyer);
             // Prepare the mail data
             $mail = [
                 'order_number' => $order_details->order_number,

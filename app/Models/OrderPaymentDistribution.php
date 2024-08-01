@@ -82,6 +82,9 @@ class OrderPaymentDistribution extends Model
     const REFUND_STATUS_PAID = self::STATUS_PAID;
     const REFUND_STATUS_DUE = self::STATUS_DUE;
 
+    // Default Adjustment amount 
+    const DEFAULT_ADJUSTMENT_AMOUNT = 0;
+
     /**
      * Get the options for logging changes to the model.
      */

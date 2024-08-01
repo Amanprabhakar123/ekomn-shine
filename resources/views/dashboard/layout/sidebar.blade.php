@@ -77,11 +77,12 @@
                     </li>
                 </ul>
             </li>
+            @if(auth()->user()->hasPermissionTo(PERMISSION_PAYMENT_LIST) )
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#payment"
                     data-bs-parent="#dashboard_ekomn" id="components">
                     <i class="fas fa-money-bill-alt menuIcon"></i>
-                    <span class="nav-link-text">Payment</span>
+                    <span class="nav-link-text">Payments</span>
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
                 <ul class="sidenav-second-level collapse" id="payment" data-bs-parent="#dashboard_ekomn">
@@ -93,6 +94,7 @@
                     </li>
                 </ul>
             </li>
+            @endif
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-envelope menuIcon"></i>

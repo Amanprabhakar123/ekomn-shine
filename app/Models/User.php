@@ -25,6 +25,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+use Faker\Provider\ar_EG\Person;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
@@ -47,10 +48,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_LIST_COURIER = 'list_courier';
     const PERMISSION_EDIT_COURIER = 'edit_courier';
     const PERMISSION_ORDER_TRACKING = 'order_tracking';
-    
-
-
-    
+    const PERMISSION_PAYMENT_LIST = 'payment_list';
+    const PERMISSION_PAYMENT_EDIT = 'payment_edit'; 
+    coNst PERMISSION_PAYMENT_EXPORT = 'payment_export';
+ 
 
     /**
      * The attributes that are mass assignable.

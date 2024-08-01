@@ -21,6 +21,7 @@ use Database\Seeders\ImportWorldSqlSeeder;
 use Database\Seeders\AddCourierPermisssion;
 use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
+use Database\Seeders\PaymentPermissionSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PincodeSeeder::class);
         $this->call(CourierList::class);
         $this->call(AddCourierPermisssion::class);
+        $this->call(PaymentPermissionSeeder::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);
