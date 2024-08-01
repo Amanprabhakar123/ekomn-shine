@@ -1164,23 +1164,44 @@ class OrderController extends Controller
                         $order->getPaymentStatus(),
                     ]);
                 }else{
-                    fputcsv($file, [
-                        $order->order_number,
-                        $order->store_order ?? '',
-                        $title,
-                        $order->full_name,
-                        '+91-xxx-xxx-xxxx',
-                        'support@ekomn.com',
-                        $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
-                        $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
-                        $quantity,
-                        $order->order_date->toDateString(),
-                        $order->total_amount,
-                        $order->getOrderType(),
-                        $order->getOrderChannelType(),
-                        $order->getStatus(),
-                        $order->getPaymentStatus(),
-                    ]);
+                    if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                        fputcsv($file, [
+                            $order->order_number,
+                            $order->store_order ?? '',
+                            $title,
+                            $order->full_name,
+                            $order->email,
+                            $order->mobile_number,
+                            $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                            $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                            $quantity,
+                            $order->order_date->toDateString(),
+                            $order->total_amount,
+                            $order->getOrderType(),
+                            $order->getOrderChannelType(),
+                            $order->getStatus(),
+                            $order->getPaymentStatus(),
+                        ]);
+                    }
+                    else{
+                        fputcsv($file, [
+                            $order->order_number,
+                            $order->store_order ?? '',
+                            $title,
+                            $order->full_name,
+                            '+91-xxx-xxx-xxxx',
+                            'support@ekomn.com',
+                            $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
+                            $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                            $quantity,
+                            $order->order_date->toDateString(),
+                            $order->total_amount,
+                            $order->getOrderType(),
+                            $order->getOrderChannelType(),
+                            $order->getStatus(),
+                            $order->getPaymentStatus(),
+                        ]);
+                    }
                 }
 
                 // Add order invoice to the base path if available
