@@ -39,8 +39,8 @@
                                 <th>Invoice</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="dataContainer">
+                            <!-- <tr>
                                 <td><input type="checkbox"></td>
                                 <td>12345</td>
                                 <td>2023-07-31</td>
@@ -60,7 +60,7 @@
                                 <td>Paid</td>
                                 <td>31</td>
                                 <td>INV12345</td>
-                            </tr>
+                            </tr> -->
                             <!-- Additional rows can go here -->
                         </tbody>
                     </table>
@@ -85,4 +85,234 @@
     </div>
     @include('dashboard.layout.copyright')
 </div>
+@endsection
+
+@section('scripts')
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+            const rowsPerPage = document.getElementById("rowsPerPage");
+            const rowInfo = document.getElementById("rowInfo");
+            const pagination = document.getElementById("pagination");
+            const prevPage = document.getElementById("prevPage");
+            const nextPage = document.getElementById("nextPage");
+            const dataContainer = document.getElementById("dataContainer");
+            let currentPage = 1;
+            let rows = parseInt(rowsPerPage.value, 10);
+            let totalRows = 0;
+
+            // Event listener for the search input field
+            const searchQuery = document.getElementById("searchQuery");
+            searchQuery.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    fetchData();
+                }
+            });
+
+            // Event listener for clicking outside the search input field
+            searchQuery.addEventListener("blur", (e) => {
+                fetchData();
+            });
+
+
+            let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+            let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+            const h_sorting = document.querySelectorAll(".h_sorting");
+            h_sorting.forEach(element => {
+                element.addEventListener("click", () => {
+                    const sortFieldElement = element;
+                    sortField = sortFieldElement.getAttribute("data-sort-field");
+                    sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+                    fetchData();
+                    h_sorting.forEach(el => {
+                        el.classList.remove("active");
+                        el.classList.remove("asc");
+                        el.classList.remove("desc");
+                    });
+                    element.classList.add("active");
+                    element.classList.add(sortOrder);
+                });
+            });
+            // Function to fetch data from the server
+            function fetchData() {
+                alert('fetchData');
+                // Make an API request to fetch inventory data
+                let apiUrl = `payment-info?per_page=${rows}&page=${currentPage}`;
+
+                if (sortField && sortOrder) {
+                    apiUrl += `&sort=${sortField}&order=${sortOrder}`;
+                }
+
+                if (searchQuery) {
+                    apiUrl += `&query=${searchQuery.value}`;
+                }
+
+
+                ApiRequest(apiUrl, 'GET')
+                    .then(response => {
+                        const data = (response.data.data);
+                        console.log(data);
+                        if (data.length === 0) {
+                            dataContainer.innerHTML =
+                                `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                        } else {
+                            response = (response.data.meta.pagination);
+                            totalRows = response.total;
+                            updatePagination();
+                            displayData(data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }
+
+            // Function to update the pagination UI
+            function updatePagination() {
+                const totalPages = Math.ceil(totalRows / rows);
+                pagination.innerHTML = "";
+                let pageList = "";
+                if (totalPages <= 5) {
+                    for (let i = 1; i <= totalPages; i++) {
+                        pageList +=
+                            `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                    }
+                } else {
+                    if (currentPage <= 3) {
+                        for (let i = 1; i <= 4; i++) {
+                            pageList +=
+                                `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        }
+                        pageList += `<li>...</li>`;
+                        pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+                    } else if (currentPage >= totalPages - 2) {
+                        pageList += `<li><a href="#" data-page="1">1</a></li>`;
+                        pageList += `<li>...</li>`;
+                        for (let i = totalPages - 3; i <= totalPages; i++) {
+                            pageList +=
+                                `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        }
+                    } else {
+                        pageList += `<li><a href="#" data-page="1">1</a></li>`;
+                        pageList += `<li>...</li>`;
+                        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                            pageList +=
+                                `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        }
+                        pageList += `<li>...</li>`;
+                        pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+                    }
+                }
+                pagination.innerHTML = pageList;
+                updateRowInfo();
+                prevPage.disabled = currentPage === 1;
+                nextPage.disabled = currentPage === totalPages;
+            }
+
+            // Function to update the row information
+            function updateRowInfo() {
+                const startRow = (currentPage - 1) * rows + 1;
+                const endRow = Math.min(currentPage * rows, totalRows);
+                rowInfo.textContent = `Showing ${startRow} to ${endRow} of ${totalRows}`;
+            }
+
+            // Function to display the inventory data in the table
+            function displayData(items) {
+                dataContainer.innerHTML = items.map(generateTableRow).join("");
+            }
+
+            // Event listener for the "rowsPerPage" select element
+            rowsPerPage.addEventListener("change", (e) => {
+                rows = parseInt(e.target.value, 10);
+                currentPage = 1;
+                fetchData();
+            });
+
+            // Event listener for the pagination links
+            pagination.addEventListener("click", (e) => {
+                if (e.target.tagName === "A") {
+                    currentPage = parseInt(e.target.dataset.page, 10);
+                    fetchData();
+                }
+            });
+
+            // Event listener for the "prevPage" button
+            prevPage.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchData();
+                }
+            });
+
+            // Event listener for the "nextPage" button
+            nextPage.addEventListener("click", () => {
+                const totalPages = Math.ceil(totalRows / rows);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    fetchData();
+                }
+            });
+
+            // Initial fetch of data
+            fetchData();
+
+});
+
+        function generateTableRow(item) {
+                var orderType = '';
+                // let a = status(item);
+                return `
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>${item.order_no}</td>
+                            <td>${item.order_date}</td>
+                            <td>20</td>
+                            <td>10</td>
+                            <td>10</td>
+                            <td>5</td>
+                            <td>2</td>
+                            <td>18</td>
+                            <td>5</td>
+                            <td>20</td>
+                            <td>Dropshi</td>
+                            <td>pending</td>
+                            <td>21</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>success</td>
+                            <td>pending</td>
+                            <td>Amazone</td>
+                        </tr>
+                `;
+            }
+
+
+//--------------------------------------------------------------
+            // backup for data when get original data whenever you want to use
+
+                        //  <tr>
+                        //     <td><input type="checkbox"></td>
+                        //     <td>${item.order_id}</td>
+                        //     <td>${item.date}</td>
+                        //     <td>${item.product_cost}</td>
+                        //     <td>${item.discount}</td>
+                        //     <td>${item.shipping_cost}</td>
+                        //     <td>${item.packing_cost}</td>
+                        //     <td>${item.labour_cost}</td>
+                        //     <td>${item.gst}</td>
+                        //     <td>${item.payment_charge}</td>
+                        //     <td>${item.order_amount}</td>
+                        //     <td>${item.order_status}</td>
+                        //     <td>${item.refunds}</td>
+                        //     <td>${item.service_charge}</td>
+                        //     <td>${item.adjustment_amount}</td>
+                        //     <td>${item.disburse_amount}</td>
+                        //     <td>${item.payment_status}</td>
+                        //     <td>${item.statement_date}</td>
+                        //     <td>${item.invoice}</td>
+                        // </tr>
+
+            
+</script>
+
 @endsection

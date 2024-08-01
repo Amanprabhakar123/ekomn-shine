@@ -116,6 +116,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('orders-export-csv', [OrderController::class, 'exportOrders'])->name('orders.export');
         Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
         Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
+        Route::get('payment-info', [OrderPaymentController::class, 'getPaymentInfo'])->name('payment.info');
     });
 });
 
