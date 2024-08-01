@@ -633,6 +633,7 @@
                 <div class="d-flex justify-content-between">
                   <h4 class="subheading mb-2">Product Details</h4>
                   <div class="upload-original-invoice">
+                  <span class="" style="padding-left: 20px; font-size:12px">(Optional)</span>
                     <input type="file" id="UploadInvoiceResell" class="upload_invoice" accept=".pdf" style="display: none;">
                     <div class="d-flex gap-2 align-items-center">
                       <div class="UploadInvoiceName fs-14 opacity-75"></div>

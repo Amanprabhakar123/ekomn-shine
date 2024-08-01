@@ -522,7 +522,12 @@
                         <input class="form-check-input" type="checkbox"
                             value="${item.id}">
                     </div></td>
-                <td> <a href="${item.view_order}" class="a_link">${item.order_no}</a></td>
+                <td>
+                  <div class="productTitle_t">
+                    <a href="${item.view_order}" class="a_link">${item.order_no}</a>
+                  </div>
+                </td>
+                
                 <td>
                   ${item.store_order}
                 </td>
@@ -554,14 +559,21 @@
               </tr>
     `;
             }
-        @else
+        @elseif (auth()->user()->hasRole(ROLE_SUPPLIER)) 
             function generateTableRow(item) {
                 var orderType = '';
 
                 let a = status(item);
                 return `
                <tr>
-                <td>  <a href="${item.view_order}" class="a_link">${item.order_no}</a></td>
+                <td> <div
+                        class="form-check form-check-sm form-check-custom form-check-solid mt-3">
+                        <input class="form-check-input" type="checkbox"
+                            value="${item.id}">
+                    </div></td>
+                <td>
+                <a href="${item.view_order}" class="a_link">${item.order_no}</a>
+                </td>
                 <td>
                   ${item.store_order}
                 </td>
@@ -591,6 +603,48 @@
               </tr>
     `;
             }
+        @elseif (auth()->user()->hasRole(ROLE_BUYER))
+
+        function generateTableRow(item) {
+                var orderType = '';
+
+                let a = status(item);
+                return `
+               <tr>
+             
+                <td>
+                 <a href="${item.view_order}" class="a_link">${item.order_no}</a>
+                </td>
+                <td>
+                  ${item.store_order}
+                </td>
+                <td>
+                  <div class="productTitle_t">
+                    <a href="#" class="a_link">${item.title}</a>
+                  </div>
+                </td>
+                <td>${item.customer_name}</td>
+                <td>${item.quantity}</td>
+                <td>
+                  <div>${item.order_date}</div>
+                </td>
+                <td>
+                  <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
+                </td>
+                <td>${item.order_type}</td>
+                <td>${item.order_channel_type}</td>
+                <td>${item.status}</td>
+                <td>${item.payment_status}</td>
+                <td class="text-center">
+                  <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''}>Cancel</button>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')">Download</button>
+                    </td>
+              </tr>
+    `;
+            }
+          
         @endif
 
         function status(item) {

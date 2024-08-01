@@ -251,12 +251,13 @@
         <tr>
             <td>
                  <div class="productTitle_t">
-                    ${item.order_number}
+                    <a href="${item.view_order}" class="a_link">${item.order_number}</a>
+
                 </div>
             </td>
             <td>
                 <div class="productTitle_t">
-                    <a href="${item.view_order}" class="a_link">${item.title}</a>
+                    ${item.title}
                 </div>
             </td>
              <td>
