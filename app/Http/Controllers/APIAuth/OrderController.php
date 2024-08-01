@@ -2,29 +2,32 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Shipment;
-use App\Models\AddToCart;
-use App\Models\ShipmentAwb;
-use League\Fractal\Manager;
-use App\Models\OrderPayment;
-use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
-use App\Services\OrderService;
-use App\Models\ProductVariation;
-use App\Models\OrderItemAndCharges;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Events\OrderStatusChangedEvent;
-use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use App\Models\AddToCart;
+use App\Models\Order;
+use App\Models\OrderItemAndCharges;
+use App\Models\OrderPayment;
+use App\Models\ProductVariation;
+use App\Models\Shipment;
+use App\Models\ShipmentAwb;
+use App\Models\User;
+use App\Services\OrderService;
 use App\Transformers\OrderDataTransformer;
+use App\Transformers\ProductCartListTransformer;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderTrackingTransformer;
 use Illuminate\Validation\ValidationException;
-use App\Transformers\ProductCartListTransformer;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
+use ZipArchive;
 
 class OrderController extends Controller
 {
@@ -481,43 +484,43 @@ class OrderController extends Controller
             $sort_by_status = (int) $request->input('sort_by_status', '0'); // Default sort by 'all'
 
             // Allowed sort fields to prevent SQL injection
-            $allowedSorts = ['order_number', 'quantity', 'order_date', 'order_type', 'order_channel_type' ,'payment_status'];
+            $allowedSorts = ['order_number', 'quantity', 'order_date', 'order_type', 'order_channel_type', 'payment_status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
             $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'buyer', 'supplier'])
                 ->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
-                        $query->where('order_number', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('store_order', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('full_name', 'like', '%' . $searchTerm . '%')
+                        $query->where('order_number', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('store_order', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('full_name', 'like', '%'.$searchTerm.'%')
                             ->orWhereHas('orderItemsCharges.product', function ($query) use ($searchTerm) {
-                                $query->where('title', 'like', '%' . $searchTerm . '%');
+                                $query->where('title', 'like', '%'.$searchTerm.'%');
                             });
                     });
                 });
-                if ($sort_by_status != 0) {
-                    $orderList = $orderList->where('status', $sort_by_status);
-                }
-                if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
-                    $orderList = $orderList->where('orders.supplier_id', auth()->user()->id);
-                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
-                }else if(auth()->user()->hasRole(User::ROLE_BUYER)){
-                    $orderList = $orderList->where('buyer_id', auth()->user()->id);
-                }elseif(auth()->user()->hasRole(User::ROLE_ADMIN)){
-                    $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
-                }
+            if ($sort_by_status != 0) {
+                $orderList = $orderList->where('status', $sort_by_status);
+            }
+            if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+                $orderList = $orderList->where('orders.supplier_id', auth()->user()->id);
+                $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+            } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+                $orderList = $orderList->where('buyer_id', auth()->user()->id);
+            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+            }
 
-                if($sort == 'quantity'){
-                    $orderList->join('order_item_and_charges', 'orders.id', '=', 'order_item_and_charges.order_id');
-                    $orderList->select('orders.*', \DB::raw('SUM(order_item_and_charges.quantity) as quantity'));
-                    $orderList->groupBy('orders.id');
-                }
-                $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
+            if ($sort == 'quantity') {
+                $orderList->join('order_item_and_charges', 'orders.id', '=', 'order_item_and_charges.order_id');
+                $orderList->select('orders.*', \DB::raw('SUM(order_item_and_charges.quantity) as quantity'));
+                $orderList->groupBy('orders.id');
+            }
+            $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
                 ->paginate($perPage); // Paginate results
-          
+
             // Transform the paginated results using Fractal
-            $resource = new Collection($orderList, new OrderDataTransformer());
+            $resource = new Collection($orderList, new OrderDataTransformer);
 
             // Add pagination information to the resource
             $resource->setPaginator(new IlluminatePaginatorAdapter($orderList));
@@ -567,11 +570,11 @@ class OrderController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            if($request->input('order_id')){
+            if ($request->input('order_id')) {
                 $order_id = salt_decrypt($request->input('order_id'));
                 $order = Order::find($order_id);
-                $orderService = new OrderPayment();
-                 // crete response array
+                $orderService = new OrderPayment;
+                // crete response array
                 $response = [
                     'total_amount' => (string) ($order->total_amount * 100),
                     'currency' => $orderService->getCurrency((int) OrderPayment::CURRENCY_INR),
@@ -581,6 +584,7 @@ class OrderController extends Controller
                     'mobile_number' => $order->mobile_number,
                     'order_id' => salt_encrypt($order->id),
                 ];
+
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
@@ -588,10 +592,10 @@ class OrderController extends Controller
                     'data' => $response,
                 ]], __('statusCode.statusCode200'));
             }
-            if($request->order_type != Order::ORDER_TYPE_BULK){
+            if ($request->order_type != Order::ORDER_TYPE_BULK) {
                 $validator = Validator::make($request->all(), [
                     'full_name' => 'required|string',
-                    'email' => 'required|email',
+                    'email' => 'nullable|string',
                     'mobile' => 'required|string|max:10|min:10',
                     'order_type' => 'required|integer',
                     'store_order' => 'nullable|string',
@@ -605,7 +609,7 @@ class OrderController extends Controller
                     'b_city' => 'required|string',
                     'b_pincode' => 'required|string|max:6|min:6',
                 ]);
-            }else{
+            } else {
                 $validator = Validator::make($request->all(), [
                     'order_type' => 'required|integer',
                 ]);
@@ -617,6 +621,7 @@ class OrderController extends Controller
                 $errors = $validator->errors();
                 $field = $errors->keys()[0]; // Get the first field that failed validation
                 $errorMessage = $errors->first($field);
+
                 return errorResponse($errorMessage.'-'.$field);
             }
             // Fetch the Cart Data
@@ -636,9 +641,10 @@ class OrderController extends Controller
             // Create the data array using Fractal
             $data = $this->fractal->createData($resource)->toArray();
 
-            $OrderService = new OrderService();
+            $OrderService = new OrderService;
+
             return $OrderService->createOrder($request->all(), $data, $productCartList);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             // Handle the exception
             Log::error('Store order failed: '.$e->getMessage().'Line:- '.$e->getLine().'File:- '.$e->getFile());
             // Prepare exception details
@@ -650,6 +656,7 @@ class OrderController extends Controller
 
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
+
             // Log the exception details and trigger an ExceptionEvent
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
@@ -664,20 +671,22 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function orderPaymentSuccess(Request $request){
+    public function orderPaymentSuccess(Request $request)
+    {
         try {
-            $OrderService = new OrderService();
+            $OrderService = new OrderService;
             $success = $OrderService->confirmOrder($request->all());
-            if($success){
+            if ($success) {
                 return redirect()->route('my.orders');
-            }else{
+            } else {
                 return redirect()->route('payment.failed');
             }
         } catch (\Exception $e) {
-            Log::info('Request data: ' . $e->getMessage() . '---- ' . $e->getLine());
+            Log::info('Request data: '.$e->getMessage().'---- '.$e->getLine());
             if (config('app.front_end_tech') == false) {
                 return redirect()->route('payment.failed');
             }
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -685,7 +694,7 @@ class OrderController extends Controller
             ]], __('statusCode.statusCode422'));
         }
     }
-        
+
     /**
      * Update the order status.
      *
@@ -767,7 +776,7 @@ class OrderController extends Controller
                 'status' => Order::STATUS_DISPATCHED,
             ];
             event(new OrderStatusChangedEvent($order_details->buyer, $mail));
-            
+
             // Return a success response
             return response()->json([
                 'data' => [
@@ -836,7 +845,8 @@ class OrderController extends Controller
             // Decrypt the order ID from the request
             $order_id = salt_decrypt($request->order_id);
 
-            $OrderService = new OrderService();
+            $OrderService = new OrderService;
+
             return $OrderService->cancelOrder($order_id, $request->reason);
 
         } catch (\Exception $e) {
@@ -850,7 +860,8 @@ class OrderController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
             // Log the error message for debugging purposes
-            \Log::error('Error cancelling order: '.$e->getMessage().'Line:- '.$e->getLine(). 'File:- '.$e->getFile());
+            \Log::error('Error cancelling order: '.$e->getMessage().'Line:- '.$e->getLine().'File:- '.$e->getFile());
+
             // Return an error response with a message
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
@@ -865,7 +876,8 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function downloadInvoice($order_id){
+    public function downloadInvoice($order_id)
+    {
         try {
             $validator = Validator::make(['order_id' => $order_id], [
                 'order_id' => 'required|string',
@@ -880,26 +892,27 @@ class OrderController extends Controller
             }
             $order_id = salt_decrypt($order_id);
             $order = Order::find($order_id);
-            if(empty($order)){
+            if (empty($order)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status404'),
                     'message' => __('auth.orderNotFound'),
                 ]], __('statusCode.statusCode200'));
             }
-            if($order->isDropship() || $order->isResell()){
-            $orderInvoice = $order->orderInvoices->first();
-            $path = str_replace('public/', 'storage/', $orderInvoice->uploaded_invoice_path);
-            return response()->download($path)->deleteFileAfterSend(false);
+            if ($order->isDropship() || $order->isResell()) {
+                $orderInvoice = $order->orderInvoices->first();
+                $path = str_replace('public/', 'storage/', $orderInvoice->uploaded_invoice_path);
 
-            }else{
+                return response()->download($path)->deleteFileAfterSend(false);
+
+            } else {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
                     'status' => __('statusCode.status404'),
                     'message' => __('auth.invoiceNotFound'),
                 ]], __('statusCode.statusCode200'));
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -907,6 +920,7 @@ class OrderController extends Controller
             ];
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode500'),
                 'status' => __('statusCode.status500'),
@@ -916,6 +930,86 @@ class OrderController extends Controller
 
     }
 
+    /**
+     * Get the order details for download invoice.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function orderInvoice(Request $request)
+    {
+        try {
+            // Decrypt the order ID from the request
+            $orderId = salt_decrypt($request->all()[0]);
+
+            // Find the order by the decrypted ID
+            $order = Order::find($orderId);
+
+            // Check if the order exists and has associated invoices
+            if (! $order || ! $order->orderInvoices->isNotEmpty()) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.orderNotFound'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+
+            // Get the first invoice associated with the order
+            $invoice = $order->orderInvoices->first();
+
+            if ($order && $invoice) {
+                // Prepare data for the PDF
+                $invoiceData = [
+                    'invoice_number' => $invoice->invoice_number,
+                    'total_amount' => $invoice->total_amount,
+                    'order_number' => $order->order_number,
+                    'full_name' => $order->full_name,
+                    'email' => $order->email,
+                    'mobile_number' => $order->mobile_number,
+                    'store_order' => $order->store_order,
+                    'status' => $order->getStatus(),
+                    'shipping_address' => $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                    'billing_address' => $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                    'pickup_address' => $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
+                ];
+
+                // Generate the PDF from the view
+                $pdf = Pdf::loadView('pdf.invoice', $invoiceData);
+                $fileName = 'invoice_'.$invoice->invoice_number.'.pdf';
+
+                // Return the PDF as a download
+                return $pdf->download($fileName);
+            } else {
+                // Return error response if invoice is not found
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.invoiceNotFound'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+        } catch (\Exception $e) {
+           // Handle any exceptions that occur during the database operations
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+              // Return error response for failed invoice download
+              return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.invoiceDownloadFailed'),
+                ],
+            ], __('statusCode.statusCode200'));
+        }
+    }
 
     /**
      * Get the order details.
@@ -975,6 +1069,178 @@ class OrderController extends Controller
             // Return the JSON response with paginated data
             return response()->json($data);
         }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+
+            // Return error response for failed invoice download
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.invoiceDownloadFailed'),
+                ],
+            ], __('statusCode.statusCode200'));
+        }
+    }
+
+    /**
+     * Get the order details for Export Ordders and download CSV.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exportOrders(Request $request)
+    {
+        try {
+            // Retrieve and validate order IDs
+            $orderIds = $request->data;
+            if (! is_array($orderIds)) {
+                throw new \Exception('Invalid order IDs format.');
+            }
+
+            // Generate a unique filename for the CSV
+            $timestamp = time();
+            $csvFilename = 'orders-'.$timestamp.'.csv';
+            $csvFilepath = storage_path('app/public/export/'.auth()->user()->id.'/'.$csvFilename);
+
+            // Create a base path for storing the files
+            $basePath = storage_path('app/public/export/'.auth()->user()->id);
+            if (! file_exists($basePath)) {
+                mkdir($basePath, 0777, true);
+            }
+
+            // Create and write headers to the CSV file
+            $file = fopen($csvFilepath, 'w');
+            fputcsv($file, [
+                'ORDER NUMBER', 'STORE ORDER', 'PRODUCT TITLE', 'CUSTOMER NAME',
+                'CUSTOMER EMAIL', 'CUSTOMER PHONE', 'DELIVERY ADDRESS',
+                'BILLING ADDRESS', 'QUANTITY', 'DATE', 'TOTAL AMOUNT',
+                'CATEGORY', 'TYPE', 'STATUS', 'PAYMENT STATUS',
+            ]);
+
+            foreach ($orderIds as $encryptedId) {
+                $orderId = salt_decrypt($encryptedId);
+                $order = Order::find($orderId);
+
+                if (! $order) {
+                    fclose($file);
+
+                    return response()->json([
+                        'data' => [
+                            'statusCode' => __('statusCode.statusCode400'),
+                            'status' => __('statusCode.status404'),
+                            'message' => __('auth.orderNotFound'),
+                        ],
+                    ], __('statusCode.statusCode200'));
+                }
+
+                // Collect and write order data to the CSV file
+                $quantity = 0;
+                $title = '';
+                foreach ($order->orderItemsCharges as $itemCharge) {
+                    $quantity += $itemCharge->quantity;
+                    $title = $itemCharge->product->title;
+                }
+
+                if($order->isDropship()){
+                    fputcsv($file, [
+                        $order->order_number,
+                        $order->store_order ?? '',
+                        $title,
+                        $order->full_name,
+                        $order->email,
+                        $order->mobile_number,
+                        $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                        $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                        $quantity,
+                        $order->order_date->toDateString(),
+                        $order->total_amount,
+                        $order->getOrderType(),
+                        $order->getOrderChannelType(),
+                        $order->getStatus(),
+                        $order->getPaymentStatus(),
+                    ]);
+                }else{
+                    if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                        fputcsv($file, [
+                            $order->order_number,
+                            $order->store_order ?? '',
+                            $title,
+                            $order->full_name,
+                            $order->email,
+                            $order->mobile_number,
+                            $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                            $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                            $quantity,
+                            $order->order_date->toDateString(),
+                            $order->total_amount,
+                            $order->getOrderType(),
+                            $order->getOrderChannelType(),
+                            $order->getStatus(),
+                            $order->getPaymentStatus(),
+                        ]);
+                    }
+                    else{
+                        fputcsv($file, [
+                            $order->order_number,
+                            $order->store_order ?? '',
+                            $title,
+                            $order->full_name,
+                            '+91-xxx-xxx-xxxx',
+                            'support@ekomn.com',
+                            $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
+                            $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                            $quantity,
+                            $order->order_date->toDateString(),
+                            $order->total_amount,
+                            $order->getOrderType(),
+                            $order->getOrderChannelType(),
+                            $order->getStatus(),
+                            $order->getPaymentStatus(),
+                        ]);
+                    }
+                }
+
+                // Add order invoice to the base path if available
+                if ($order->isDropship() || $order->isResell()) {
+                    $orderInvoice = $order->orderInvoices->first();
+                    $invoicePath = str_replace('public/', 'storage/', $orderInvoice->uploaded_invoice_path);
+
+                    if ($orderInvoice) {
+                        $destinationPath = $basePath.'/invoices/'.basename($invoicePath);
+                        if (! file_exists(dirname($destinationPath))) {
+                            mkdir(dirname($destinationPath), 0777, true);
+                        }
+                        copy($invoicePath, $destinationPath);
+                    }
+                }
+            }
+
+            fclose($file);
+
+            // Create a ZIP file containing the CSV and any invoices
+            $zip = new ZipArchive;
+            $zipFilename = 'invoices_'.$timestamp.'.zip';
+            $zipFilePath = storage_path('app/public/export/').$zipFilename;
+
+            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                addFolderToZip($zip, $basePath, '');
+                $zip->close();
+            } else {
+                throw new \Exception('Could not create zip file');
+            }
+
+            // Send the ZIP file to the user and clean up temporary files
+            $response = response()->download($zipFilePath)->deleteFileAfterSend(true);
+            unlinkFile($basePath);
+
+            return $response;
+
+        } catch (\Exception $e) {
+            // Log exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -1064,15 +1330,6 @@ class OrderController extends Controller
             ], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
-            // Handle any exceptions that occur during the database operations
-
-            // Prepare exception details
-            $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
@@ -1084,9 +1341,9 @@ class OrderController extends Controller
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    'message' => __('auth.orderUpdateFailed'),
+                    'message' => __('auth.invoiceDownloadFailed'),
                 ],
-            ], __('statusCode.statusCode500'));
+            ], __('statusCode.statusCode200'));
         }
         
     }

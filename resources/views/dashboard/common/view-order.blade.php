@@ -6,9 +6,13 @@
         <input type="hidden" id="orderID" value="{{ salt_encrypt($myOrderId) }}" name="orderID">
         @if (auth()->user()->hasRole(ROLE_BUYER))
                 <div class="card ekcard pa shadow-sm">
-                    <div class="cardhead">
+                    <div class="cardhead d-flex justify-content-between align-items-center">
                         <h3 class="cardtitle">View Order Details</h3>
-                    </div>
+                        <div class="text-end">
+                            <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
+                            <span class="fs-15">{{$orderUpdate->updated_at->toDateString()}} - ({{$orderUpdate->updated_at->diffForHumans()}})</span>
+                        </div>
+                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
@@ -17,6 +21,19 @@
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -271,9 +288,13 @@
             <!-- view supplier ordqer -->
             @if (auth()->user()->hasRole(ROLE_SUPPLIER))
                 <div class="card ekcard pa shadow-sm">
-                    <div class="cardhead">
+                <div class="cardhead d-flex justify-content-between align-items-center">
                         <h3 class="cardtitle">View Order Details</h3>
-                    </div>
+                        <div class="text-end">
+                            <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
+                            <span class="fs-15">{{$orderUpdate->updated_at->toDateString()}} - ({{$orderUpdate->updated_at->diffForHumans()}})</span>
+                        </div>
+                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
@@ -282,6 +303,18 @@
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -393,12 +426,21 @@
                             </section>
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
+                                @if($orderUpdate->isDropship())
                                 <div class="orderStatus_d">
                                     <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderUpdate->full_name}}</span></div>
                                     <div><strong class="me-2">Email Address:</strong><span
                                             class="opacity-75">{{$orderUpdate->email}}</span></div>
                                     <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91-{{$orderUpdate->mobile_number}}</span></div>
                                 </div>
+                                @else
+                                <div class="orderStatus_d">
+                                    <div><strong class="me-2">Full Name:</strong><span class="opacity-75">{{$orderUpdate->full_name}}</span></div>
+                                    <div><strong class="me-2">Email Address:</strong><span
+                                            class="opacity-75">support@ekomn.com</span></div>
+                                    <div><strong class="me-2">Phone No:</strong><span class="opacity-75">+91-xxx-xxx-xxxx</span></div>
+                                </div>
+                                @endif
                             </section>
                             <section class="mt5">
                                 <div class="row">
@@ -535,9 +577,13 @@
  
  @if (auth()->user()->hasRole(ROLE_ADMIN))
                 <div class="card ekcard pa shadow-sm">
-                    <div class="cardhead">
-                        <h3 class="cardtitle">View Order Details</h3>
-                    </div>
+                <div class="cardhead d-flex justify-content-between align-items-center">
+    <h3 class="cardtitle">View Order Details</h3>
+    <div class="text-end">
+        <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
+        <span class="fs-15">{{$orderUpdate->updated_at->toDateString()}} - ({{$orderUpdate->updated_at->diffForHumans()}})</span>
+    </div>
+</div>
                     <div class="row">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
@@ -546,6 +592,18 @@
                                         <div class="mt10">
                                             <label class="bold">eKomn Order No</label>
                                             <input type="text" class="form-control" value="{{$orderUpdate->order_number}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Store Order</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->store_order}}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 col-md-2">
+                                        <div class="mt10">
+                                            <label class="bold">Order Date</label>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -564,6 +622,20 @@
                                         <div class="mt10">
                                             <label class="bold">Courier Name</label>
                                             @isset($shipment)
+                                            @if($orderUpdate->isDispatched() || $orderUpdate->isInTransit())
+                                            <select class="form-select" id="courier_id" name="courier_id">
+                                                <option value="">Select Courier</option>
+                                                @if($courierList->isNotEmpty())
+                                                @foreach($courierList as $courier)
+                                                @if($courier->id == $shipment->courier_id)
+                                                <option selected value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @else
+                                                <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                                @endif
+                                                @endforeach
+                                                @endif
+                                            </select>
+                                            @else
                                             <select class="form-select" id="courier_id" name="courier_id" disabled>
                                                 <option value="">Select Courier</option>
                                                 @if($courierList->isNotEmpty())
@@ -576,6 +648,7 @@
                                                 @endforeach
                                                 @endif
                                             </select>
+                                            @endif
                                             @else
                                             <select class="form-select" id="courier_id" name="courier_id" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                                 <option value="">Select Courier</option>
@@ -592,6 +665,16 @@
                                     </div>
 
                                     @isset($courier_detatils)
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isInTransit())
+                                    <div class="col-sm-4 col-md-2" id="show_courier">
+                                        <div class="mt10">
+                                            <label class="bold">Other Courier Name</label>
+                                            <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                            id="courierName" name="courierName" value="{{$courier_detatils->courier_provider_name}}">
+                                        </div>
+                                        <p id="error_courier_text"></p>
+                                    </div>
+                                    @else
                                     <div class="col-sm-4 col-md-2" id="show_courier">
                                         <div class="mt10">
                                             <label class="bold">Other Courier Name</label>
@@ -600,6 +683,7 @@
                                         </div>
                                         <p id="error_courier_text"></p>
                                     </div>
+                                    @endif
                                     @else
                                     <div class="col-sm-4 col-md-2" id="show_courier">
                                         <div class="mt10">
@@ -614,8 +698,13 @@
                                         <div class="mt10">
                                             <label class="bold">Traking No</label>
                                             @isset($courier_detatils)
+                                            @if($orderUpdate->isDispatched() || $orderUpdate->isInTransit())
+                                            <input type="text" class="form-control" placeholder="Enter Traking No"
+                                            value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo">
+                                            @else
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
                                             value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                            @endif
                                             @else
                                             <input type="text" class="form-control" placeholder="Enter Traking No"
                                                 value="" id="trackingNo" name="trackingNo" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
@@ -800,9 +889,13 @@
                                 <div class="text-right d-flex justify-content-end mt10">
                                     @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
                                     @else
-                                    <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
+                                    @if($orderUpdate->isDelivered()|| $orderUpdate->isRTO() || $orderUpdate->isCancelled())
+                                    @else
+                                    <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
+                                    @endif
+
                                 </div>
                             </section>
                         </div>

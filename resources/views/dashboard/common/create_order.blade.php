@@ -129,7 +129,7 @@
                   Billing Address
                   <div class="fw-normal">
                     <input class="form-check-input" type="checkbox" id="sameas" />
-                    <label for="sameas" class="w-normal m-0">Same as aelivery address</label>
+                    <label for="sameas" class="w-normal m-0">Same as delivery address</label>
                   </div>
                 </h4>
                 <div class="row">
@@ -562,7 +562,7 @@
                   <div class="fw-normal">
                     <input class="form-check-input" type="checkbox" id="sameas_3" />
                     <div id="resell-b-addressErr" class="invalid-feedback"></div>
-                    <label for="sameas_3" class="fw-normal m-0">Same as aelivery address</label>
+                    <label for="sameas_3" class="fw-normal m-0">Same as delivery address</label>
                   </div>
                 </h4>
                 <div class="row">
@@ -633,6 +633,7 @@
                 <div class="d-flex justify-content-between">
                   <h4 class="subheading mb-2">Product Details</h4>
                   <div class="upload-original-invoice">
+                  <span class="" style="padding-left: 20px; font-size:12px">(Optional)</span>
                     <input type="file" id="UploadInvoiceResell" class="upload_invoice" accept=".pdf" style="display: none;">
                     <div class="d-flex gap-2 align-items-center">
                       <div class="UploadInvoiceName fs-14 opacity-75"></div>
@@ -787,15 +788,13 @@
         isvalid = false;
       }
 
-      if (!$('#email').val()) {
-        $('#email').addClass('is-invalid');
-        $('#emailErr').text('Please enter email');
-        isvalid = false;
-      } else if (!emailRegex.test($('#email').val())) {
+      if ($('#email').val()) {
+       if(!emailRegex.test($('#email').val())) {
         $('#email').addClass('is-invalid');
         $('#emailErr').text('Please enter valid email');
         isvalid = false;
       }
+    }
 
       if (!$('#mobile').val()) {
         $('#mobile').addClass('is-invalid');
@@ -843,11 +842,12 @@
         $('#b_address').addClass('is-invalid');
         $('#b_addressErr').text('Please enter address');
         isvalid = false
-      } else if (!addressRegex.test($('#b_address').val())) {
-        $('#b_address').addClass('is-invalid');
-        $('#b_addressErr').text('Please enter valid address');
-        isvalid = false;
-      }
+      } 
+      // else if (!addressRegex.test($('#b_address').val())) {
+      //   $('#b_address').addClass('is-invalid');
+      //   $('#b_addressErr').text('Please enter valid address');
+      //   isvalid = false;
+      // }
 
       if (!$('#b_state').val()) {
         $('#b_state').addClass('is-invalid');
@@ -1123,15 +1123,13 @@
         isvalid = false;
       }
 
-      if (!$('#resell-email').val()) {
-        $('#resell-email').addClass('is-invalid');
-        $('#resell-emailErr').text('Please enter email address');
-        isvalid = false;
-      } else if (!emailRegex.test($('#resell-email').val())) {
+      if ($('#resell-email').val()) {
+        if (!emailRegex.test($('#resell-email').val())) {
         $('#resell-email').addClass('is-invalid');
         $('#resell-emailErr').text('Please enter valid email address');
         isvalid = false;
       }
+    }
 
       if (!$('#resell-mobile').val()) {
         $('#resell-mobile').addClass('is-invalid');
@@ -1147,11 +1145,12 @@
         $('#resell-d-address').addClass('is-invalid');
         $('#resell-d-addressErr').text('Please enter address');
         isvalid = false;
-      } else if (!addressRegex.test($('#resell-d-address').val())) {
-        $('#resell-d-address').addClass('is-invalid');
-        $('#resell-d-addressErr').text('Please enter valid address');
-        isvalid = false;
-      }
+      } 
+      // else if (!addressRegex.test($('#resell-d-address').val())) {
+      //   $('#resell-d-address').addClass('is-invalid');
+      //   $('#resell-d-addressErr').text('Please enter valid address');
+      //   isvalid = false;
+      // }
 
       if (!$('#resell-d-state').val()) {
         $('#resell-d-state').addClass('is-invalid');
@@ -1207,21 +1206,21 @@
         isvalid = false;
       }
 
-      const fileInputResell = $('#UploadInvoiceResell')[0];
-      const file = fileInputResell.files[0];
-      // Check if a file is selected
-      if (!file) {
-        $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
-        isvalid = false;
-      }
-      fileInputResell.addEventListener('change', function() {
-        const file = fileInputResell.files[0];
-        // Check if a file is selected
-        if (file) {
-          $('#UploadInvoiceResellErr').text('');
-          isvalid = true;
-        }
-      });
+      // const fileInputResell = $('#UploadInvoiceResell')[0];
+      // const file = fileInputResell.files[0];
+      // // Check if a file is selected
+      // if (!file) {
+      //   $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
+      //   isvalid = false;
+      // }
+      // fileInputResell.addEventListener('change', function() {
+      //   const file = fileInputResell.files[0];
+      //   // Check if a file is selected
+      //   if (file) {
+      //     $('#UploadInvoiceResellErr').text('');
+      //     isvalid = true;
+      //   }
+      // });
 
 
       //--------------------Resell Order Submit--------------------
@@ -1651,7 +1650,7 @@
                     $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 
                 } else {
-                    const $dropshipInvoice = $('#dropshipInvoice tbody');
+                    const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1659,7 +1658,7 @@
                 $dropshipInvoiceRow);
                 }
             }else{
-              const $dropshipInvoice = $('#dropshipInvoice tbody');
+              const $dropshipInvoice = $('.payInvoiceTable tbody');
                     $dropshipInvoice.empty();
                     const $dropshipInvoiceRow = $('<tr></tr>').html(
                 `<td colspan="8" class="text-center">No Record Found</td>`);
@@ -1667,7 +1666,7 @@
                 $dropshipInvoiceRow);
             }
         }).catch(data => {
-            const $dropshipInvoice = $('#dropshipInvoice tbody');
+            const $dropshipInvoice = $('.payInvoiceTable tbody');
             $dropshipInvoice.empty();
 
             const $dropshipInvoiceRow = $('<tr></tr>').html(
