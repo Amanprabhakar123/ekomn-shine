@@ -472,7 +472,7 @@
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'products_' + Math.random().toString(36).substring(2) + '_' + Date.now() + '.zip';
+            a.download = 'products_' + Date.now() + '.zip';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
