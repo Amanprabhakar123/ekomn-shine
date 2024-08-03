@@ -4,16 +4,42 @@
 <div class="ek_dashboard">
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
-            <div class="cardhead">
-                <h3 class="cardtitle">Order Table</h3>
-            </div>
-            <div class="tableTop mt10">
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search">
-                <div class="d-flex gap-2">
-                    <button class="btn btn-sm btnekomn_dark"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
-                </div>
-            </div>
-           
+             <div class="cardhead">
+                        <h3 class="cardtitle">Order Payments</h3>
+                    </div>
+                    <div class="tableTop mt10">
+                    @if (auth()->user()->hasRole(ROLE_ADMIN))
+                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name"
+                            class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
+                    @else
+                    <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name"
+                        class="form-control w_300_f searchicon" placeholder="Search By Order No">
+                        @endif
+                        <div class="ek_group m-0">
+                            <label class="eklabel eklabel_80 m-0">Order Status:</label>
+                            <div class="ek_f_input">
+                                <select id="sort_by_order_status" class="form-select w_150_f">
+                                    <option value="0" selected>Select</option>
+                                    <option value="4">Dispatched</option>
+                                    <option value="5">In Transit</option>
+                                    <option value="6">Delivered</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="ek_group m-0">
+                            <label class="eklabel eklabel_80 m-0">Payment Status:</label>
+                            <div class="ek_f_input">
+                                <select id="sort_by_status" class="form-select w_150_f">
+                                    <option value="0" selected>Select</option>
+                                    <option value="1">Hold</option>
+                                    <option value="2">Accured</option>
+                                    <option value="3">Paid</option>
+                                    <option value="4">Due</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
                 <div class="table-responsive tres_border">
                     <table class="normalTable tableSorting whitespace">
                         <thead class="thead-dark">
@@ -21,18 +47,21 @@
                                 <th>Select</th>
                                 <th>eKomn Order No</th>
                                 <th>Date</th>
-                                <th>Product Cost</th>
+                                <th>Product Charges</th>
                                 <th>Discount</th>
-                                <th>Shipping Cost</th>
-                                <th>Packing Cost</th>
-                                <th>Labour Cost</th>
-                                <th>GST</th>
-                                <th>Payment Charge</th>
+                                <th>Shipping Charges</th>
+                                <th>Packing Charges</th>
+                                <th>Labour Charges</th>
+                                <th>Payment Charges</th>
+                                <th>Total GST</th>
                                 <th>Order Amount</th>
                                 <th>Order Status</th>
+                                <th>Category</th>
                                 <th>Refunds</th>
-                                <th>Service Charge</th>
+                                <th>Referral Fee</th>
                                 <th>Adjustments</th>
+                                <th>TDS</th>
+                                <th>TCS</th>
                                 <th>Order Disbursement Amount</th>
                                 <th>Payment Status</th>
                                 <th>Statement Wk</th>
@@ -40,28 +69,7 @@
                             </tr>
                         </thead>
                         <tbody id="dataContainer">
-                            <!-- <tr>
-                                <td><input type="checkbox"></td>
-                                <td>12345</td>
-                                <td>2023-07-31</td>
-                                <td>$100.00</td>
-                                <td>$5.00</td>
-                                <td>$10.00</td>
-                                <td>$2.00</td>
-                                <td>$3.00</td>
-                                <td>$1.50</td>
-                                <td>$0.50</td>
-                                <td>$111.00</td>
-                                <td>Shipped</td>
-                                <td>$0.00</td>
-                                <td>$2.00</td>
-                                <td>$0.00</td>
-                                <td>$106.50</td>
-                                <td>Paid</td>
-                                <td>31</td>
-                                <td>INV12345</td>
-                            </tr> -->
-                            <!-- Additional rows can go here -->
+                            <!-- Data will be displayed here -->
                         </tbody>
                     </table>
                 </div>
@@ -114,6 +122,15 @@
                 fetchData();
             });
 
+            const sortByStatus = document.getElementById("sort_by_status");
+            sortByStatus.addEventListener("change", () => {
+                fetchData();
+            });
+
+            const sort_by_order_status = document.getElementById("sort_by_order_status");
+            sort_by_order_status.addEventListener("change", () => {
+                fetchData();
+            });
 
             let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
             let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
@@ -135,9 +152,8 @@
             });
             // Function to fetch data from the server
             function fetchData() {
-                alert('fetchData');
                 // Make an API request to fetch inventory data
-                let apiUrl = `payment-info?per_page=${rows}&page=${currentPage}`;
+                let apiUrl = `payments/weekly?per_page=${rows}&page=${currentPage}`;
 
                 if (sortField && sortOrder) {
                     apiUrl += `&sort=${sortField}&order=${sortOrder}`;
@@ -147,16 +163,24 @@
                     apiUrl += `&query=${searchQuery.value}`;
                 }
 
+                if (sortByStatus) {
+                    apiUrl += `&sort_by_status=${sortByStatus.value}`;
+                }
+                
+                if (sort_by_order_status) {
+                    apiUrl += `&sort_by_order_status=${sort_by_order_status.value}`;
+                }
+
 
                 ApiRequest(apiUrl, 'GET')
                     .then(response => {
-                        const data = (response.data.data);
-                        console.log(data);
+                        const data = (response.data);
+                        // console.log(data);
                         if (data.length === 0) {
                             dataContainer.innerHTML =
                                 `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
                         } else {
-                            response = (response.data.meta.pagination);
+                            response = (response.meta.pagination);
                             totalRows = response.total;
                             updatePagination();
                             displayData(data);
@@ -264,53 +288,36 @@
                 return `
                         <tr>
                             <td><input type="checkbox"></td>
-                            <td>${item.order_no}</td>
-                            <td>${item.order_date}</td>
-                            <td>20</td>
-                            <td>10</td>
-                            <td>10</td>
-                            <td>5</td>
-                            <td>2</td>
-                            <td>18</td>
-                            <td>5</td>
-                            <td>20</td>
-                            <td>Dropshi</td>
-                            <td>pending</td>
-                            <td>21</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>success</td>
-                            <td>pending</td>
-                            <td>Amazone</td>
+                            <td class="text-center">
+                                <div class="productTitle_t">
+                                    <a href="${item.view_order}" class="a_link">${item.order_no}</a>
+                                </div>
+                            </td>
+                            <td class="text-center">${item.order_date}</td>
+                            <td class="text-center">${item.product_cost_exc_gst}</td>
+                            <td class="text-center">${item.discount}</td>
+                            <td class="text-center">${item.shipping_charges_gst_exc_amount}</td>
+                            <td class="text-center">${item.packing_charges_gst_exc_amount}</td>
+                            <td class="text-center">${item.labour_charges_gst_exc_amount}</td>
+                            <td class="text-center">${item.payment_gateway_charges_gst_exc_amount}</td>
+                            <td class="text-center">${item.total_gst_amount}</td>
+                            <td class="text-center">${item.order_total}</td>
+                            <td class="text-center">${item.order_status}</td>
+                            <td class="text-center">${item.order_type}</td>
+                            <td class="text-center">${item.refund_amount}</td>
+                            <td class="text-center">${item.processing_charges}</td>
+                            <td class="text-center">${item.adjustment_amount}</td>
+                            <td class="text-center">${item.tds_amount}</td>
+                            <td class="text-center">${item.tcs_amount}</td>
+                            <td class="text-center">${item.disburse_amount}</td>
+                            <td class="text-center">${item.payment_status}</td>
+                            <td class="text-center">${item.statement_date}</td>
+                             <td class="text-center">
+                                <button class="btn btn-sm btn-warning text-white" ${!item.invoice_generated ? 'disabled' : ''} onclick="downloadInvoice('${item.id}')">Download</button>
+                            </td>
                         </tr>
                 `;
             }
-
-
-//--------------------------------------------------------------
-            // backup for data when get original data whenever you want to use
-
-                        //  <tr>
-                        //     <td><input type="checkbox"></td>
-                        //     <td>${item.order_id}</td>
-                        //     <td>${item.date}</td>
-                        //     <td>${item.product_cost}</td>
-                        //     <td>${item.discount}</td>
-                        //     <td>${item.shipping_cost}</td>
-                        //     <td>${item.packing_cost}</td>
-                        //     <td>${item.labour_cost}</td>
-                        //     <td>${item.gst}</td>
-                        //     <td>${item.payment_charge}</td>
-                        //     <td>${item.order_amount}</td>
-                        //     <td>${item.order_status}</td>
-                        //     <td>${item.refunds}</td>
-                        //     <td>${item.service_charge}</td>
-                        //     <td>${item.adjustment_amount}</td>
-                        //     <td>${item.disburse_amount}</td>
-                        //     <td>${item.payment_status}</td>
-                        //     <td>${item.statement_date}</td>
-                        //     <td>${item.invoice}</td>
-                        // </tr>
 
             
 </script>

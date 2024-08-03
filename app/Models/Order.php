@@ -107,6 +107,7 @@ class Order extends Model
         self::STATUS_DISPATCHED,
         self::STATUS_IN_TRANSIT,
         self::STATUS_DELIVERED,
+        self::STATUS_RTO
     ];
 
     //Default Refund amound Draft Case
