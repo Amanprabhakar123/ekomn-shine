@@ -120,6 +120,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
         Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
         Route::get('payments/weekly', [OrderPaymentController::class, 'paymentWeekly'])->name('payment.weekly');
+        Route::post('order-payment-update', [OrderPaymentController::class, 'orderPaymentUpdate'])->name('order.payment.update');
     });
 });
 

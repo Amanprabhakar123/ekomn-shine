@@ -7,6 +7,7 @@ use App\Models\Order;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\SupplierPayment;
 use League\Fractal\Resource\Collection;
 use App\Transformers\OrderPaymentTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -57,6 +58,42 @@ class OrderPaymentController extends Controller
             }
         }
         return view('dashboard.common.payment', compact('total_balance_due', 'total_payment_due', 'total_statement_amount'));
+    }
+
+    /**
+     * Order payment update.
+     * 
+     * @param Request $request
+     * 
+     * Illuminate\Http\JsonResponse
+     */
+    public function orderPaymentUpdate(Request $request){
+        try {
+            $order_id = $request->input('order_id');
+            $id = salt_decrypt($order_id);
+            $order = SupplierPayment::where('order_id', $id)->first();
+            $order->adjustment_amount = $request->input('adjustment_amount');
+            $order->save();
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => 'Order payment updated successfully',
+                ]
+            ]);
+
+
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => 'Failed to update order payment',
+                ]
+            ]);
+        }
     }
 
     /**
