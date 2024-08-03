@@ -174,7 +174,7 @@ class SupplierPayment extends Model
             case self::PAYMENT_STATUS_HOLD:
                 return 'Hold';
             case self::PAYMENT_STATUS_ACCURED:
-                return 'Accured';
+                return 'Accrued';
             case self::PAYMENT_STATUS_PAID:
                 return 'Paid';
             case self::PAYMENT_STATUS_DUE:

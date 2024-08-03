@@ -1,5 +1,6 @@
 <?php
 namespace App\Transformers;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderRefund;
@@ -112,7 +113,7 @@ class OrderPaymentTransformer extends TransformerAbstract
                 'tcs_amount' => number_format($tcs_amount, 2),
                 'disburse_amount' => number_format($disburse_amount, 2),
                 'payment_status' => $payment_status,
-                'statement_date' => is_null($statement_date) ? 'NA' : $statement_date->toDateString(),
+                'statement_date' => is_null($statement_date) ? 'NA' : Carbon::parse($statement_date)->toDateString(),
                 'invoice_generated' => $invoice_generated,
                 'order_channel_type' => $order->getOrderChannelType(),
                 'view_order' => route('view.order', salt_encrypt($order->id)),

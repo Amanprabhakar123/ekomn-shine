@@ -32,7 +32,7 @@
                                 <select id="sort_by_status" class="form-select w_150_f">
                                     <option value="0" selected>Select</option>
                                     <option value="1">Hold</option>
-                                    <option value="2">Accured</option>
+                                    <option value="2">Accrued</option>
                                     <option value="3">Paid</option>
                                     <option value="4">Due</option>
                                 </select>
