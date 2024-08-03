@@ -2,7 +2,9 @@
 
 use App\Models\CourierDetails;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\web\WebController;
 use App\Http\Controllers\FeedBackController;
+use PhpOffice\PhpSpreadsheet\Calculation\Web;
 use App\Http\Controllers\BulkUploadController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
@@ -16,11 +18,11 @@ use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\APIAuth\OrderPaymentController;
 use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
-use App\Http\Controllers\APIAuth\OrderPaymentController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 /*
@@ -36,7 +38,7 @@ use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 
 // Define the root route that returns the welcome view
 Route::get('/', function () {
-    return view('welcome');
+    return view('web.index');
 })->name('home');
 
 // Define routes for buyer, supplier, and admin login and registration forms
@@ -52,6 +54,9 @@ Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('passwor
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
+Route::get('product-category', [WebController::class, 'productCategory'])->name('product.category');
+Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
+Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
