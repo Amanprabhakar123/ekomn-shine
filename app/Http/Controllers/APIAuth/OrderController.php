@@ -771,6 +771,14 @@ class OrderController extends Controller
                     $awbData
                 );
             }
+            $OrderService = new OrderService();
+            $OrderService->getSupplierPayment($order_details);
+            // Prepare the mail data
+            $mail = [
+                'order_number' => $order_details->order_number,
+                'status' => Order::STATUS_DISPATCHED,
+            ];
+
             $mail = [
                 'order_number' => $order_details->order_number,
                 'status' => Order::STATUS_DISPATCHED,

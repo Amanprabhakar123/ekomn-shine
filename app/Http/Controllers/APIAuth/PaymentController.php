@@ -319,5 +319,6 @@ class PaymentController extends Controller
                 'message' => __('auth.paymentFailed'),
             ]], __('statusCode.statusCode422'));
         }
+        
     }
 }

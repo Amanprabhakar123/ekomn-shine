@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIAuth;
 
 use App\Models\FeedBack;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class FeedBackController extends Controller

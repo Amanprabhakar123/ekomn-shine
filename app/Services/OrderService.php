@@ -20,7 +20,7 @@ use App\Models\OrderItemAndCharges;
 use App\Events\NewOrderCreatedEvent;
 use App\Models\CompanyAddressDetail;
 use App\Models\OrderPaymentDistribution;
-
+use App\Models\SupplierPayment;
 
 class OrderService
 {
@@ -901,5 +901,32 @@ class OrderService
         ];
         $refund = $api->payment->fetch($paymentId)->refund($data);
         return $refund;
+    }
+
+    /**
+     * Get Supplier Payment
+     * 
+     * @param integer $supplier_id
+     * 
+     * @return void
+     */
+    public function getSupplierPayment($order_details){
+        try{
+            // get order payment distribution
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_details->id)->first();
+            // Create supplier payment
+            $supplierPayment = SupplierPayment::firstOrCreate([
+                'distribution_id' => $orderDistribution->id,
+                'supplier_id' => $order_details->supplier_id,
+                'order_id' => $order_details->id,
+                'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
+                'disburse_amount' => ($orderDistribution->amount - $orderDistribution->refunded_amount - OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                'payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD,
+                'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
+            ]);
+            return $supplierPayment;
+        }catch(\Exception $e){
+            throw $e;
+        }
     }
 }
