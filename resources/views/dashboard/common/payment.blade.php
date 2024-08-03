@@ -38,7 +38,9 @@
                                 </select>
                             </div>
                         </div>
-
+                        <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
+                                    class="fas fa-file-csv me-2"></i>Export
+                                CSV</button>
                     </div>
                 <div class="table-responsive tres_border">
                     <table class="normalTable tableSorting whitespace">
@@ -96,6 +98,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -287,7 +290,12 @@
                 // let a = status(item);
                 return `
                         <tr>
-                            <td><input type="checkbox"></td>
+                            <td> 
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mt-3">
+                                    <input class="form-check-input" type="checkbox"
+                                        value="${item.id}">
+                                </div>
+                            </td>
                             <td class="text-center">
                                 <div class="productTitle_t">
                                     <a href="${item.view_order}" class="a_link">${item.order_no}</a>
@@ -319,7 +327,80 @@
                 `;
             }
 
-            
+ 
+        /**
+         * Collects the IDs of all checked checkboxes for CSV download.
+         * Displays an error message if no checkboxes are selected.
+         */
+        function collectCheckedIdsForCsv() {
+            // Select all checkboxes with the class 'form-check-input'
+            const allCheckboxes = document.querySelectorAll('.form-check-input');
+
+            // Initialize an array to store the IDs of checked checkboxes
+            const orderId = {
+                data: []
+            };
+
+            // Iterate over each checkbox
+            allCheckboxes.forEach(checkbox => {
+                // Check if the checkbox is checked
+                if (checkbox.checked) {
+                    // Add the value (ID) of the checked checkbox to the array
+                    orderId.data.push(checkbox.value);
+                }
+            });
+console.log(orderId);
+            // Check if any IDs have been selected
+            if (orderId.data.length > 0) {
+                // Handle the selected IDs (e.g., prepare for CSV download)
+                // Make an API request to download the selected products
+                fetch('{{ route('payment.export.weekly') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderId)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = 'Supplier-Payments_' + Date.now() + '.csv';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading products:', error);
+                    });
+
+            } else {
+                // Display an error message if no checkboxes are selected
+                Swal.fire({
+                    title: "Error!",
+                    text: "Please select at least one checkbox.",
+                    icon: "error",
+                    didOpen: () => {
+                        // Apply inline CSS to the title
+                        const titleElement = Swal.getTitle();
+                        titleElement.style.color = 'red';
+                        titleElement.style.fontSize = '20px';
+
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
+        }           
 </script>
 
 @endsection
