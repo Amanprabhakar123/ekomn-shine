@@ -319,5 +319,17 @@ class PaymentController extends Controller
                 'message' => __('auth.paymentFailed'),
             ]], __('statusCode.statusCode422'));
         }
+        
+    }
+
+    public function paymentUpdate(){
+        return view('dashboard.admin.payment-update');
+    }
+
+    public function downloadSampleTemplate()
+    {
+        $filePath = public_path('templates/payment-status.csv'); // Adjust the path to your template file
+        $fileName = 'payment-status_' . uniqid() . '.csv'; // Generate a unique file name
+        return response()->download($filePath, $fileName);
     }
 }

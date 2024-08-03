@@ -22,6 +22,7 @@ use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\OrderPaymentController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use Faker\Provider\ar_EG\Payment;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
         Route::post('bulk/import-product-inventory', [ImportController::class, 'importFile'])->name('import-product-inventory');
         Route::get('/download-template', [BulkUploadController::class, 'downloadSampleTemplate'])->name('download-template');
+        Route::get('/download-template-payment', [PaymentController::class, 'downloadSampleTemplate'])->name('download-template-payment');
         Route::get('/bulk-data', [ProductInvetoryController::class, 'getDataBulkInventory'])->name('bulk-data');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
@@ -117,6 +119,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
         Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
         Route::get('payment-info', [OrderPaymentController::class, 'getPaymentInfo'])->name('payment.info');
+        Route::get('payment-update', [PaymentController::class, 'paymentUpdate'])->name('payment.update');
     });
 });
 
