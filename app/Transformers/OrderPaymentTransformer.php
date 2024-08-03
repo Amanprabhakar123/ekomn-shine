@@ -120,6 +120,14 @@ class OrderPaymentTransformer extends TransformerAbstract
                 'created_at' => $order->created_at->toDateTimeString(),
                 'updated_at' => $order->updated_at->toDateTimeString(),
             ];
+            
+            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                $data['supplier_id'] = $order->supplier->CompanyDetails->company_serial_id;
+                $data['bank_name'] = $order->supplier->CompanyDetails->bank_name;
+                $data['bank_account_no'] = $order->supplier->CompanyDetails->bank_account_no;
+                $data['ifsc_code'] = $order->supplier->CompanyDetails->ifsc_code;
+                $data['swift_code'] = $order->supplier->CompanyDetails->swift_code;
+            }
             return $data;
         } catch (\Exception $e) {
             throw $e;
