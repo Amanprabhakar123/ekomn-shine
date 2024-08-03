@@ -73,9 +73,9 @@ class UpdatePaymentStatus implements ShouldQueue
                     // Update the payment status for the record
                     $order = Order::where('order_number', $data[0])->first();
                     $supplier_payment = new SupplierPayment();
-                    if ($order) {   
+                    if ($order && $order->isDelivered()) {   
                         $payment = SupplierPayment::where('order_id', $order->id)->first();
-                        if ($payment) {
+                        if ($payment && $payment->isPaymentStatusDue()) {
                             $payment->payment_status = $supplier_payment->setPaymentStatus($data[1]);
                             $payment->payment_date = Carbon::parse($data[2])->toDateTimeString();
                             $payment->transaction_id = $data[3];
