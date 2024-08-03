@@ -1,13 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\APIAuth;
 
 use Illuminate\Http\Request;
 use App\Models\ImportErrorMessage;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 
 class BulkUploadController extends Controller
 {
+    /**
+     * Download the sample template file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function downloadSampleTemplate()
     {
         $filePath = public_path('templates/Bulk-Upload-Template.xlsm'); // Adjust the path to your template file

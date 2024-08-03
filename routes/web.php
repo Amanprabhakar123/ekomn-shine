@@ -2,8 +2,6 @@
 
 use App\Models\CourierDetails;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FeedBackController;
-use App\Http\Controllers\BulkUploadController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
 use App\Http\Controllers\APIAuth\OrderController;
@@ -12,6 +10,7 @@ use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\APIAuth\ForgotController;
 use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\FeedBackController;
 use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
@@ -21,6 +20,7 @@ use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\OrderPaymentController;
+use App\Http\Controllers\APIAuth\BulkUploadController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use Faker\Provider\ar_EG\Payment;
 
@@ -76,6 +76,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('edit-courier/{id}', [CourierDetailsController::class, 'edit'])->name('edit.courier');
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
     Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
+    Route::get('order-payment/bulk-upload', [PaymentController::class, 'paymentUpdate'])->name('payment.update');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -118,8 +119,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('orders-export-csv', [OrderController::class, 'exportOrders'])->name('orders.export');
         Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
         Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
-        Route::get('payment-info', [OrderPaymentController::class, 'getPaymentInfo'])->name('payment.info');
-        Route::get('payment-update', [PaymentController::class, 'paymentUpdate'])->name('payment.update');
+        Route::get('payments/weekly', [OrderPaymentController::class, 'paymentWeekly'])->name('payment.weekly');
     });
 });
 

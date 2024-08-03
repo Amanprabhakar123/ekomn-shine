@@ -32,17 +32,17 @@ class OrderItemAndCharges extends Model
         'gst_percentage',
         'igst',
         'cgst',
-        'shipping_gst_percent',
-        'shipping_charges',
-        'packing_charges',
-        'packaging_gst_percent',
-        'labour_charges',
-        'labour_gst_percent',
-        'processing_charges',
-        'processing_gst_percent',
-        'payment_gateway_percentage',
-        'payment_gateway_charges',
-        'payment_gateway_gst_percent'
+        'shipping_gst_percent', // Shipping Charges GST
+        'shipping_charges', // Shipping Charges INC GST
+        'packing_charges', // Packaging Charges INC GST
+        'packaging_gst_percent', // Packaging Charges GST
+        'labour_charges', // Labour Charges INC GST
+        'labour_gst_percent', // Labour Charges GST
+        'processing_charges',  // Referal Charges INC GST
+        'processing_gst_percent', // Referal Charges GST
+        'payment_gateway_percentage', // Payment Gateway Charges
+        'payment_gateway_charges', // Payment Gateway Charges INC GST
+        'payment_gateway_gst_percent' // Payment Gateway Charges GST
     ];
 
     /**
