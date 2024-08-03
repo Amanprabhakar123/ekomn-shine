@@ -30,7 +30,7 @@
                         <select id="sort_by_status" class="form-select w_150_f">
                             <option value="0" selected>Select</option>
                             <option value="1">Hold</option>
-                            <option value="2">Accured</option>
+                            <option value="2">Accrued</option>
                             <option value="3">Paid</option>
                             <option value="4">Due</option>
                         </select>
@@ -44,6 +44,9 @@
                         <tr>
                             <th>Select</th>
                             <th>eKomn Order No</th>
+                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            <th>Supplier Id</th>
+                            @endif
                             <th>Date</th>
                             <th>Product Charges</th>
                             <th>Discount</th>
@@ -292,6 +295,9 @@
                                     <a href="${item.view_order}" class="a_link">${item.order_no}</a>
                                 </div>
                             </td>
+                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            <td class="text-center">${item.supplier_id}</td>
+                            @endif
                             <td class="text-center">${item.order_date}</td>
                             <td class="text-center">${item.product_cost_exc_gst}</td>
                             <td class="text-center">${item.discount}</td>
@@ -328,6 +334,7 @@
     }
 
 
+    // Function to download invoice
     function updateAdjustmentAmount(id, element) {
         let value = element.value;
         ApiRequest('order-payment-update', 'POST', {
@@ -350,7 +357,10 @@
                         const confirmButton = Swal.getConfirmButton();
                         confirmButton.style.backgroundColor = '#feca40';
                         confirmButton.style.color = 'white';
-
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
                     }
                 });
 

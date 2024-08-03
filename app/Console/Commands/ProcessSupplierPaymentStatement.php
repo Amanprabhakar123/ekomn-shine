@@ -11,6 +11,7 @@ use App\Models\SupplierPayment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use App\Models\OrderPaymentDistribution;
+use Illuminate\Support\Facades\DB;
 
 class ProcessSupplierPaymentStatement extends Command
 {
@@ -48,20 +49,28 @@ class ProcessSupplierPaymentStatement extends Command
                 }
             }
             // Get all the orders which are Dispatched, Intransit, Delivered, RTO
-            Order::whereIn('status', Order::STATUS_ORDER_TRACKING)->join('supplier_payments', 'orders.id', '=', 'supplier_payments.order_id')
-            ->whereIn('supplier_payments.payment_status', SupplierPayment::PaymentStatement)
-            ->select('orders.*')
+           
+            $a = Order::leftJoin('supplier_payments', 'orders.id', '=', 'supplier_payments.order_id')
+            ->select('orders.*', 'supplier_payments.payment_status')
+            ->whereIn('status', Order::STATUS_ORDER_TRACKING)   
+            ->where(function($query) {
+                $query->whereNull('supplier_payments.payment_status')->OrwhereIn('supplier_payments.payment_status', SupplierPayment::PaymentStatement);
+            })
             ->chunk(100, function ($orders) use($supplier_payment, $tds_percent, $tcs_percent) {
                 foreach ($orders as $order) {
-                    
                     $shipments = $order->shipments()->first();
                     if($shipments){
                         $delivery_date = $shipments->delivery_date;
                     }else{
                         $delivery_date = '';
                     }
-                    $payment_week = $supplier_payment->getPaymentWeek($order, $delivery_date);
-                    $payment_status = $supplier_payment->paymentStatus($order, $delivery_date);
+                    if(isset($delivery_date) && !empty($delivery_date)){
+                        $payment_week = $supplier_payment->getPaymentWeek($order, $delivery_date);
+                        $payment_status = $supplier_payment->paymentStatus($order, $delivery_date);
+                    }else{
+                        $payment_week = null;
+                        $payment_status = SupplierPayment::PAYMENT_STATUS_HOLD;
+                    }
                     $tds_amount = number_format(($order->total_amount * $tds_percent / 100), 2);
                     $tcs_amount = number_format(($order->total_amount * $tcs_percent / 100), 2);
                     $processing_charges = 0;
@@ -112,9 +121,8 @@ class ProcessSupplierPaymentStatement extends Command
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-dd($exceptionDetails);
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
 
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
         }
