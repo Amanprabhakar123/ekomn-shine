@@ -184,6 +184,31 @@ class SupplierPayment extends Model
         }
     }
 
+    /**
+     * Set the payment status int value based on the payment status name.
+     *
+     * @param string $value
+     * @return int
+     */
+    public function setPaymentStatus($value) : ?int
+    {
+        switch ($value) {
+            case 'NA':
+                return self::PAYMENT_STATUS_NA;
+            case 'Hold':
+                return self::PAYMENT_STATUS_HOLD;
+            case 'Accrued':
+                return self::PAYMENT_STATUS_ACCURED;
+            case 'Paid':
+                return self::PAYMENT_STATUS_PAID;
+            case 'Due':
+                return self::PAYMENT_STATUS_DUE;
+            default:
+                return null;
+        }
+    }
+
+
 
     /**
      * Get the payment status name based on the payment status int value.

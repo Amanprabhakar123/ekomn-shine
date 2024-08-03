@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\APIAuth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\ImportErrorMessage;
 use App\Http\Controllers\Controller;
@@ -46,5 +47,31 @@ class BulkUploadController extends Controller
                 ]
             ], __('statusCode.statusCode200'));
         }
+    }
+
+    /**
+     * Download the error file for the import.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function paymentUpdate(){
+         // Check if the user has permission to export payment information
+         if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_EDIT)) {
+           abort(403);
+        }
+        return view('dashboard.admin.payment-update');
+    }
+
+    /**
+     * Download the sample template file for payment status.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadSampleTemplatePayment()
+    {
+        $filePath = public_path('templates/payment-status.csv'); // Adjust the path to your template file
+        $fileName = 'payment-status_' . uniqid() . '.csv'; // Generate a unique file name
+        return response()->download($filePath, $fileName);
     }
 }

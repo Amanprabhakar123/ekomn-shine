@@ -132,11 +132,11 @@ class SupplierPaymentInvoice extends Model
      */
     public function generateInvoiceNumber(): string
     {
-        $invoiceNumber = 'INV-' . strtoupper(substr(md5(uniqid()), 0, 10));
+        $invoiceNumber = 'RCT-' . strtoupper(substr(md5(uniqid()), 0, 10));
         
         // Check if the generated invoice number already exists in the OrderInvoice table
         while (self::where('invoice_number', $invoiceNumber)->exists()) {
-            $invoiceNumber = 'INV-' . strtoupper(substr(md5(uniqid()), 0, 10));
+            $invoiceNumber = 'RCT-' . strtoupper(substr(md5(uniqid()), 0, 10));
         }
         
         return $invoiceNumber;

@@ -7,8 +7,9 @@ use App\Models\Order;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
 use App\Models\SupplierPayment;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
 use App\Transformers\OrderPaymentTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -68,8 +69,17 @@ class OrderPaymentController extends Controller
      * 
      * Illuminate\Http\JsonResponse
      */
-    public function orderPaymentUpdate(Request $request){
+    public function orderPaymentUpdate(Request $request)
+    {
         try {
+            // Check if the user has permission to update the payment information
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_EDIT)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $order_id = $request->input('order_id');
             $id = salt_decrypt($order_id);
             $order = SupplierPayment::where('order_id', $id)->first();
@@ -83,10 +93,16 @@ class OrderPaymentController extends Controller
                     'message' => __('auth.adjustmeAmountUpdated'),
                 ]
             ]);
-
-
         }
         catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
@@ -104,8 +120,17 @@ class OrderPaymentController extends Controller
      * 
      * Illuminate\Http\JsonResponse
      */
-    public function paymentWeekly(Request $request){
+    public function paymentWeekly(Request $request)
+    {
         try {
+            // Check if the user has permission to view the payment information
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
@@ -121,11 +146,11 @@ class OrderPaymentController extends Controller
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
-            $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'orderRefunds', 'supplierPayments'])
+            $orderList = Order::with(['orderItemsCharges', 'orderRefunds', 'supplierPayments', 'supplier.CompanyDetails'])
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('order_number', 'like', '%'.$searchTerm.'%')
-                        ->orWhereHas('orderItemsCharges.product.company', function ($query) use ($searchTerm) {
+                        ->orWhereHas('supplier.CompanyDetails', function ($query) use ($searchTerm) {
                             $query->where('company_serial_id', 'like', '%'.$searchTerm.'%');
                         });
                 });
@@ -162,18 +187,6 @@ class OrderPaymentController extends Controller
             // Create the data array using Fractal
             $transformedData = $this->fractal->createData($resource)->toArray();
             return response()->json($transformedData);
-
-
-            // dd($transformedData);
-            return response()->json([
-                'data' => [
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200'),
-                    'message' => 'Payment information fetched successfully',
-                    'data' => $transformedData['data'],
-                    'meta' => $transformedData['meta']
-                ]
-            ]);
         } catch (\Exception $e) {
             
              // Prepare exception details
@@ -195,9 +208,24 @@ class OrderPaymentController extends Controller
 
     }
 
+    /**
+     * Export the payment information.
+     *
+     * @param Request $request
+     * 
+     * Illuminate\Http\JsonResponse
+     */
     public function exportPaymentWeekly(Request $request)
     {
         try{
+            // Check if the user has permission to export payment information
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_EXPORT)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $orderIds = $request->data;
             if (! is_array($orderIds)) {
                 throw new \Exception('Invalid order IDs format.');
@@ -317,7 +345,7 @@ class OrderPaymentController extends Controller
             ];
             dd($exceptionDetails);
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
@@ -325,6 +353,97 @@ class OrderPaymentController extends Controller
                     'message' => 'Failed to export payment information',
                 ]
             ]);
+        }
+    }
+
+
+    /**
+     * Get the order details for download invoice.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function OrderPaymentInvoice(Request $request)
+    {
+        try {
+             // Check if the user has permission to export payment information
+             if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_EXPORT)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            // Decrypt the order ID from the request
+            $orderId = salt_decrypt($request->all()[0]);
+
+            // Find the order by the decrypted ID
+            $order = Order::where('id', $orderId)->with(['supplierPayments'])->get()->first();
+            
+            // Check if the order exists and has associated invoices
+            if (! $order || ! $order->supplierPayments->isNotEmpty()) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.orderNotFound'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+
+            // Get the first invoice associated with the order
+            $invoice = $order->supplierPayments()->first();
+
+            if ($order && $invoice) {
+                // Prepare data for the PDF
+                $invoiceData = [
+                    'invoice_number' => $invoice->supplierPaymentInvoice->invoice_number,
+                    'total_amount' => $invoice->supplierPaymentInvoice->total_amount,
+                    'invoice_date' => $invoice->supplierPaymentInvoice->invoice_date,
+                    'order_number' => $order->order_number,
+                    'full_name' => $order->full_name,
+                    'email' => $order->email,
+                    'mobile_number' => $order->mobile_number,
+                    'store_order' => $order->store_order,
+                    'status' => $order->getStatus(),
+                    'shipping_address' => $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
+                    'billing_address' => $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
+                    'pickup_address' => $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
+                ];
+                // Generate the PDF from the view
+                $pdf = Pdf::loadView('pdf.payment_reciept', $invoiceData);
+                $fileName = 'payment_reciept_'.$invoice->invoice_number.'.pdf';
+
+                // Return the PDF as a download
+                return $pdf->download($fileName);
+            } else {
+                // Return error response if invoice is not found
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.invoiceNotFound'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+        } catch (\Exception $e) {
+           // Handle any exceptions that occur during the database operations
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+              // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+              // Return error response for failed invoice download
+              return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.invoiceDownloadFailed'),
+                ],
+            ], __('statusCode.statusCode200'));
         }
     }
 }

@@ -76,7 +76,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('edit-courier/{id}', [CourierDetailsController::class, 'edit'])->name('edit.courier');
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
     Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
-    Route::get('order-payment/bulk-upload', [PaymentController::class, 'paymentUpdate'])->name('payment.update');
+    Route::get('order-payment/bulk-upload', [BulkUploadController::class, 'paymentUpdate'])->name('payment.update');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -96,7 +96,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/product/find-category', [CategoryController::class, 'findCategory']);
         Route::post('bulk/import-product-inventory', [ImportController::class, 'importFile'])->name('import-product-inventory');
         Route::get('/download-template', [BulkUploadController::class, 'downloadSampleTemplate'])->name('download-template');
-        Route::get('/download-template-payment', [PaymentController::class, 'downloadSampleTemplate'])->name('download-template-payment');
+        Route::get('/download-template-payment', [BulkUploadController::class, 'downloadSampleTemplatePayment'])->name('download-template-payment');
         Route::get('/bulk-data', [ProductInvetoryController::class, 'getDataBulkInventory'])->name('bulk-data');
         Route::patch('/product/updateStock/{variation_id}', [ProductInvetoryController::class, 'updateStock'])->name('product.updateStock');
         Route::patch('/product/updateStatus/{variation_id}', [ProductInvetoryController::class, 'updateStatus'])->name('product.updateStatus');
@@ -122,6 +122,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('payments/weekly', [OrderPaymentController::class, 'paymentWeekly'])->name('payment.weekly');
         Route::post('order-payment-update', [OrderPaymentController::class, 'orderPaymentUpdate'])->name('order.payment.update');
         Route::post('payments/export/weekly', [OrderPaymentController::class, 'exportPaymentWeekly'])->name('payment.export.weekly');
+        Route::post('bulk/import-payment', [ImportController::class, 'importPaymentFile'])->name('import-payment'); 
+        Route::post('/orders-payment-invoice', [OrderPaymentController::class, 'orderPaymentInvoice'])->name('orders.payment.invoice');
     });
 });
 
