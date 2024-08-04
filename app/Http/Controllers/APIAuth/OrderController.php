@@ -779,10 +779,6 @@ class OrderController extends Controller
                 'status' => Order::STATUS_DISPATCHED,
             ];
 
-            $mail = [
-                'order_number' => $order_details->order_number,
-                'status' => Order::STATUS_DISPATCHED,
-            ];
             event(new OrderStatusChangedEvent($order_details->buyer, $mail));
 
             // Return a success response

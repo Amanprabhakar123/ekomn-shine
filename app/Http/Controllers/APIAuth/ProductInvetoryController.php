@@ -1632,6 +1632,7 @@ class ProductInvetoryController extends Controller
                 $company_id = auth()->user()->companyDetails->id;
                 // Eager load product variations with product inventory that matches user_id
                 $bulkData = Import::where('company_id', $company_id);
+                $bulkData = $bulkData->where('type', Import::TYPE_BULK_UPLOAD_INVENTORY);
 
                 if ($sort_by_status != 0) {
                     $bulkData = $bulkData->where('status', $sort_by_status);
@@ -1657,6 +1658,7 @@ class ProductInvetoryController extends Controller
                 if ($sort_by_status != 0) {
                     $bulkData = $bulkData->where('status', $sort_by_status);
                 }
+                $bulkData = $bulkData->where('type', Import::TYPE_BULK_UPLOAD_INVENTORY);
                 $bulkData = $bulkData->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results
             } else {

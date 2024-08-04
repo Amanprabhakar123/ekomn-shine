@@ -5,34 +5,32 @@
   <div class="ek_content">
     <div class="card ekcard pa shadow-sm">
       <div class="cardhead ">
-        <h3 class="cardtitle">Add Listings in Bulk</h3>
+        <h3 class="cardtitle">Update Bulk Payment</h3>
       </div>
       <div class="uploadContainer_p">
         <div class="uploadContainer">
           <div class="u_d_text">
             <i class="far fa-file-excel"></i>
-            Download the excel template to add your product details
+            Download the 'csv' template to add your payment update
           </div>
-          <a href="{{ route('download-template') }}" class="btn btnekomn-border mt25 mb5">Download</a>
+          <a href="{{ route('download-template-payment') }}" class="btn btnekomn-border mt25 mb5">Download</a>
         </div>
         <div class="bt_arrow">
           <i class="fas fa-long-arrow-alt-right"></i>
         </div>
         <div class="uploadContainer">
-          @if(auth()->user()->hasRole(ROLE_ADMIN) && auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
-          <div class="ek_group">
+          <!-- <div class="ek_group">
             <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
             <div class="ek_f_input">
               <input type="text" class="form-control" placeholder="Supplier Id." id="supplier_id" required />
               <div id="supplier_idErr" class="invalid-feedback"></div>
             </div>
-          </div>
-          @endif
+          </div> -->
           <div class="u_d_text">
             <i class="fas fa-upload"></i>
-            Upload the filled excel file with your product details
+            Upload the filled 'csv' file with your payment update
           </div>
-          <input type="file" name="import_file" id="fileInput" class="file-input" accept=".xls, .xlsx, .xlsm" required />
+          <input type="file" name="import_file" id="fileInput" class="file-input" accept=".csv" required />
           <div class="d-flex gap-3 align-items-center">
             <label for="fileInput" class="file-label">
               <span class="file-label-text">Upload</span>
@@ -42,9 +40,10 @@
           <div id="fileInputErr" class="invalid-feedback"></div>
         </div>
       </div>
-      <p class="mt15 opacity-50">
-        The QC proces swill start after the upload of your product.
-      </p>
+      <!-- <p class="mt15 opacity-50">
+        The QC proces swill start after the upload of your payment.
+      </p> -->
+
       <div class="saveform_footer text-right mt30">
         <button type="button" id="processing" class="btn btn-login btnekomn card_f_btn next_Tab">Start Processing</button>
       </div>
@@ -66,9 +65,9 @@
       var file = $('#fileInput')[0].files[0];
       $('#fileName').text(file.name);
       var fileExtension = file.name.split('.').pop().toLowerCase();
-      if (['xls', 'xlsx', 'xlsm'].indexOf(fileExtension) === -1) {
+      if (['csv'].indexOf(fileExtension) === -1) {
         Swal.fire({
-          title: 'Invalid file format. Please upload a valid Excel file.',
+          title: 'Invalid file format. Please upload a valid Csv file.',
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -82,20 +81,6 @@
     });
     $('#processing').click(function() {
       var file = $('#fileInput')[0].files[0];
-      @if(auth()->user()-> hasRole(ROLE_ADMIN) && auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
-      var supplier_id = $('#supplier_id').val();
-      if (supplier_id == '' || supplier_id == null) {
-        $('#supplier_id').addClass('is-invalid');
-        $('#supplier_idErr').text('Supplier Id is required.');
-        isvalid = false;
-      } else {
-        $('#supplier_id').removeClass('is-invalid');
-        $('#supplier_idErr').text('');
-        formData.append('supplier_id', supplier_id);
-        isvalid = true;
-      }
-      formData.append('supplier_id', supplier_id);
-      @endif
       if (!file) {
         $('#fileInput').addClass('is-invalid');
         $('#fileInputErr').text('No file chosen');
@@ -103,7 +88,7 @@
       }
       if (isvalid) {
         $.ajax({
-          url: "{{ route('import-product-inventory') }}",
+          url: "{{ route('import-payment') }}",
           type: 'POST',
           data: formData,
           contentType: false,
@@ -132,7 +117,7 @@
                 }
               }).then((result) => {
                 if (result.isConfirmed) {
-                  window.location.href = "{{ route('bulk-upload.list') }}";
+                  window.location.href = "{{ route('order.payment') }}";
                 }
               });
             } else {
@@ -163,11 +148,4 @@
   });
 </script>
 
-<!-- <script>
-  document.getElementById('fileInput').addEventListener('change', function(event) {
-    const fileName = event.target.files[0]?.name || 'No file chosen';
-    document.getElementById('fileName').textContent = fileName;
-});
-
-</script> -->
 @endsection

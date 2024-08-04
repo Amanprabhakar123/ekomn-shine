@@ -50,7 +50,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_ORDER_TRACKING = 'order_tracking';
     const PERMISSION_PAYMENT_LIST = 'payment_list';
     const PERMISSION_PAYMENT_EDIT = 'payment_edit'; 
-    coNst PERMISSION_PAYMENT_EXPORT = 'payment_export';
+    const PERMISSION_PAYMENT_EXPORT = 'payment_export';
  
 
     /**

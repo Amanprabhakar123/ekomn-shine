@@ -89,9 +89,11 @@
                     <li>
                         <a class="nav-link" href="{{ route('order.payment') }}">Payment</a>
                     </li>
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_PAYMENT_EDIT) )
                     <li>
-                        <a class="nav-link" href="#">Payment Failed</a>
+                        <a class="nav-link" href="{{route('payment.update')}}">Update Bulk Payment</a>
                     </li>
+                    @endif
                 </ul>
             </li>
             @endif

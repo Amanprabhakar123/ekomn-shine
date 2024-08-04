@@ -8,6 +8,7 @@ use Spatie\Activitylog\LogOptions;
 use App\Models\SupplierPaymentInvoice;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\OrderPaymentDistribution;
+use Carbon\Carbon;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,8 @@ class SupplierPayment extends Model
         'distribution_id',
         'supplier_id',
         'order_id',
+        'tds',
+        'tcs',
         'adjustment_amount',
         'disburse_amount',
         'statement_date',
@@ -67,6 +70,12 @@ class SupplierPayment extends Model
     const PAYMENT_STATUS_DUE = 4;
 
 
+    // Payment Status
+    const PaymentStatement = [
+        self::PAYMENT_STATUS_HOLD,
+        self::PAYMENT_STATUS_ACCURED,
+        self::PAYMENT_STATUS_DUE,
+    ];
     /**
      * The attributes that should be cast to native types.
      *  @var array<string, string>
@@ -100,6 +109,8 @@ class SupplierPayment extends Model
             'distribution_id',
             'supplier_id',
             'order_id',
+            'tds',
+            'tcs',
             'adjustment_amount',
             'disburse_amount',
             'statement_date',
@@ -163,7 +174,7 @@ class SupplierPayment extends Model
             case self::PAYMENT_STATUS_HOLD:
                 return 'Hold';
             case self::PAYMENT_STATUS_ACCURED:
-                return 'Accured';
+                return 'Accrued';
             case self::PAYMENT_STATUS_PAID:
                 return 'Paid';
             case self::PAYMENT_STATUS_DUE:
@@ -172,6 +183,82 @@ class SupplierPayment extends Model
                 return null;
         }
     }
+
+    /**
+     * Set the payment status int value based on the payment status name.
+     *
+     * @param string $value
+     * @return int
+     */
+    public function setPaymentStatus($value) : ?int
+    {
+        switch ($value) {
+            case 'NA':
+                return self::PAYMENT_STATUS_NA;
+            case 'Hold':
+                return self::PAYMENT_STATUS_HOLD;
+            case 'Accrued':
+                return self::PAYMENT_STATUS_ACCURED;
+            case 'Paid':
+                return self::PAYMENT_STATUS_PAID;
+            case 'Due':
+                return self::PAYMENT_STATUS_DUE;
+            default:
+                return null;
+        }
+    }
+
+
+
+    /**
+     * Get the payment status name based on the payment status int value.
+     *
+     * @param int $value
+     * @return string
+     */
+    public function paymentStatus($order, $delivery_date)
+    {
+        // Order Status Payment Status
+        // Pending Hold
+        // Dispatched Hold
+        // Intransit Hold
+        // Delivered Accrued
+        // Delivered+7 Days Due
+        // Paid (Updated by Adin when payment is realesd)
+        // RTO Hold
+
+        // Delivery date week function se update ho jaaati h
+        if($order->isDispatched() || $order->isInTransit() || $order->isRTO()){
+            return self::PAYMENT_STATUS_HOLD; // Hold
+        }
+        else if($order->isDelivered() && $delivery_date->toDateString() < now()->toDateString()){
+            return self::PAYMENT_STATUS_DUE; // Due
+        }
+        else if($order->isDelivered()){
+            return self::PAYMENT_STATUS_ACCURED; // Accrued 
+        }
+       
+    }
+
+    /**
+     * Get the payment week based on the payment status int value.
+     *
+     * @param int $value
+     * @return string
+     */
+    public function getPaymentWeek($order, $delivery_date) : ?string
+    {
+        $payment_week = null;
+
+        $oneWeekLater = $delivery_date->addDays(7); // Copy the delivery_date and add 7 days
+        // Check if the one week later date is less than the current date
+        if ($order->isDelivered() && ($oneWeekLater->toDateString() < now()->toDateString())) {
+            // Get the next Thursday date
+            $payment_week = now()->next('Thursday')->toDateString();
+        }
+        return $payment_week;
+    }
+    
 
     /**
      * Get the payment method name based on the payment method int value.

@@ -37,6 +37,7 @@ class Import extends Model
 
     // Import type
     const TYPE_BULK_UPLOAD_INVENTORY = 'bulk_upload_inventory';
+    const TYPE_BULK_UPLOAD_PAYMENT = 'bulk_upload_payment';
 
     /**
      * The attributes that should be cast to native types.

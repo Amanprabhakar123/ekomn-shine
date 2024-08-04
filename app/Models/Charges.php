@@ -17,6 +17,8 @@ class Charges extends Model
     const LABOUR_CHARGES = 'Labour Charges';
     const PROCESSING_CHARGES = 'Processing Charges';
     const REFERRAL_CHARGES = 'Referral Charges';
+    const TDS = 'TDS';
+    const TCS = 'TCS';
 
     // Constants for Order Types
     const DROPSHIP = 'Dropship';
