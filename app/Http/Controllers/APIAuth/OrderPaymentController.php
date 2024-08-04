@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIAuth;
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\OrderRefund;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
@@ -33,6 +34,10 @@ class OrderPaymentController extends Controller
      */
     public function orderPayment(Request $request)
     {
+         // Check if the user has permission to update the payment information
+         if (! auth()->user()->hasPermissionTo(User::PERMISSION_PAYMENT_LIST)) {
+            return abort(403, __('auth.unauthorizedAction'));
+        }
         if(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
             $orderList = Order::with(['supplierPayments'])
             ->where('supplier_id', auth()->user()->id)
@@ -82,9 +87,32 @@ class OrderPaymentController extends Controller
             }
             $order_id = $request->input('order_id');
             $id = salt_decrypt($order_id);
-            $order = SupplierPayment::where('order_id', $id)->first();
-            $order->adjustment_amount = $request->input('adjustment_amount');
-            $order->save();
+            $order = Order::find($id);
+            $processing_charges = 0;
+            $payment_gateway_charges = 0;
+            $refund_amount = 0;
+
+            $order->orderItemsCharges()->get()->each(function($orderItemsCharges) use (&$processing_charges, &$payment_gateway_charges){
+                $processing_charges += $orderItemsCharges->processing_charges;
+                $payment_gateway_charges += $orderItemsCharges->payment_gateway_charges;
+            });
+            $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
+                $refund_amount += $refund->refund_amount;
+            });
+            $payment = SupplierPayment::where('order_id', $id)->first();
+            if (! $payment) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.paymentNotFound'),
+                    ]
+                ]);
+            }
+            $disburse_amount = ($order->total_amount - ($payment->tds + $payment->tcs + $request->input('adjustment_amount') + $refund_amount + $processing_charges + $payment_gateway_charges));
+            $payment->adjustment_amount = $request->input('adjustment_amount');
+            $payment->disburse_amount = $disburse_amount;
+            $payment->save();
 
             return response()->json([
                 'data' => [
@@ -169,7 +197,11 @@ class OrderPaymentController extends Controller
             if(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
                 $orderList = $orderList->where('supplier_id', auth()->user()->id);
             }
-            $orderList = $orderList->whereBetween('order_date', [$order_date, $order_last_date]);
+            
+            $orderList = $orderList->where(function ($qu) use ($order_date, $order_last_date) {
+                $qu->where('order_date', '>=', $order_date)
+                ->Orwhere('order_date', '<=', $order_last_date);
+            });
             if($statement_date){
                 $orderList = $orderList->whereHas('supplierPayments', function ($query) use ($statement_date) {
                     $query->where('statement_date', $statement_date);

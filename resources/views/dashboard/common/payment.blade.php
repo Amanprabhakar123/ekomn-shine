@@ -320,7 +320,7 @@
                             <td class="text-center">${item.processing_charges}</td>
                             
                              @if(auth()->user()->hasRole(ROLE_ADMIN))
-                                <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" adjustmentAmount" value="${item.adjustment_amount}"></td>
+                                <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
                                 @else
                                  <td class="text-center">${item.adjustment_amount}</td>
                                 @endif
