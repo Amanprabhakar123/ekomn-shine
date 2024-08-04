@@ -6,11 +6,13 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
 use Razorpay\Api\Api;
+use App\Models\Charges;
 use App\Models\AddToCart;
 use App\Models\OrderRefund;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
+use App\Models\SupplierPayment;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
 use App\Events\OrderCanceledEvent;
@@ -20,7 +22,6 @@ use App\Models\OrderItemAndCharges;
 use App\Events\NewOrderCreatedEvent;
 use App\Models\CompanyAddressDetail;
 use App\Models\OrderPaymentDistribution;
-use App\Models\SupplierPayment;
 
 class OrderService
 {
@@ -910,19 +911,58 @@ class OrderService
      * 
      * @return void
      */
-    public function getSupplierPayment($order_details){
+    public function getSupplierPayment($order){
         try{
             // get order payment distribution
-            $orderDistribution = OrderPaymentDistribution::where('order_id', $order_details->id)->first();
+            $orderDistribution = OrderPaymentDistribution::where('order_id', $order->id)->first();
+            $tds_percent = 0;
+            $tcs_percent = 0;
+            $supplier_payment = new SupplierPayment();
+            $charges = Charges::whereIn('other_charges', [Charges::TDS, Charges::TCS])->get();
+            foreach ($charges as $charge) {
+                if ($charge->other_charges == Charges::TDS) {
+                    $tds_percent = $charge->value;
+                } elseif ($charge->other_charges == Charges::TCS) {
+                    $tcs_percent = $charge->value;
+                }
+            }
+            $shipments = $order->shipments()->first();
+            if($shipments){
+                $delivery_date = $shipments->delivery_date;
+            }else{
+                $delivery_date = '';
+            }
+            if(isset($delivery_date) && !empty($delivery_date)){
+                $payment_week = $supplier_payment->getPaymentWeek($order, $delivery_date);
+            }else{
+                $payment_week = null;
+            }
+            $tds_amount = number_format(($order->total_amount * $tds_percent / 100), 2);
+            $tcs_amount = number_format(($order->total_amount * $tcs_percent / 100), 2);
+
+            $processing_charges = 0;
+            $payment_gateway_charges = 0;
+            $refund_amount = 0;
+
+            $order->orderItemsCharges()->get()->each(function($orderItemsCharges) use (&$processing_charges, &$payment_gateway_charges){
+                $processing_charges += $orderItemsCharges->processing_charges;
+                $payment_gateway_charges += $orderItemsCharges->payment_gateway_charges;
+            });
+            $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
+                $refund_amount += $refund->refund_amount;
+            });
             // Create supplier payment
             $supplierPayment = SupplierPayment::firstOrCreate([
                 'distribution_id' => $orderDistribution->id,
-                'supplier_id' => $order_details->supplier_id,
-                'order_id' => $order_details->id,
+                'supplier_id' => $order->supplier_id,
+                'order_id' => $order->id,
+                'tds' => $tds_amount,
+                'tcs' => $tcs_amount,
                 'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
-                'disburse_amount' => ($orderDistribution->amount - $orderDistribution->refunded_amount - OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                'disburse_amount' => ($orderDistribution->amount - ($tds_amount + $tcs_amount +  $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT)),
+                'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER,
                 'payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD,
-                'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
+                'statement_date' => $payment_week,
             ]);
             return $supplierPayment;
         }catch(\Exception $e){

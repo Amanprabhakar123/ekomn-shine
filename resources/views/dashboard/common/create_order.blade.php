@@ -1206,21 +1206,21 @@
         isvalid = false;
       }
 
-      // const fileInputResell = $('#UploadInvoiceResell')[0];
-      // const file = fileInputResell.files[0];
-      // // Check if a file is selected
+      const fileInputResell = $('#UploadInvoiceResell')[0];
+      const file = fileInputResell.files[0];
+      // Check if a file is selected
       // if (!file) {
       //   $('#UploadInvoiceResellErr').text('Please upload an invoice file.');
       //   isvalid = false;
       // }
-      // fileInputResell.addEventListener('change', function() {
-      //   const file = fileInputResell.files[0];
-      //   // Check if a file is selected
-      //   if (file) {
-      //     $('#UploadInvoiceResellErr').text('');
-      //     isvalid = true;
-      //   }
-      // });
+      fileInputResell.addEventListener('change', function() {
+        const file = fileInputResell.files[0];
+        // Check if a file is selected
+        if (file) {
+          $('#UploadInvoiceResellErr').text('');
+          isvalid = true;
+        }
+      });
 
 
       //--------------------Resell Order Submit--------------------
@@ -1238,7 +1238,9 @@
         formData.append('b_state', $('#resell-b-state').val());
         formData.append('b_city', $('#resell-b-city').val());
         formData.append('b_pincode', parseInt($('#resell-b-pincode').val()));
-        formData.append('invoice', file);
+        if (file) {
+          formData.append('invoice', file);
+        }
         formData.append('order_type', $('#order_type').val());
         formData.append('order_id', $('#order_id').val());
         ApiRequest('orders', 'POST', formData)

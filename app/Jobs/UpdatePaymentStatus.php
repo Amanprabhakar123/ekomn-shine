@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\Events\SupplierPaymentDisburseEvent;
 
 class UpdatePaymentStatus implements ShouldQueue
 {
@@ -85,7 +86,7 @@ class UpdatePaymentStatus implements ShouldQueue
                             ImportErrorMessage::create([
                                 'import_id' => $import->id,
                                 'row_number' => $data[0],
-                                'error_message' => 'Payment not found',
+                                'error_message' => 'Payment not found is not due',
                             ]);
                         }
 
@@ -98,12 +99,20 @@ class UpdatePaymentStatus implements ShouldQueue
                             'total_amount' => $payment->disburse_amount,
                             'status' => SupplierPaymentInvoice::STATUS_PAID,
                         ]);
+
+                        $response = [
+                            'total_amount' => $payment->disburse_amount,
+                            'order_id' => $order->order_number,
+                            'order_type' => $order->getOrderType(),
+                        ];
+                        // Trigger an event
+                        event (new SupplierPaymentDisburseEvent($order->supplier, $response));
                         
                     } else {
                         ImportErrorMessage::create([
                             'import_id' => $import->id,
                             'row_number' => $data[0],
-                            'error_message' => 'Order not found',
+                            'error_message' => 'Order not found and not delivered',
                         ]);
                     }
                 }

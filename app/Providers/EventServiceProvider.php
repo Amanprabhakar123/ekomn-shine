@@ -3,19 +3,21 @@
 namespace App\Providers;
 
 use App\Events\ExceptionEvent;
-use App\Events\NewOrderCreatedEvent;
 use App\Events\OrderCanceledEvent;
-use App\Events\OrderStatusChangedEvent;
+use App\Events\NewOrderCreatedEvent;
 use App\Listeners\ExceptionListener;
-use App\Listeners\NotifyBuyerNewOrderListener;
-use App\Listeners\NotifyBuyerOrderCanceledListener;
-use App\Listeners\NotifyChangeOrderStatusListener;
-use App\Listeners\NotifySupplierNewOrderListener;
-use App\Listeners\NotifySupplierOrderCanceledListener;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use App\Events\OrderStatusChangedEvent;
+use App\Events\SupplierPaymentDisburseEvent;
+use App\Listeners\NotifyBuyerNewOrderListener;
+use App\Listeners\NotifySupplierNewOrderListener;
+use App\Listeners\NotifyChangeOrderStatusListener;
+use App\Listeners\SupplierPaymentDisburseListener;
+use App\Listeners\NotifyBuyerOrderCanceledListener;
+use App\Listeners\NotifySupplierOrderCanceledListener;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -41,7 +43,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         ExceptionEvent::class => [
             ExceptionListener::class,
+        ],
 
+        SupplierPaymentDisburseEvent::class => [
+            SupplierPaymentDisburseListener::class,
         ],
     ];
 
