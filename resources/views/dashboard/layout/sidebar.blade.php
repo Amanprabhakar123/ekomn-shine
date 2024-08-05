@@ -103,6 +103,14 @@
                     <span class="nav-link-text">Messages/Notifications</span>
                 </a>
             </li>
+            @if(auth()->user()->hasRole(ROLE_ADMIN) )
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('category.list') }}">
+                    <i class="fas fa-envelope menuIcon"></i>
+                    <span class="nav-link-text">categories-by-listing</span>
+                </a>
+            </li>
+            @endif
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-tags menuIcon"></i>

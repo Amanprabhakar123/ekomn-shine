@@ -24,6 +24,7 @@ use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\BulkUploadController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\web\HomeController;
 use Faker\Provider\ar_EG\Payment;
 
 /*
@@ -58,6 +59,7 @@ Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name
 Route::get('product-category', [WebController::class, 'productCategory'])->name('product.category');
 Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
+Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -82,6 +84,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
     Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
     Route::get('order-payment/bulk-upload', [BulkUploadController::class, 'paymentUpdate'])->name('payment.update');
+   
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -129,6 +132,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('payments/export/weekly', [OrderPaymentController::class, 'exportPaymentWeekly'])->name('payment.export.weekly');
         Route::post('bulk/import-payment', [ImportController::class, 'importPaymentFile'])->name('import-payment'); 
         Route::post('/orders-payment-invoice', [OrderPaymentController::class, 'orderPaymentInvoice'])->name('orders.payment.invoice');
+        Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
+        Route::post('find-category', [HomeController::class, 'findCategory'])->name('find.category');
+        Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
     });
 });
 
