@@ -60,8 +60,8 @@
       </div>
         @else
         <div class="userAction">
-          <a href="{{ route('supplier.login') }}" class="text-white fs-6" >Login</a>
-          <a href="{{ route('supplier.register') }}" class="btn btnekomn btnround px-5" >Register</a>   
+          <a href="{{ route('buyer.login') }}" class="text-white fs-6" >Login</a>
+          <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5" >Register</a>   
         </div>
         <!-- <a href="{{ route('buyer.login') }}" class="text-white" >Login</a>
         <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5" >Register</a> -->

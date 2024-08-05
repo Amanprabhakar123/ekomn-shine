@@ -44,6 +44,7 @@
 </div>
 
 @section('custom_script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $(document).ready(function() {
     // Function to clear error messages for email and password fields
@@ -96,12 +97,47 @@
             });
             $('#r_m').append(response.data.message);
           } else {
-            alert('Failed to send reset password email. Please try again.');
+            Swal.fire({
+                title: 'Failed to send reset password email. Please try again.',
+                icon: "error",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
+              });
           }
         })
         .catch(error => {
-          console.error('Error:', error);
-          alert('><><><><><><> Failed to send reset password email. Please try again later.');
+          Swal.fire({
+                title: 'Failed to send reset password email. Please try again.',
+                icon: "error",
+                didOpen: () => {
+                  // Apply inline CSS to the title
+                  const title = Swal.getTitle();
+                  title.style.color = 'red';
+                  title.style.fontSize = '20px';
+
+                  // Apply inline CSS to the content
+                  const content = Swal.getHtmlContainer();
+                  content.style.color = 'blue';
+
+                  // Apply inline CSS to the confirm button
+                  const confirmButton = Swal.getConfirmButton();
+                  confirmButton.style.backgroundColor = '#feca40';
+                  confirmButton.style.color = 'white';
+                }
+              });
         });
     });
   });
