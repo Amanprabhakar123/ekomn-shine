@@ -4,9 +4,10 @@ namespace App\Http\Controllers\web;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Models\TopProductTable;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
@@ -83,11 +84,6 @@ class HomeController extends Controller
 
     // create find category by product api function
 
-    public function productView()
-    {
-        return view('dashboard.admin.top-product');
-    }
-
     public function findCategoryByProduct(Request $request)
     {
         try {
@@ -118,14 +114,19 @@ class HomeController extends Controller
         }
     }
 
+    public function productView()
+    {
+        return view('dashboard.admin.top-product');
+    }
+
     // create find category by product api function
 
-    public function topProduct(Request $request)
+    public function getTopProduct(Request $request)
     {
         try {
             // dd($request->categoryBy);
             $product = ProductVariation::all();
-
+             $typeProduct = TopProductTable::TYPE_ARRAY;
             // dd($category);
             return response()->json([
                 'data' => [
@@ -133,6 +134,7 @@ class HomeController extends Controller
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
                     'data' => $product,
+                    'typeProduct' => $typeProduct,
                 ],
             ], __('statusCode.statusCode200'));
         
