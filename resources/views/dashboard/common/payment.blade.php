@@ -66,7 +66,7 @@
                             <th>TDS</th>
                             <th>TCS</th>
                             <th>Order Disbursement Amount</th>
-                            <th>Payment Status</th>
+                            <th>Supplier Payment Status</th>
                             <th>Statement Wk</th>
                             <th>Invoice</th>
                         </tr>

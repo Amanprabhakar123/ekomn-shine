@@ -172,7 +172,7 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
             // Check if the product variation SKU exists
-            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->id)->get();
+            $checkDuplicate = AddToCart::where('product_id', $productVariationSku->id)->where('buyer_id', $user->id)->get();
 
             // Check if the product variation SKU exists
             if ($checkDuplicate->isEmpty()) {
