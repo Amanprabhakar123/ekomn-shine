@@ -59,6 +59,7 @@ Route::get('product-category', [WebController::class, 'productCategory'])->name(
 Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
+Route::get('top-product', [HomeController::class, 'productView'])->name('top.product');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -135,6 +136,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('find-category', [HomeController::class, 'findCategory'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
         Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
+        Route::get('get-top-product', [HomeController::class, 'getTopProduct'])->name('get.top.product');
     });
 });
 

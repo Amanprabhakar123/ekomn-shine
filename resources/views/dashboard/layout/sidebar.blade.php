@@ -162,7 +162,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('category.list') }}">
+                        <a class="nav-link" href="{{ route('top.product') }}">
                             <span class="nav-link-text">Top Categories</span>
                         </a>
                     </li>

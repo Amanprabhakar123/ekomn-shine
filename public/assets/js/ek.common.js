@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive(links, this);
     });
   });
+
   subLinks.forEach(function (subLink) {
     subLink.addEventListener('click', function (event) {
       // event.preventDefault();
