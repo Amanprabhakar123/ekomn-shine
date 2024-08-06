@@ -103,14 +103,6 @@
                     <span class="nav-link-text">Messages/Notifications</span>
                 </a>
             </li>
-            @if(auth()->user()->hasRole(ROLE_ADMIN) )
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('category.list') }}">
-                    <i class="fas fa-envelope menuIcon"></i>
-                    <span class="nav-link-text">categories-by-listing</span>
-                </a>
-            </li>
-            @endif
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="fas fa-tags menuIcon"></i>
@@ -161,6 +153,18 @@
                     </li>
                     <li>
                         <a class="nav-link" href="#">Category Management</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('category.list') }}">
+                            <span class="nav-link-text">Top Products</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('category.list') }}">
+                            <span class="nav-link-text">Top Categories</span>
+                        </a>
                     </li>
                 </ul>
             </li>

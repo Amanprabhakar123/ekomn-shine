@@ -32,6 +32,7 @@ class HomeController extends Controller
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
                     'data' => $categories,
+                    'priority' => $priority,
                 ],
             ], __('statusCode.statusCode200'));
         
@@ -82,6 +83,11 @@ class HomeController extends Controller
 
     // create find category by product api function
 
+    public function productView()
+    {
+        return view('dashboard.admin.top-product');
+    }
+
     public function findCategoryByProduct(Request $request)
     {
         try {
@@ -97,6 +103,36 @@ class HomeController extends Controller
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
                     'data' => $category,
+                ],
+            ], __('statusCode.statusCode200'));
+        
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    // 'message' => __('auth.categoryNotCreate'),
+                ],
+            ]);
+        }
+    }
+
+    // create find category by product api function
+
+    public function topProduct(Request $request)
+    {
+        try {
+            // dd($request->categoryBy);
+            $product = ProductVariation::all();
+
+            // dd($category);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    // 'message' => __('auth.categoryCreate'),
+                    'data' => $product,
                 ],
             ], __('statusCode.statusCode200'));
         
