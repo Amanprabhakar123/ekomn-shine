@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('top_product_tables', function (Blueprint $table) {
+        Schema::create('top_products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->integer('priority');
-            $table->string('type');
+            $table->tinyInteger('type')->default(1);
             $table->timestamps();
-
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('product_variations')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('top_categories')->onDelete('cascade');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('top_product_tables');
+        Schema::dropIfExists('top_products');
     }
 };

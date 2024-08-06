@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('top_categories_tables', function (Blueprint $table) {
+        Schema::create('top_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('category_id');
             $table->integer('priority');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('top_categories_tables');
+        Schema::dropIfExists('top_categories');
     }
 };
