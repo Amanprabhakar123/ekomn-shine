@@ -71,7 +71,7 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
-                                    <th class="h_sorting" data-sort-field="payment_status">Payment Status
+                                    <th class="h_sorting" data-sort-field="payment_status">Order Payment Status
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
                                                     class="fas fa-caret-down"></i></small>
@@ -177,7 +177,7 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
-                                    <th class="h_sorting" data-sort-field="payment_status">Payment Status
+                                    <th class="h_sorting" data-sort-field="payment_status">Order Payment Status
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
                                                     class="fas fa-caret-down"></i></small>
@@ -287,7 +287,7 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
-                                    <th class="h_sorting" data-sort-field="payment_status">Payment Status
+                                    <th class="h_sorting" data-sort-field="payment_status">Order Payment Status
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
                                                     class="fas fa-caret-down"></i></small>
@@ -512,6 +512,10 @@
          */
         @if (auth()->user()->hasRole(ROLE_ADMIN))
             function generateTableRow(item) {
+                var isvalid = false;
+                if(item.status == "Cancelled" || item.payment_status == "Pending"){
+                isvalid = true;
+            }
                 var orderType = '';
 
                 let a = status(item);
@@ -554,13 +558,17 @@
                   <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''} >Cancel</button>
                 </td>
                   <td class="text-center">
-                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')">Download</button>
+                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')" ${isvalid ? 'disabled' : ''}>Download</button>
                 </td>
               </tr>
     `;
             }
         @elseif (auth()->user()->hasRole(ROLE_SUPPLIER)) 
             function generateTableRow(item) {
+                var isvalid = false;
+                if(item.status == "Cancelled" || item.payment_status == "Pending"){
+                isvalid = true;
+            }
                 var orderType = '';
 
                 let a = status(item);
@@ -598,7 +606,7 @@
                   <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''}>Cancel</button>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')">Download</button>
+                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')" ${isvalid ? 'disabled' : ''}>Download</button>
                     </td>
               </tr>
     `;
@@ -606,6 +614,11 @@
         @elseif (auth()->user()->hasRole(ROLE_BUYER))
 
         function generateTableRow(item) {
+            var isvalid = false;
+                if(item.status == "Cancelled" || item.payment_status == "Pending"){
+                isvalid = true;
+            }
+            
                 var orderType = '';
 
                 let a = status(item);
@@ -639,7 +652,7 @@
                   <button class="btn btn-sm btn-danger" onclick="cancelOrder('${item.id}')" ${item.is_cancelled ? 'disabled' : ''}>Cancel</button>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')">Download</button>
+                  <button class="btn btn-sm btn-warning text-white" onclick="downloadInvoice('${item.id}')" ${isvalid ? 'disabled' : ''}>Download</button>
                     </td>
               </tr>
     `;
