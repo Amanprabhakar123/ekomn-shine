@@ -21,7 +21,7 @@
                 
                 <div class="col-md-4">
                     <div class="ek_f_input">
-                        <label for="category">Priority</label>
+                        <label for="category">Category of Number</label>
                         <select class="form-select" class="number" id="number">
                             <option value="" selected>Select State</option>
                         </select>
@@ -61,7 +61,6 @@
         .then((res) => {
             if (res.data.statusCode == 200) {
                 let data = res.data.data;
-                let priority = res.data.priority;
                 let options = data.map(item => {
                     return {
                         id: item.id,
@@ -75,17 +74,17 @@
                     placeholder: 'Select a category',
                     allowClear: true
                 });
-
-                priority.forEach((item) => {
-                 $('#number').append(`<option value="${item}">${item}</option>`);
-                 });
             }
         })
         .catch((err) => {
             console.log(err);
         });
       
-   
+
+        var numberCategory = [1, 2, 3, 4, 5, 6];
+       numberCategory.forEach((item) => {
+            $('#number').append(`<option value="${item}">${item}</option>`);
+        });
         
         $('#category').on('change', function() {
             var formData = new FormData();
@@ -96,7 +95,9 @@
             .then((res) => {
                 if (res.data.statusCode == 200) {
                     let data = res.data.data;
+                    console.log(data);
                     let options = data.map(item => {
+                        console.log(item);
                         return {
                             id: item.id,
                             text: item.title
