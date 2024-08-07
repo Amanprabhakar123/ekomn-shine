@@ -20,9 +20,8 @@ use App\Http\Controllers\Auth\CourierDetailsController;
 use App\Http\Controllers\Auth\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\web\Banners;
-use App\Http\Controllers\web\HomeController;
-use App\Http\Controllers\web\WebController;
+use App\Http\Controllers\MsiSettingAdmin\HomeController;
+use App\Http\Controllers\Web\WebController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,8 +57,8 @@ Route::get('product-category', [WebController::class, 'productCategory'])->name(
 Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
-Route::get('top-product', [HomeController::class, 'productView'])->name('top.product');
-Route::get('banner', [Banners::class, 'banner'])->name('banner');
+Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
+Route::get('banner', [HomeController::class, 'banner'])->name('banner');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -133,9 +132,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('bulk/import-payment', [ImportController::class, 'importPaymentFile'])->name('import-payment');
         Route::post('/orders-payment-invoice', [OrderPaymentController::class, 'orderPaymentInvoice'])->name('orders.payment.invoice');
         Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
-        Route::post('find-category', [HomeController::class, 'findCategory'])->name('find.category');
+        Route::post('find-category', [HomeController::class, 'findProduct'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
-        Route::get('get-top-product', [HomeController::class, 'getTopProduct'])->name('get.top.product');
+        Route::get('get-top-product', [HomeController::class, 'TopProduct'])->name('get.top.product');
         Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
     });
 });

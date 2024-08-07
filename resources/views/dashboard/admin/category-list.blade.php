@@ -45,6 +45,32 @@
                     <button type="button" id="btnSubmit" class="btn btn-login btnekomn card_f_btn"
                         id="generaltab">Submit</button>
                 </div>
+
+                <div class="table-responsive tres_border">
+
+                <table class="normalTable tableSorting whitespace">
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Product title</th>
+                            <th>Tracking URL</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>loop->index + 1 </td>
+                            <td>courier->courier_name </td>
+                            <td>courier->tracking_url </td>
+                            <td>
+                                <a href="">Edit</a>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
             </div>
 
         </div>
