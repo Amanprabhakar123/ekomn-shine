@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
             $table->integer('priority');
-            $table->tinyInteger('type')->default(1);
+            $table->tinyInteger('type')->default(0);
             $table->timestamps();
             $table->foreign('product_id')->references('id')->on('product_variations')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('top_categories')->onDelete('cascade');

@@ -14,6 +14,7 @@ use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
 use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\web\Banners;
 use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\Auth\AuthViewController;
 use App\Http\Controllers\Auth\CourierDetailsController;
@@ -22,9 +23,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\web\HomeController;
 use App\Http\Controllers\web\WebController;
-use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
-use PhpOffice\PhpSpreadsheet\Calculation\Web;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +59,7 @@ Route::get('product-details', [WebController::class, 'productDetails'])->name('p
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 Route::get('top-product', [HomeController::class, 'productView'])->name('top.product');
+Route::get('banner', [Banners::class, 'banner'])->name('banner');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -135,8 +135,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
         Route::post('find-category', [HomeController::class, 'findCategory'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
-        Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
         Route::get('get-top-product', [HomeController::class, 'getTopProduct'])->name('get.top.product');
+        Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
     });
 });
 

@@ -31,7 +31,7 @@ class CategoryController extends Controller
                     return str_replace(' ', '-', $tag);
                 }, $tags); // Replace spaces with hyphens
             }
-            $categoryService = new CategoryService;
+            $categoryService = new CategoryService();
             $categoryDetails = $categoryService->searchCategory($tags);
 
             return response()->json(['data' => $categoryDetails]);

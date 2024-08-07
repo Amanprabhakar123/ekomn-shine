@@ -13,7 +13,7 @@
                         <div class="ek_f_input">
                             <label for="category">Category</label>
                             <select class="form-select" id="category">
-                                <option value="" selected>Select State</option>
+                                <option value="" selected>Select Category</option>
                             </select>
                             <div id="categoryErr" class="invalid-feedback"></div>
                         </div>
@@ -23,7 +23,7 @@
                         <div class="ek_f_input">
                             <label for="category">Priority</label>
                             <select class="form-select" id="number" value="">
-                                <option value="" selected>Select State</option>
+                                <option value="" selected>Select Priority</option>
                             </select>
                             <div id="priorityErr" class="invalid-feedback"></div>
                         </div>
@@ -33,7 +33,7 @@
                     <div class="col-md-4">
                         <div class="ek_f_input">
                             <label for="category">Product by</label>
-                            <select class="form-select " class="" id="productBy" multiple data-max-options="3">
+                            <select class="form-select " id="productBy" multiple data-max-options="3" placeholder = "Select 3 products">
                             </select>
                             <div id="productByErr" class="invalid-feedback"></div>
                         </div>
@@ -107,7 +107,7 @@
                             // Initialize Select2 with options
                             $('#productBy').select2({
                                 data: options,
-                                placeholder: 'Select a category',
+                                placeholder: 'Select 3 products',
                                 allowClear: true
                             });
                         }
