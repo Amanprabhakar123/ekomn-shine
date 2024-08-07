@@ -1,32 +1,29 @@
 <?php
 
-use App\Models\CourierDetails;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\web\WebController;
-use PhpOffice\PhpSpreadsheet\Calculation\Web;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\APIAuth\FeedBackController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\CategoryController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\Auth\CourierDetailsController;
-use App\Http\Controllers\APIAuth\OrderPaymentController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\BulkUploadController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\CategoryController;
+use App\Http\Controllers\APIAuth\FeedBackController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\OrderPaymentController;
+use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\web\Banners;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\web\HomeController;
-use Faker\Provider\ar_EG\Payment;
+use App\Http\Controllers\web\WebController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +84,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
     Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
     Route::get('order-payment/bulk-upload', [BulkUploadController::class, 'paymentUpdate'])->name('payment.update');
-   
+
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -128,17 +125,18 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/download-invoice/{id}', [OrderController::class, 'downloadInvoice'])->name('download.invoice');
         Route::post('/orders-invoice', [OrderController::class, 'orderInvoice'])->name('orders.invoice');
         Route::post('orders-export-csv', [OrderController::class, 'exportOrders'])->name('orders.export');
-        Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store'); 
-        Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update'); 
+        Route::post('courier-detail', [CourierDetailsController::class, 'courierDetails'])->name('courier-detail.store');
+        Route::post('courier-update', [CourierDetailsController::class, 'update'])->name('courier.update');
         Route::get('payments/weekly', [OrderPaymentController::class, 'paymentWeekly'])->name('payment.weekly');
         Route::post('order-payment-update', [OrderPaymentController::class, 'orderPaymentUpdate'])->name('order.payment.update');
         Route::post('payments/export/weekly', [OrderPaymentController::class, 'exportPaymentWeekly'])->name('payment.export.weekly');
-        Route::post('bulk/import-payment', [ImportController::class, 'importPaymentFile'])->name('import-payment'); 
+        Route::post('bulk/import-payment', [ImportController::class, 'importPaymentFile'])->name('import-payment');
         Route::post('/orders-payment-invoice', [OrderPaymentController::class, 'orderPaymentInvoice'])->name('orders.payment.invoice');
         Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
         Route::post('find-category', [HomeController::class, 'findCategory'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
         Route::get('get-top-product', [HomeController::class, 'getTopProduct'])->name('get.top.product');
+        Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
     });
 });
 

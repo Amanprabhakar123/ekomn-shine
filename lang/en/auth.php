@@ -111,5 +111,7 @@ return [
     'updateSuccess' => 'Courier Details Updated Successfully.',
     'shipmetUpdate' => 'Shipment Updated Successfully.',
     'adjustmeAmountUpdated' => 'Adjustment Amount Updated Successfully.',
+    'categoryAdded' => 'Category Store Successfully.',
+    'categoryFailed' => 'Category Store Failed.',
 
 ];

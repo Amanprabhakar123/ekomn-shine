@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AddCourierPermisssion::class);
         $this->call(PaymentPermissionSeeder::class);
         $this->call(AddTDSCharges::class);
+        $this->call(MisAdminPermission::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\web;
 
 use App\Models\Category;
+use App\Models\TopProduct;
+use App\Models\TopCategory;
 use Illuminate\Http\Request;
 use App\Models\TopProductTable;
 use App\Models\ProductInventory;
@@ -26,14 +28,15 @@ class HomeController extends Controller
             ->get();
             $priority = [1,2,3,4,5,6];
 
-            // $TopCategory =)
+            $topCategoryPriority = TopCategory::pluck('priority')->toArray();
+            $p = array_values(array_diff($priority, $topCategoryPriority));
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
                     'data' => $categories,
-                    'priority' => $priority,
+                    'priority' => $p,
                 ],
             ], __('statusCode.statusCode200'));
         
@@ -126,7 +129,7 @@ class HomeController extends Controller
         try {
             // dd($request->categoryBy);
             $product = ProductVariation::all();
-             $typeProduct = TopProductTable::TYPE_ARRAY;
+             $typeProduct = TopProduct::TYPE_ARRAY;
             // dd($category);
             return response()->json([
                 'data' => [
