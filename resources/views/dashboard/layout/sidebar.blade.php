@@ -154,18 +154,21 @@
                     <li>
                         <a class="nav-link" href="#">Category Management</a>
                     </li>
-
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY) )
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('category.list') }}">
-                            <span class="nav-link-text">Top Products</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('top.product') }}">
                             <span class="nav-link-text">Top Categories</span>
                         </a>
                     </li>
+                    @endif
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_PRODUCT) )
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('top.product') }}">
+                            <span class="nav-link-text">Top Products</span>
+                        </a>
+                    </li>
+                    @endif
+                    
                 </ul>
             </li>
 
