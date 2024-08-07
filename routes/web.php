@@ -136,6 +136,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('find-category', [HomeController::class, 'findProduct'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
         Route::get('get-top-product', [HomeController::class, 'TopProduct'])->name('get.top.product');
+        Route::post('store-products', [CategoryController::class, 'storeProducts'])->name('store.products');
         Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
     });
 });

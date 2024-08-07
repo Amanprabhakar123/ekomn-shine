@@ -31,7 +31,7 @@ class CategoryController extends Controller
                     return str_replace(' ', '-', $tag);
                 }, $tags); // Replace spaces with hyphens
             }
-            $categoryService = new CategoryService();
+            $categoryService = new CategoryService;
             $categoryDetails = $categoryService->searchCategory($tags);
 
             return response()->json(['data' => $categoryDetails]);
@@ -130,5 +130,71 @@ class CategoryController extends Controller
             return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
 
+    }
+
+    /**
+     * Store multiple products.
+     *
+     * This method is responsible for storing multiple products along with their associated categories.
+     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the status and message.
+     */
+    public function storeProducts(Request $request)
+    {
+
+        try {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'product_title' => 'required',
+                'product_type' => 'required',
+
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            $products = $request->input('product_type');
+
+            // Split the productBy value into an array
+            $product = explode(',', $products);
+            // Check if the category is saved successfully
+            if ($products) {
+                // Loop through each product and save it as a TopProduct
+                foreach ($product as $key => $value) {
+                    $productCategory = new TopProduct;
+                    $productCategory->product_id = $value;
+                    $productCategory->priority = $key + 1;
+                    $productCategory->save();
+                }
+
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.productAdded'),
+                ]], __('statusCode.statusCode200'));
+            } else {
+                return response()->json(['data' => __('auth.productFailed')], __('statusCode.statusCode404'));
+            }
+        } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+        }
     }
 }
