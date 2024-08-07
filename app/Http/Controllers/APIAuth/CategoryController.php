@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\TopCategory;
 use App\Models\TopProduct;
+use App\Models\User;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -66,9 +67,9 @@ class CategoryController extends Controller
         try {
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'number' => 'required',
-                'category' => 'required',
-                'productBy' => 'required',
+                'number' => 'required|string',
+                'category' => 'required|string',
+                'productBy' => 'required|string',
             ]);
 
             // Check if validation fails
@@ -80,9 +81,13 @@ class CategoryController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
-            // Define priority values
-            $priority = [1, 2, 3, 4, 5, 6];
-
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             // Get the number and productBy values from the request
             $number = $request->input('number');
             $product = $request->input('productBy');
@@ -146,8 +151,8 @@ class CategoryController extends Controller
         try {
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'product_title' => 'required',
-                'product_type' => 'required',
+                'product_title' => 'required|string',
+                'product_type' => 'required|string',
 
             ]);
 
@@ -159,8 +164,15 @@ class CategoryController extends Controller
                     'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
 
-            $products = $request->input('product_type');
+            $products = $request->input('product_title');
 
             // Split the productBy value into an array
             $product = explode(',', $products);
@@ -170,6 +182,7 @@ class CategoryController extends Controller
                 foreach ($product as $key => $value) {
                     $productCategory = new TopProduct;
                     $productCategory->product_id = $value;
+                    $productCategory->type = $request->input('product_type');
                     $productCategory->priority = $key + 1;
                     $productCategory->save();
                 }
