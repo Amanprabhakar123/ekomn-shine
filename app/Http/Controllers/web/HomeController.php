@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\TopCategory;
 
 class HomeController extends Controller
 {
@@ -25,14 +26,15 @@ class HomeController extends Controller
             ->get();
             $priority = [1,2,3,4,5,6];
 
-            // $TopCategory =)
+            $topCategoryPriority = TopCategory::pluck('priority')->toArray();
+            $p = array_values(array_diff($priority, $topCategoryPriority));
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
                     'data' => $categories,
-                    'priority' => $priority,
+                    'priority' => $p,
                 ],
             ], __('statusCode.statusCode200'));
         
