@@ -59,6 +59,7 @@ Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.cat
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
 Route::get('banner', [HomeController::class, 'banner'])->name('banner');
+Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {

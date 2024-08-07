@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
@@ -19,9 +19,8 @@ class Category extends Model
         'meta_description',
         'parent_id',  // for depth level 3 parent_id store the sub category id that
         'depth',
-        'root_parent_id'
+        'root_parent_id',
     ];
-
 
     // Define the relationship with the parent category
     public function parent()
@@ -30,8 +29,8 @@ class Category extends Model
     }
 
     // Define the relationship with the root parent category
-    public function rootParent()
+    public function children()
     {
-        return $this->belongsTo(Category::class, 'root_parent_id');
+        return $this->hasMany(Category::class, 'parent_id');
     }
 }
