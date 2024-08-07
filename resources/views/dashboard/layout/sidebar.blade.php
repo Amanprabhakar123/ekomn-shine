@@ -166,6 +166,11 @@
                             <span class="nav-link-text">Top Categories</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('banner') }}">
+                            <span class="nav-link-text">Banner</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
 

@@ -24,6 +24,7 @@ use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\BulkUploadController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\web\Banners;
 use App\Http\Controllers\web\HomeController;
 use Faker\Provider\ar_EG\Payment;
 
@@ -61,6 +62,7 @@ Route::get('product-details', [WebController::class, 'productDetails'])->name('p
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 Route::get('top-product', [HomeController::class, 'productView'])->name('top.product');
+Route::get('banner', [Banners::class, 'banner'])->name('banner');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
