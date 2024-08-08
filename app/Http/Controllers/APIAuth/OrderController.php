@@ -2,32 +2,30 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Events\ExceptionEvent;
-use App\Events\OrderStatusChangedEvent;
-use App\Http\Controllers\Controller;
-use App\Models\AddToCart;
-use App\Models\Order;
-use App\Models\OrderItemAndCharges;
-use App\Models\OrderPayment;
-use App\Models\ProductVariation;
-use App\Models\Shipment;
-use App\Models\ShipmentAwb;
-use App\Models\User;
-use App\Services\OrderService;
-use App\Transformers\OrderDataTransformer;
-use App\Transformers\ProductCartListTransformer;
-use Barryvdh\DomPDF\Facade\Pdf;
+use ZipArchive;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Shipment;
+use App\Models\AddToCart;
+use App\Models\ShipmentAwb;
+use League\Fractal\Manager;
+use App\Models\OrderPayment;
 use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
+use App\Services\OrderService;
+use App\Models\ProductVariation;
+use App\Models\OrderItemAndCharges;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Controller;
+use App\Events\OrderStatusChangedEvent;
+use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
+use App\Transformers\OrderDataTransformer;
 use App\Transformers\OrderTrackingTransformer;
 use Illuminate\Validation\ValidationException;
-use League\Fractal\Manager;
+use App\Transformers\ProductCartListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection;
-use ZipArchive;
 
 class OrderController extends Controller
 {
@@ -945,58 +943,29 @@ class OrderController extends Controller
             // Decrypt the order ID from the request
             $orderId = salt_decrypt($request->all()[0]);
 
-            // Find the order by the decrypted ID
-            $order = Order::find($orderId);
+            $orderService = new OrderService;
+            $fileName = $orderService->orderInvoice($orderId);
+            $originalFullPath = storage_path('app/public/' . $fileName);
+            $file = file_get_contents($originalFullPath);
+            
+            // Return the file as a download
+            $response = response($file, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ]);
 
-            // Check if the order exists and has associated invoices
-            if (! $order || ! $order->orderInvoices->isNotEmpty()) {
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status404'),
-                        'message' => __('auth.orderNotFound'),
-                    ],
-                ], __('statusCode.statusCode200'));
+            // Delete the file after sending the response
+            unlink($originalFullPath);
+
+            // Delete the directory if it is empty
+            $directory = dirname($originalFullPath);
+            if (is_dir($directory) && count(scandir($directory)) == 2) {
+                rmdir($directory);
             }
 
-            // Get the first invoice associated with the order
-            $invoice = $order->orderInvoices->first();
-
-            if ($order && $invoice) {
-                // Prepare data for the PDF
-                $invoiceData = [
-                    'invoice_number' => $invoice->invoice_number,
-                    'total_amount' => $invoice->total_amount,
-                    'order_number' => $order->order_number,
-                    'full_name' => $order->full_name,
-                    'email' => $order->email,
-                    'mobile_number' => $order->mobile_number,
-                    'store_order' => $order->store_order,
-                    'status' => $order->getStatus(),
-                    'shipping_address' => $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
-                    'billing_address' => $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
-                    'pickup_address' => $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
-                ];
-
-                // Generate the PDF from the view
-                $pdf = Pdf::loadView('pdf.invoice', $invoiceData);
-                $fileName = 'invoice_'.$invoice->invoice_number.'.pdf';
-
-                // Return the PDF as a download
-                return $pdf->download($fileName);
-            } else {
-                // Return error response if invoice is not found
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status404'),
-                        'message' => __('auth.invoiceNotFound'),
-                    ],
-                ], __('statusCode.statusCode200'));
-            }
+            return $response;
         } catch (\Exception $e) {
            // Handle any exceptions that occur during the database operations
-
             // Prepare exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),

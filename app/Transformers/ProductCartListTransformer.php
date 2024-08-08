@@ -191,7 +191,7 @@ class ProductCartListTransformer extends TransformerAbstract
                 'labour_gst_percent' => isset($labour_charges[0]['gst_bracket']) ? (int) $labour_charges[0]['gst_bracket'] : 18, // labour_gst_percent
                 'labour_charges' => (float) $this->labourCharges + $this->labourChargesGst,
                 'processing_charges' => (float) $this->referalChargesPerCharges, // referal_charges_perecent
-                'processing_gst_percent' => (float) $this->referalChargesPerGst,
+                'processing_gst_percent' => isset($referal_charges[0]['gst_bracket']) ? (int) $referal_charges[0]['gst_bracket'] : 18, // referal_charges_gst_percent
                 'payment_gateway_charges' => $this->processingCost,
                 'payment_gateway_gst_percent' => isset($process_charges->gst_bracket)  ? (int) $process_charges->gst_bracket : 18,
                 'payment_gateway_percentage' => $process_charges_per,
