@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use Illuminate\Validation\Rule;
 use App\Models\CompanyCanHandle;
 use App\Models\CompanyBusinessType;
 use App\Models\CompanySalesChannel;
@@ -17,7 +19,6 @@ use App\Models\CompanyProductCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Validation\Rule;
 
 
 class CompanyService
@@ -54,35 +55,47 @@ class CompanyService
      */
     private function updateSupplierCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
+        try {
+            $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $field = $errors->keys()[0]; // Get the first field that failed validation
-            $errorMessage = $errors->first($field);
-            $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
-            throw $message;
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                $field = $errors->keys()[0]; // Get the first field that failed validation
+                $errorMessage = $errors->first($field);
+                $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
+                throw $message;
+            }
+            $validatedData = $validator->validated();
+            $company = auth()->user()->companyDetails;
+            $paths = $this->storeFiles($request, $companyId, $company);
+
+            $data = $this->extractAlternateBusinessContactData($validatedData);
+
+            $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
+
+            $company->update($companyDetails);
+
+            $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
+            $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
+            $this->handleCompanyCanHandleOnUpdate($companyId, $validatedData["can_handle"] ?? null);
+            $this->handleAddressOnUpdate($companyId, $validatedData['shipping_address'], CompanyAddressDetail::TYPE_PICKUP_ADDRESS);
+            $this->handleAddressOnUpdate($companyId, $validatedData['billing_address'], CompanyAddressDetail::TYPE_BILLING_ADDRESS);
+
+            return [
+                'message' => 'Company details updated successfully',
+                'data' => $companyDetails,
+            ];
+        } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
         }
-        $validatedData = $validator->validated();
-        $company = auth()->user()->companyDetails;
-        $paths = $this->storeFiles($request, $companyId, $company);
-
-        $data = $this->extractAlternateBusinessContactData($validatedData);
-
-        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
-
-        $company->update($companyDetails);
-
-        $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
-        $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
-        $this->handleCompanyCanHandleOnUpdate($companyId, $validatedData["can_handle"] ?? null);
-        $this->handleAddressOnUpdate($companyId, $validatedData['shipping_address'], CompanyAddressDetail::TYPE_PICKUP_ADDRESS);
-        $this->handleAddressOnUpdate($companyId, $validatedData['billing_address'], CompanyAddressDetail::TYPE_BILLING_ADDRESS);
-
-        return [
-            'message' => 'Company details updated successfully',
-            'data' => $companyDetails,
-        ];
     }
 
     /**
@@ -95,37 +108,49 @@ class CompanyService
      */
     private function updateBuyerCompanyProfile(Request $request, int $companyId): array
     {
-        $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
+        try {
+            $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $field = $errors->keys()[0]; // Get the first field that failed validation
-            $errorMessage = $errors->first($field);
-            $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
-            throw $message;
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                $field = $errors->keys()[0]; // Get the first field that failed validation
+                $errorMessage = $errors->first($field);
+                $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
+                throw $message;
+            }
+            $validatedData = $validator->validated();
+
+            $company = auth()->user()->companyDetails;
+            $paths = $this->storeFiles($request, $companyId, $company);
+
+            $data = $this->extractAlternateBusinessContactData($validatedData, 'buyer');
+
+            $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
+            // dd($companyDetails);
+            $company->update($companyDetails);
+
+            $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
+            $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
+            $this->handleAddressOnUpdate($companyId, $validatedData['delivery_address'], CompanyAddressDetail::TYPE_DELIVERY_ADDRESS);
+            $this->handleAddressOnUpdate($companyId, $validatedData['billing_address'], CompanyAddressDetail::TYPE_BILLING_ADDRESS);
+            $this->handleCompanySalesChannelsOnUpdate($companyId, $validatedData["sales_channel"] ?? null);
+
+
+            return [
+                'message' => 'Company details updated successfully',
+                'data' => $companyDetails,
+            ];
+        } catch (\Exception $e) {
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
         }
-        $validatedData = $validator->validated();
-
-        $company = auth()->user()->companyDetails;
-        $paths = $this->storeFiles($request, $companyId, $company);
-
-        $data = $this->extractAlternateBusinessContactData($validatedData, 'buyer');
-
-        $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
-        // dd($companyDetails);
-        $company->update($companyDetails);
-
-        $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
-        $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
-        $this->handleAddressOnUpdate($companyId, $validatedData['delivery_address'], CompanyAddressDetail::TYPE_DELIVERY_ADDRESS);
-        $this->handleAddressOnUpdate($companyId, $validatedData['billing_address'], CompanyAddressDetail::TYPE_BILLING_ADDRESS);
-        $this->handleCompanySalesChannelsOnUpdate($companyId, $validatedData["sales_channel"] ?? null);
-
-        
-        return [
-            'message' => 'Company details updated successfully',
-            'data' => $companyDetails,
-        ];
     }
 
     /**
@@ -181,10 +206,10 @@ class CompanyService
             'alternate_business_contact.ProductListings.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'can_handle' => 'nullable|string'
@@ -244,10 +269,10 @@ class CompanyService
             'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
-            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'sales_channel' => 'nullable|string'
@@ -267,12 +292,12 @@ class CompanyService
 
         foreach (['pan_file', 'signature_image', 'gst_file', 'cancelled_cheque_image'] as $fileField) {
             if ($request->hasFile($fileField)) {
-                $filename = md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension();        
+                $filename = md5(Str::random(40)) . '.' . $request->file($fileField)->getClientOriginalExtension();
                 // Get the file contents
                 $fileContents = $request->file($fileField)->get();
                 // Define the path
-                $path = "company_{$company->id}/documents/{$filename}"; 
-                $paths[$fileField] = $path;             
+                $path = "company_{$company->id}/documents/{$filename}";
+                $paths[$fileField] = $path;
                 // Store the file
                 Storage::disk('public')->put($path, $fileContents);
             }
@@ -288,7 +313,7 @@ class CompanyService
      */
     private function extractAlternateBusinessContactData(array $validatedData, $type = 'supplier'): array
     {
-        if($type == 'supplier'){
+        if ($type == 'supplier') {
             return ['alternate_business_contact' => [
                 'BusinessPerformanceAndCriticalEvents' => [
                     'name' => $validatedData['alternate_business_contact']['BusinessPerformanceAndCriticalEvents']['name'] ?? '',
@@ -319,7 +344,6 @@ class CompanyService
                 ],
             ]];
         }
-
     }
 
     /**
@@ -388,7 +412,7 @@ class CompanyService
     }
 
 
-    
+
     /**
      * Handle company sales channels update.
      *
