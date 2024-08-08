@@ -59,6 +59,7 @@ Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.cat
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
 Route::get('banner', [HomeController::class, 'banner'])->name('banner');
+Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -134,7 +135,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
         Route::post('find-category', [HomeController::class, 'findProduct'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
-        Route::get('get-top-product', [HomeController::class, 'TopProduct'])->name('get.top.product');
+        Route::get('get-top-product', [HomeController::class, 'topProduct'])->name('get.top.product');
+        Route::post('store-products', [CategoryController::class, 'storeProducts'])->name('store.products');
         Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
         Route::get('get-top-category-product', [HomeController::class, 'getTopCategoryByProduct'])->name('get.top.category.product');
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProduct'])->name('delete.top.product');
