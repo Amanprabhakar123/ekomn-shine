@@ -222,4 +222,81 @@ class HomeController extends Controller
              ]);
          }
      }
+
+        /**
+        * create top get category by product api function
+        *
+        * @param Request $request
+        * @return \Illuminate\Http\Response
+        */
+
+        public function getTopCategoryByProduct(Request $request){
+            try{ 
+               
+                $topCategories = TopCategory::with('category', 'topProduct.productVarition')->get();
+                // dd($topCategories);
+                $transformData = $topCategories->map(function($item){
+                    return [
+                        'topCategoryId' => salt_encrypt($item->id),
+                        'category' => $item->category->name,
+                        'priority' => $item->priority,
+                        'product' => $item->topProduct->map(function($product){
+                            return [
+                                'title' => $product->productVarition->title,
+                            ];
+                        })->toArray(),
+                    ];
+
+                   
+                })->toArray();
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'data' => $transformData,
+                    ],
+                ], __('statusCode.statusCode200'));
+                
+            }
+            catch (\Exception $e) {
+                dd($e);
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode500'),
+                        'status' => __('statusCode.status500'),
+                        // 'message' => __('auth.categoryNotCreate'),
+                    ],
+                ]);
+            }
+        }
+
+        /**
+         * create top product delete api function
+         * 
+         * @param Request $request
+         * @return \Illuminate\Http\Response
+         */
+
+        public function deleteTopProduct(Request $request){
+            try{
+                $topProduct = TopCategory::find(salt_decrypt($request->id));
+                $topProduct->delete();
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.topProductDelete'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+            catch (\Exception $e) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode500'),
+                        'status' => __('statusCode.status500'),
+                        'message' => __('auth.topProductNotDelete'),
+                    ],
+                ]);
+            }
+        }
 }

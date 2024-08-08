@@ -51,23 +51,14 @@
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th>Sr. No.</th>
-                            <th>Product title</th>
-                            <th>Tracking URL</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Product by</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
-                        <tr>
-                            <td>loop->index + 1 </td>
-                            <td>courier->courier_name </td>
-                            <td>courier->tracking_url </td>
-                            <td>
-                                <a href="">Edit</a>
-                            </td>
-                        </tr>
-                        
+                        <!--  Data display here Dynamic -->
                     </tbody>
                 </table>
             </div>
@@ -217,6 +208,94 @@
                 }
             });
 
+            ApiRequest('get-top-category-product', 'GET')
+                .then((res) => {
+                    // console.log(res);
+                    if (res.data.statusCode == 200) {
+                        let data = res.data.data;
+                        data.forEach((item) => {
+                            const productTitles = item.product.map(p => p.title.trim()).join(', ');
+                            $('tbody').append(`
+                                <tr>
+                                    <td>${item.category}</td>
+                                    <td>${item.priority}</td>
+                                    <td>${productTitles}</td>
+                                    <td>
+                                        <a href="${item.topCategoryId}">Delete</a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+                // delete api request
+
+                $('tbody').on('click', 'a', function(e) {
+                    e.preventDefault();
+                    var id = $(this).attr('href');
+                    var formData = new FormData();
+                    formData.append('id', id);
+                   // First, show the confirmation dialog
+                    Swal.fire({
+                        title: "Do you want to delete?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!",
+                        customClass: {
+                            confirmButton: 'swal2-confirm-btn',
+                            cancelButton: 'swal2-cancel-btn'
+                        },
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Send the delete request only after confirmation
+                                        ApiRequest('delete-top-product', 'POST', formData)
+                                            .then((res) => {
+                                                if (res.data.statusCode == 200) {
+                                                    Swal.fire({
+                                                        title: "Deleted!",
+                                                        text: "Your file has been deleted.",
+                                                        icon: "success",
+                                                        didOpen: () => {
+                                                            const title = Swal.getTitle();
+                                                            title.style.fontSize = '25px';
+                                                            // Apply inline CSS to the content
+                                                            const content = Swal.getHtmlContainer();
+                                                            // Apply inline CSS to the confirm button
+                                                            const confirmButton = Swal.getConfirmButton();
+                                                            confirmButton.style.backgroundColor = '#feca40';
+                                                            confirmButton.style.color = 'white';
+                                                        }
+                                                    }).then(() => {
+                                                        window.location.href = '/category-list';
+                                                    });
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                                Swal.fire({
+                                                    title: "Error!",
+                                                    text: "There was an error deleting the item.",
+                                                    icon: "error"
+                                                });
+                                            });
+                                    }
+                                });
+
+                                    });
 
         });
     </script>
