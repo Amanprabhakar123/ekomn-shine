@@ -267,7 +267,7 @@
             </td>
             <td>
                 <div class="productTitle_t">
-                 <a href="${item.tracking_url}" class="a_link" target="_blank">${item.tracking_number}</a>
+                 <a href="${item.tracking_url}" class="a_link" target="_blank" onclick="copyText('${item.tracking_number}')">${item.tracking_number}</a>
                 </div>
             </td>
             <td>
@@ -290,6 +290,20 @@
             <option value="6" ${item.order_action_status == "6" ? "selected" : ""}>Delivered</option>
         `;
        
+    }
+
+    /**
+     * Copies the provided text to the clipboard.
+     *
+     * @param {string} text - The text to be copied.
+     */
+    function copyText(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
     }
 
 
