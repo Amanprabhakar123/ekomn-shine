@@ -169,5 +169,12 @@ class ProductVariation extends Model
         return $this->hasMany(ChannelProductMap::class, 'product_variation_id', 'id');
     }
 
+    /**
+     * Get the top ProductVariation's .
+     */
+    public function topProducts()
+    {
+        return $this->hasMany(TopProduct::class);
+    }
     
 }

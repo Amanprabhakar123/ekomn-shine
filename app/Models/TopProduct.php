@@ -20,4 +20,29 @@ class TopProduct extends Model
         self::TYPE_IN_DEMAND => 'In Demand',
         self::TYPE_REGULAR_AVAILABLE => 'Regular Available',
     ];
+
+    protected $fillable = ['product_id', 'top_category_id', 'type'];
+
+    /**
+     * Get the category that owns the TopProduct
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function topCategory()
+    {
+        return $this->belongsTo(TopCategory::class, 'category_id', 'id');
+    }
+
+    /**
+     * Get the productVarition that owns the TopProduct
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    
+    public function productVarition()
+    {
+        return $this->belongsTo(ProductVariation::class, 'product_id', 'id');
+    }
+
+
 }

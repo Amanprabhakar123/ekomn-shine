@@ -135,9 +135,11 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('get-category', [HomeController::class, 'getCategory'])->name('get.category');
         Route::post('find-category', [HomeController::class, 'findProduct'])->name('find.category');
         Route::post('find-product', [HomeController::class, 'findCategoryByProduct'])->name('find.product');
-        Route::get('get-top-product', [HomeController::class, 'TopProduct'])->name('get.top.product');
+        Route::get('get-top-product', [HomeController::class, 'topProduct'])->name('get.top.product');
         Route::post('store-products', [CategoryController::class, 'storeProducts'])->name('store.products');
         Route::post('store-categories', [CategoryController::class, 'storeCategory'])->name('store.categories');
+        Route::get('get-top-category-product', [HomeController::class, 'getTopCategoryByProduct'])->name('get.top.category.product');
+        Route::post('delete-top-product', [HomeController::class, 'deleteTopProduct'])->name('delete.top.product');
     });
 });
 

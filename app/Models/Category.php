@@ -33,4 +33,15 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
+
+    /**
+     * Get all of the top Categories for the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function topCategory()
+    {
+        return $this->hasMany(TopCategory::class);
+    }
 }
