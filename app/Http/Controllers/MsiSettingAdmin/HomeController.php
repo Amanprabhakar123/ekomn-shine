@@ -233,6 +233,7 @@ class HomeController extends Controller
                             $query->where('depth', 2);
                         }]);
                 }])
+                ->limit(12)
                 ->orderBy('id') // Order categories by id
                 ->get(); // Execute the query and get the results
 
