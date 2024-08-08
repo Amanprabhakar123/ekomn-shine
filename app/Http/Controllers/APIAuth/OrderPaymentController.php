@@ -476,7 +476,6 @@ class OrderPaymentController extends Controller
                     'logo' => $logo,
                     'rupee' => $rupee,
                 ];
-            //   dd($invoiceData);
                 // Generate the PDF from the view
                 $pdf = Pdf::loadView('pdf.payment_reciept', $invoiceData);
                 $fileName = 'payment_reciept_'.$invoice->invoice_number.'.pdf';

@@ -450,7 +450,7 @@
 
      // download the invoice pdf
      function downloadInvoice(orderId) {
-            fetch('{{ route('orders.payment.invoice') }}', {
+            fetch('{{ route('orders.invoice') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
