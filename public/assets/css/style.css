@@ -3205,3 +3205,17 @@ img._pdimg {
   .testimonalBlock {padding: 15px 20px 40px 20px;}
   .unitext{margin-bottom: 75px;}
 }
+
+
+
+/* ---------------------------------------------------- */
+.normalTable tbody tr td .wordbreak{
+  word-break: break-all!important;
+  white-space: normal!important;
+}
+.pointereventnone{
+  pointer-events: none!important;
+}
+.form-check.min-height{
+  min-height: 1px!important;
+}
