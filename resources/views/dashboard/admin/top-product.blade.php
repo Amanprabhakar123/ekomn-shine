@@ -12,8 +12,8 @@
                     <div class="col-md-4">
                         <div class="ek_f_input">
                             <label for="category">Prodcut title</label>
-                            <select class="form-select" class="state" id="product-title">
-                                <option value="" selected>Select State</option>
+                            <select class="form-select" class="state" id="product-title" multiple>
+                                {{-- <option value="" selected>Select State</option> --}}
                             </select>
                             <div id="productTitleErr" class="invalid-feedback"></div>
                         </div>
@@ -22,9 +22,9 @@
                     <div class="col-md-4">
                         <div class="ek_f_input">
                             <label for="category">Product type</label>
-                            <select class="form-select" class="number" id="product-type" multiple
+                            <select class="form-select" class="number" id="product-type"
                                 aria-placeholder="Select PRoduct Type">
-                                {{-- <option value="" selected>Select State</option> --}}
+                                <option value="" selected>Select State</option>
                             </select>
                             <div id="productTypeErr" class="invalid-feedback"></div>
                         </div>

@@ -239,21 +239,21 @@ class HomeController extends Controller
             // Transform the result into a hierarchical array
             $category = $categories->map(function ($parent) {
                 return [
-                    'parent_id' => $parent->id, // ID of the parent category
+                    // 'parent_id' => $parent->id, // ID of the parent category
                     'parent_name' => $parent->name, // Name of the parent category
                     'parent_slug' => $parent->slug, // Slug of the parent category
 
                     // Map children of the parent category
                     'sub_parents' => $parent->children->map(function ($subParent) {
                         return [
-                            'sub_parent_id' => $subParent->id, // ID of the sub-parent category
+                            // 'sub_parent_id' => $subParent->id, // ID of the sub-parent category
                             'sub_parent_name' => $subParent->name, // Name of the sub-parent category
                             'sub_parent_slug' => $subParent->slug, // Slug of the sub-parent category
 
                             // Map children of the sub-parent category
                             'children' => $subParent->children->map(function ($child) {
                                 return [
-                                    'child_id' => $child->id, // ID of the child category
+                                    // 'child_id' => $child->id, // ID of the child category
                                     'child_name' => $child->name, // Name of the child category
                                     'child_slug' => $child->slug, // Slug of the child category
                                 ];
