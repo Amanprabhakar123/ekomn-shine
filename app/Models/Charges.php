@@ -20,6 +20,13 @@ class Charges extends Model
     const TDS = 'TDS';
     const TCS = 'TCS';
 
+    const OTHER_CHARGES = [
+        self::PACKING_CHARGES,
+        self::LABOUR_CHARGES,
+        self::PROCESSING_CHARGES,
+        self::REFERRAL_CHARGES,
+    ];
+
     // Constants for Order Types
     const DROPSHIP = 'Dropship';
     const BULK = 'Bulk';

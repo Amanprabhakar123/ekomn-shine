@@ -13,6 +13,7 @@ use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
 use App\Models\SupplierPayment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OrderTransaction;
 use App\Models\ProductVariation;
 use App\Events\OrderCanceledEvent;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderItemAndCharges;
 use App\Events\NewOrderCreatedEvent;
 use App\Models\CompanyAddressDetail;
+use Illuminate\Support\Facades\Storage;
 use App\Models\OrderPaymentDistribution;
 
 class OrderService
@@ -45,7 +47,7 @@ class OrderService
                     $supplier_id[] = $product->product->company->user_id;
                     $s_address = $product->product->company->address->where('address_type', CompanyAddressDetail::TYPE_PICKUP_ADDRESS)->first();
                     $supplierAddress[] = [
-                        'street' => $s_address->address_line1.' '.$s_address->address_line2,
+                        'street' => $s_address->address_line1 . ' ' . $s_address->address_line2,
                         'city' => $s_address->city,
                         'state' => $s_address->state,
                         'postal_code' => $s_address->pincode,
@@ -97,7 +99,7 @@ class OrderService
                     'orderDeliveryAddress' => [
                         'order_id' => $order->id,
                         'buyer_id' => auth()->user()->id,
-                        'street' => $delivery->address_line1.' '.$delivery->address_line2,
+                        'street' => $delivery->address_line1 . ' ' . $delivery->address_line2,
                         'city' => $delivery->city,
                         'state' => $delivery->state,
                         'postal_code' => $delivery->pincode,
@@ -108,7 +110,7 @@ class OrderService
                     'orderBillingAddress' => [
                         'order_id' => $order->id,
                         'buyer_id' => auth()->user()->id,
-                        'street' => $billing->address_line1.' '.$billing->address_line2,
+                        'street' => $billing->address_line1 . ' ' . $billing->address_line2,
                         'city' => $billing->city,
                         'state' => $billing->state,
                         'postal_code' => $billing->pincode,
@@ -194,7 +196,7 @@ class OrderService
             $isValidQuantity = false;
             $isOutOfStock = false;
             // check OrderItems is not empty
-            if (isset($orderItems['data']) && ! empty($orderItems['data'])) {
+            if (isset($orderItems['data']) && !empty($orderItems['data'])) {
                 foreach ($orderItems['data'] as $item) {
                     if ($orderData['order_type'] == Order::ORDER_TYPE_DROPSHIP && $item['quantity'] > Order::DROPSHIP_ORDER_QUANTITY) {
                         $isValidQuantity = true;
@@ -361,8 +363,8 @@ class OrderService
         $orderPayment = OrderPayment::where('razorpay_order_id', $razorpay_order_id)->first();
         if (!$orderPayment) {
             return false;
-        }else{
-            if($orderPayment->status == OrderPayment::STATUS_CAPTURED){
+        } else {
+            if ($orderPayment->status == OrderPayment::STATUS_CAPTURED) {
                 return true;
             }
         }
@@ -424,12 +426,13 @@ class OrderService
             }
 
             $response = [
-                'total_amount' => round ($order->total_amount),
+                'total_amount' => round($order->total_amount),
                 'full_name' => $order->full_name,
                 'email' => $order->email,
                 'mobile_number' => $order->mobile_number,
                 'order_id' => $order->order_number,
                 'order_type' => $order->getOrderType(),
+                'id' => $order->id,
             ];
             event(new NewOrderCreatedEvent($order->supplier, $order->buyer, $response));
             return true;
@@ -503,8 +506,7 @@ class OrderService
             }
 
             // Check User Role is buyer order cancel only Pending status
-            if (auth()->user()->hasRole(User::ROLE_BUYER) && ($order->isPending() || $order->isDraft())) 
-            {
+            if (auth()->user()->hasRole(User::ROLE_BUYER) && ($order->isPending() || $order->isDraft())) {
                 if ($order->isPendingPayment()) {
                     // Update the order status to 'Cancelled'
                     $order->cancel();
@@ -514,22 +516,22 @@ class OrderService
                     $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
                     $refund_amount = (int) round($orderPayment->amount) * 100;
                     $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, $refund_amount, $orderInvoice->invoice_number);
-                    if(isset($refund['error'])){
+                    if (isset($refund['error'])) {
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode400'),
                             'status' => __('statusCode.status400'),
                             'message' => $refund['error']['description'],
                         ]], __('statusCode.statusCode200'));
                     }
-                    if($refund->status == 'processed'){
+                    if ($refund->status == 'processed') {
                         // Update the order status to 'Cancelled'
                         $order->cancelRefund();
                         $this->cancelPendingOrderSuccefull($order_id, $reason, $refund->id);
-                    }elseif($refund->status == 'pending'){
-                          // Update the order status to 'Cancelled'
+                    } elseif ($refund->status == 'pending') {
+                        // Update the order status to 'Cancelled'
                         $order->cancelRefund();
                         $this->cancelPendingOrder($order_id, $reason, $refund->id);
-                    }else{
+                    } else {
                         return response()->json(['data' => [
                             'statusCode' => __('statusCode.statusCode400'),
                             'status' => __('statusCode.status400'),
@@ -553,7 +555,6 @@ class OrderService
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.orderCancelled'),
                 ]], __('statusCode.statusCode200'));
-
             } else if (auth()->user()->hasAnyRole([User::ROLE_SUPPLIER, User::ROLE_ADMIN]) && ($order->isBulk() || $order->isResell())) {
                 if ($order->isPending() || $order->isInProgress()) {
                     if ($order->isPaid()) {
@@ -561,22 +562,22 @@ class OrderService
                         $orderInvoice = OrderInvoice::where('order_id', $order_id)->first();
                         $refund_amount = (int) round($orderPayment->amount) * 100;
                         $refund = $this->intiateRefund($orderPayment->razorpay_payment_id, $reason, $refund_amount, $orderInvoice->invoice_number);
-                        if(isset($refund['error'])){
+                        if (isset($refund['error'])) {
                             return response()->json(['data' => [
                                 'statusCode' => __('statusCode.statusCode400'),
                                 'status' => __('statusCode.status400'),
                                 'message' => $refund['error']['description'],
                             ]], __('statusCode.statusCode200'));
                         }
-                        if($refund->status == 'processed'){
+                        if ($refund->status == 'processed') {
                             // Update the order status to 'Cancelled'
                             $order->cancelRefund();
                             $this->cancelPendingOrderSuccefull($order_id, $reason, $refund->id);
-                        }elseif($refund->status == 'pending'){
-                              // Update the order status to 'Cancelled'
+                        } elseif ($refund->status == 'pending') {
+                            // Update the order status to 'Cancelled'
                             $order->cancelRefund();
                             $this->cancelPendingOrder($order_id, $reason, $refund->id);
-                        }else{
+                        } else {
                             return response()->json(['data' => [
                                 'statusCode' => __('statusCode.statusCode400'),
                                 'status' => __('statusCode.status400'),
@@ -685,8 +686,8 @@ class OrderService
      */
     protected function cancelPendingOrderSuccefull($order_id, $reason = null, $refund_id)
     {
-        try{
-             // update product stock
+        try {
+            // update product stock
             $orderItem = OrderItemAndCharges::where('order_id', $order_id)->get();
             foreach ($orderItem as $item) {
                 $product = ProductVariation::find($item->product_id);
@@ -708,11 +709,11 @@ class OrderService
             $orderDistribution->refund_completed_at = Carbon::now()->toDateTimeString();
             $orderDistribution->save();
 
-            if(auth()->user()->hasRole(User::ROLE_BUYER)){
+            if (auth()->user()->hasRole(User::ROLE_BUYER)) {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_CUSTOMER;
-            }elseif(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
+            } elseif (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_SUPPLIER;
-            }else{
+            } else {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_ADMIN;
             }
             // create order cancellation transaction
@@ -761,7 +762,7 @@ class OrderService
                 'razorpay_transaction_id' => $refund_id,
                 'status' => OrderTransaction::STATUS_SUCCESS,
             ]);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -776,7 +777,7 @@ class OrderService
      */
     protected function cancelPendingOrder($order_id, $reason = null, $refund_id)
     {
-        try{
+        try {
             // update product stock
             $orderItem = OrderItemAndCharges::where('order_id', $order_id)->get();
             foreach ($orderItem as $item) {
@@ -798,21 +799,21 @@ class OrderService
             $orderDistribution->refund_initiated_at = Carbon::now()->toDateTimeString();
             $orderDistribution->save();
 
-            if(auth()->user()->hasRole(User::ROLE_BUYER)){
+            if (auth()->user()->hasRole(User::ROLE_BUYER)) {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_CUSTOMER;
-            }elseif(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
+            } elseif (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_SUPPLIER;
-            }else{
+            } else {
                 $order_cancelled_by = OrderCancellations::CANCELLED_BY_ADMIN;
             }
             // create order cancellation transaction
             $orderCancellation = OrderCancellations::create([
-            'order_id' => $order_id,
-            'cancelled_by_id' => auth()->user()->id,
-            'cancelled_by' => $order_cancelled_by,
-            'reason' => $reason,
-            'refund_status' => OrderCancellations::REFUND_STATUS_APPROVED,
-            'refund_amount' => $orderPayment->amount,
+                'order_id' => $order_id,
+                'cancelled_by_id' => auth()->user()->id,
+                'cancelled_by' => $order_cancelled_by,
+                'reason' => $reason,
+                'refund_status' => OrderCancellations::REFUND_STATUS_APPROVED,
+                'refund_amount' => $orderPayment->amount,
             ]);
 
             // create entry order refunds
@@ -838,8 +839,8 @@ class OrderService
             $orderInvoice->refund_status = OrderInvoice::REFUND_STATUS_PROCESSING;
             $orderInvoice->save();
 
-             // create order transaction
-             OrderTransaction::create([
+            // create order transaction
+            OrderTransaction::create([
                 'order_id' => $order_id,
                 'order_payment_id' => $orderPayment->id,
                 'transaction_date' => Carbon::now()->toDateTimeString(),
@@ -849,9 +850,7 @@ class OrderService
                 'razorpay_transaction_id' => $refund_id,
                 'status' => OrderTransaction::STATUS_PENDING,
             ]);
- 
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -864,18 +863,18 @@ class OrderService
      * @param object $transaction
      * @return void
      */
-    public function changePaymentRefundStatus($transaction){
+    public function changePaymentRefundStatus($transaction)
+    {
         OrderPaymentDistribution::where('order_id', $transaction->order_id)
-        ->update([
-            'refund_status' => OrderPaymentDistribution::REFUND_STATUS_PAID,
-            'refund_completed_at' => Carbon::now()->toDateTimeString(),        
-        ]);
+            ->update([
+                'refund_status' => OrderPaymentDistribution::REFUND_STATUS_PAID,
+                'refund_completed_at' => Carbon::now()->toDateTimeString(),
+            ]);
 
         OrderRefund::where('order_id', $transaction->order_id)
-        ->update([
-            'status' => OrderRefund::STATUS_COMPLETED,        
-        ]);
-    
+            ->update([
+                'status' => OrderRefund::STATUS_COMPLETED,
+            ]);
     }
 
     /**
@@ -911,8 +910,9 @@ class OrderService
      * 
      * @return void
      */
-    public function getSupplierPayment($order){
-        try{
+    public function getSupplierPayment($order)
+    {
+        try {
             // get order payment distribution
             $orderDistribution = OrderPaymentDistribution::where('order_id', $order->id)->first();
             $tds_percent = 0;
@@ -927,14 +927,14 @@ class OrderService
                 }
             }
             $shipments = $order->shipments()->first();
-            if($shipments){
+            if ($shipments) {
                 $delivery_date = $shipments->delivery_date;
-            }else{
+            } else {
                 $delivery_date = '';
             }
-            if(isset($delivery_date) && !empty($delivery_date)){
+            if (isset($delivery_date) && !empty($delivery_date)) {
                 $payment_week = $supplier_payment->getPaymentWeek($order, $delivery_date);
-            }else{
+            } else {
                 $payment_week = null;
             }
             $tds_amount = number_format(($order->total_amount * $tds_percent / 100), 2);
@@ -944,11 +944,11 @@ class OrderService
             $payment_gateway_charges = 0;
             $refund_amount = 0;
 
-            $order->orderItemsCharges()->get()->each(function($orderItemsCharges) use (&$processing_charges, &$payment_gateway_charges){
+            $order->orderItemsCharges()->get()->each(function ($orderItemsCharges) use (&$processing_charges, &$payment_gateway_charges) {
                 $processing_charges += $orderItemsCharges->processing_charges;
                 $payment_gateway_charges += $orderItemsCharges->payment_gateway_charges;
             });
-            $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
+            $order->orderRefunds()->where('status', OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function ($refund) use (&$refund_amount) {
                 $refund_amount += $refund->refund_amount;
             });
             // Create supplier payment
@@ -965,8 +965,96 @@ class OrderService
                 'statement_date' => $payment_week,
             ]);
             return $supplierPayment;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+
+    /**
+     * Get Supplier Payment
+     * 
+     * @param integer $supplier_id
+     * 
+     * @return void
+     */
+    public function orderInvoice($orderId)
+    {
+        // Find the order by the decrypted ID
+        $order = Order::where('id', $orderId)->with('orderInvoices', 'supplier', 'buyer', 'orderItemsCharges.product.product', 'supplier.companyDetails')->first();
+
+        // Check if the order exists and has associated invoices
+        if (!$order || !$order->orderInvoices->isNotEmpty()) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.orderNotFound'),
+                ],
+            ], __('statusCode.statusCode200'));
+        }
+
+        // Get the first invoice associated with the order
+        $invoice = $order->orderInvoices->first();
+        $companyDetails = $order->supplier->companyDetails;
+        $orderItemsCharge = $order->orderItemsCharges;
+        $shippingChargesHsn = Charges::where('other_charges', Charges::SHIPPING_CHARGES)->first();
+        $otherCharges = Charges::whereIn('other_charges', Charges::OTHER_CHARGES)->distinct()->pluck('hsn')->toArray();
+
+        // Check if the signature image is available
+        if ($companyDetails->signature_image_file_path == null) {
+            $signature = '';
+        } else {
+            // Get the signature image from the storage
+            $originalPath = str_replace('storage/', '', $companyDetails->signature_image_file_path);
+            $originalFullPath = storage_path('app/public/' . $originalPath);
+            $signature = 'data:image/png;base64,' . base64_encode(file_get_contents($originalFullPath));
+        }
+
+        // Get the logo image from the storage
+        $logo = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/Logo.svg'));
+        // Get the rupee image from the storage
+        $rupee = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/icon/rupee.png'));
+        // Prepare data for the PDF
+        $invoiceData = [
+            'invoice_number' => $invoice->invoice_number,
+            'total_amount' => $invoice->total_amount,
+            'order_number' => $order->order_number,
+            'full_name' => $order->full_name,
+            'email' => $order->email,
+            'mobile_number' => $order->mobile_number,
+            'discount' => $order->discount,
+            'invoice_date' => $invoice->invoice_date->format('d-m-Y'),
+            'shipping_address' => $order->shippingAddress->street . ' ' . $order->shippingAddress->city . ' ' . $order->shippingAddress->state . ' - ' . $order->shippingAddress->postal_code,
+            'billing_address' => $order->billingAddress->street . ' ' . $order->billingAddress->city . ' ' . $order->billingAddress->state . ' - ' . $order->billingAddress->postal_code,
+            'supplier_bussiens_name' => $companyDetails->business_name,
+            'supplier_gst' => $companyDetails->gst_no,
+            'supplier_pan' => $companyDetails->pan_no,
+            'supplier_phone' => $companyDetails->mobile_no,
+            'supplier_email' => $companyDetails->email,
+            'order_items' => $orderItemsCharge,
+            'shippingChargesHsn' => $shippingChargesHsn->hsn,
+            'packingChargesHsn' => isset($otherCharges) ? implode(', ', $otherCharges) : '',
+            'signature' => $signature,
+            'logo' => $logo,
+            'rupee' => $rupee,
+        ];
+
+        // Generate the PDF from the view
+        $pdf = Pdf::loadView('pdf.invoice', $invoiceData);
+        // Set the PDF coordinates
+        $pdf->setOptions([
+            'dpi' => 110,
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'isPhpEnabled' => true,
+            'isJavascriptEnabled' => true,
+            'isHtmlImagesEnabled' => true,
+        ]);
+        $fileName = 'invoice_' . $invoice->invoice_number . '.pdf';
+        $pdf->render();
+        // Save the PDF to the storage
+        Storage::disk('public')->put('order/'.$invoice->invoice_number.'/'.$fileName, $pdf->output());
+        return 'order/'.$invoice->invoice_number.'/'.$fileName;
     }
 }

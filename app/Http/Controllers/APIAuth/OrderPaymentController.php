@@ -4,6 +4,7 @@ namespace App\Http\Controllers\APIAuth;
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Charges;
 use App\Models\OrderRefund;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Events\ExceptionEvent;
 use App\Models\SupplierPayment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
+use App\Models\EkomnDetails;
 use League\Fractal\Resource\Collection;
 use App\Transformers\OrderPaymentTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -409,8 +411,8 @@ class OrderPaymentController extends Controller
             $orderId = salt_decrypt($request->all()[0]);
 
             // Find the order by the decrypted ID
-            $order = Order::where('id', $orderId)->with(['supplierPayments'])->get()->first();
-            
+            $order = Order::where('id', $orderId)->with('orderInvoices', 'supplier', 'buyer', 'orderItemsCharges.product.product', 'supplier.companyDetails')->first();
+           
             // Check if the order exists and has associated invoices
             if (! $order || ! $order->supplierPayments->isNotEmpty()) {
                 return response()->json([
@@ -423,11 +425,43 @@ class OrderPaymentController extends Controller
             }
 
             // Get the first invoice associated with the order
-            $invoice = $order->supplierPayments()->first();
+            $ekomnDetails = EkomnDetails::all()->first();
+            $companyDetails = $order->supplier->companyDetails;
+            $companyDetails = $order->supplier->companyDetails;
+            $orderItemsCharge = $order->orderItemsCharges; 
+            $supplier = $order->supplier; 
+            $supplierAdd = $order->supplier->companyDetails->address()->first();
+            $shippingChargesHsn = Charges::where('other_charges', Charges::SHIPPING_CHARGES)->first();
+            $otherCharges = Charges::whereIn('other_charges', Charges::OTHER_CHARGES)->distinct()->pluck('hsn')->toArray();
+            
 
+            // Get the logo image from the storage
+            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents('assets/images/Logo.svg'));
+            // Get the rupee image from the storage
+            $rupee = 'data:image/png;base64,'.base64_encode(file_get_contents('assets/images/icon/rupee.png'));
+            $paid = 'data:image/png;base64,'.base64_encode(file_get_contents('assets/images/icon/paid.png'));
+           
+            $invoice = $order->supplierPayments()->first();
+            // dd($ekomnDetails);
             if ($order && $invoice) {
                 // Prepare data for the PDF
                 $invoiceData = [
+                    'ekomn_details' =>$ekomnDetails,
+                    'payment_date' => $invoice->payment_date,
+                    'payment_method' => $invoice->payment_method,
+                    'supplier_name' => $supplier->name,
+                    'supplier_address' => $supplierAdd->address_line1,
+                    'supplier_city' => $supplierAdd->city,
+                    'supplier_state' => $supplierAdd->state,
+                    'supplier_pincode' => $supplierAdd->pincode,
+                    'company_name' => $companyDetails->business_name,
+                    'gst_no' => $companyDetails->gst_no,
+                    'pan_no' => $companyDetails->pan_no,
+                    'bank_name' => $companyDetails->bank_name,
+                    'account_number' => $companyDetails->bank_account_no,
+                    'ifsc_code' => $companyDetails->ifsc_code,
+                    'swift_code' => $companyDetails->swift_code,
+                    'discount' => $order->discount,
                     'invoice_number' => $invoice->supplierPaymentInvoice->invoice_number,
                     'total_amount' => $invoice->supplierPaymentInvoice->total_amount,
                     'invoice_date' => $invoice->supplierPaymentInvoice->invoice_date,
@@ -435,11 +469,12 @@ class OrderPaymentController extends Controller
                     'full_name' => $order->full_name,
                     'email' => $order->email,
                     'mobile_number' => $order->mobile_number,
-                    'store_order' => $order->store_order,
-                    'status' => $order->getStatus(),
-                    'shipping_address' => $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
-                    'billing_address' => $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
-                    'pickup_address' => $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
+                    'order_items' => $orderItemsCharge,
+                    'shippingChargesHsn' => $shippingChargesHsn->hsn,
+                    'packingChargesHsn' => isset($otherCharges) ? implode(', ',$otherCharges) : '',
+                    'paid' => $paid,
+                    'logo' => $logo,
+                    'rupee' => $rupee,
                 ];
                 // Generate the PDF from the view
                 $pdf = Pdf::loadView('pdf.payment_reciept', $invoiceData);
@@ -467,6 +502,7 @@ class OrderPaymentController extends Controller
                 'line' => $e->getLine(),
             ];
               // Trigger the event
+              dd($exceptionDetails);
             event(new ExceptionEvent($exceptionDetails));
               // Return error response for failed invoice download
               return response()->json([

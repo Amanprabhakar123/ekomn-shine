@@ -231,7 +231,10 @@ class SupplierPayment extends Model
         if($order->isDispatched() || $order->isInTransit() || $order->isRTO()){
             return self::PAYMENT_STATUS_HOLD; // Hold
         }
-        else if($order->isDelivered() && $delivery_date->toDateString() < now()->toDateString()){
+        // else if($order->isDelivered() && $delivery_date->toDateString() < now()->toDateString()){
+        //     return self::PAYMENT_STATUS_DUE; // Due
+        // }
+        else if($order->isDelivered() && $delivery_date->toDateTimeString() < now()->toDateTimeString()){
             return self::PAYMENT_STATUS_DUE; // Due
         }
         else if($order->isDelivered()){
@@ -250,9 +253,15 @@ class SupplierPayment extends Model
     {
         $payment_week = null;
 
-        $oneWeekLater = $delivery_date->addDays(7); // Copy the delivery_date and add 7 days
-        // Check if the one week later date is less than the current date
-        if ($order->isDelivered() && ($oneWeekLater->toDateString() < now()->toDateString())) {
+        // $oneWeekLater = $delivery_date->addDays(7); // Copy the delivery_date and add 7 days
+        // // Check if the one week later date is less than the current date
+        // if ($order->isDelivered() && ($oneWeekLater->toDateString() < now()->toDateString())) {
+        //     // Get the next Thursday date
+        //     $payment_week = now()->next('Thursday')->toDateString();
+        // }
+        $tenMinutesLater = $delivery_date->addMinutes(10); // Copy the delivery_date and add 10 minutes
+        // Check if the ten minutes later date is less than the current date
+        if ($order->isDelivered() && ($tenMinutesLater->toDateTimeString() < now()->toDateTimeString())) {
             // Get the next Thursday date
             $payment_week = now()->next('Thursday')->toDateString();
         }

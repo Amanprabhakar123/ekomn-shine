@@ -907,6 +907,7 @@
         formData.append('invoice', file);
         formData.append('order_type', $('#order_type').val());
         formData.append('order_id', $('#order_id').val());
+        $(this).attr('disabled',true);
         ApiRequest('orders', 'POST', formData)
           .then(response => {
             if (response.data.statusCode == 200) {
@@ -937,10 +938,12 @@
               rzp1.open();
             }
             else if (response.data.statusCode == 422) {
+              $(this).attr('disabled',false);
                 const field = response.data.key;
                 $(`#${field}`).addClass('is-invalid');
                 $(`#${field}Err`).text(response.data.message);
             } else if(response.data.statusCode == 201){
+              $(this).attr('disabled',false);
                // Handle error
                Swal.fire({
                     title: 'Error',
@@ -962,6 +965,7 @@
             }
           })
           .catch(error => {
+            $(this).attr('disabled',false);
             console.error(error);
           });
       }
@@ -975,6 +979,7 @@
       formData.append('order_type', $('#order_type').val());
       formData.append('pincode', $('#pinCodeBulk').val());
       formData.append('order_id', $('#order_id').val());
+      $(this).attr('disabled',true);
       ApiRequest('orders', 'POST', formData)
           .then(response => {
             if (response.data.statusCode == 200) {
@@ -1005,10 +1010,12 @@
               rzp1.open();
             }
             else if (response.data.statusCode == 422) {
+            $(this).attr('disabled',false);
                 const field = response.data.key;
                 $(`#${field}`).addClass('is-invalid');
                 $(`#${field}Err`).text(response.data.message);
             } else if(response.data.statusCode == 201){
+            $(this).attr('disabled',false);
                // Handle error
                Swal.fire({
                     title: 'Error',
@@ -1030,6 +1037,7 @@
             }
           })
           .catch(error => {
+            $(this).attr('disabled',false);
             console.error(error);
           });
     });
@@ -1243,6 +1251,7 @@
         }
         formData.append('order_type', $('#order_type').val());
         formData.append('order_id', $('#order_id').val());
+        $(this).attr('disabled',true);
         ApiRequest('orders', 'POST', formData)
           .then(response => {
             if (response.data.statusCode == 200) {
@@ -1273,10 +1282,12 @@
               rzp1.open();
             }
             else if (response.data.statusCode == 422) {
+              $(this).attr('disabled',false);
                 const field = response.data.key;
                 $(`#${field}`).addClass('is-invalid');
                 $(`#${field}Err`).text(response.data.message);
             } else if(response.data.statusCode == 201){
+              $(this).attr('disabled',false);
                // Handle error
                Swal.fire({
                     title: 'Error',
@@ -1298,6 +1309,7 @@
             }
           })
           .catch(error => {
+            $(this).attr('disabled',false);
             console.error(error);
           });
       }
@@ -1318,6 +1330,9 @@
           tab.addEventListener('shown.bs.tab', function(event) {
               const activeTabId = event.target.id;
               const numericValue = tabMapping[activeTabId];
+              $('#dropship-order').attr('disabled',false);
+              $('#bulk-order').attr('disabled',false);
+              $('#resell-order').attr('disabled',false);
               $('#order_id').val('');
                 hiddenInput.value = numericValue;
                 if (hiddenInput.value == 1) {
