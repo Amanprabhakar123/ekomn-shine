@@ -6,7 +6,6 @@ use ZipArchive;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
-use App\Models\Charges;
 use App\Models\Shipment;
 use App\Models\AddToCart;
 use App\Models\ShipmentAwb;
@@ -15,15 +14,12 @@ use App\Models\OrderPayment;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Services\OrderService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ProductVariation;
 use App\Models\OrderItemAndCharges;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Events\OrderStatusChangedEvent;
-use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\OrderDataTransformer;
 use App\Transformers\OrderTrackingTransformer;
@@ -947,94 +943,27 @@ class OrderController extends Controller
             // Decrypt the order ID from the request
             $orderId = salt_decrypt($request->all()[0]);
 
-            // Find the order by the decrypted ID
-            $order = Order::where('id', $orderId)->with('orderInvoices', 'supplier', 'buyer', 'orderItemsCharges.product.product', 'supplier.companyDetails')->first();
-
-            // Check if the order exists and has associated invoices
-            if (! $order || ! $order->orderInvoices->isNotEmpty()) {
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status404'),
-                        'message' => __('auth.orderNotFound'),
-                    ],
-                ], __('statusCode.statusCode200'));
-            }
-
-            // Get the first invoice associated with the order
-            $invoice = $order->orderInvoices->first();
-            $companyDetails = $order->supplier->companyDetails;
-            $orderItemsCharge = $order->orderItemsCharges;  
-            $shippingChargesHsn = Charges::where('other_charges', Charges::SHIPPING_CHARGES)->first();
-            $otherCharges = Charges::whereIn('other_charges', Charges::OTHER_CHARGES)->distinct()->pluck('hsn')->toArray();
+            $orderService = new OrderService;
+            $fileName = $orderService->orderInvoice($orderId);
+            $originalFullPath = storage_path('app/public/' . $fileName);
+            $file = file_get_contents($originalFullPath);
             
-            // Check if the signature image is available
-            if($companyDetails->signature_image_file_path == null){
-                $signature = '';
-            }else{
-                // Get the signature image from the storage
-                $originalPath = str_replace('storage/', '', $companyDetails->signature_image_file_path);
-                $originalFullPath = storage_path('app/public/'.$originalPath);
-                $signature = 'data:image/png;base64,'.base64_encode(file_get_contents($originalFullPath));
+            // Return the file as a download
+            $response = response($file, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ]);
+
+            // Delete the file after sending the response
+            unlink($originalFullPath);
+
+            // Delete the directory if it is empty
+            $directory = dirname($originalFullPath);
+            if (is_dir($directory) && count(scandir($directory)) == 2) {
+                rmdir($directory);
             }
 
-            // Get the logo image from the storage
-            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents('assets/images/Logo.svg'));
-            // Get the rupee image from the storage
-            $rupee = 'data:image/png;base64,'.base64_encode(file_get_contents('assets/images/icon/rupee.png'));
-
-            if ($order && $invoice) {
-                // Prepare data for the PDF
-                $invoiceData = [
-                    'invoice_number' => $invoice->invoice_number,
-                    'total_amount' => $invoice->total_amount,
-                    'order_number' => $order->order_number,
-                    'full_name' => $order->full_name,
-                    'email' => $order->email,
-                    'mobile_number' => $order->mobile_number,
-                    'discount' => $order->discount,
-                    'invoice_date' => $invoice->invoice_date->format('d-m-Y'),
-                    'shipping_address' => $order->shippingAddress->street.' '.$order->shippingAddress->city.' '.$order->shippingAddress->state.' - '.$order->shippingAddress->postal_code,
-                    'billing_address' => $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
-                    'supplier_bussiens_name' => $companyDetails->business_name,
-                    'supplier_gst' => $companyDetails->gst_no,
-                    'supplier_pan' => $companyDetails->pan_no,
-                    'supplier_phone' => $companyDetails->mobile_no,
-                    'supplier_email' => $companyDetails->email,
-                    'order_items' => $orderItemsCharge,
-                    'shippingChargesHsn' => $shippingChargesHsn->hsn,
-                    'packingChargesHsn' => isset($otherCharges) ? implode(', ',$otherCharges) : '',
-                    'signature' => $signature,
-                    'logo' => $logo,
-                    'rupee' => $rupee,
-
-                ];
-
-                // Generate the PDF from the view
-                $pdf = Pdf::loadView('pdf.invoice', $invoiceData);
-                // Set the PDF coordinates
-                $pdf->setOptions([
-                    'dpi' => 110,
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                    'isPhpEnabled' => true,
-                    'isJavascriptEnabled' => true,
-                    'isHtmlImagesEnabled' => true,
-                ]);
-                $fileName = 'invoice_'.$invoice->invoice_number.'.pdf';
-
-                // Return the PDF as a download
-                return $pdf->download($fileName);
-            } else {
-                // Return error response if invoice is not found
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status404'),
-                        'message' => __('auth.invoiceNotFound'),
-                    ],
-                ], __('statusCode.statusCode200'));
-            }
+            return $response;
         } catch (\Exception $e) {
            // Handle any exceptions that occur during the database operations
             // Prepare exception details

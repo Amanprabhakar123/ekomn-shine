@@ -3,8 +3,9 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
+use App\Services\OrderService;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class NewOrderBuyerNotification extends Notification
 {
@@ -38,10 +39,32 @@ class NewOrderBuyerNotification extends Notification
 
         $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_number = $this->details['order_id'];
+        $order_id = $this->details['id'];
 
-        return (new MailMessage)
+        $service = new OrderService;
+        $fileName = $service->orderInvoice($order_id); 
+        $originalFullPath = storage_path('app/public/' . $fileName);
+        $file = file_get_contents($originalFullPath);
+
+        // attach the file in the email
+
+        $mailMessage = (new MailMessage)
             ->subject('eKomn – New Order '.$order_number.' is created.')
-            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'));
+            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'))
+            ->attachData($file, $order_number.'.pdf', [
+            'mime' => 'application/pdf',
+            ]);
+
+        // Delete the file
+        unlink($originalFullPath);
+
+        // Delete the directory if it is empty
+        $directory = dirname($originalFullPath);
+        if (is_dir($directory) && count(scandir($directory)) == 2) {
+            rmdir($directory);
+        }
+
+        return $mailMessage;
     }
 
     /**
