@@ -55,17 +55,18 @@ class CompanyService
      */
     private function updateSupplierCompanyProfile(Request $request, int $companyId): array
     {
-        try {
-            $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
 
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                $field = $errors->keys()[0]; // Get the first field that failed validation
-                $errorMessage = $errors->first($field);
-                $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
-                throw $message;
-            }
-            $validatedData = $validator->validated();
+        $validator = Validator::make($request->all(), $this->getSupplierValidationRules($companyId));
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
+            throw $message;
+        }
+        $validatedData = $validator->validated();
+        try {
             $company = auth()->user()->companyDetails;
             $paths = $this->storeFiles($request, $companyId, $company);
 
@@ -108,18 +109,18 @@ class CompanyService
      */
     private function updateBuyerCompanyProfile(Request $request, int $companyId): array
     {
+
+        $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $field = $errors->keys()[0]; // Get the first field that failed validation
+            $errorMessage = $errors->first($field);
+            $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
+            throw $message;
+        }
+        $validatedData = $validator->validated();
         try {
-            $validator = Validator::make($request->all(), $this->getBuyerValidationRules($companyId));
-
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                $field = $errors->keys()[0]; // Get the first field that failed validation
-                $errorMessage = $errors->first($field);
-                $message = ValidationException::withMessages([$field => "{$errorMessage} - {$field}"]);
-                throw $message;
-            }
-            $validatedData = $validator->validated();
-
             $company = auth()->user()->companyDetails;
             $paths = $this->storeFiles($request, $companyId, $company);
 
@@ -134,8 +135,6 @@ class CompanyService
             $this->handleAddressOnUpdate($companyId, $validatedData['delivery_address'], CompanyAddressDetail::TYPE_DELIVERY_ADDRESS);
             $this->handleAddressOnUpdate($companyId, $validatedData['billing_address'], CompanyAddressDetail::TYPE_BILLING_ADDRESS);
             $this->handleCompanySalesChannelsOnUpdate($companyId, $validatedData["sales_channel"] ?? null);
-
-
             return [
                 'message' => 'Company details updated successfully',
                 'data' => $companyDetails,
@@ -143,6 +142,7 @@ class CompanyService
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
             // Prepare exception details
+
             $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -150,6 +150,7 @@ class CompanyService
             ];
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
+            return $exceptionDetails;
         }
     }
 
@@ -206,10 +207,10 @@ class CompanyService
             'alternate_business_contact.ProductListings.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'can_handle' => 'nullable|string'
@@ -269,10 +270,10 @@ class CompanyService
             'alternate_business_contact.BulkOrderContact.mobile_no' => 'nullable|string|max:10|min:10',
             'language_i_can_read' => 'nullable|string',
             'language_i_can_understand' => 'nullable|string',
-            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
-            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp|svg|max:2048',
+            'pan_file' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'gst_file' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'cancelled_cheque_image' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
+            'signature_image' => 'nullable|file|mimes:jpeg,png,pdf,webp,svg|max:2048',
             'product_categories' => 'nullable|string',
             'business_type' => 'nullable|string',
             'sales_channel' => 'nullable|string'
