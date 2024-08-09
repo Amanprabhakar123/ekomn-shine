@@ -59,8 +59,11 @@ class WebController extends Controller
         try {
 
             // Get pagination and sorting parameters from the request
-            $productWithVideos = $request->query('productWithVideos', '');
+            $productWithVideos = $request->input('productWithVideos', '');
             $newArrived = $request->input('new_arrived', '');
+            $min = $request->input('min', '');
+            $max = $request->input('max', '');
+            $minmax = $request->input('minmax', '');
 
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
@@ -85,16 +88,16 @@ class WebController extends Controller
                 ProductVariation::STATUS_OUT_OF_STOCK,
                 ProductVariation::STATUS_ACTIVE,
             ])
-            ->whereIn('product_id', $product_ids)
-            ->with('media')
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->where(function ($query) use ($searchTerm) {
-                    $query->where('title', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                ->whereIn('product_id', $product_ids)
+                ->with('media')
+                ->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                    });
                 });
-            });
 
             // Filter by newArrived if provided
             if ($newArrived == true) {
@@ -106,9 +109,15 @@ class WebController extends Controller
                     $query->where('media_type', '=', ProductVariationMedia::MEDIA_TYPE_VIDEO);
                 });
             }
+            if ($min != '' && $max != '') {
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
+            }
+            if ($minmax != '') {
+                $productVariations = $productVariations->where('price_before_tax', $minmax);
+            }
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-            ->paginate($perPage);
+                ->paginate($perPage);
 
             // Transform product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);

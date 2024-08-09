@@ -3,8 +3,8 @@
 namespace App\Transformers;
 
 use App\Models\ProductVariation;
-use Illuminate\Support\Facades\Log;
 use App\Models\ProductVariationMedia;
+use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
 
 class ProductsCategoryWiseTransformer extends TransformerAbstract

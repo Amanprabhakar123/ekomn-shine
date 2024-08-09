@@ -35,17 +35,20 @@
                         <div class="mt15">
                             <label>Minimum Stock</label>
                             <div class="inputwithOk">
-                                <input type="text" class="form-control" placeholder="Eg. 100">
-                                <button class="inputokbtn">Ok</button>
+                                <input type="text" class="form-control" placeholder="Eg. 100" id="minimumStk"
+                                    name="minimumStk" value="">
+                                <button class="inputokbtn" type="button" id="minimumStock">Ok</button>
                             </div>
                         </div>
                         <div class="mt15">
                             <label>Price (<i class="fas fa-rupee-sign fs-13"></i>)</label>
                             <div class="inputwithOk minmax">
                                 <span class="sepminmax">-</span>
-                                <input type="text" class="form-control" placeholder="Min">
-                                <input type="text" class="form-control" placeholder="Max">
-                                <button class="inputokbtn">Ok</button>
+                                <input type="text" class="form-control" placeholder="Min" name="min" id="min"
+                                    value="">
+                                <input type="text" class="form-control" placeholder="Max" name="max" id="max"
+                                    value="">
+                                <button type="button" class="inputokbtn" id="priceRange">Ok</button>
                             </div>
                         </div>
                     </div>
@@ -370,22 +373,6 @@
         </section>
 
     </div>
-    <div class="ek_pagination d-none">
-        <span class="row_select rowcount" id="rowInfo"></span>
-        <div class="pager_box">
-            <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
-            <ul class="pager_" id="pagination"></ul>
-            <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="row_select jumper">Go to
-            <select id="rowsPerPage">
-                <option value="10" selected>10</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-            </select>
-        </div>
-    </div>
 @endsection
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
@@ -398,13 +385,26 @@
 
     let new_arrived = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
     let productWithVideos = ""; // Set the sort order here (e.g. "asc", "desc")
+    let priceRange = ""; // Set the sort order here (e.g. "asc", "desc")
+    let minimunStock = ""; // Set the sort order here (e.g. "asc", "desc")
+    let maximumStock = ""; // Set the sort order here (e.g. "asc", "desc")
 
     // Initial fetch of data
 
 
     $(document).ready(function() {
         fetchData();
-
+        $("#priceRange").click(function() {
+            let min = $("#min").val();
+            let max = $("#max").val();
+            priceRange = `min=${min}&max=${max}`;
+            fetchData();
+        });
+        $("#minimumStock").click(function() {
+            let minimumStk = $("#minimumStk").val();
+            minimunStock = `min=${minimumStk}`;
+            fetchData();
+        });
         // Perform an AJAX GET request to fetch category data
         $.ajax({
                 url: '{{ route('categories.list') }}', // URL endpoint for fetching categories
@@ -461,6 +461,12 @@
 
         if (productWithVideos) {
             apiUrl += `productWithVideos=${productWithVideos}`;
+        }
+        if (priceRange) {
+            apiUrl += `&${priceRange}`;
+        }
+        if (minimunStock) {
+            apiUrl += `&${minimunStock}`;
         }
 
         ApiRequest(apiUrl, 'GET')
