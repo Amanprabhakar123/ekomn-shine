@@ -298,6 +298,13 @@ class HomeController extends Controller
     public function getTopCategoryByProduct(Request $request)
     {
         try {
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $topCategories = TopCategory::with('category', 'topProduct.productVarition')->get();
             $transformData = $topCategories->map(function ($item) {
                 return [
@@ -339,6 +346,13 @@ class HomeController extends Controller
     public function deleteTopProduct(Request $request)
     {
         try {
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $topProduct = TopCategory::find(salt_decrypt($request->id));
             $topProduct->delete();
             return response()->json([

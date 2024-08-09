@@ -105,6 +105,10 @@
 
 
 
+            /**
+             * When the category select box value changes, fetch the products for the selected category
+             * and populate the productBy select box with the fetched products
+             */
             $('#category').on('change', function() {
                 var formData = new FormData();
 
@@ -133,6 +137,10 @@
             });
             var maxOptions = $('#productBy').data('max-options');
 
+            /**
+             * Check the number of selected options in the productBy select box
+             * If the number of selected options is greater than the maxOptions, deselect the extra options
+             */
             $("#productBy").on('change', function() {
                 var selectedOptions = $(this).find('option:selected').length;
                 if (selectedOptions > maxOptions) {
@@ -161,6 +169,10 @@
                 }
             });
 
+            /**
+             * When the submit button is clicked, validate the form fields
+             * If the form fields are valid, make an API request to store the categories
+             */
             $('#btnSubmit').on('click', function() {
                 var formData = new FormData();
                 var number = $('#number').val();
@@ -214,12 +226,12 @@
                     if (res.data.statusCode == 200) {
                         let data = res.data.data;
                         data.forEach((item) => {
-                            const productTitles = item.product.map(p => p.title.trim()).join(', ');
+                            const productTitles = item.product.map(p => `<li><a href="#" class="text_u">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
                                 <tr>
                                     <td>${item.category}</td>
                                     <td>${item.priority}</td>
-                                    <td>${productTitles}</td>
+                                    <td><div class="w_500_f wordbreak">${productTitles}</div></td>
                                     <td>
                                         <a href="${item.topCategoryId}">Delete</a>
                                     </td>
@@ -232,8 +244,10 @@
                     console.log(err);
                 });
 
-                // delete api request
-
+                /**
+                 * When the delete link is clicked, show a confirmation dialog
+                 * If the user confirms the deletion, make an API request to delete the item
+                 */
                 $('tbody').on('click', 'a', function(e) {
                     e.preventDefault();
                     var id = $(this).attr('href');
