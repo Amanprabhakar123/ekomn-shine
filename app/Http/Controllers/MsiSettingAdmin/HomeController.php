@@ -435,9 +435,8 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }            
-            $topProduct = TopProduct::whereIn('type',TopProduct::TYPE_ARRAY)
+            $topProduct = TopProduct::whereIn('type',TopProduct::TYPE_ARRAY_FOR_SELECT)
             ->with('productVarition')->orderBy('id', 'desc')->get();
-           
             $transformData = $topProduct->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -461,7 +460,7 @@ class HomeController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
+dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
