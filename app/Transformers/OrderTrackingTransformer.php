@@ -17,8 +17,10 @@ class OrderTrackingTransformer extends TransformerAbstract
     {
         try {
             $title = '';
+            $slug = '';
             foreach($order->orderItemsCharges as $orderItemsCharges){
                 $title = $orderItemsCharges->product->title;
+                $slug = $orderItemsCharges->product->slug;
             }
             $courier_name = '';
             $tracking_url = '';
@@ -37,6 +39,7 @@ class OrderTrackingTransformer extends TransformerAbstract
             $data = [
                 'id' => salt_encrypt($order->id),
                 'title' => $title,
+                'link' => url($slug),
                 'order_number' => $order->order_number,
                 'order_date' => $order->order_date->toDateString(),
                 'status' => $order->getStatus(),

@@ -541,7 +541,7 @@
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="#" class="a_link">${item.title}</a>
+                    <a href="${item.link}" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
@@ -591,7 +591,7 @@
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="#" class="a_link">${item.title}</a>
+                    <a href="${item.link}" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
@@ -637,7 +637,7 @@
                 </td>
                 <td>
                   <div class="productTitle_t">
-                    <a href="#" class="a_link">${item.title}</a>
+                    <a href="${item.link}" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
