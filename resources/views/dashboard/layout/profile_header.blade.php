@@ -24,6 +24,7 @@
                 <li><a class="dropdown-item" href="{{route('edit.profile')}}">Profile</a></li>
                 <li><a class="dropdown-item" href="#">Wish List</a></li>
                 <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                     <input type="hidden" name="token" id="token">
