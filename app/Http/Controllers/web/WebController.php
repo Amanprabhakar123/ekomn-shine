@@ -67,20 +67,26 @@ class WebController extends Controller
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
             $categoryService = new CategoryService;
             $categoryDetails = $categoryService->getCategoryBySlug($slug);
+            $product_ids = [];
+            $s_slug = '';
+            if($categoryDetails['status'] == true){
+                $product_ids = $categoryDetails['result']['productIds'];
+                $s_slug =  $categoryDetails['result']['category'];
+            }
             // Find the product variations in the ProductVariation table
             $productVariations = ProductVariation::whereIn('status', [
                 ProductVariation::STATUS_OUT_OF_STOCK,
                 ProductVariation::STATUS_ACTIVE,
             ])
-                ->whereIn('product_id', $categoryDetails['result']['productIds'])
-                ->when($searchTerm, function ($query) use ($searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
-                    });
+                ->whereIn('product_id', $product_ids)
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
                 });
+            });
 
             // Filter by status if provided
             if ($sort_by_status != 0) {
@@ -89,7 +95,7 @@ class WebController extends Controller
 
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-                ->paginate($perPage);
+            ->paginate($perPage);
 
             // Transform product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
@@ -98,20 +104,18 @@ class WebController extends Controller
 
             // Prepare data for response
             $data = [
-                'slug' => $categoryDetails['result']['category'],
+                'slug' => $s_slug,
                 'productVariations' => $products,
             ];
 
-            return view('web.product-category', compact('data'));
-
             // // Return the transformed data as a JSON response
-            // return response()->json([
-            //     'data' => [
-            //         'statusCode' => __('statusCode.statusCode200'),
-            //         'status' => __('statusCode.status200'),
-            //         'data' => $data,
-            //     ],
-            // ], __('statusCode.statusCode200'));
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $data,
+                ],
+            ], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
             // Prepare exception details

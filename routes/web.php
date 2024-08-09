@@ -41,7 +41,6 @@ Route::get('/', function () {
 })->name('home');
 
 // Define routes for buyer, supplier, and admin login and registration forms
-Route::get('/caregories/{slug}', [WebController::class, 'productsCategoryWise'])->name('filter.slug');
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
 Route::get('supplier/login', [AuthViewController::class, 'loginFormView'])->name('supplier.login');
 Route::get('center/admin/login', [AuthViewController::class, 'adminloginFormView'])->name('admin.login');
@@ -166,6 +165,9 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
+
+    // Home Page Category Wise Product Listing
+    Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
 
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');

@@ -909,7 +909,7 @@
 
                     // Clear any existing content in the menu
                     $menu.empty();
-                    var url = "{{ route('filter.slug', ['slug' => 'SLUG']) }}";
+                    var url = "{{ route('category.slug', ['slug' => 'SLUG']) }}";
                     // Check if the response status code is 200 (OK)
                     if (res.data.statusCode == 200) {
                         // Extract the category data from the response
