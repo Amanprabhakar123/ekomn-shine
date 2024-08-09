@@ -24,6 +24,11 @@ class Banner extends Model
         'updated_at',
     ];
 
+    const BANNER_TYPE_HOME = 'home';
+    const BANNER_TYPE_CATEGORY = 'category';
+    const BANNER_TYPE_PRODUCT = 'product';
+    const BANNER_TYPE_BRAND = 'user_dashboard';
+
 
     /**
      * Get the options for logging changes to the model.
