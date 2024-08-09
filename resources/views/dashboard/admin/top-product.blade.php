@@ -35,6 +35,18 @@
                     <button type="button" id="btnSubmit" class="btn btn-login btnekomn card_f_btn"
                         id="generaltab">Submit</button>
                 </div>
+                <table class="normalTable tableSorting whitespace mt-5">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Product Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!--  Data display here Dynamic -->
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -141,7 +153,90 @@
                 }
             });
 
+            ApiRequest('get-top-product-type', 'GET')
+                .then((res) => {
+                    // console.log(res);
+                    if (res.data.statusCode == 200) {
+                        let data = res.data.data;
+                        data.forEach((item) => {
+                            // const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
+                            $('tbody').append(`
+                                <tr>
+                                    <td>${item.title}</td>
+                                    <td>${item.type}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteProduct('${item.id}')">Delete</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            });
+                function deleteProduct(id){
+                    var formData = new FormData();
+                    formData.append('id', id);
 
-        });
+                    // First, show the confirmation dialog
+                    Swal.fire({
+                        title: "Do you want to delete?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!",
+                        customClass: {
+                            confirmButton: 'swal2-confirm-btn',
+                            cancelButton: 'swal2-cancel-btn'
+                        },
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Send the delete request only after confirmation
+                                ApiRequest('delete-top-product', 'POST', formData)
+                                    .then((res) => {
+                                        if (res.data.statusCode == 200) {
+                                            Swal.fire({
+                                                title: "Deleted!",
+                                                text: "Your file has been deleted.",
+                                                icon: "success",
+                                                didOpen: () => {
+                                                    const title = Swal.getTitle();
+                                                    title.style.fontSize = '25px';
+                                                    // Apply inline CSS to the content
+                                                    const content = Swal.getHtmlContainer();
+                                                    // Apply inline CSS to the confirm button
+                                                    const confirmButton = Swal.getConfirmButton();
+                                                    confirmButton.style.backgroundColor = '#feca40';
+                                                    confirmButton.style.color = 'white';
+                                                }
+                                            }).then(() => {
+                                                window.location.href = '/top-product';
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: "There was an error deleting the item.",
+                                            icon: "error"
+                                        });
+                                    });
+                            }
+                        });
+                }
+
+       
     </script>
 @endsection

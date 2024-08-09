@@ -45,4 +45,15 @@ class TopProduct extends Model
     }
 
 
+    /**
+     * Get the type of the TopProduct
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return self::TYPE_ARRAY[$this->type];
+    }
+
+
 }

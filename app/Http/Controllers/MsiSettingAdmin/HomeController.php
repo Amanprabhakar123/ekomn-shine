@@ -353,13 +353,23 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    // 'message' => __('auth.categoryNotCreate'),
+                    'message' => __('auth.categoryNotCreate'),
                 ],
-            ]);
+            ], __('statusCode.statusCode500'));
         }
     }
 
@@ -389,13 +399,124 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+             // Prepare exception details
+             $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    'message' => __('auth.topProductNotDelete'),
+                    'message' => __('auth.deleteFailed'),
                 ],
-            ]);
+            ], __('statusCode.statusCode500'));
         }
+    }
+
+    /**
+     * create top product get data api function
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getTopProductData(Request $request){
+        try {
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }            
+            $topProduct = TopProduct::with('productVarition')->orderBy('id', 'desc')->get();
+           
+            $transformData = $topProduct->map(function ($item) {
+                return [
+                    'id' => salt_encrypt($item->id),
+                    'title' => $item->productVarition->title,
+                    'type' => $item->getType(),
+                ];
+            });
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $transformData,
+                    
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+             // Prepare exception details
+             $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.categoryNotCreate'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * create top product delete api function
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+
+    public function deleteTopProductData(Request $request){
+        try {
+            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $topProduct = TopProduct::find(salt_decrypt($request->id));
+            $topProduct->delete();
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200')
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+             // Prepare exception details
+             $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.deleteFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+
     }
 }

@@ -118,5 +118,6 @@ return [
     'productAdded' => 'Product Store Successfully.',
     'categoryExists' => 'Category Already Exists.',
     'productExists' => 'Product Already Exists.',
+    'deleteFailed' => 'Delete Product Failed.',
 
 ];
