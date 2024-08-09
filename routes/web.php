@@ -56,10 +56,6 @@ Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name
 Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('product.category');
 Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
-Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
-Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
-Route::get('banner', [HomeController::class, 'banner'])->name('banner');
-Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -84,7 +80,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('order-tracking', [DashboardController::class, 'orderTracking'])->name('order.tracking');
     Route::get('order-payment', [OrderPaymentController::class, 'orderPayment'])->name('order.payment');
     Route::get('order-payment/bulk-upload', [BulkUploadController::class, 'paymentUpdate'])->name('payment.update');
-
+    Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
+    Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
+    Route::get('banner', [HomeController::class, 'banner'])->name('banner');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -153,7 +151,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     });
 });
 
-// Route group for API authentication routes
+// Route group for API authentication and unauthenticated routes
 Route::group(['prefix' => 'api'], function () {
     Route::post('register', [RegisterController::class, 'registerUser']);
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -168,6 +166,7 @@ Route::group(['prefix' => 'api'], function () {
 
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
+    Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
 
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
