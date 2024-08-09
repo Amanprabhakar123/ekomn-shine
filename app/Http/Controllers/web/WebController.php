@@ -85,35 +85,30 @@ class WebController extends Controller
                 ProductVariation::STATUS_OUT_OF_STOCK,
                 ProductVariation::STATUS_ACTIVE,
             ])
-                ->whereIn('product_id', $product_ids)
-                ->when($searchTerm, function ($query) use ($searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
-                    });
+            ->whereIn('product_id', $product_ids)
+            ->with('media')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
                 });
+            });
 
             // Filter by newArrived if provided
             if ($newArrived == true) {
-                // Last 30 days ka record get karna
-                $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest()->get();
+                // Get records from the last 30 days
+                $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest();
             }
             if ($productWithVideos == true) {
-
                 $productVariations = $productVariations->whereHas('media', function ($query) {
-                    $query->where([
-                        ['is_master', '=', ProductVariationMedia::IS_MASTER_TRUE],
-                        ['media_type', '=', ProductVariationMedia::MEDIA_TYPE_IMAGE],
-                    ]);
-                })->get();
-
+                    $query->where('media_type', '=', ProductVariationMedia::MEDIA_TYPE_VIDEO);
+                });
             }
-
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-                ->paginate($perPage);
+            ->paginate($perPage);
 
             // Transform product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
