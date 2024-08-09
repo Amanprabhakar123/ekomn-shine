@@ -435,7 +435,8 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }            
-            $topProduct = TopProduct::with('productVarition')->orderBy('id', 'desc')->get();
+            $topProduct = TopProduct::whereIn('type',TopProduct::TYPE_ARRAY)
+            ->with('productVarition')->orderBy('id', 'desc')->get();
            
             $transformData = $topProduct->map(function ($item) {
                 return [
@@ -468,7 +469,7 @@ class HomeController extends Controller
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    'message' => __('auth.categoryNotCreate'),
+                    'message' => __('auth.productNotCreated'),
                 ],
             ], __('statusCode.statusCode500'));
         }
