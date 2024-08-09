@@ -3,9 +3,10 @@
 namespace App\Transformers;
 
 use App\Models\ProductVariation;
+use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
 
-class SlugProductVariationTransformer extends TransformerAbstract
+class ProductsCategoryWiseTransformer extends TransformerAbstract
 {
     /**
      * Transform the product variation data.
@@ -23,7 +24,7 @@ class SlugProductVariationTransformer extends TransformerAbstract
             if ($media == null) {
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             } else {
-                $thumbnail = $media->file_path;
+                $thumbnail = $media->thumbnail;
             }
 
             // Check if the user is authenticated
@@ -43,7 +44,7 @@ class SlugProductVariationTransformer extends TransformerAbstract
             }
 
             // Return an associative array with product details
-            return [
+            $data = [
                 'id' => salt_encrypt($product->id), // Encrypted product ID
                 'title' => $product->title, // Product title
                 'slug' => $product->slug, // URL-friendly slug for the product
@@ -55,6 +56,8 @@ class SlugProductVariationTransformer extends TransformerAbstract
                 'availability_status' => $status, // Product availability status
                 'status' => getStatusName($product->status), // Product status name
             ];
+
+            return $data;
 
         } catch (\Exception $e) {
             // Handle the exception here

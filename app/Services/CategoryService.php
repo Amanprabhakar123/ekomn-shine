@@ -3,15 +3,15 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\ProductInventory;
 use Illuminate\Support\Facades\Log;
 
 class CategoryService
 {
-
     /**
      * Search for a category based on tags.
      *
-     * @param array $tags The tags to search for.
+     * @param  array  $tags  The tags to search for.
      * @return array The main category and sub category found based on the tags.
      */
     public function searchCategory(array $tags)
@@ -19,9 +19,9 @@ class CategoryService
         // Generate all combinations of tags
         $combinations = $this->generateCombinations($tags);
         try {
-            if (!empty($combinations)) {
+            if (! empty($combinations)) {
                 foreach ($combinations as $combination) {
-                    list($tag1, $tag2) = $combination;
+                    [$tag1, $tag2] = $combination;
 
                     // Search in the database using LIKE query for these tags
                     $category1 = Category::where('slug', 'LIKE', "%$tag1%")->first();
@@ -46,6 +46,7 @@ class CategoryService
                                 $subCategoryName = $parentCategory1->name ?? 'unknown';
                                 $subCategoryId = $parentCategory1->id ?? 0;
                             }
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         } elseif ($category1->depth === 1) {
                             if ($category1->root_parent_id === null) {
@@ -60,12 +61,14 @@ class CategoryService
                                 $subCategoryName = $category1->name ?? 'unknown';
                                 $subCategoryId = $category1->id ?? 0;
                             }
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         } elseif ($category1->depth === 0) {
                             $mainCategoryName = $category1->name ?? 'unknown';
                             $mainCategoryId = $category1->id ?? 0;
                             $subCategoryName = $mainCategoryName;
                             $subCategoryId = $mainCategoryId;
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         }
                     }
@@ -74,9 +77,9 @@ class CategoryService
 
             // Check if the any one  tag has a matching main category
             foreach ($tags as $firstTag) {
-                if (!empty($firstTag)) {
+                if (! empty($firstTag)) {
                     $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
-                    #i want to update this logic if $category1->depth === 3 and $category1->depth === 2 i want to check root_parent_id and parent_id data root_parent_id is main category and parent_id is sub category another case if $category1->depth === 1 i want to check root_parent_id if root_parent_id is null then i want to set main category and sub category is same if $category1->depth === 0 i want to set main category and sub category is same and same for $category2
+                    //i want to update this logic if $category1->depth === 3 and $category1->depth === 2 i want to check root_parent_id and parent_id data root_parent_id is main category and parent_id is sub category another case if $category1->depth === 1 i want to check root_parent_id if root_parent_id is null then i want to set main category and sub category is same if $category1->depth === 0 i want to set main category and sub category is same and same for $category2
 
                     if ($firstTagCategory) {
                         if ($firstTagCategory->depth === 3 || $firstTagCategory->depth === 2) {
@@ -86,6 +89,7 @@ class CategoryService
                             $mainCategoryId = $rootParentCategory->id ?? 0;
                             $subCategoryName = $parentCategory->name ?? 'unknown';
                             $subCategoryId = $parentCategory->id ?? 0;
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         } elseif ($firstTagCategory->depth === 1) {
                             if ($firstTagCategory->root_parent_id === null) {
@@ -100,12 +104,14 @@ class CategoryService
                                 $subCategoryName = $firstTagCategory->name ?? 'unknown';
                                 $subCategoryId = $firstTagCategory->id ?? 0;
                             }
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         } elseif ($firstTagCategory->depth === 0) {
                             $mainCategoryName = $firstTagCategory->name ?? 'unknown';
                             $mainCategoryId = $firstTagCategory->id ?? 0;
                             $subCategoryName = $mainCategoryName;
                             $subCategoryId = $mainCategoryId;
+
                             return $this->categoryData($mainCategoryName, $mainCategoryId, $subCategoryName, $subCategoryId);
                         }
                     }
@@ -130,7 +136,7 @@ class CategoryService
     /**
      * Generate all combinations of tags.
      *
-     * @param array $tags The tags to generate combinations from.
+     * @param  array  $tags  The tags to generate combinations from.
      * @return array The generated combinations of tags.
      */
     private function generateCombinations(array $tags)
@@ -150,10 +156,10 @@ class CategoryService
     /**
      * Generate category data.
      *
-     * @param string $mainCategoryName The main category name.
-     * @param int $mainCategoryId The main category ID.
-     * @param string $subCategoryName The sub category name.
-     * @param int $subCategoryId The sub category ID.
+     * @param  string  $mainCategoryName  The main category name.
+     * @param  int  $mainCategoryId  The main category ID.
+     * @param  string  $subCategoryName  The sub category name.
+     * @param  int  $subCategoryId  The sub category ID.
      * @return array The generated category data.
      */
     private function categoryData($mainCategoryName = 'unknown', $mainCategoryId = 1, $subCategoryName = 'unknown', $subCategoryId = 1)
@@ -168,7 +174,50 @@ class CategoryService
         return [
             'statusCode' => __('statusCode.statusCode200'),
             'status' => true,
-            'result' => $data
+            'result' => $data,
+        ];
+    }
+
+    public function getCategoryBySlug($slug)
+    {
+        // Find the category based on the slug
+        $category = Category::select('name', 'slug', 'root_parent_id')->where('slug', $slug)->firstOrFail();
+
+        // Initialize a collection to hold relevant categories
+        $categories = collect();
+
+        // Fetch categories based on the depth of the current category
+        if ($category->depth == 0) {
+            // If the category is at depth 0, get all its children (depth 1 and 2)
+            $categories = $category->children()->with('children')->get();
+        } elseif ($category->depth == 1) {
+            // If the category is at depth 1, get only its direct children (depth 2)
+            $categories = $category->children()->get();
+        } elseif ($category->depth == 2) {
+            // If the category is at depth 2, only the category itself is relevant
+            $categories->push($category);
+        }
+
+        // Add the original category itself to the collection
+        $categories->prepend($category);
+
+        // Get all the relevant category IDs
+        $categoryIds = $categories->pluck('id');
+
+        // Retrieve product IDs from the ProductInventory table based on category associations
+        $productIds = ProductInventory::whereIn('product_category', $categoryIds)
+            ->orWhereIn('product_subcategory', $categoryIds)
+            ->pluck('id');
+        $data = [
+            'categories' => $categories,
+            'category' => $category->slug,
+            'productIds' => $productIds,
+        ];
+
+        return [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => true,
+            'result' => $data,
         ];
     }
 }

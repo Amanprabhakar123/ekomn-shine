@@ -41,7 +41,7 @@ Route::get('/', function () {
 })->name('home');
 
 // Define routes for buyer, supplier, and admin login and registration forms
-Route::get('/caregories/{slug}', [HomeController::class, 'filterWithSlug'])->name('filter.slug');
+Route::get('/caregories/{slug}', [WebController::class, 'productsCategoryWise'])->name('filter.slug');
 Route::get('buyer/login', [AuthViewController::class, 'loginFormView'])->name('buyer.login');
 Route::get('supplier/login', [AuthViewController::class, 'loginFormView'])->name('supplier.login');
 Route::get('center/admin/login', [AuthViewController::class, 'adminloginFormView'])->name('admin.login');
