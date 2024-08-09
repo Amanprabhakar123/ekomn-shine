@@ -12,13 +12,15 @@
                             </ul>
                         </div>
                         <label class="checkbox-item">
-                            <input type="checkbox">
+                            <input type="checkbox" name="newArrivals" id="newArrivals" value="1"
+                                onclick="filterWithCheckbox('newArrivals',this.checked)">
                             <span class="checkbox-text">
                                 <i class="fas fa-info-circle me-2"></i>New Arrivals
                             </span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox">
+                            <input type="checkbox" id="productWithVideos" name="productWithVideos"
+                                onclick="filterWithCheckbox('productWithVideos',this.checked)">
                             <span class="checkbox-text">
                                 <i class="far fa-play-circle me-2"></i>Product with Videos
                             </span>
@@ -33,17 +35,20 @@
                         <div class="mt15">
                             <label>Minimum Stock</label>
                             <div class="inputwithOk">
-                                <input type="text" class="form-control" placeholder="Eg. 100">
-                                <button class="inputokbtn">Ok</button>
+                                <input type="text" class="form-control" placeholder="Eg. 100" id="minimumStk"
+                                    name="minimumStk" value="">
+                                <button class="inputokbtn" type="button" id="minimumStock">Ok</button>
                             </div>
                         </div>
                         <div class="mt15">
                             <label>Price (<i class="fas fa-rupee-sign fs-13"></i>)</label>
                             <div class="inputwithOk minmax">
                                 <span class="sepminmax">-</span>
-                                <input type="text" class="form-control" placeholder="Min">
-                                <input type="text" class="form-control" placeholder="Max">
-                                <button class="inputokbtn">Ok</button>
+                                <input type="text" class="form-control" placeholder="Min" name="min" id="min"
+                                    value="">
+                                <input type="text" class="form-control" placeholder="Max" name="max" id="max"
+                                    value="">
+                                <button type="button" class="inputokbtn" id="priceRange">Ok</button>
                             </div>
                         </div>
                     </div>
@@ -362,55 +367,107 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </section>
+
     </div>
 @endsection
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
 
 <script>
+    // Initialize variables for sorting and filtering options
+    const slug = "{{ $slug }}";
+    let newArrived = ""; // Sort field for new arrivals (e.g., "true" or "false")
+    let productWithVideos = ""; // Filter for products with videos (e.g., "true" or "false")
+    let priceRange = ""; // Filter for price range (e.g., "min=10&max=100")
+    let minimumStock = ""; // Filter for minimum stock (e.g., "minimumStock=10")
+    let maximumStock = ""; // Filter for maximum stock (e.g., "maximumStock=100")
+
     $(document).ready(function() {
-        // Perform an AJAX GET request to fetch category data
+        // Initial data fetch
+        fetchData();
+
+        // Event handler for price range filter
+        $("#priceRange").click(function() {
+            let min = $("#min").val();
+            let max = $("#max").val();
+            priceRange = `min=${min}&max=${max}`;
+            fetchData();
+        });
+
+        // Event handler for minimum stock filter
+        $("#minimumStock").click(function() {
+            let minimumStk = $("#minimumStk").val();
+            minimumStock = `minimumStock=${minimumStk}`;
+            fetchData();
+        });
+
+        // Fetch categories and populate the menu
         $.ajax({
-                url: '{{ route('categories.list') }}', // URL endpoint for fetching categories
-                type: 'GET', // HTTP method for the request
-                dataType: 'json', // Expected data type of the response
-                success: function(res) {
-                    // jQuery object for the primary category menu
-                    $menu = $("#itemListCategory");
-                    const slug = "{{ $data['slug'] }}"
-                    // Clear any existing content in the menu
+            url: '{{ route('categories.list') }}', // Endpoint for fetching categories
+            type: 'GET', // HTTP method
+            dataType: 'json', // Expected data type
+            success: function(res) {
+                // jQuery object for the category menu
+                const $menu = $("#itemListCategory");
+                const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
+
+                if (res.data.statusCode == 200) {
+                    const data = res.data.data;
+
+                    // Clear existing content
                     $menu.empty();
-                    var url = "{{ route('category.slug', ['slug' => 'SLUG']) }}";
-                    // Check if the response status code is 200 (OK)
-                    if (res.data.statusCode == 200) {
-                        // Extract the category data from the response
-                        let data = res.data.data;
-                        console.log(data);
 
-                        // Clear existing content (redundant with the above empty())
-                        $menu.empty();
-
-                        // Iterate through each main category in the data
-                        $.each(data, function(index, category) {
-
-                            // HTML structure for the main category
-                            var mainCategoryHtml = '<li class="nav-link active">';
-                            mainCategoryHtml += '<a href="' + url.replace('SLUG', category
-                                .parent_slug) + '">' + category.parent_name + '</a>';
-                            // Close the sub-list and main category HTML structure
-                            mainCategoryHtml += '</li>';
-                            console.log(mainCategoryHtml);
-                            // Append the constructed HTML to the menu
-                            $menu.append(mainCategoryHtml);
-                        });
-                    }
+                    // Populate menu with categories
+                    $.each(data, function(index, category) {
+                        const active = slug == category.parent_slug ? 'active' : '';
+                        const mainCategoryHtml = `
+                            <li class="nav-link ${active}">
+                                <a href="${url.replace('SLUG', category.parent_slug)}">${category.parent_name}</a>
+                            </li>`;
+                        $menu.append(mainCategoryHtml);
+                    });
                 }
-            })
-
-            .fail(function() {
-                // Log error message to console if AJAX request fails
-                console.log("error");
-            });
+            },
+            fail: function() {
+                console.log("Error fetching categories");
+            }
+        });
     });
+
+    // Function to fetch filtered data
+    function fetchData() {
+        let apiUrl = `categories/${slug}?`;
+
+        // Append filters to the API URL
+        if (newArrived) apiUrl += `new_arrived=${newArrived}&`;
+        if (productWithVideos) apiUrl += `productWithVideos=${productWithVideos}&`;
+        if (priceRange) apiUrl += `${priceRange}&`;
+        if (minimumStock) apiUrl += `${minimumStock}&`;
+        if (maximumStock) apiUrl += `${maximumStock}`;
+
+        // Make API request and handle the response
+        ApiRequest(apiUrl, 'GET')
+            .then(response => {
+                const data = response.data;
+                console.log(data, 'Data fetched');
+
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    // Function to filter data based on checkbox input
+    function filterWithCheckbox(name, value) {
+        if (name == 'newArrivals') {
+            newArrived = value ? true : '';
+        } else if (name == 'productWithVideos') {
+            productWithVideos = value ? true : '';
+        }
+        fetchData();
+    }
 </script>

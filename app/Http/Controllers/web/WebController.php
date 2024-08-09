@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\web;
 
+use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariation;
+use App\Models\ProductVariationMedia;
 use App\Services\CategoryService;
 use App\Transformers\ProductsCategoryWiseTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -30,9 +33,10 @@ class WebController extends Controller
         return view('web.index');
     }
 
-    public function productCategory()
+    public function productCategory($slug)
     {
-        return view('web.product-category');
+
+        return view('web.product-category', compact('slug'));
     }
 
     public function productDetails()
@@ -51,64 +55,99 @@ class WebController extends Controller
      * @param  string  $slug
      * @return \Illuminate\Http\Response
      */
-    public function productsCategoryWise(Request $request, $slug)
+    public function productsCategoryWise($slug, Request $request)
     {
         try {
-            // Get pagination and sorting parameters from the request
+            // Get filtering, sorting, and pagination parameters from the request
+            $productWithVideos = $request->input('productWithVideos', false);
+            $newArrived = $request->input('new_arrived', false);
+            $min = $request->input('min', '');
+            $max = $request->input('max', '');
+            $minimumStock = $request->input('minimumStock', '');
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
-            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'desc'
-            $sort_by_status = (int) $request->input('status', '1'); // Default sort by 'all'
+            $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
+            $sortByStatus = (int) $request->input('status', 1); // Default status filter
 
             // Define allowed sort fields to prevent SQL injection
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+
+            // Get category details
             $categoryService = new CategoryService;
             $categoryDetails = $categoryService->getCategoryBySlug($slug);
             $product_ids = [];
-            $s_slug = '';
-            if($categoryDetails['status'] == true){
+            $categorySlug = '';
+
+            if ($categoryDetails['status'] === true) {
                 $product_ids = $categoryDetails['result']['productIds'];
-                $s_slug =  $categoryDetails['result']['category'];
+                $categorySlug = $categoryDetails['result']['category'];
             }
-            // Find the product variations in the ProductVariation table
+
+            // Query for product variations
             $productVariations = ProductVariation::whereIn('status', [
                 ProductVariation::STATUS_OUT_OF_STOCK,
                 ProductVariation::STATUS_ACTIVE,
             ])
                 ->whereIn('product_id', $product_ids)
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->where(function ($query) use ($searchTerm) {
-                    $query->where('title', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                ->with('media')
+                ->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                    });
                 });
-            });
 
-            // Filter by status if provided
-            if ($sort_by_status != 0) {
-                $productVariations = $productVariations->where('status', $sort_by_status);
+            // Filter by new arrival
+            if ($newArrived) {
+                $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest();
+            }
+
+            // Filter by video content
+            if ($productWithVideos) {
+                $productVariations = $productVariations->whereHas('media', function ($query) {
+                    $query->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
+                });
+            }
+
+            // Filter by price range
+            if ($min != '' && $max == '') {
+                // Only $min is provided
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($max != '' && $min == '') {
+                // Only $max is provided
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            }elseif ($min !== '' && $max !== '') {
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
+            }
+
+            // Filter by minimum stock
+            if ($minimumStock !== '') {
+                $minimumStock = (int) $minimumStock;
+                if ($minimumStock > 0) {
+                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
+                }
             }
 
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-            ->paginate($perPage);
+                ->paginate($perPage);
 
             // Transform product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
             $resource->setPaginator(new IlluminatePaginatorAdapter($productVariations));
             $products = $this->fractal->createData($resource)->toArray();
 
-            // Prepare data for response
+            // Prepare and return the response
             $data = [
-                'slug' => $s_slug,
+                'slug' => $categorySlug,
                 'productVariations' => $products,
             ];
 
-            // // Return the transformed data as a JSON response
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -118,6 +157,8 @@ class WebController extends Controller
             ], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
+            // Return a JSON response with error details
+
             // Prepare exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),
@@ -125,12 +166,10 @@ class WebController extends Controller
                 'line' => $e->getLine(),
             ];
 
-            // Optionally, trigger an event with exception details (if needed)
-            // event(new ExceptionEvent($exceptionDetails));
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
-            // Return a JSON response with error details
             return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
-
     }
 }
