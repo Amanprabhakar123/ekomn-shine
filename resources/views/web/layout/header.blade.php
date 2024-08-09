@@ -49,6 +49,18 @@
             <li><a class="dropdown-item" href="#">Profile</a></li>
             <li><a class="dropdown-item" href="#">Wish List</a></li>
             <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                    <input type="hidden" name="token" id="token">
+                </form>
+              <a href="#" class="dropdown-item" onclick="event.preventDefault();
+                      document.getElementById('token').value = sessionStorage.getItem('token');
+                        sessionStorage.removeItem('token'); sessionStorage.removeItem('user_details');
+                      document.getElementById('logout-form').submit();">
+                  Logout
+              </a>
+              </li>
           </ul>
         </div>
         <div class="cartAction">
