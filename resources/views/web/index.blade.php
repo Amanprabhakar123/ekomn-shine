@@ -938,8 +938,10 @@
                                 // Iterate through each child category of the sub-parent
                                 $.each(subParent.children, function(index, child) {
                                     // HTML structure for each child category
-                                    subParentHtml += '<li><a href="' + child
-                                        .child_slug + '">' + child.child_name +
+                                    subParentHtml += '<li><a href="' + url
+                                        .replace('SLUG', child
+                                            .child_slug) + '">' + child
+                                        .child_name +
                                         '</a></li>';
                                 });
 
