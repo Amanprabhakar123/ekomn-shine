@@ -53,7 +53,7 @@ Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('passwor
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
-Route::get('product-category', [WebController::class, 'productCategory'])->name('product.category');
+Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('product.category');
 Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
@@ -165,6 +165,9 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
+
+    // Home Page Category Wise Product Listing
+    Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
 
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');

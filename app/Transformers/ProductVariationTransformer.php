@@ -2,6 +2,7 @@
 namespace App\Transformers;
 use App\Models\User;
 use App\Models\ProductVariation;
+use App\Models\ProductVariationMedia;
 use League\Fractal\TransformerAbstract;
 
 class ProductVariationTransformer extends TransformerAbstract
@@ -15,7 +16,7 @@ class ProductVariationTransformer extends TransformerAbstract
     public function transform(ProductVariation $product)
     {
         try {
-            $media = $product->media->where('is_master', 1)->first();
+            $media = $product->media->where(['is_master' => ProductVariationMedia::IS_MASTER_TRUE, 'media_type' => ProductVariationMedia::MEDIA_TYPE_IMAGE])->first();
             if($media == null){
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             }else{

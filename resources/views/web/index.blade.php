@@ -909,7 +909,7 @@
 
                     // Clear any existing content in the menu
                     $menu.empty();
-
+                    var url = "{{ route('category.slug', ['slug' => 'SLUG']) }}";
                     // Check if the response status code is 200 (OK)
                     if (res.data.statusCode == 200) {
                         // Extract the category data from the response
@@ -922,7 +922,8 @@
                         $.each(data, function(index, category) {
                             // HTML structure for the main category
                             var mainCategoryHtml = '<li class="primary_category_list">';
-                            mainCategoryHtml += '<a href="' + category.parent_slug +
+                            mainCategoryHtml += '<a href="' + url.replace('SLUG', category
+                                    .parent_slug) +
                                 '" class="main_category">' + category.parent_name + '</a>';
                             mainCategoryHtml += '<div class="category_sub_list">';
 
@@ -937,8 +938,10 @@
                                 // Iterate through each child category of the sub-parent
                                 $.each(subParent.children, function(index, child) {
                                     // HTML structure for each child category
-                                    subParentHtml += '<li><a href="' + child
-                                        .child_slug + '">' + child.child_name +
+                                    subParentHtml += '<li><a href="' + url
+                                        .replace('SLUG', child
+                                            .child_slug) + '">' + child
+                                        .child_name +
                                         '</a></li>';
                                 });
 

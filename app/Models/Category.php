@@ -39,7 +39,6 @@ class Category extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-
     public function topCategory()
     {
         return $this->hasMany(TopCategory::class);
