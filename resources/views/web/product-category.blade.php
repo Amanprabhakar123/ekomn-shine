@@ -378,136 +378,96 @@
 <script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
 
 <script>
+    // Initialize variables for sorting and filtering options
     const slug = "{{ $slug }}";
-
-
-
-
-    let new_arrived = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-    let productWithVideos = ""; // Set the sort order here (e.g. "asc", "desc")
-    let priceRange = ""; // Set the sort order here (e.g. "asc", "desc")
-    let minimunStock = ""; // Set the sort order here (e.g. "asc", "desc")
-    let maximumStock = ""; // Set the sort order here (e.g. "asc", "desc")
-
-    // Initial fetch of data
-
+    let newArrived = ""; // Sort field for new arrivals (e.g., "true" or "false")
+    let productWithVideos = ""; // Filter for products with videos (e.g., "true" or "false")
+    let priceRange = ""; // Filter for price range (e.g., "min=10&max=100")
+    let minimumStock = ""; // Filter for minimum stock (e.g., "minimumStock=10")
+    let maximumStock = ""; // Filter for maximum stock (e.g., "maximumStock=100")
 
     $(document).ready(function() {
+        // Initial data fetch
         fetchData();
+
+        // Event handler for price range filter
         $("#priceRange").click(function() {
             let min = $("#min").val();
             let max = $("#max").val();
             priceRange = `min=${min}&max=${max}`;
             fetchData();
         });
+
+        // Event handler for minimum stock filter
         $("#minimumStock").click(function() {
             let minimumStk = $("#minimumStk").val();
-            minimunStock = `min=${minimumStk}`;
+            minimumStock = `minimumStock=${minimumStk}`;
             fetchData();
         });
-        // Perform an AJAX GET request to fetch category data
+
+        // Fetch categories and populate the menu
         $.ajax({
-                url: '{{ route('categories.list') }}', // URL endpoint for fetching categories
-                type: 'GET', // HTTP method for the request
-                dataType: 'json', // Expected data type of the response
-                success: function(res) {
-                    // jQuery object for the primary category menu
-                    $menu = $("#itemListCategory");
-                    // Clear any existing content in the menu
+            url: '{{ route('categories.list') }}', // Endpoint for fetching categories
+            type: 'GET', // HTTP method
+            dataType: 'json', // Expected data type
+            success: function(res) {
+                // jQuery object for the category menu
+                const $menu = $("#itemListCategory");
+                const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
+
+                if (res.data.statusCode == 200) {
+                    const data = res.data.data;
+
+                    // Clear existing content
                     $menu.empty();
-                    var url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
-                    // Check if the response status code is 200 (OK)
-                    if (res.data.statusCode == 200) {
-                        // Extract the category data from the response
-                        let data = res.data.data;
 
-                        // Clear existing content (redundant with the above empty())
-                        $menu.empty();
-
-                        // Iterate through each main category in the data
-                        $.each(data, function(index, category) {
-                            var active = slug == category.parent_slug ? 'active' :
-                                '';
-                            // HTML structure for the main category
-                            var mainCategoryHtml = '<li class="nav-link ' + active +
-                                '">';
-                            mainCategoryHtml += '<a href="' + url.replace('SLUG',
-                                    category
-                                    .parent_slug) + '">' + category.parent_name +
-                                '</a>';
-                            // Close the sub-list and main category HTML structure
-                            mainCategoryHtml += '</li>';
-                            // Append the constructed HTML to the menu
-                            $menu.append(mainCategoryHtml);
-                        });
-                    }
+                    // Populate menu with categories
+                    $.each(data, function(index, category) {
+                        const active = slug == category.parent_slug ? 'active' : '';
+                        const mainCategoryHtml = `
+                            <li class="nav-link ${active}">
+                                <a href="${url.replace('SLUG', category.parent_slug)}">${category.parent_name}</a>
+                            </li>`;
+                        $menu.append(mainCategoryHtml);
+                    });
                 }
-            })
-
-            .fail(function() {
-                // Log error message to console if AJAX request fails
-                console.log("error");
-            });
-
+            },
+            fail: function() {
+                console.log("Error fetching categories");
+            }
+        });
     });
-    // Function to fetch data from the server
+
+    // Function to fetch filtered data
     function fetchData() {
-
-        // Make an API request to fetch inventory data
         let apiUrl = `categories/${slug}?`;
-        if (new_arrived) {
-            apiUrl += `new_arrived=${new_arrived}&`;
-        }
 
-        if (productWithVideos) {
-            apiUrl += `productWithVideos=${productWithVideos}`;
-        }
-        if (priceRange) {
-            apiUrl += `&${priceRange}`;
-        }
-        if (minimunStock) {
-            apiUrl += `&${minimunStock}`;
-        }
+        // Append filters to the API URL
+        if (newArrived) apiUrl += `new_arrived=${newArrived}&`;
+        if (productWithVideos) apiUrl += `productWithVideos=${productWithVideos}&`;
+        if (priceRange) apiUrl += `${priceRange}&`;
+        if (minimumStock) apiUrl += `${minimumStock}&`;
+        if (maximumStock) apiUrl += `${maximumStock}`;
 
+        // Make API request and handle the response
         ApiRequest(apiUrl, 'GET')
             .then(response => {
-                const data = (response.data);
-                console.log(data, 'khalid');
-                if (data.length === 0) {
-                    // dataContainer.innerHTML =
-                    //     `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
-                } else {
-                    // response = (response.meta.pagination);
-                    // totalRows = response.total;
-                    // updatePagination();
-                    // displayData(data);
-                }
+                const data = response.data;
+                console.log(data, 'Data fetched');
+
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
 
+    // Function to filter data based on checkbox input
     function filterWithCheckbox(name, value) {
-        console.log(name, value);
         if (name == 'newArrivals') {
-            if (value == true) {
-                new_arrived = true;
-                fetchData();
-            } else {
-                new_arrived = '';
-                fetchData();
-
-            }
+            newArrived = value ? true : '';
         } else if (name == 'productWithVideos') {
-            if (value == true) {
-                productWithVideos = true;
-                fetchData();
-            } else {
-                productWithVideos = '';
-                fetchData();
-
-            }
+            productWithVideos = value ? true : '';
         }
+        fetchData();
     }
 </script>

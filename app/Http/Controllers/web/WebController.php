@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
+use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariation;
 use App\Models\ProductVariationMedia;
@@ -57,33 +58,35 @@ class WebController extends Controller
     public function productsCategoryWise($slug, Request $request)
     {
         try {
-
-            // Get pagination and sorting parameters from the request
-            $productWithVideos = $request->input('productWithVideos', '');
-            $newArrived = $request->input('new_arrived', '');
+            // Get filtering, sorting, and pagination parameters from the request
+            $productWithVideos = $request->input('productWithVideos', false);
+            $newArrived = $request->input('new_arrived', false);
             $min = $request->input('min', '');
             $max = $request->input('max', '');
-            $minmax = $request->input('minmax', '');
-
+            $minimumStock = $request->input('minimumStock', '');
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
-            $sort_by_status = (int) $request->input('status', '1'); // Default sort by 'all'
+            $sortByStatus = (int) $request->input('status', 1); // Default status filter
 
             // Define allowed sort fields to prevent SQL injection
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+
+            // Get category details
             $categoryService = new CategoryService;
             $categoryDetails = $categoryService->getCategoryBySlug($slug);
             $product_ids = [];
-            $s_slug = '';
-            if ($categoryDetails['status'] == true) {
+            $categorySlug = '';
+
+            if ($categoryDetails['status'] === true) {
                 $product_ids = $categoryDetails['result']['productIds'];
-                $s_slug = $categoryDetails['result']['category'];
+                $categorySlug = $categoryDetails['result']['category'];
             }
-            // Find the product variations in the ProductVariation table
+
+            // Query for product variations
             $productVariations = ProductVariation::whereIn('status', [
                 ProductVariation::STATUS_OUT_OF_STOCK,
                 ProductVariation::STATUS_ACTIVE,
@@ -99,22 +102,37 @@ class WebController extends Controller
                     });
                 });
 
-            // Filter by newArrived if provided
-            if ($newArrived == true) {
-                // Get records from the last 30 days
+            // Filter by new arrival
+            if ($newArrived) {
                 $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest();
             }
-            if ($productWithVideos == true) {
+
+            // Filter by video content
+            if ($productWithVideos) {
                 $productVariations = $productVariations->whereHas('media', function ($query) {
-                    $query->where('media_type', '=', ProductVariationMedia::MEDIA_TYPE_VIDEO);
+                    $query->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
                 });
             }
-            if ($min != '' && $max != '') {
+
+            // Filter by price range
+            if ($min !== '' && $max !== '') {
                 $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
+            } elseif ($min != '') {
+                // Only $min is provided
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($max != '') {
+                // Only $max is provided
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
             }
-            if ($minmax != '') {
-                $productVariations = $productVariations->where('price_before_tax', $minmax);
+
+            // Filter by minimum stock
+            if ($minimumStock !== '') {
+                $minimumStock = (int) $minimumStock;
+                if ($minimumStock > 0) {
+                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
+                }
             }
+
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
                 ->paginate($perPage);
@@ -124,13 +142,12 @@ class WebController extends Controller
             $resource->setPaginator(new IlluminatePaginatorAdapter($productVariations));
             $products = $this->fractal->createData($resource)->toArray();
 
-            // Prepare data for response
+            // Prepare and return the response
             $data = [
-                'slug' => $s_slug,
+                'slug' => $categorySlug,
                 'productVariations' => $products,
             ];
 
-            // Return the transformed data as a JSON response
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -140,6 +157,8 @@ class WebController extends Controller
             ], __('statusCode.statusCode200'));
 
         } catch (\Exception $e) {
+            // Return a JSON response with error details
+
             // Prepare exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),
@@ -147,12 +166,10 @@ class WebController extends Controller
                 'line' => $e->getLine(),
             ];
 
-            // Optionally, trigger an event with exception details (if needed)
-            // event(new ExceptionEvent($exceptionDetails));
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
-            // Return a JSON response with error details
             return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
-
     }
 }
