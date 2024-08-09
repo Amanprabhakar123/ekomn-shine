@@ -34,13 +34,13 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    public function productInventory()
+    /**
+     * Get all of the top Categories for the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function topCategory()
     {
-        return $this->hasMany(ProductInventory::class, 'product_category');
-    }
-
-    public function productInventorySubCategory()
-    {
-        return $this->hasMany(ProductInventory::class, 'product_subcategory');
+        return $this->hasMany(TopCategory::class);
     }
 }

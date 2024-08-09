@@ -6,7 +6,10 @@
   color: #fff;
   border-color: #feca40;
 } */
-
+.normalTable tbody tr td .wordbreak{
+  word-break: break-all!important;
+  white-space: normal!important;
+}
 
 .popup-button{
     /* color: #feca40; */

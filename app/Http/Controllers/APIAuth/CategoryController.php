@@ -65,6 +65,14 @@ class CategoryController extends Controller
     public function storeCategory(Request $request)
     {
         try {
+            // Check if the user has permission to add a top category
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'number' => 'required|string',
@@ -81,44 +89,52 @@ class CategoryController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
-                return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
-                    'status' => __('statusCode.status403'),
-                    'message' => __('auth.unauthorizedAction'),
-                ]], __('statusCode.statusCode200'));
-            }
             // Get the number and productBy values from the request
             $number = $request->input('number');
             $product = $request->input('productBy');
 
             // Split the productBy value into an array
             $product = explode(',', $product);
-
-            // Create a new TopCategory instance
-            $category = new TopCategory;
-            $category->category_id = $request->input('category');
-            $category->priority = $number;
-            $category->save();
-
-            // Check if the category is saved successfully
-            if ($category) {
-                // Loop through each product and save it as a TopProduct
-                foreach ($product as $key => $value) {
-                    $productCategory = new TopProduct;
-                    $productCategory->product_id = $value;
-                    $productCategory->priority = $key + 1;
-                    $productCategory->category_id = $category->id;
-                    $productCategory->save();
-                }
-
+            $product = array_map(function ($product) {
+                return salt_decrypt($product);
+            }, $product); 
+            $category = TopCategory::where('category_id',salt_decrypt($request->input('category')))->first();
+            if(!empty($category)){
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200'),
-                    'message' => __('auth.categoryAdded'),
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.categoryExists'),
                 ]], __('statusCode.statusCode200'));
-            } else {
-                return response()->json(['data' => __('auth.categoryFailed')], __('statusCode.statusCode404'));
+            }else{
+                // Create a new TopCategory instance
+                $category = new TopCategory;
+                $category->category_id = salt_decrypt($request->input('category'));
+                $category->priority = $number;
+                $category->save();
+
+                // Check if the category is saved successfully
+                if ($category) {
+                    // Loop through each product and save it as a TopProduct
+                    foreach ($product as $key => $value) {
+                        $productCategory = new TopProduct;
+                        $productCategory->product_id = $value;
+                        $productCategory->priority = $key + 1;
+                        $productCategory->category_id = $category->id;
+                        $productCategory->save();
+                    }
+
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.categoryAdded'),
+                    ]], __('statusCode.statusCode200'));
+                } else {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status404'),
+                        'message' => __('auth.categoryFailed'),
+                    ]], __('statusCode.statusCode200'));
+                }
             }
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
@@ -132,7 +148,13 @@ class CategoryController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
-            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => $e->getMessage(),
+                ],
+            ], __('statusCode.statusCode500'));
         }
 
     }
@@ -147,8 +169,16 @@ class CategoryController extends Controller
      */
     public function storeProducts(Request $request)
     {
-
         try {
+            // Check if the user has permission to add a top product
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_title' => 'required|string',
@@ -164,13 +194,6 @@ class CategoryController extends Controller
                     'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
-                return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
-                    'status' => __('statusCode.status403'),
-                    'message' => __('auth.unauthorizedAction'),
-                ]], __('statusCode.statusCode200'));
-            }
 
             $products = $request->input('product_title');
 
@@ -181,19 +204,23 @@ class CategoryController extends Controller
                 // Loop through each product and save it as a TopProduct
                 foreach ($product as $key => $value) {
                     $productCategory = new TopProduct;
-                    $productCategory->product_id = $value;
+                    $productCategory->product_id = salt_decrypt($value);
                     $productCategory->type = $request->input('product_type');
                     $productCategory->priority = $key + 1;
                     $productCategory->save();
                 }
-
+                // Check if the product is saved successfully
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.productAdded'),
                 ]], __('statusCode.statusCode200'));
             } else {
-                return response()->json(['data' => __('auth.productFailed')], __('statusCode.statusCode404'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status404'),
+                    'message' => __('auth.productFailed'),
+                ]], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
@@ -207,7 +234,13 @@ class CategoryController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
-            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.categoryNotCreate'),
+                ],
+            ], __('statusCode.statusCode500'));
         }
     }
 }

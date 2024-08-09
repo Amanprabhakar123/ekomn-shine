@@ -46,28 +46,19 @@
                         id="generaltab">Submit</button>
                 </div>
 
-                <div class="table-responsive tres_border">
+                <div class="table-responsive tres_border mt-5">
 
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th>Sr. No.</th>
-                            <th>Product title</th>
-                            <th>Tracking URL</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Product by</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
-                        <tr>
-                            <td>loop->index + 1 </td>
-                            <td>courier->courier_name </td>
-                            <td>courier->tracking_url </td>
-                            <td>
-                                <a href="">Edit</a>
-                            </td>
-                        </tr>
-                        
+                        <!--  Data display here Dynamic -->
                     </tbody>
                 </table>
             </div>
@@ -114,6 +105,10 @@
 
 
 
+            /**
+             * When the category select box value changes, fetch the products for the selected category
+             * and populate the productBy select box with the fetched products
+             */
             $('#category').on('change', function() {
                 var formData = new FormData();
 
@@ -130,6 +125,7 @@
                                 };
                             });
 
+                            $('#productBy').empty();
                             // Initialize Select2 with options
                             $('#productBy').select2({
                                 data: options,
@@ -142,6 +138,10 @@
             });
             var maxOptions = $('#productBy').data('max-options');
 
+            /**
+             * Check the number of selected options in the productBy select box
+             * If the number of selected options is greater than the maxOptions, deselect the extra options
+             */
             $("#productBy").on('change', function() {
                 var selectedOptions = $(this).find('option:selected').length;
                 if (selectedOptions > maxOptions) {
@@ -170,6 +170,10 @@
                 }
             });
 
+            /**
+             * When the submit button is clicked, validate the form fields
+             * If the form fields are valid, make an API request to store the categories
+             */
             $('#btnSubmit').on('click', function() {
                 var formData = new FormData();
                 var number = $('#number').val();
@@ -210,6 +214,22 @@
                                 }).then(() => {
                                     window.location.href = '/category-list';
                                 });
+                            }else{
+                                Swal.fire({
+                                    title: 'Error',
+                                    icon: "error",
+                                    text: res.data.message,
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
                             }
                         }).catch(error => {
                             console.error(error);
@@ -217,7 +237,95 @@
                 }
             });
 
-
+            ApiRequest('get-top-category-product', 'GET')
+                .then((res) => {
+                    // console.log(res);
+                    if (res.data.statusCode == 200) {
+                        let data = res.data.data;
+                        data.forEach((item) => {
+                            const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
+                            $('tbody').append(`
+                                <tr>
+                                    <td>${item.category}</td>
+                                    <td>${item.priority}</td>
+                                    <td><div class="w_500_f wordbreak">${productTitles}</div></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCategory('${item.topCategoryId}')">Delete</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         });
+
+         /**
+         * When the delete link is clicked, show a confirmation dialog
+         * If the user confirms the deletion, make an API request to delete the item
+         */
+        function deleteCategory(id) {
+            var formData = new FormData();
+                    formData.append('id', id);
+                   // First, show the confirmation dialog
+                    Swal.fire({
+                        title: "Do you want to delete?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!",
+                        customClass: {
+                            confirmButton: 'swal2-confirm-btn',
+                            cancelButton: 'swal2-cancel-btn'
+                        },
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Send the delete request only after confirmation
+                                ApiRequest('delete-top-product', 'POST', formData)
+                                    .then((res) => {
+                                        if (res.data.statusCode == 200) {
+                                            Swal.fire({
+                                                title: "Deleted!",
+                                                text: "Your file has been deleted.",
+                                                icon: "success",
+                                                didOpen: () => {
+                                                    const title = Swal.getTitle();
+                                                    title.style.fontSize = '25px';
+                                                    // Apply inline CSS to the content
+                                                    const content = Swal.getHtmlContainer();
+                                                    // Apply inline CSS to the confirm button
+                                                    const confirmButton = Swal.getConfirmButton();
+                                                    confirmButton.style.backgroundColor = '#feca40';
+                                                    confirmButton.style.color = 'white';
+                                                }
+                                            }).then(() => {
+                                                window.location.href = '/category-list';
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error(error);
+                                        Swal.fire({
+                                            title: "Error!",
+                                            text: "There was an error deleting the item.",
+                                            icon: "error"
+                                        });
+                                    });
+                            }
+                        });
+
+                    
+        }
     </script>
 @endsection

@@ -23,7 +23,9 @@
                         <tr>
                             <td>{{ $loop->index + 1 }}</td>
                             <td>{{ $courier->courier_name }}</td>
-                            <td>{{ $courier->tracking_url }}</td>
+                            <td><div  class="w_500_f wordbreak">
+                            {{ $courier->tracking_url }}
+                            </div></td>
                             <td>
                                 <a href="{{ route('edit.courier', salt_encrypt($courier->id)) }}">Edit</a>
                             </td>

@@ -103,18 +103,6 @@ class DashboardController extends Controller
 
             return successResponse(null, $response['data']);
         } catch (\Exception $e) {
-
-            // Log the exception details and trigger an ExceptionEvent
-            // Prepare exception details
-            $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-
-            // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
-
             return errorResponse($e->getMessage());
         }
     }

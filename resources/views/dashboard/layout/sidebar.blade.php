@@ -171,39 +171,7 @@
                             <span class="nav-link-text">Top Products</span>
                         </a>
                     </li>
-                    @endif
-                <li class="nav-item">
-                        <a class="nav-link" href="{{ route('banner') }}">
-                            <span class="nav-link-text">Banner</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Content Update</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">MIS for Admin</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Edit Log</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Category Management</a>
-                    </li>
-                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY) )
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('category.list') }}">
-                            <span class="nav-link-text">Top Categories</span>
-                        </a>
-                    </li>
-                    @endif
-                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_PRODUCT) )
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('top.product') }}">
-                            <span class="nav-link-text">Top Products</span>
-                        </a>
-                    </li>
-                    @endif
-                    
+                    @endif                    
                 </ul>
             </li>
 
