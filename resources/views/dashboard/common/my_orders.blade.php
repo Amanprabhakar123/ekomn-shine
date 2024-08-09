@@ -247,7 +247,11 @@
                         <table class="normalTable tableSorting whitespace">
                             <thead>
                                 <tr>
-                                    <th>Select</th>
+                                    <th><div
+                        class="form-check min-height m-0">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label for="selectAll" class="m-0">All</label>
+                    </div></th>
                                     <th>eKomn Order</th>
                                     <th>Store Order</th>
                                     <th>Product Title
@@ -522,7 +526,7 @@
                 return `
                <tr>
                 <td> <div
-                        class="form-check form-check-sm form-check-custom form-check-solid mt-3">
+                        class="form-check form-check-sm form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox"
                             value="${item.id}">
                     </div></td>
@@ -566,7 +570,7 @@
         @elseif (auth()->user()->hasRole(ROLE_SUPPLIER)) 
             function generateTableRow(item) {
                 var isvalid = false;
-                if(item.status == "Cancelled" || item.payment_status == "Pending"){
+                if(item.status == "Cancelled" || item.payment_status == "Pending" || item.payment_status == "Failed"){
                 isvalid = true;
             }
                 var orderType = '';
@@ -575,7 +579,7 @@
                 return `
                <tr>
                 <td> <div
-                        class="form-check form-check-sm form-check-custom form-check-solid mt-3">
+                        class="form-check form-check-sm form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox"
                             value="${item.id}">
                     </div></td>
@@ -615,7 +619,7 @@
 
         function generateTableRow(item) {
             var isvalid = false;
-                if(item.status == "Cancelled" || item.payment_status == "Pending"){
+                if(item.status == "Cancelled" || item.payment_status == "Pending" || item.payment_status == "Failed"){
                 isvalid = true;
             }
             

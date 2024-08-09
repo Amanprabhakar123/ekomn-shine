@@ -1,5 +1,16 @@
 /* bulk uplaod list css popup  */
 
+/* table paginataion backgorund color */
+/* .pager_ a:hover, .pager_ a.active {
+  background-color: #feca40;
+  color: #fff;
+  border-color: #feca40;
+} */
+.normalTable tbody tr td .wordbreak{
+  word-break: break-all!important;
+  white-space: normal!important;
+}
+
 .popup-button{
     /* color: #feca40; */
       background: none;
@@ -103,6 +114,24 @@
     width: 100%;
   }
 
+/* keyword close tag icon css this x */
+.tag span {margin-right: 5px;}
+.tag .remove-tag {
+  cursor: pointer;
+  font-weight: bold;
+  color: #888;
+  position: relative;
+  right: -3px;
+  top: -1px;
+}
+
+.remove-tag::after {
+  content: '\00d7'; /* Unicode for '×' */
+  font-size: 16px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+}
 
 
 

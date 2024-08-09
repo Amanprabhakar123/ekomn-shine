@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       setActive(links, this);
     });
   });
+
   subLinks.forEach(function (subLink) {
     subLink.addEventListener('click', function (event) {
       // event.preventDefault();
@@ -112,104 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-  // end
-
-  // Add or Remove Bulk Rate Row
- /* document.getElementById('addNewRowButton').addEventListener('click', function () {
-    const tableBody = document.querySelector('#bulkRateTable tbody');
-    const newRow = document.createElement('tr');
-    const quantityCell = document.createElement('td');
-    const quantityInput = document.createElement('input');
-    quantityInput.type = 'text';
-    quantityInput.className = 'smallInput_n';
-    quantityInput.placeholder = 'Qty. Upto';
-    quantityCell.appendChild(quantityInput);
-  
-    const priceCell = document.createElement('td');
-    const priceInput = document.createElement('input');
-    priceInput.type = 'text';
-    priceInput.className = 'smallInput_n';
-    priceInput.placeholder = 'Rs. 0.00';
-    priceCell.appendChild(priceInput);
-  
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'deleteRow deleteBulkRow';
-    deleteButton.innerHTML = '<i class="far fa-trash-alt"></i>';
-    priceCell.appendChild(deleteButton);
-  
-    newRow.appendChild(quantityCell);
-    newRow.appendChild(priceCell);
-    tableBody.appendChild(newRow);
-    deleteButton.addEventListener('click', function () {
-      newRow.remove();
-    });
-  });
-  document.querySelectorAll('.deleteBulkRow').forEach(button => {
-    button.addEventListener('click', function () {
-      button.closest('#bulkRateTable tr').remove();
-    });
-  });
-  // end*/
-
-/*
-  // Add or Remove Shipping Rate Row
-  const addShippingDetails = document.getElementById('addShippingRow')
-  addShippingDetails.addEventListener('click', function () {
-    const shippingTableBody = document.querySelector('#shippingRateTable tbody');
-    const newShipingRow = document.createElement('tr');
-    const quantityuptoCell = document.createElement('td');
-    const quantityuptoInput = document.createElement('input');
-    quantityuptoInput.type = 'text';
-    quantityuptoInput.className = 'smallInput_n';
-    quantityuptoInput.placeholder = 'Qty. Upto';
-    quantityuptoCell.appendChild(quantityuptoInput);
-
-    const localPrice = document.createElement('td');
-    const localPriceInput = document.createElement('input');
-    localPriceInput.type = 'text';
-    localPriceInput.className = 'smallInput_n';
-    localPriceInput.placeholder = 'Rs. 0.00';
-    localPrice.appendChild(localPriceInput);
-
-    const regionalPrice = document.createElement('td');
-    const regionalPriceInput = document.createElement('input');
-    regionalPriceInput.type = 'text';
-    regionalPriceInput.className = 'smallInput_n';
-    regionalPriceInput.placeholder = 'Rs. 0.00';
-    regionalPrice.appendChild(regionalPriceInput);
-
-    const nationalPrice = document.createElement('td');
-    const nationalPriceInput = document.createElement('input');
-    nationalPriceInput.type = 'text';
-    nationalPriceInput.className = 'smallInput_n';
-    nationalPriceInput.placeholder = 'Rs. 0.00';
-    nationalPrice.appendChild(nationalPriceInput);
-
-    const deletShippingRow = document.createElement('td');
-    const deletShippingBtn = document.createElement('button');
-    deletShippingBtn.type = 'button';
-    deletShippingBtn.className = 'deleteRow deleteShippingRow';
-    deletShippingBtn.innerHTML = '<i class="far fa-trash-alt"></i>';
-    deletShippingRow.appendChild(deletShippingBtn);
-
-    newShipingRow.appendChild(quantityuptoCell);
-    newShipingRow.appendChild(localPrice);
-    newShipingRow.appendChild(regionalPrice);
-    newShipingRow.appendChild(nationalPrice);
-    newShipingRow.appendChild(deletShippingRow);
-    shippingTableBody.appendChild(newShipingRow);
-
-    deletShippingRow.addEventListener('click', function () {
-      newShipingRow.remove();
-    });
-  });
-  document.querySelectorAll('.deleteShippingRow').forEach(button => {
-    button.addEventListener('click', function () {
-      button.closest('#shippingRateTable tr').remove();
-    });
-  });
-  // end
-*/
+ 
   // add product keywords
   const tagContainer = document.querySelector(".tag-container");
   const input = document.querySelector("#tag-input");
@@ -269,53 +173,241 @@ document.addEventListener('DOMContentLoaded', function () {
   // ####### end radio check ######
   
 
-  // ########## Create Product Feature List ############
-  /*
-  document.getElementById('add-feature').addEventListener('click', function() {
-    const textarea = document.getElementById('product-description');
-    const featureList = document.getElementById('features-list');
-    const errorMessage = document.getElementById('error-message');
-    if (textarea.value.trim() === '') {
-      errorMessage.classList.remove('hide');
-      return;
-    } else {
-      errorMessage.classList.add('hide');
-    }
-    const newFeature = document.createElement('li');
-    newFeature.innerHTML = `
-      <div class="featurescontent">
-        ${textarea.value.replace(/\n/g, '<br>')}
-        <div class="f_btn f_btn_rightSide">
-          <button class="btn btn-link btn-sm me-1 p-1 edit-feature" type="button"><i class="fas fa-pencil-alt"></i></button>
-          <button class="btn btn-link btn-sm text-danger p-1 delete-feature" type="button"><i class="fas fa-trash"></i></button>
-        </div>
-      </div>
-    `;
-    featureList.appendChild(newFeature);
-    textarea.value = '';
-    if (featureList.children.length >= 7) {
-      document.getElementById('add-feature').disabled = true;
-    }
-    newFeature.querySelector('.delete-feature').addEventListener('click', function() {
-      newFeature.remove();
-      if (featureList.children.length < 7) {
-        document.getElementById('add-feature').disabled = false;
+});
+
+
+  // ########## Header Search ############
+  const searchInput = document.querySelector('.serchinput');
+  const searchCard = document.querySelector('.header_search_card');
+  if (searchInput && searchCard) {
+    searchInput.addEventListener('input', function() {
+      searchCard.style.display = 'block';
+    });
+    document.addEventListener('click', function(event) {
+      if (!searchCard.contains(event.target) && !searchInput.contains(event.target)) {
+        searchCard.style.display = 'none';
       }
     });
-    newFeature.querySelector('.edit-feature').addEventListener('click', function() {
-      const content = newFeature.querySelector('.featurescontent').innerHTML
-        .split('<div')[0].trim().replace(/<br>/g, '\n');
-      textarea.value = content;
-      newFeature.remove();
-      if (featureList.children.length < 7) {
-        document.getElementById('add-feature').disabled = false;
+  }
+  // ## end header search ##
+
+
+
+  // ############# Mobile Drawer ##########
+  const barclick = document.getElementById('barIcon');
+  const filtershow = document.querySelector('.mobileMenu');
+  const closeDrawer = document.querySelector('.closeDrawer');
+  const bodyOverlay = document.querySelector('.bodyOverlay');
+  if (barclick && filtershow && closeDrawer && bodyOverlay) {
+    barclick.addEventListener('click', function() {
+      filtershow.classList.add('active');
+      bodyOverlay.classList.add('active');
+    });
+    closeDrawer.addEventListener('click', function() {
+      filtershow.classList.remove('active');
+      bodyOverlay.classList.remove('active');
+    });
+    bodyOverlay.addEventListener('click', function() {
+      filtershow.classList.remove('active');
+      bodyOverlay.classList.remove('active');
+    });
+  }
+  // ## end mobile drawer ##
+
+
+
+  // ############## Index Page Mein Category ##############
+  var menuItems = document.querySelectorAll('.primary_category_menu > li');
+  menuItems.forEach(function(item) {
+    item.addEventListener('mouseenter', function() {
+      var submenu = item.querySelector('.category_sub_list');
+      var rect = submenu.getBoundingClientRect();
+      if (rect.right > window.innerWidth) {
+        submenu.classList.add('open-right');
+      } else {
+        submenu.classList.remove('open-right');
       }
     });
   });
-  */
-  //########## End Product Feature List ############
+  // ## end Index Page Mein Category ##
 
-});
+
+
+  // ######## Select All Product #########
+  const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+  if (selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.allproductbox .form-check-input');
+    selectAllCheckbox.addEventListener('click', () => {
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+      });
+    });
+  }
+  // ## end select all ##
+
+ 
+
+  
+
+
+
+  // ########### Scroll to Stick header on web ##########
+  if (window.innerWidth > 1024) {
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById("main_header");
+      const bottomHeader = document.querySelector('.bottom_header');
+      if (header && bottomHeader) {
+        const sticky = header.offsetTop;
+        if (window.pageYOffset > sticky) {
+          header.classList.add("headerFixed");
+          bottomHeader.style.marginTop = '60px';
+        } else {
+          header.classList.remove("headerFixed");
+          bottomHeader.style.marginTop = '0px';
+        }
+      }
+    });
+  }
+  // ## end stick header ##
+
+
+
+  // ######## Show and Less Items #######
+  const items = document.querySelectorAll('#itemList li');
+  const toggleButton = document.getElementById('toggleButton');
+  if(toggleButton){
+    let showingAll = false;
+    toggleButton.addEventListener('click', () => {
+      showingAll = !showingAll;
+      items.forEach((item, index) => item.classList.toggle('show', showingAll || index < 8));
+      toggleButton.innerHTML = showingAll ? '<u>Less</u>' : 'More';
+    });
+    items.forEach((item, index) => item.classList.toggle('show', index < 8));
+  }
+  // ## end Show and Less Items ##
+
+  
+
+  // ####### Stick Filter bar ########
+  if(window.innerWidth > 1025) {
+    const stickyElement = document.getElementById('productFilters');
+    const footerElement = document.querySelector('footer');
+    if(stickyElement && footerElement) {
+      const stickyOffset = stickyElement.offsetTop - 76;
+      window.addEventListener('scroll', () => {
+        const footerOffset = footerElement.offsetTop;
+        const scrollPosition = window.pageYOffset + window.innerHeight;
+        const stickyHeight = stickyElement.offsetHeight;
+        if (window.pageYOffset >= stickyOffset) {
+          if (scrollPosition >= footerOffset) {
+            stickyElement.style.position = 'absolute';
+            stickyElement.style.top = (footerOffset - stickyHeight - 16) + 'px';
+          } else {
+            stickyElement.style.position = 'fixed';
+            stickyElement.style.top = '76px';
+          }
+        } else {
+          stickyElement.style.position = 'static';
+        }
+      });
+    }
+  }
+  // ## end Stick Filter bar ##
+
+
+
+  // ########## Image Carousel Setup ##########
+  const mainImg = document.getElementById('main-img');
+  const smallImgs = document.querySelectorAll('.smImg');
+  const carousel = document.querySelector('.small-card');
+  const prevButton = document.querySelector('.prev');
+  const nextButton = document.querySelector('.next');
+  if(mainImg && smallImgs.length && carousel && prevButton && nextButton) {
+    const imgWidth = 84;
+    const imgMargin = 10;
+    const visibleImgs = 5;
+    let scrollPosition = 0;
+    const maxScroll = (smallImgs.length - visibleImgs) * (imgWidth + imgMargin);
+    const updateButtonStates = () => {
+      prevButton.style.display = scrollPosition > 0 ? 'block' : 'none';
+      nextButton.style.display = scrollPosition < maxScroll ? 'block' : 'none';
+    };
+    smallImgs.forEach(img => {
+      img.addEventListener('mouseover', () => {
+        mainImg.src = img.getAttribute('data-src');
+        smallImgs.forEach(i => i.classList.remove('active'));
+        img.classList.add('active');
+      });
+      img.addEventListener('click', () => {
+        mainImg.src = img.getAttribute('data-src');
+        smallImgs.forEach(i => i.classList.remove('active'));
+        img.classList.add('active');
+      });
+    });
+    prevButton.addEventListener('click', () => {
+      if(scrollPosition > 0) {
+        scrollPosition -= (imgWidth + imgMargin);
+        carousel.style.transform = `translateX(-${scrollPosition}px)`;
+        updateButtonStates();
+      }
+    });
+    nextButton.addEventListener('click', () => {
+      if (scrollPosition < maxScroll) {
+        scrollPosition += (imgWidth + imgMargin);
+        carousel.style.transform = `translateX(-${scrollPosition}px)`;
+        updateButtonStates();
+      }
+    });
+    updateButtonStates();
+  }
+  // ## End Image Carousel ##
+
+
+
+  // ########## Testimonial text truncat ##########
+  var paragraphs = document.querySelectorAll(".authorContentPara");
+  if (paragraphs.length > 0) {
+    paragraphs.forEach(function(paragraph) {
+      var text = paragraph.textContent || paragraph.innerText;
+      if (text.length > 150) {
+        var truncatedText = text.slice(0, 150) + "...";
+        paragraph.textContent = truncatedText;
+      }
+    });
+  }
+
+  // ######### file upload #########
+  const fileInput = document.getElementById('fileInput');
+  if(fileInput) {
+    fileInput.addEventListener('change', function(event) {
+      const fileName = event.target.files[0]?.name || 'No file chosen';
+      const fileNameDisplay = document.getElementById('fileName');
+      if(fileNameDisplay) {
+        fileNameDisplay.textContent = fileName;
+      }
+    });
+  }
+  // ######## footer button if button is single ########
+  const footers = document.querySelectorAll('.saveform_footer');
+  footers.forEach(function (footer) {
+    const buttons = footer.querySelectorAll('button');
+    if (buttons.length === 1) {
+      footer.classList.add('single-button');
+    }
+  });
+  
+  // ######### Sub header link active ########
+  document.addEventListener("DOMContentLoaded", function() {
+    const links = document.querySelectorAll('.b_h_list > li > a');
+    links.forEach(link => {
+      link.addEventListener('click', function(event) {
+        // event.preventDefault();
+        links.forEach(link => link.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+  // ## end Sub header link active ##
 
 
 

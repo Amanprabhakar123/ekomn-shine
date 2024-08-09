@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('supplier_payments', function (Blueprint $table) {
-            $table->dropColumnIfExists('tds');
-            $table->dropColumnIfExists('tcs');
+            $table->dropColumn('tds');
+            $table->dropColumn('tcs');
         });
     }
 };

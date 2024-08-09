@@ -139,9 +139,13 @@
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
                 <ul class="sidenav-second-level collapse" id="AdminControl" data-bs-parent="#dashboard_ekomn">
-                    <li>
-                        <a class="nav-link" href="#">Banners</a>
+                   @if(auth()->user()->hasPermissionTo(PERMISSION_BANNER) )
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('banner') }}">
+                            <span class="nav-link-text">Banner</span>
+                        </a>
                     </li>
+                    @endif
                     <li>
                         <a class="nav-link" href="#">Content Update</a>
                     </li>
@@ -154,6 +158,20 @@
                     <li>
                         <a class="nav-link" href="#">Category Management</a>
                     </li>
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY) )
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('category.list') }}">
+                            <span class="nav-link-text">Top Categories</span>
+                        </a>
+                    </li>
+                    @endif
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_PRODUCT) )
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('top.product') }}">
+                            <span class="nav-link-text">Top Products</span>
+                        </a>
+                    </li>
+                    @endif                    
                 </ul>
             </li>
 

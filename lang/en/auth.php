@@ -111,5 +111,12 @@ return [
     'updateSuccess' => 'Courier Details Updated Successfully.',
     'shipmetUpdate' => 'Shipment Updated Successfully.',
     'adjustmeAmountUpdated' => 'Adjustment Amount Updated Successfully.',
+    'categoryAdded' => 'Category Store Successfully.',
+    'categoryFailed' => 'Category Store Failed.',
+    'categoryNotCreated' => 'Category Not Created.',
+    'productFailed' => 'Top Product Store Failed.',
+    'productAdded' => 'Product Store Successfully.',
+    'categoryExists' => 'Category Already Exists.',
+    'productExists' => 'Product Already Exists.',
 
 ];
