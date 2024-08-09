@@ -291,4 +291,94 @@ class HomeController extends Controller
             return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
     }
+
+    /**
+     * Filter categories by slug.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function filterWithSlug($slug)
+    {
+        try {
+            // Retrieve the category with the given slug
+            $category = Category::where('slug', $slug)->first();
+            // dd($category->productInventory);
+            if (! $category) {
+                // Return a JSON response with error message if category is not found
+                return response()->json([
+                    'error' => __('Category not found.'),
+                ], __('statusCode.statusCode404'));
+            }
+            $product_ids = ProductInventory::where('product_category', $category->id)
+                ->OrWhere('product_subcategory', $category->id)
+                ->groupBy('id')
+                ->pluck('id');
+
+            $product = ProductVariation::whereIn('product_id', $product_ids)->select('title', 'id')->get();
+            // Transform the category data into a hierarchical array
+            $categoryData = [
+                'product_invantory_category' => $category->productInventory->map(function ($productInventory) {
+                    return [
+                        'product_variations' => $productInventory->variations->map(function ($variation) {
+                            return [
+                                'variation_id' => $variation->id,
+                                'variation_title' => $variation->title,
+                            ];
+                        }),
+                        'product_inventory_category_id' => $productInventory->id,
+                        'product_inventory_category_name' => $productInventory->title,
+                    ];
+                }),
+                'parent_name' => $category->name,
+                'parent_slug' => $category->slug,
+                'sub_parents' => $category->children->map(function ($subParent) {
+
+                    return [
+                        'product_inventory_subCategory' => $subParent->productInventorySubCategory->map(function ($productInventory) {
+
+                            return [
+                                'product_inventory_subCategory_id' => $productInventory->id,
+                                'product_inventory_subCategory_name' => $productInventory->title,
+                            ];
+                        }),
+                        'sub_parent_name' => $subParent->name,
+                        'sub_parent_slug' => $subParent->slug,
+                        'children' => $subParent->children->filter(function ($child) {
+                            return $child->depth === 2;
+                        })->map(function ($child) {
+                            return [
+                                'child_name' => $child->name,
+                                'child_slug' => $child->slug,
+                            ];
+                        }),
+                    ];
+                }),
+            ];
+            dd($categoryData);
+
+            // Return the transformed category data as a JSON response with status code 200
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $categoryData,
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            return $exceptionDetails;
+            // Trigger the event with exception details
+            // event(new ExceptionEvent($exceptionDetails));
+
+            // Return a JSON response with error details
+            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+        }
+    }
 }
