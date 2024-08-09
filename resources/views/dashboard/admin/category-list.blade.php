@@ -242,6 +242,13 @@
                     // console.log(res);
                     if (res.data.statusCode == 200) {
                         let data = res.data.data;
+                        if(data.length == 0){
+                            $('tbody').append(`
+                                <tr>
+                                    <td colspan="4" class="text-center">No data found</td>
+                                </tr>
+                            `);
+                        }
                         data.forEach((item) => {
                             const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
