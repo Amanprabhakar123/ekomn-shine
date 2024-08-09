@@ -12,13 +12,15 @@
                             </ul>
                         </div>
                         <label class="checkbox-item">
-                            <input type="checkbox">
+                            <input type="checkbox" name="newArrivals" id="newArrivals" value="1"
+                                onclick="filterWithCheckbox('newArrivals',this.checked)">
                             <span class="checkbox-text">
                                 <i class="fas fa-info-circle me-2"></i>New Arrivals
                             </span>
                         </label>
                         <label class="checkbox-item">
-                            <input type="checkbox">
+                            <input type="checkbox" id="productWithVideos" name="productWithVideos"
+                                onclick="filterWithCheckbox('productWithVideos',this.checked)">
                             <span class="checkbox-text">
                                 <i class="far fa-play-circle me-2"></i>Product with Videos
                             </span>
@@ -362,14 +364,47 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </section>
+
+    </div>
+    <div class="ek_pagination d-none">
+        <span class="row_select rowcount" id="rowInfo"></span>
+        <div class="pager_box">
+            <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
+            <ul class="pager_" id="pagination"></ul>
+            <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="row_select jumper">Go to
+            <select id="rowsPerPage">
+                <option value="10" selected>10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+            </select>
+        </div>
     </div>
 @endsection
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
 
 <script>
+    const slug = "{{ $slug }}";
+
+
+
+
+    let new_arrived = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+    let productWithVideos = ""; // Set the sort order here (e.g. "asc", "desc")
+
+    // Initial fetch of data
+
+
     $(document).ready(function() {
+        fetchData();
+
         // Perform an AJAX GET request to fetch category data
         $.ajax({
                 url: '{{ route('categories.list') }}', // URL endpoint for fetching categories
@@ -378,29 +413,30 @@
                 success: function(res) {
                     // jQuery object for the primary category menu
                     $menu = $("#itemListCategory");
-                    const slug = "{{ $data['slug'] }}"
                     // Clear any existing content in the menu
                     $menu.empty();
-                    var url = "{{ route('category.slug', ['slug' => 'SLUG']) }}";
+                    var url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
                     // Check if the response status code is 200 (OK)
                     if (res.data.statusCode == 200) {
                         // Extract the category data from the response
                         let data = res.data.data;
-                        console.log(data);
 
                         // Clear existing content (redundant with the above empty())
                         $menu.empty();
 
                         // Iterate through each main category in the data
                         $.each(data, function(index, category) {
-
+                            var active = slug == category.parent_slug ? 'active' :
+                                '';
                             // HTML structure for the main category
-                            var mainCategoryHtml = '<li class="nav-link active">';
-                            mainCategoryHtml += '<a href="' + url.replace('SLUG', category
-                                .parent_slug) + '">' + category.parent_name + '</a>';
+                            var mainCategoryHtml = '<li class="nav-link ' + active +
+                                '">';
+                            mainCategoryHtml += '<a href="' + url.replace('SLUG',
+                                    category
+                                    .parent_slug) + '">' + category.parent_name +
+                                '</a>';
                             // Close the sub-list and main category HTML structure
                             mainCategoryHtml += '</li>';
-                            console.log(mainCategoryHtml);
                             // Append the constructed HTML to the menu
                             $menu.append(mainCategoryHtml);
                         });
@@ -412,5 +448,60 @@
                 // Log error message to console if AJAX request fails
                 console.log("error");
             });
+
     });
+    // Function to fetch data from the server
+    function fetchData() {
+
+        // Make an API request to fetch inventory data
+        let apiUrl = `categories/${slug}?`;
+        if (new_arrived) {
+            apiUrl += `new_arrived=${new_arrived}&`;
+        }
+
+        if (productWithVideos) {
+            apiUrl += `productWithVideos=${productWithVideos}`;
+        }
+
+        ApiRequest(apiUrl, 'GET')
+            .then(response => {
+                const data = (response.data);
+                console.log(data, 'khalid');
+                if (data.length === 0) {
+                    // dataContainer.innerHTML =
+                    //     `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                } else {
+                    // response = (response.meta.pagination);
+                    // totalRows = response.total;
+                    // updatePagination();
+                    // displayData(data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    function filterWithCheckbox(name, value) {
+        console.log(name, value);
+        if (name == 'newArrivals') {
+            if (value == true) {
+                new_arrived = true;
+                fetchData();
+            } else {
+                new_arrived = '';
+                fetchData();
+
+            }
+        } else if (name == 'productWithVideos') {
+            if (value == true) {
+                productWithVideos = true;
+                fetchData();
+            } else {
+                productWithVideos = '';
+                fetchData();
+
+            }
+        }
+    }
 </script>

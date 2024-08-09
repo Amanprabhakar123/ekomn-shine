@@ -4,8 +4,10 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariation;
+use App\Models\ProductVariationMedia;
 use App\Services\CategoryService;
 use App\Transformers\ProductsCategoryWiseTransformer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -30,9 +32,10 @@ class WebController extends Controller
         return view('web.index');
     }
 
-    public function productCategory()
+    public function productCategory($slug)
     {
-        return view('web.product-category');
+
+        return view('web.product-category', compact('slug'));
     }
 
     public function productDetails()
@@ -51,14 +54,18 @@ class WebController extends Controller
      * @param  string  $slug
      * @return \Illuminate\Http\Response
      */
-    public function productsCategoryWise(Request $request, $slug)
+    public function productsCategoryWise($slug, Request $request)
     {
         try {
+
             // Get pagination and sorting parameters from the request
+            $productWithVideos = $request->query('productWithVideos', '');
+            $newArrived = $request->input('new_arrived', '');
+
             $perPage = $request->input('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
-            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'desc'
+            $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
             $sort_by_status = (int) $request->input('status', '1'); // Default sort by 'all'
 
             // Define allowed sort fields to prevent SQL injection
@@ -69,9 +76,9 @@ class WebController extends Controller
             $categoryDetails = $categoryService->getCategoryBySlug($slug);
             $product_ids = [];
             $s_slug = '';
-            if($categoryDetails['status'] == true){
+            if ($categoryDetails['status'] == true) {
                 $product_ids = $categoryDetails['result']['productIds'];
-                $s_slug =  $categoryDetails['result']['category'];
+                $s_slug = $categoryDetails['result']['category'];
             }
             // Find the product variations in the ProductVariation table
             $productVariations = ProductVariation::whereIn('status', [
@@ -79,23 +86,34 @@ class WebController extends Controller
                 ProductVariation::STATUS_ACTIVE,
             ])
                 ->whereIn('product_id', $product_ids)
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->where(function ($query) use ($searchTerm) {
-                    $query->where('title', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                ->when($searchTerm, function ($query) use ($searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('title', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                    });
                 });
-            });
 
-            // Filter by status if provided
-            if ($sort_by_status != 0) {
-                $productVariations = $productVariations->where('status', $sort_by_status);
+            // Filter by newArrived if provided
+            if ($newArrived == true) {
+                // Last 30 days ka record get karna
+                $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest()->get();
+            }
+            if ($productWithVideos == true) {
+
+                $productVariations = $productVariations->whereHas('media', function ($query) {
+                    $query->where([
+                        ['is_master', '=', ProductVariationMedia::IS_MASTER_TRUE],
+                        ['media_type', '=', ProductVariationMedia::MEDIA_TYPE_IMAGE],
+                    ]);
+                })->get();
+
             }
 
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-            ->paginate($perPage);
+                ->paginate($perPage);
 
             // Transform product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
@@ -108,7 +126,7 @@ class WebController extends Controller
                 'productVariations' => $products,
             ];
 
-            // // Return the transformed data as a JSON response
+            // Return the transformed data as a JSON response
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
