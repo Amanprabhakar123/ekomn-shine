@@ -21,6 +21,7 @@
                 </div>
             </div>
             <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">
+                <li><a class="dropdown-item" href="{{route('dashboard')}}">Dashboard</a></li>
                 <li><a class="dropdown-item" href="{{route('edit.profile')}}">Profile</a></li>
                 <li><a class="dropdown-item" href="#">Wish List</a></li>
                 <li><a class="dropdown-item" href="#">Settings</a></li>

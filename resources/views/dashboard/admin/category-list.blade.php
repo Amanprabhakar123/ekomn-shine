@@ -292,7 +292,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 // Send the delete request only after confirmation
-                                ApiRequest('delete-top-product', 'POST', formData)
+                                ApiRequest('delete-top-category', 'POST', formData)
                                     .then((res) => {
                                         if (res.data.statusCode == 200) {
                                             Swal.fire({
