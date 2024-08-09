@@ -57,9 +57,15 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $categories = Category::whereIn('depth', [0, 1])
+            $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
                 ->where('id', '!=', 1)
                 ->get();
+            
+            $categories_list = [];
+            foreach ($categories as $key => $value) {
+                $categories_list[$key]['id'] = salt_encrypt($value->id);
+                $categories_list[$key]['name'] = $value->name;
+            }
             $priority = [1, 2, 3, 4, 5, 6];
 
             $topCategoryPriority = TopCategory::pluck('priority')->toArray();
@@ -70,7 +76,7 @@ class HomeController extends Controller
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     // 'message' => __('auth.categoryCreate'),
-                    'data' => $categories,
+                    'data' => $categories_list,
                     'priority' => $p,
                 ],
             ], __('statusCode.statusCode200'));
@@ -99,12 +105,18 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $product_ids = ProductInventory::where('product_category', $request->category)
+            $product_ids = ProductInventory::where('product_category', salt_decrypt($request->category))
                 ->OrWhere('product_subcategory', $request->category)
                 ->groupBy('id')
                 ->pluck('id');
 
-            $product = ProductVariation::whereIn('product_id', $product_ids)->select('title', 'id')->get()->toArray();
+            $product = ProductVariation::whereIn('product_id', $product_ids)->select('title', 'id')->get();
+            $product = $product->map(function ($item) {
+                return [
+                    'id' => salt_encrypt($item->id),
+                    'title' => $item->title,
+                ];
+            });
 
             return response()->json([
                 'data' => [
@@ -184,7 +196,6 @@ class HomeController extends Controller
     public function topProduct(Request $request)
     {
         try {
-
             if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
@@ -192,25 +203,40 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $product = ProductVariation::all();
+            $product = ProductVariation::select('id', 'title')->get();
+            $list = [];
+            foreach ($product as $key => $value) {
+                $list[$key]['id'] = salt_encrypt($value->id);
+                $list[$key]['title'] = $value->title;
+            }
             $typeProduct = TopProduct::TYPE_ARRAY;
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
-                    // 'message' => __('auth.categoryCreate'),
-                    'data' => $product,
+                    'data' => $list,
                     'typeProduct' => $typeProduct,
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+
+            // Prepare exception details
+             $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    // 'message' => __('auth.categoryNotCreate'),
+                    'message' => __('auth.categoryNotCreate'),
                 ],
-            ]);
+            ], __('statusCode.statusCode500'));
         }
     }
 
@@ -314,6 +340,7 @@ class HomeController extends Controller
                     'product' => $item->topProduct->map(function ($product) {
                         return [
                             'title' => $product->productVarition->title,
+                            'slug' => url($product->productVarition->slug),
                         ];
                     })->toArray(),
                 ];
@@ -342,7 +369,6 @@ class HomeController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-
     public function deleteTopProduct(Request $request)
     {
         try {

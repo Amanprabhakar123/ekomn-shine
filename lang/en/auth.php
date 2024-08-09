@@ -113,7 +113,10 @@ return [
     'adjustmeAmountUpdated' => 'Adjustment Amount Updated Successfully.',
     'categoryAdded' => 'Category Store Successfully.',
     'categoryFailed' => 'Category Store Failed.',
-    'productFailed' => 'Product Store Failed.',
+    'categoryNotCreated' => 'Category Not Created.',
+    'productFailed' => 'Top Product Store Failed.',
     'productAdded' => 'Product Store Successfully.',
+    'categoryExists' => 'Category Already Exists.',
+    'productExists' => 'Product Already Exists.',
 
 ];
