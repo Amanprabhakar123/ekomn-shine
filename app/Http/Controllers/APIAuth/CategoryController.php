@@ -98,7 +98,7 @@ class CategoryController extends Controller
             $product = array_map(function ($product) {
                 return salt_decrypt($product);
             }, $product); 
-            $category = TopCategory::find(salt_decrypt($request->input('category')));
+            $category = TopCategory::where('category_id',salt_decrypt($request->input('category')))->first();
             if(!empty($category)){
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode400'),
