@@ -114,9 +114,11 @@ return [
     'categoryAdded' => 'Category Store Successfully.',
     'categoryFailed' => 'Category Store Failed.',
     'categoryNotCreated' => 'Category Not Created.',
+    'productNotCreated' => 'Product Not Created.',
     'productFailed' => 'Top Product Store Failed.',
     'productAdded' => 'Product Store Successfully.',
     'categoryExists' => 'Category Already Exists.',
     'productExists' => 'Product Already Exists.',
+    'deleteFailed' => 'Delete Product Failed.',
 
 ];

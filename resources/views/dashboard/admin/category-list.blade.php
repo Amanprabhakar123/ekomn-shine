@@ -242,6 +242,13 @@
                     // console.log(res);
                     if (res.data.statusCode == 200) {
                         let data = res.data.data;
+                        if(data.length == 0){
+                            $('tbody').append(`
+                                <tr>
+                                    <td colspan="4" class="text-center">No data found</td>
+                                </tr>
+                            `);
+                        }
                         data.forEach((item) => {
                             const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
@@ -292,7 +299,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 // Send the delete request only after confirmation
-                                ApiRequest('delete-top-product', 'POST', formData)
+                                ApiRequest('delete-top-category', 'POST', formData)
                                     .then((res) => {
                                         if (res.data.statusCode == 200) {
                                             Swal.fire({

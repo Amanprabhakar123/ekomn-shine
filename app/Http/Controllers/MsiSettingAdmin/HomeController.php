@@ -10,11 +10,8 @@ use App\Models\ProductVariation;
 use App\Models\TopCategory;
 use App\Models\TopProduct;
 use App\Models\User;
-use App\Transformers\SlugProductVariationTransformer;
 use Illuminate\Http\Request;
 use League\Fractal\Manager;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection;
 
 class HomeController extends Controller
 {
@@ -371,13 +368,23 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    // 'message' => __('auth.categoryNotCreate'),
+                    'message' => __('auth.categoryNotCreate'),
                 ],
-            ]);
+            ], __('statusCode.statusCode500'));
         }
     }
 
@@ -407,113 +414,59 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    'message' => __('auth.topProductNotDelete'),
+                    'message' => __('auth.deleteFailed'),
                 ],
-            ]);
+            ], __('statusCode.statusCode500'));
         }
     }
 
     /**
-     * Filter categories by slug.
+     * create top product get data api function
      *
-     * @param  string  $slug
      * @return \Illuminate\Http\Response
      */
-    public function filterWithSlug(Request $request, $slug)
+    public function getTopProductData(Request $request)
     {
         try {
-            // Find the category based on the slug
-            $category = Category::where('slug', $slug)->firstOrFail();
-
-            // Initialize a collection to hold relevant categories
-            $categories = collect();
-
-            // Fetch categories based on the depth of the current category
-            if ($category->depth == 0) {
-                // If the category is at depth 0, get all its children (depth 1 and 2)
-                $categories = $category->children()->with('children')->get();
-            } elseif ($category->depth == 1) {
-                // If the category is at depth 1, get only its direct children (depth 2)
-                $categories = $category->children()->get();
-            } elseif ($category->depth == 2) {
-                // If the category is at depth 2, only the category itself is relevant
-                $categories->push($category);
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
+            $topProduct = TopProduct::whereIn('type', TopProduct::TYPE_ARRAY_FOR_SELECT)
+                ->with('productVarition')->orderBy('id', 'desc')->get();
+            $transformData = $topProduct->map(function ($item) {
+                return [
+                    'id' => salt_encrypt($item->id),
+                    'title' => $item->productVarition->title,
+                    'type' => $item->getType(),
+                ];
+            });
 
-            // Add the original category itself to the collection
-            $categories->prepend($category);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $transformData,
 
-            // Get all the relevant category IDs
-            $categoryIds = $categories->pluck('id');
-
-            // Retrieve product IDs from the ProductInventory table based on category associations
-            $productIds = ProductInventory::whereIn('product_category', $categoryIds)
-                ->orWhereIn('product_subcategory', $categoryIds)
-                ->pluck('id');
-
-            // Get pagination and sorting parameters from the request
-            $perPage = $request->input('per_page', 10);
-            $searchTerm = $request->input('query', null);
-            $sort = $request->input('sort', 'id'); // Default sort field 'id'
-            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'desc'
-            $sort_by_status = (int) $request->input('status', '1'); // Default sort by 'all'
-
-            // Define allowed sort fields to prevent SQL injection
-            $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
-            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
-            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
-
-            // Find the product variations in the ProductVariation table
-            $productVariations = ProductVariation::whereNotIn('status', [
-                ProductVariation::STATUS_INACTIVE,
-                ProductVariation::STATUS_DRAFT,
-            ])
-                ->whereIn('product_id', $productIds)
-                ->when($searchTerm, function ($query) use ($searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
-                    });
-                });
-
-            // Filter by status if provided
-            if ($sort_by_status != 0) {
-                $productVariations = $productVariations->where('status', $sort_by_status);
-            }
-
-            // Apply sorting and pagination
-            $productVariations = $productVariations->orderBy($sort, $sortOrder)
-                ->paginate($perPage);
-
-            // Transform product variations using Fractal
-            $resource = new Collection($productVariations, new SlugProductVariationTransformer);
-            $resource->setPaginator(new IlluminatePaginatorAdapter($productVariations));
-            $products = $this->fractal->createData($resource)->toArray();
-
-            // Prepare data for response
-            $data = [
-                'category' => $category,
-                'categories' => $categories,
-                'productVariations' => $products,
-            ];
-
-            return view('web.product-category', compact('data'));
-
-            // // Return the transformed data as a JSON response
-            // return response()->json([
-            //     'data' => [
-            //         'statusCode' => __('statusCode.statusCode200'),
-            //         'status' => __('statusCode.status200'),
-            //         'data' => $data,
-            //     ],
-            // ], __('statusCode.statusCode200'));
-
+                ],
+            ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             // Prepare exception details
             $exceptionDetails = [
@@ -522,11 +475,61 @@ class HomeController extends Controller
                 'line' => $e->getLine(),
             ];
 
-            // Optionally, trigger an event with exception details (if needed)
-            // event(new ExceptionEvent($exceptionDetails));
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
 
-            // Return a JSON response with error details
-            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.productNotCreated'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * create top product delete api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteTopProductData(Request $request)
+    {
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $topProduct = TopProduct::find(salt_decrypt($request->id));
+            $topProduct->delete();
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.deleteFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
         }
 
     }

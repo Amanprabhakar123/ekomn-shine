@@ -21,6 +21,13 @@ class TopProduct extends Model
         self::TYPE_REGULAR_AVAILABLE => 'Regular Available',
     ];
 
+    const TYPE_ARRAY_FOR_SELECT = [
+        self::TYPE_PREMIUM_PRODUCT,
+        self::TYPE_NEW_ARRIVAL,
+        self::TYPE_IN_DEMAND,
+        self::TYPE_REGULAR_AVAILABLE,
+    ];
+
     protected $fillable = ['product_id', 'top_category_id', 'type'];
 
     /**
@@ -42,6 +49,17 @@ class TopProduct extends Model
     public function productVarition()
     {
         return $this->belongsTo(ProductVariation::class, 'product_id', 'id');
+    }
+
+
+    /**
+     * Get the type of the TopProduct
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return self::TYPE_ARRAY[$this->type];
     }
 
 

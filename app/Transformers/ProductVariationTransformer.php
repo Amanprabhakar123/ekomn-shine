@@ -25,6 +25,7 @@ class ProductVariationTransformer extends TransformerAbstract
                 'id' => salt_encrypt($product->id),
                 'product_image' => $thumbnail,
                 'title' => $product->title,
+                'link' => url($product->slug),
                 'sku' => $product->sku,
                 'product_id' => $product->product_slug_id,
                 'stock' => $product->stock,

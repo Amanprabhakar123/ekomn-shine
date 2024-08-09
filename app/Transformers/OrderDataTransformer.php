@@ -18,9 +18,11 @@ class OrderDataTransformer extends TransformerAbstract
         try {
             $quantity = 0;
             $title = '';
+            $slug = '';
             foreach($order->orderItemsCharges as $orderItemsCharges){
                 $quantity += $orderItemsCharges->quantity;
                 $title = $orderItemsCharges->product->title;
+                $slug = $orderItemsCharges->product->slug;
             }
             $data = [
                 'id' => salt_encrypt($order->id),
@@ -36,6 +38,7 @@ class OrderDataTransformer extends TransformerAbstract
                 'payment_status' => $order->getPaymentStatus(),
                 'order_channel_type' => $order->getOrderChannelType(),
                 'view_order' => route('view.order', salt_encrypt($order->id)),
+                'link' => url($slug),
                 'created_at' => $order->created_at->toDateTimeString(),
                 'updated_at' => $order->updated_at->toDateTimeString(),
     
