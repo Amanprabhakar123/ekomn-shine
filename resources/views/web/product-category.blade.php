@@ -77,293 +77,9 @@
                         </div>
                     </div>
                     <div class="container-fluid pad_l_r">
-                        <div class="row gx-3 allproductbox">
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_1" class="form-check-input">
-                                                    <label for="prod_1"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>5,000+ in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Regular
-                                                        Available</span>
-                                                </div>
-                                                <h5 class="productPrice fs-16 bold"><i
-                                                        class="fas fa-rupee-sign me-1"></i>2999.00</h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <a href="" class="btn btnround cardaddinventry">Add to Inventory
-                                                List</a>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_2" class="form-check-input">
-                                                    <label for="prod_2"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>5,000+ in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Till Stock
-                                                        Last</span>
-                                                </div>
-                                                <h5 class="productPrice fs-16 bold"><i
-                                                        class="fas fa-rupee-sign me-1"></i>2999.00</h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_3" class="form-check-input">
-                                                    <label for="prod_3"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>...in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Availability</span>
-                                                </div>
-                                                <h5 class="productPrice fs-15 bold"><a href=""
-                                                        style="color:inherit">Login to See Price</a></h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_4" class="form-check-input">
-                                                    <label for="prod_4"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>...in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Availability</span>
-                                                </div>
-                                                <h5 class="productPrice fs-15 bold"><a href=""
-                                                        style="color:inherit">Login to See Price</a></h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_5" class="form-check-input">
-                                                    <label for="prod_5"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>5,000+ in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Regular
-                                                        Available</span>
-                                                </div>
-                                                <h5 class="productPrice fs-16 bold"><i
-                                                        class="fas fa-rupee-sign me-1"></i>2999.00</h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <a href="" class="btn btnround cardaddinventry">Add to Inventory
-                                                List</a>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_6" class="form-check-input">
-                                                    <label for="prod_6"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>5,000+ in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Till Stock
-                                                        Last</span>
-                                                </div>
-                                                <h5 class="productPrice fs-16 bold"><i
-                                                        class="fas fa-rupee-sign me-1"></i>2999.00</h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_7" class="form-check-input">
-                                                    <label for="prod_7"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>...in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Availability</span>
-                                                </div>
-                                                <h5 class="productPrice fs-15 bold"><a href=""
-                                                        style="color:inherit">Login to See Price</a></h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="product-details.html" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_8" class="form-check-input">
-                                                    <label for="prod_8"></label>
-                                                </div>
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>...in
-                                                        Stock</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>Availability</span>
-                                                </div>
-                                                <h5 class="productPrice fs-15 bold"><a href=""
-                                                        style="color:inherit">Login to See Price</a></h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <button class="btn btnround cardaddinventry">Add to Inventory List</button>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="row gx-3 allproductbox" id="allproductbox">
+
+
                         </div>
                     </div>
                 </div>
@@ -453,7 +169,59 @@
         ApiRequest(apiUrl, 'GET')
             .then(response => {
                 const data = response.data;
-                console.log(data, 'Data fetched');
+                var container = $("#allproductbox");
+                container.empty()
+                if (data.statusCode == 200) {
+                    const products = data.data.productVariations;
+                    let html = '';
+                    // console.log(products.data);
+
+                    // Populate the product listing
+                    products.data.forEach(product => {
+                        var productId = product
+                            .id; // Assuming `product` is your JavaScript object with the `id` property
+                        var url = '{{ route('product.details', ':id') }}';
+                        url = url.replace(':id', productId);
+                        html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
+                                <div class="ekom_card">
+                                    <div class="product_card">
+                                        <a href="${url}" class="text_u">
+                                            <div class="product_image_wraper">
+                                                <div class="form-check onimg">
+                                                    <input type="checkbox" id="prod_1" class="form-check-input">
+                                                    <label for="prod_1"></label>
+                                                </div>
+                                                <div class="product_image">
+                                                    <img src="${product.images}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </div>
+                                            <div class="product_dec">
+                                                <h3 class="product_title bold">${product.title}</h3>
+                                                <div class="d-flex justify-content-between stockdiv align-items-center">
+                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>${product.stock} in
+                                                        Stock +</span>
+                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>
+                                                        ${product.availability_status}</span>
+                                                </div>
+                                                <h5 class="productPrice fs-16 bold"><i
+                                                        class="fas fa-rupee-sign me-1"></i>${product.price}</h5>
+                                            </div>
+                                        </a>
+                                        <div class="product_foot d-flex justify-content-between align-items-center">
+                                            <a href="" class="btn btnround cardaddinventry">Add to Inventory
+                                                List</a>
+                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
+                                                    alt=""></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                    console.log(html);
+                    container.append(html);
+                }
 
             })
             .catch(error => {
