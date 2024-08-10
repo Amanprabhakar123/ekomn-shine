@@ -11,9 +11,22 @@ use App\Models\TopCategory;
 use App\Models\TopProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
+use League\Fractal\Manager;
 
 class HomeController extends Controller
 {
+    /**
+     * Class HomeController
+     *
+     * This class is responsible for handling requests related to the home page of the MsiSettingAdmin application.
+     */
+    protected $fractal;
+
+    public function __construct(Manager $fractal)
+    {
+        $this->fractal = $fractal;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +34,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
             abort(403);
         }
 
@@ -35,7 +48,7 @@ class HomeController extends Controller
      */
     public function banner()
     {
-        if (!auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
             abort(403);
         }
 
@@ -50,7 +63,7 @@ class HomeController extends Controller
     public function getCategory(Request $request)
     {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -59,8 +72,9 @@ class HomeController extends Controller
             }
             $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
                 ->where('id', '!=', 1)
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
-            
+
             $categories_list = [];
             foreach ($categories as $key => $value) {
                 $categories_list[$key]['id'] = salt_encrypt($value->id);
@@ -98,7 +112,7 @@ class HomeController extends Controller
     public function findProduct(Request $request)
     {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -110,7 +124,9 @@ class HomeController extends Controller
                 ->groupBy('id')
                 ->pluck('id');
 
-            $product = ProductVariation::whereIn('product_id', $product_ids)->select('title', 'id')->get();
+            $product = ProductVariation::whereIn('product_id', $product_ids)
+            ->where('status', ProductInventory::STATUS_ACTIVE)
+            ->select('title', 'id')->get();
             $product = $product->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -144,8 +160,7 @@ class HomeController extends Controller
     public function findCategoryByProduct(Request $request)
     {
         try {
-
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -155,6 +170,7 @@ class HomeController extends Controller
             $category = ProductVariation::where('product_id', $request->categoryBy)
                 ->limit(3) // Limit the result to 2 items
                 ->get();
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -182,9 +198,10 @@ class HomeController extends Controller
      */
     public function productAddView()
     {
-        if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
             abort(403);
         }
+
         return view('dashboard.admin.top-product');
     }
 
@@ -196,20 +213,21 @@ class HomeController extends Controller
     public function topProduct(Request $request)
     {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $product = ProductVariation::select('id', 'title')->get();
+            $product = ProductVariation::select('id', 'title')->where('status', ProductVariation::STATUS_ACTIVE)->get();
             $list = [];
             foreach ($product as $key => $value) {
                 $list[$key]['id'] = salt_encrypt($value->id);
                 $list[$key]['title'] = $value->title;
             }
             $typeProduct = TopProduct::TYPE_ARRAY;
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -221,7 +239,7 @@ class HomeController extends Controller
         } catch (\Exception $e) {
 
             // Prepare exception details
-             $exceptionDetails = [
+            $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -310,21 +328,19 @@ class HomeController extends Controller
             event(new ExceptionEvent($exceptionDetails));
 
             // Return a JSON response with error details
-            return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
+            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
     }
 
     /**
      * create top get category by product api function
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-
     public function getTopCategoryByProduct(Request $request)
     {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -345,6 +361,7 @@ class HomeController extends Controller
                     })->toArray(),
                 ];
             })->toArray();
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -375,14 +392,13 @@ class HomeController extends Controller
 
     /**
      * create top product delete api function
-     * 
-     * @param Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function deleteTopProduct(Request $request)
     {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -391,6 +407,7 @@ class HomeController extends Controller
             }
             $topProduct = TopCategory::find(salt_decrypt($request->id));
             $topProduct->delete();
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -399,8 +416,8 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-             // Prepare exception details
-             $exceptionDetails = [
+            // Prepare exception details
+            $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -421,22 +438,21 @@ class HomeController extends Controller
 
     /**
      * create top product get data api function
-     * 
-     * @param Request $request
+     *
      * @return \Illuminate\Http\Response
      */
-
-    public function getTopProductData(Request $request){
+    public function getTopProductData(Request $request)
+    {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
-            }            
-            $topProduct = TopProduct::whereIn('type',TopProduct::TYPE_ARRAY_FOR_SELECT)
-            ->with('productVarition')->orderBy('id', 'desc')->get();
+            }
+            $topProduct = TopProduct::whereIn('type', TopProduct::TYPE_ARRAY_FOR_SELECT)
+                ->with('productVarition')->orderBy('id', 'desc')->get();
             $transformData = $topProduct->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -450,17 +466,17 @@ class HomeController extends Controller
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'data' => $transformData,
-                    
+
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-             // Prepare exception details
-             $exceptionDetails = [
+            // Prepare exception details
+            $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-dd($exceptionDetails);
+
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
@@ -476,14 +492,13 @@ dd($exceptionDetails);
 
     /**
      * create top product delete api function
-     * 
-     * @param Request $request
+     *
      * @return \Illuminate\Http\Response
      */
-
-    public function deleteTopProductData(Request $request){
+    public function deleteTopProductData(Request $request)
+    {
         try {
-            if (!auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -492,15 +507,16 @@ dd($exceptionDetails);
             }
             $topProduct = TopProduct::find(salt_decrypt($request->id));
             $topProduct->delete();
+
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
-                    'status' => __('statusCode.status200')
+                    'status' => __('statusCode.status200'),
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-             // Prepare exception details
-             $exceptionDetails = [
+            // Prepare exception details
+            $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),

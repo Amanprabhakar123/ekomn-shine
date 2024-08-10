@@ -22,6 +22,9 @@ class Category extends Model
         'root_parent_id',
     ];
 
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 0;
+
     // Define the relationship with the parent category
     public function parent()
     {
@@ -39,7 +42,6 @@ class Category extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-
     public function topCategory()
     {
         return $this->hasMany(TopCategory::class);

@@ -3,6 +3,7 @@ namespace App\Transformers;
 use App\Models\User;
 use App\Models\BuyerInventory;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProductVariationMedia;
 use League\Fractal\TransformerAbstract;
 
 class BuyerInventoryTransformer extends TransformerAbstract
@@ -18,7 +19,7 @@ class BuyerInventoryTransformer extends TransformerAbstract
         try {
             
             $product = $buyerInventory->product;
-            $media = $product->media->where('is_master', 1)->first();
+            $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
             if($media == null){
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             }else{
