@@ -7,19 +7,8 @@
                 @include('web.layout.main-category')
                 <div class="promotional_banner">
                     <div class="carousel slide carousel-fade" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_1.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_2.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_3.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_4.jpg" class="d-block w-100" />
-                            </div>
+                        <div class="carousel-inner" id="banner">
+                         <!-- dynamic code here -->
                         </div>
                     </div>
                 </div>
@@ -486,9 +475,7 @@
 
             ApiRequest('top-product-view-home', 'GET')
             .then((res) => {
-                // let premium = res.data.data.Premium
                 let list = res.data.data;
-                // console.log(list);
                 if(res.data.statusCode == 200){
                     var premium = '';
                     var new_arrival = '';
@@ -498,11 +485,9 @@
                     // Iterate through each key-value pair in the object
                     $.each(list, function(key, value) {
                         // Print the key
-                        console.log(key);
 
                         // Print each element in the array
                         $.each(value, function(index, element) {
-                            console.log(element);
                            if(key === 'premium'){
                             premium +=  `
                               <div class="col-sm-4">
@@ -640,6 +625,39 @@
             })
             .catch((err) => {
                 console.log(err);
+            });
+
+            ApiRequest('get-banner', 'GET')
+            .then(res => {
+                if (res.data.statusCode == 200) {
+                    const imagePath = res.data.data;
+                    var html = '';
+                    if(res.data.data.length == 0){
+                    }
+                               
+                    imagePath.forEach(element => {
+                        console.log(element)
+                        html += `
+                          <div class="carousel-item active" data-bs-interval="10000">
+                                <img src="${element.image_path}" class="d-block w-100" />
+                            </div>
+                            <div class="carousel-item" data-bs-interval="10000">
+                                <img src="${element.image_path}" class="d-block w-100" />
+                            </div>
+                            <div class="carousel-item" data-bs-interval="10000">
+                                <img src="${element.image_path}" class="d-block w-100" />
+                            </div>
+                            <div class="carousel-item" data-bs-interval="10000">
+                                <img src="${element.image_path}" class="d-block w-100" />
+                            </div>
+                            `;
+                    });
+                    $('#banner').html(html);
+                } 
+            })
+            .catch(err => {
+                console.log(err);
+              
             });
     });
 </script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MsiSettingAdmin;
 
 use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
@@ -52,8 +53,171 @@ class HomeController extends Controller
             abort(403);
         }
 
-        return view('dashboard.admin.banners');
+        $type = Banner::BANNER_TYPE_ARRAY;
+        return view('dashboard.admin.banners', compact('type'));
     }
+
+    /**
+     * post banner api function
+     * @param  Request  $request
+     *  
+     * @return \Illuminate\Http\Response
+     */
+
+    public function storeBanner(Request $request){
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    // 'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            // dd($request->all());
+            $banner = Banner::create([
+                'title' => $request->title,
+                'image_path' => $request->banner,
+                'banner_type' => $request->banner_type,
+                // 'category_id' => $request->category_id,
+                // 'user_role' => $request->user_role,
+            ]);
+
+            if($banner){
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        // 'message' => __('auth.bannerCreate'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }else{
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status403'),
+                        // 'message' => __('auth.bannerNotCreate'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+        } catch (\Exception $e) {
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            
+            // Trigger the event
+
+            // event(new ExceptionEvent($exceptionDetails));
+    }
+
+}
+
+    /**
+     * get banner api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function getBanner(Request $request){
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    // 'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $banner = Banner::get();
+
+            $transformData = $banner->map(function ($item) {
+                return [
+                    'id' => salt_encrypt($item->id),
+                    'title' => $item->title,
+                    'image_path' => url($item->image_path),
+                    'banner_type' => $item->getType(),
+                ];
+            });
+
+            
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $transformData,
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            dd($exceptionDetails);
+
+            // Trigger the event
+            // event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    // 'message' => __('auth.categoryNotCreate'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    
+    }
+    /**
+     * create banner delete api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function deleteBanner(Request $request){
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    // 'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $banner = Banner::find(salt_decrypt($request->id));
+            $banner->delete();
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    // 'message' => __('auth.bannerDelete'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    // 'message' => __('auth.deleteFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+
 
     /**
      * get category list api function
