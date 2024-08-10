@@ -119,14 +119,14 @@ class WebController extends Controller
             }
 
             // Filter by price range
-            if ($min !== '' && $max !== '') {
-                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
-            } elseif ($min != '') {
+            if ($min != '' && $max == '') {
                 // Only $min is provided
                 $productVariations = $productVariations->where('price_before_tax', '>=', $min);
-            } elseif ($max != '') {
+            } elseif ($max != '' && $min == '') {
                 // Only $max is provided
                 $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            }elseif ($min !== '' && $max !== '') {
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
             }
 
             // Filter by minimum stock
