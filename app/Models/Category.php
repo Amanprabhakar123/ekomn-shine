@@ -22,6 +22,9 @@ class Category extends Model
         'root_parent_id',
     ];
 
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 0;
+
     // Define the relationship with the parent category
     public function parent()
     {

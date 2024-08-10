@@ -140,6 +140,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('delete-top-category', [HomeController::class, 'deleteTopProduct'])->name('delete.top.product');
         Route::get('get-top-product-type', [HomeController::class, 'getTopProductData'])->name('get.top.product');
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
+
     });
 });
 
@@ -163,6 +164,9 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
+   
+    // Home page web api call here 
+    Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
 
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');

@@ -72,6 +72,7 @@ class HomeController extends Controller
             }
             $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
                 ->where('id', '!=', 1)
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
 
             $categories_list = [];
@@ -123,7 +124,9 @@ class HomeController extends Controller
                 ->groupBy('id')
                 ->pluck('id');
 
-            $product = ProductVariation::whereIn('product_id', $product_ids)->select('title', 'id')->get();
+            $product = ProductVariation::whereIn('product_id', $product_ids)
+            ->where('status', ProductInventory::STATUS_ACTIVE)
+            ->select('title', 'id')->get();
             $product = $product->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -157,7 +160,6 @@ class HomeController extends Controller
     public function findCategoryByProduct(Request $request)
     {
         try {
-
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
@@ -218,7 +220,7 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $product = ProductVariation::select('id', 'title')->get();
+            $product = ProductVariation::select('id', 'title')->where('status', ProductVariation::STATUS_ACTIVE)->get();
             $list = [];
             foreach ($product as $key => $value) {
                 $list[$key]['id'] = salt_encrypt($value->id);
