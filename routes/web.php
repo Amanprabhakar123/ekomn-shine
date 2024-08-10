@@ -54,7 +54,7 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('product.category');
-Route::get('product-details', [WebController::class, 'productDetails'])->name('product.details');
+Route::get('product-details/{id}', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
 Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');

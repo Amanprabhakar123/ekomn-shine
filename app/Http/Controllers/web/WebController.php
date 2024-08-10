@@ -39,9 +39,13 @@ class WebController extends Controller
         return view('web.product-category', compact('slug'));
     }
 
-    public function productDetails()
+    public function productDetails($id)
     {
-        return view('web.product-details');
+        $id = salt_decrypt($id);
+        $productVariations = ProductVariation::where('id', $id)->with('media')->first();
+        $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
+
+        return view('web.product-details', compact('productVariations', 'shippingRatesTier'));
     }
 
     public function subCategory()
