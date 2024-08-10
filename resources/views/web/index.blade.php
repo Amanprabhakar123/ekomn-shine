@@ -488,7 +488,6 @@
             .then((res) => {
                 // let premium = res.data.data.Premium
                 let list = res.data.data;
-                // console.log(list);
                 if(res.data.statusCode == 200){
                     var premium = '';
                     var new_arrival = '';
@@ -497,12 +496,8 @@
                     var category = '';
                     // Iterate through each key-value pair in the object
                     $.each(list, function(key, value) {
-                        // Print the key
-                        console.log(key);
-
                         // Print each element in the array
                         $.each(value, function(index, element) {
-                            console.log(element);
                            if(key === 'premium'){
                             premium +=  `
                               <div class="col-sm-4">
