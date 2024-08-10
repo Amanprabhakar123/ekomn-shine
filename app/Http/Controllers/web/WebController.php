@@ -21,7 +21,6 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 class WebController extends Controller
 {
     /**
-     * Class WebController
      *
      * This class is responsible for handling web requests and controlling the web application.
      */
