@@ -78,33 +78,33 @@ class WebController extends Controller
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
-
-            // Get category details
-            $categoryService = new CategoryService;
-            $categoryDetails = $categoryService->getCategoryBySlug($slug);
             $product_ids = [];
             $categorySlug = '';
+            if ($slug !== 'all') {
+                // Get category details
+                $categoryService = new CategoryService;
+                $categoryDetails = $categoryService->getCategoryBySlug($slug);
 
-            if ($categoryDetails['status'] === true) {
-                $product_ids = $categoryDetails['result']['productIds'];
-                $categorySlug = $categoryDetails['result']['category'];
+                if ($categoryDetails['status'] === true) {
+                    $product_ids = $categoryDetails['result']['productIds'];
+                    $categorySlug = $categoryDetails['result']['category'];
+                }
+
+                // Query for product variations
+                $productVariations = ProductVariation::whereIn('status', [
+                    ProductVariation::STATUS_OUT_OF_STOCK,
+                    ProductVariation::STATUS_ACTIVE,
+                ])
+                    ->whereIn('product_id', $product_ids)
+                    ->with('media');
+            } else {
+
+                $productVariations = ProductVariation::whereIn('status', [
+                    ProductVariation::STATUS_OUT_OF_STOCK,
+                    ProductVariation::STATUS_ACTIVE,
+                ])
+                    ->with('media');
             }
-
-            // Query for product variations
-            $productVariations = ProductVariation::whereIn('status', [
-                ProductVariation::STATUS_OUT_OF_STOCK,
-                ProductVariation::STATUS_ACTIVE,
-            ])
-                ->whereIn('product_id', $product_ids)
-                ->with('media')
-                ->when($searchTerm, function ($query) use ($searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('slug', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('description', 'like', '%'.$searchTerm.'%')
-                            ->orWhere('sku', 'like', '%'.$searchTerm.'%');
-                    });
-                });
 
             // Filter by new arrival
             if ($newArrived) {
@@ -125,7 +125,7 @@ class WebController extends Controller
             } elseif ($max != '' && $min == '') {
                 // Only $max is provided
                 $productVariations = $productVariations->where('price_before_tax', '<=', $max);
-            }elseif ($min !== '' && $max !== '') {
+            } elseif ($min !== '' && $max !== '') {
                 $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
             }
 

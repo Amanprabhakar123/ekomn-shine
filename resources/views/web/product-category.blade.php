@@ -67,9 +67,10 @@
                                     <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
                                 </label>
                             </div>
-                            <button type="button" class="btn filterbtn"><i class="fas fa-plus fs-12 me-2"></i>Add to
+                            <button type="button" class="btn filterbtn" onclick="addToEnventory('Enventory')"><i
+                                    class="fas fa-plus fs-12 me-2"></i>Add to
                                 Inventory List</button>
-                            <button type="button" class="btn filterbtn"><i
+                            <button type="button" class="btn filterbtn" onclick="addToEnventory('Download')"><i
                                     class="fas fa-download fs-13 me-2"></i>Download</button>
                             <select class="filterSelect ms-auto">
                                 <option value="">Sort By Most Relevent</option>
@@ -92,10 +93,12 @@
 @endsection
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <script>
     // Initialize variables for sorting and filtering options
-    const slug = "{{ $slug }}";
+    let slug = "{{ $slug }}";
     let newArrived = ""; // Sort field for new arrivals (e.g., "true" or "false")
     let productWithVideos = ""; // Filter for products with videos (e.g., "true" or "false")
     let priceRange = ""; // Filter for price range (e.g., "min=10&max=100")
@@ -105,21 +108,43 @@
     $(document).ready(function() {
         // Initial data fetch
         fetchData();
+        $("#selectAllCheckbox").on('click', function() {
+            if ($(this).is(':checked')) {
+                $(".form-check-input").prop('checked', true);
+            } else {
+                $(".form-check-input").prop('checked', false);
+            }
+        });
 
         // Event handler for price range filter
-        $("#priceRange").click(function() {
+        $(".inputokbtn").on('click', function() {
             let min = $("#min").val();
             let max = $("#max").val();
-            priceRange = `min=${min}&max=${max}`;
-            fetchData();
+            if (min == '' && max == '') {
+                priceRange = '';
+                fetchData();
+            } else if (min == '' && max != '') {
+                priceRange = `max=${max}`;
+                fetchData();
+            } else if (min != '' && max == '') {
+                priceRange = `min=${min}`;
+                fetchData();
+            } else {
+                priceRange = `min=${min}&max=${max}`;
+                fetchData();
+            }
+            let minimumStk = $("#minimumStk").val();
+            if (minimumStk == '') {
+                minimumStock = '';
+                fetchData();
+            } else {
+                minimumStock = `minimumStock=${minimumStk}`;
+                fetchData();
+            }
+
         });
 
-        // Event handler for minimum stock filter
-        $("#minimumStock").click(function() {
-            let minimumStk = $("#minimumStk").val();
-            minimumStock = `minimumStock=${minimumStk}`;
-            fetchData();
-        });
+
 
         // Fetch categories and populate the menu
         $.ajax({
@@ -188,7 +213,7 @@
                                         <a href="${url}" class="text_u">
                                             <div class="product_image_wraper">
                                                 <div class="form-check onimg">
-                                                    <input type="checkbox" id="prod_1" class="form-check-input">
+                                                    <input type="checkbox" id="${product.id}" class="form-check-input">
                                                     <label for="prod_1"></label>
                                                 </div>
                                                 <div class="product_image">
@@ -205,8 +230,7 @@
                                                     <span><i class="far fa-check-circle fs-13 me-1"></i>
                                                         ${product.availability_status}</span>
                                                 </div>
-                                                <h5 class="productPrice fs-16 bold"><i
-                                                        class="fas fa-rupee-sign me-1"></i>${product.price}</h5>
+                                                <h5 class="productPrice fs-16 bold">${product.price}</h5>
                                             </div>
                                         </a>
                                         <div class="product_foot d-flex justify-content-between align-items-center">
@@ -219,7 +243,7 @@
                                 </div>
                             </div>`;
                     });
-                    console.log(html);
+                    // console.log(html);
                     container.append(html);
                 }
 
@@ -237,5 +261,134 @@
             productWithVideos = value ? true : '';
         }
         fetchData();
+    }
+    // Function to filter data based on all data
+    function viewAll() {
+        slug = 'all';
+        fetchData();
+    }
+    // Function to add products to inventory or download them as a ZIP file
+    function addToEnventory(action) {
+        // Object to store selected product variation IDs
+        let product_id = {
+            variation_id: [],
+        };
+
+        // Iterate over each checked checkbox to collect product variation IDs
+        $(".form-check-input:checked").each(function() {
+            product_id.variation_id.push($(this).attr('id'));
+        });
+
+        // If no products are selected, show a warning using Swal
+        if (product_id.variation_id.length == 0) {
+            Swal.fire({
+                title: "No products selected!",
+                text: "Please select at least one checkbox.",
+                icon: "warning",
+                didOpen: () => {
+                    // Apply inline CSS to the title
+                    const titleElement = Swal.getTitle();
+                    titleElement.style.color = 'red';
+                    titleElement.style.fontSize = '20px';
+
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                }
+            });
+            return; // Exit the function early if no products are selected
+        }
+
+        // If action is 'Enventory', send a POST request to add products to the inventory
+        if (action == 'Enventory') {
+            ApiRequest('store/product/inventory', 'POST', {
+                    product_id
+                })
+                .then(response => {
+                    // Handle success response
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'green';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            location.reload(); // Reload the page after success
+                        });
+                    }
+                    // Handle error response with status code 201
+                    else if (response.data.statusCode == 201) {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'green';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                    // Handle other error responses
+                    else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'red';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                });
+        }
+        // If action is 'Download', download the selected products as a ZIP file
+        else if (action == 'Download') { // Corrected the syntax here
+            fetch('{{ route('product.inventory.export') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product_id)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob(); // Convert response to a Blob
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'products_' + Date.now() + '.zip'; // Set download file name
+                    document.body.appendChild(a);
+                    a.click(); // Programmatically click the link to trigger download
+                    window.URL.revokeObjectURL(url); // Revoke the URL after download
+                })
+                .catch(error => {
+                    console.error('Error downloading products:', error); // Log any errors
+                });
+        }
     }
 </script>
