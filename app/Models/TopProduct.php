@@ -28,7 +28,7 @@ class TopProduct extends Model
         self::TYPE_REGULAR_AVAILABLE,
     ];
 
-    protected $fillable = ['product_id', 'top_category_id', 'type'];
+    protected $fillable = ['product_id', 'top_category_id', 'type', 'priority'];
 
     /**
      * Get the category that owns the TopProduct

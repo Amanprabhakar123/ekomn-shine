@@ -460,7 +460,6 @@ class HomeController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
