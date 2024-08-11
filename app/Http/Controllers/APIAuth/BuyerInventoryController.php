@@ -94,7 +94,7 @@ class BuyerInventoryController extends Controller
                 $buyerInventory = $buyerInventory->paginate($perPage);
 
                 // Transform the paginated results using Fractal
-                $resource = new Collection($buyerInventory, new BuyerInventoryTransformer());
+                $resource = new Collection($buyerInventory, new BuyerInventoryTransformer);
 
                 // Add pagination information to the resource
                 $resource->setPaginator(new IlluminatePaginatorAdapter($buyerInventory));
@@ -134,62 +134,100 @@ class BuyerInventoryController extends Controller
         try {
             // Validate the request data
             $validator = Validator::make($request->all(), [
-                'product_id' => 'required|string',
+                'product_id' => 'required|array',
             ]);
 
             if ($validator->fails()) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $validator->errors()->first(),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+
+            // Check if the user is authenticated
+            if (! auth()->check()) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
-                    'status' => __('statusCode.status422'),
-                    'message' => $validator->errors()->first(),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizeLogin'),
                 ]], __('statusCode.statusCode200'));
             }
 
             // Get the authenticated user's ID
             $userId = auth()->user()->id;
 
-            // check buyer role only
+            // Check if the user has the buyer role
             if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
-                return response()->json(['data' => __('auth.unauthorizedAction')], __('statusCode.statusCode403'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
-            // Find the product variation
-            $product = ProductVariation::find(salt_decrypt($request->input('product_id')));
 
-            if ($product) {
-                // Check if the product is already in the buyer's inventory
-                $buyerInventory = BuyerInventory::where([
-                    'buyer_id' => $userId,
-                    'product_id' => $product->id,
-                ])->first();
+            $encryptedProductIds = $request->product_id['variation_id'];
+            $productIds = [];
+            $existingProductIds = [];
 
-                if ($buyerInventory) {
-                    return response()->json(['data' => [
-                        'statusCode' => __('statusCode.statusCode400'),
-                        'status' => __('statusCode.status400'),
-                        'message' => __('auth.productAlreadyInBuyerInventory'),
-                    ]], __('statusCode.statusCode200'));
+            foreach ($encryptedProductIds as $encryptedProductId) {
+                $productId = salt_decrypt($encryptedProductId);
+                $product = ProductVariation::find($productId);
+
+                if (! $product) {
+                    return response()->json([
+                        'data' => [
+                            'statusCode' => __('statusCode.statusCode404'),
+                            'status' => __('statusCode.status404'),
+                            'message' => __('auth.productNotFound'),
+                        ],
+                    ], __('statusCode.statusCode200'));
                 }
 
-                // Create a new buyer inventory record
-                $buyerInventory = new BuyerInventory();
-                $buyerInventory->buyer_id = $userId;
-                $buyerInventory->product_id = $product->id;
-                $buyerInventory->company_id = $product->company_id;
-                $buyerInventory->added_to_inventory_at = now();
-                $buyerInventory->save();
+                $productIds[] = $product->id;
+            }
 
-                // Return a success message
-                return response()->json(['data' => [
+            // Fetch existing products in buyer's inventory in a single query
+            $existingProductIds = BuyerInventory::where('buyer_id', $userId)
+                ->whereIn('product_id', $productIds)
+                ->pluck('product_id')
+                ->toArray();
+
+            // Filter out products that are already in the buyer's inventory
+            $newProductIds = array_diff($productIds, $existingProductIds);
+
+            // Prepare the data for bulk insert
+            $insertData = [];
+            foreach ($newProductIds as $productId) {
+                $product = ProductVariation::find($productId);
+                $insertData[] = [
+                    'buyer_id' => $userId,
+                    'product_id' => $product->id,
+                    'company_id' => $product->company_id,
+                    'added_to_inventory_at' => now(),
+                    'created_at' => now(),   // Manually set created_at
+                    'updated_at' => now(),   // Manually set updated_at
+                ];
+            }
+
+            // Insert new records in bulk if there are any
+            if (! empty($insertData)) {
+                BuyerInventory::insert($insertData);
+            }
+
+            // Return a success message
+            return response()->json([
+                'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.addBuyerInventory'),
-                ]], __('statusCode.statusCode200'));
-            } else {
-                return response()->json(['data' => __('auth.productNotFound')], __('statusCode.statusCode404'));
-            }
+                ],
+            ], __('statusCode.statusCode200'));
+
         } catch (\Exception $e) {
             // Log the exception details and trigger an ExceptionEvent
-            // Prepare exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -200,7 +238,9 @@ class BuyerInventoryController extends Controller
             event(new ExceptionEvent($exceptionDetails));
 
             // Handle the exception
-            return response()->json(['data' => __('auth.addBuyerInventoryFailed')], __('statusCode.statusCode500'));
+            return response()->json([
+                'data' => __('auth.addBuyerInventoryFailed'),
+            ], __('statusCode.statusCode500'));
         }
     }
 
@@ -264,6 +304,13 @@ class BuyerInventoryController extends Controller
     public function exportProductVariationData(Request $request)
     {
         try {
+            if (! auth()->check()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizeLogin'),
+                ]], __('statusCode.statusCode201'));
+            }
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'variation_id' => 'required|array',
@@ -442,7 +489,7 @@ class BuyerInventoryController extends Controller
 
             // Create a zip archive
             $zipFilePath = $basePath.'.zip';
-            $zip = new ZipArchive();
+            $zip = new ZipArchive;
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
                 addFolderToZip($zip, $basePath, '');
                 $zip->close();

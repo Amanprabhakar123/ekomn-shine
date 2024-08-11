@@ -90,8 +90,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::get('/product/inventory', [ProductInvetoryController::class, 'index'])->name('product.inventory');
         Route::get('/my/product/inventory/', [BuyerInventoryController::class, 'index'])->name('product.myinventory');
-        // Route::post('/store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
-        Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
         Route::post('/store/product/mapchannel', [BuyerInventoryController::class, 'storeChannelProductMap'])->name('product.channelMap.store');
         Route::post('/edit/product/mapchannel', [BuyerInventoryController::class, 'editChannelProductMap'])->name('product.channelMap.edit');
         Route::post('/delete/product/mapchannel', [BuyerInventoryController::class, 'deleteChannelProductMap'])->name('product.channelMap.delete');
@@ -149,7 +147,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
         Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
     });
 });
@@ -172,6 +169,8 @@ Route::group(['prefix' => 'api'], function () {
 
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
+    Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
+    Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
 
