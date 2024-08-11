@@ -120,5 +120,10 @@ return [
     'categoryExists' => 'Category Already Exists.',
     'productExists' => 'Product Already Exists.',
     'deleteFailed' => 'Delete Product Failed.',
+    'bannerCreated' => 'Banner Store Successfully.',
+    'bannerNotCreated' => 'Banner Not Created.',
+    'bannerDeleted' => 'Banner Deleted Successfully.',
+    'deleteFailed' => 'Delete Banner Failed.',
+    'bannerFailed' => 'Failed to receive banner.',
 
 ];

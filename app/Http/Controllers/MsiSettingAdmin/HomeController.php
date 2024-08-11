@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\MsiSettingAdmin;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\TopProduct;
+use App\Models\TopCategory;
+use Illuminate\Support\Str;
+use League\Fractal\Manager;
+use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
+use App\Services\ImageService;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\TopCategory;
-use App\Models\TopProduct;
-use App\Models\User;
-use Illuminate\Http\Request;
-use League\Fractal\Manager;
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
@@ -64,64 +66,99 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function storeBanner(Request $request){
+    public function storeBanner(Request $request)
+    {
         try {
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
-                    // 'message' => __('auth.unauthorizedAction'),
+                    'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            // dd($request->all());
+
+
+            $filename = time() . '.' . $request->banner->getClientOriginalExtension();
+            if ($request->banner_type == Banner::BANNER_TYPE_HOME) {
+                $banner_path = storage('home_slider', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/home-slider/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_CATEGORY) {
+                $banner_path = storage('category_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/category-banner/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_PRODUCT) {
+                $banner_path = storage('product_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/product-banner/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_USER) {
+                $banner_path = storage('user_dashboard_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/user-dashboard-banner/' . Str::random(40) . '.webp';
+            }
+
+            // Get the original path of the image
+            $originalPath = str_replace('public/', '', $banner_path);
+            $originalFullPath = storage_path('app/public/' . $originalPath);
+
+            // Convert and compress the image to WebP format
+            $imageService = new ImageService();
+            $imageService->convertAndCompressToWebP($originalFullPath, $destinationPath);
+            // Delete the original image
+            unlink($originalFullPath);
+
+            // Create a new banner
             $banner = Banner::create([
                 'title' => $request->title,
-                'image_path' => $request->banner,
-                'banner_type' => $request->banner_type,
-                // 'category_id' => $request->category_id,
-                // 'user_role' => $request->user_role,
+                'image_path' => 'storage/' . $destinationPath,
+                'banner_type' => $request->banner_type
             ]);
 
-            if($banner){
+            // Save the category ID if it exists
+            if ($request->category_id) {
+                $banner->category_id = salt_decrypt($request->category_id);
+                $banner->save();
+            }
+
+            // Save the user role if it exists
+            if ($request->user_role) {
+                $banner->user_role = $request->user_role;
+                $banner->save();
+            }
+
+            // Return response
+            if ($banner) {
                 return response()->json([
                     'data' => [
                         'statusCode' => __('statusCode.statusCode200'),
                         'status' => __('statusCode.status200'),
-                        // 'message' => __('auth.bannerCreate'),
+                        'message' => __('auth.bannerCreated'),
                     ],
                 ], __('statusCode.statusCode200'));
-            }else{
+            } else {
                 return response()->json([
                     'data' => [
                         'statusCode' => __('statusCode.statusCode422'),
                         'status' => __('statusCode.status403'),
-                        // 'message' => __('auth.bannerNotCreate'),
+                        'message' => __('auth.bannerNotCreate'),
                     ],
                 ], __('statusCode.statusCode200'));
             }
         } catch (\Exception $e) {
-
             // Prepare exception details
             $exceptionDetails = [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            
             // Trigger the event
-
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
+        }
     }
-
-}
 
     /**
      * get banner api function
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function getBanner(Request $request){
+    public function getBanner(Request $request)
+    {
         try {
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
                 return response()->json(['data' => [
@@ -130,7 +167,7 @@ class HomeController extends Controller
                     // 'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $banner = Banner::get();
+            $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
 
             $transformData = $banner->map(function ($item) {
                 return [
@@ -140,8 +177,7 @@ class HomeController extends Controller
                     'banner_type' => $item->getType(),
                 ];
             });
-
-            
+            // Return response
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
@@ -156,28 +192,26 @@ class HomeController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            dd($exceptionDetails);
-
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
 
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    // 'message' => __('auth.categoryNotCreate'),
+                    'message' => __('auth.bannerFailed'),
                 ],
             ], __('statusCode.statusCode500'));
         }
-    
     }
+
     /**
      * create banner delete api function
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function deleteBanner(Request $request){
+    public function deleteBanner(Request $request)
+    {
         try {
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
                 return response()->json(['data' => [
@@ -187,13 +221,14 @@ class HomeController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
             $banner = Banner::find(salt_decrypt($request->id));
+            unlink($banner->image_path);
             $banner->delete();
 
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
-                    // 'message' => __('auth.bannerDelete'),
+                    'message' => __('auth.bannerDelete'),
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
@@ -203,7 +238,6 @@ class HomeController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
@@ -211,7 +245,7 @@ class HomeController extends Controller
                 'data' => [
                     'statusCode' => __('statusCode.statusCode500'),
                     'status' => __('statusCode.status500'),
-                    // 'message' => __('auth.deleteFailed'),
+                    'message' => __('auth.deleteFailed'),
                 ],
             ], __('statusCode.statusCode500'));
         }
@@ -289,8 +323,8 @@ class HomeController extends Controller
                 ->pluck('id');
 
             $product = ProductVariation::whereIn('product_id', $product_ids)
-            ->where('status', ProductInventory::STATUS_ACTIVE)
-            ->select('title', 'id')->get();
+                ->where('status', ProductInventory::STATUS_ACTIVE)
+                ->select('title', 'id')->get();
             $product = $product->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -492,7 +526,7 @@ class HomeController extends Controller
             event(new ExceptionEvent($exceptionDetails));
 
             // Return a JSON response with error details
-            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+            return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
         }
     }
 
@@ -697,6 +731,5 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode500'));
         }
-
     }
 }
