@@ -141,7 +141,6 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('get-top-product-type', [HomeController::class, 'getTopProductData'])->name('get.top.product');
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
-        Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
 
     });
@@ -174,6 +173,7 @@ Route::group(['prefix' => 'api'], function () {
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
+    Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
 
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
