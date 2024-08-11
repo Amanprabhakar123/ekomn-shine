@@ -484,11 +484,6 @@
                     var category = '';
                     // Iterate through each key-value pair in the object
                     $.each(list, function(key, value) {
-<<<<<<< HEAD
-                        // Print the key
-
-=======
->>>>>>> 9f7800ce041664fd817637ea63ca28548912b8bc
                         // Print each element in the array
                         $.each(value, function(index, element) {
                            if(key === 'premium'){
