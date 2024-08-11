@@ -120,5 +120,6 @@ return [
     'categoryExists' => 'Category Already Exists.',
     'productExists' => 'Product Already Exists.',
     'deleteFailed' => 'Delete Product Failed.',
+    'unauthorizeLogin' => 'Unauthorize action please login to buyer.',
 
 ];

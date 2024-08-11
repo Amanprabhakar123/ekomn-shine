@@ -253,6 +253,17 @@
             });
     }
 
+    // Function to handle scroll event and implement pagination
+    $(window).scroll(function() {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+            // Fetch next page of data
+            // Increment the page number and update the API URL
+            apiUrl += `page=${pageNumber}&`;
+            alert('Scrolled to bottom');
+            fetchData() //  to fetch the next page of data
+        }
+    });
+
     // Function to filter data based on checkbox input
     function filterWithCheckbox(name, value) {
         if (name == 'newArrivals') {
@@ -264,7 +275,7 @@
     }
     // Function to filter data based on all data
     function viewAll() {
-        slug = 'all';
+        slug = 'all'; 
         fetchData();
     }
     // Function to add products to inventory or download them as a ZIP file

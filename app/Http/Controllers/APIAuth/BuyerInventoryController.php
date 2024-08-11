@@ -149,11 +149,11 @@ class BuyerInventoryController extends Controller
 
             // Check if the user is authenticated
             if (! auth()->check()) {
-                return response()->json([
-                    'data' => __('auth.unauthorizedAction'),
-                    'message' => __('User Not Logged In'),
-                    'status' => __('201'),
-                ], __('statusCode.statusCode403'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizeLogin'),
+                ]], __('statusCode.statusCode200'));
             }
 
             // Get the authenticated user's ID
@@ -161,9 +161,11 @@ class BuyerInventoryController extends Controller
 
             // Check if the user has the buyer role
             if (! auth()->user()->hasRole(User::ROLE_BUYER)) {
-                return response()->json([
-                    'data' => __('auth.unauthorizedAction'),
-                ], __('statusCode.statusCode403'));
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
             }
 
             $encryptedProductIds = $request->product_id['variation_id'];
@@ -179,7 +181,7 @@ class BuyerInventoryController extends Controller
                         'data' => [
                             'statusCode' => __('statusCode.statusCode404'),
                             'status' => __('statusCode.status404'),
-                            'message' => __('Product not found.'),
+                            'message' => __('auth.productNotFound'),
                         ],
                     ], __('statusCode.statusCode200'));
                 }
@@ -302,6 +304,13 @@ class BuyerInventoryController extends Controller
     public function exportProductVariationData(Request $request)
     {
         try {
+            if (! auth()->check()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizeLogin'),
+                ]], __('statusCode.statusCode201'));
+            }
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'variation_id' => 'required|array',

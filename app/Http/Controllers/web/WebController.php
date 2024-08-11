@@ -68,7 +68,7 @@ class WebController extends Controller
             $min = $request->input('min', '');
             $max = $request->input('max', '');
             $minimumStock = $request->input('minimumStock', '');
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', 12);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
@@ -103,7 +103,7 @@ class WebController extends Controller
                     ProductVariation::STATUS_OUT_OF_STOCK,
                     ProductVariation::STATUS_ACTIVE,
                 ])
-                    ->with('media');
+                ->with('media');
             }
 
             // Filter by new arrival
