@@ -24,10 +24,17 @@ class Banner extends Model
         'updated_at',
     ];
 
-    const BANNER_TYPE_HOME = 'home';
-    const BANNER_TYPE_CATEGORY = 'category';
-    const BANNER_TYPE_PRODUCT = 'product';
-    const BANNER_TYPE_BRAND = 'user_dashboard';
+    const BANNER_TYPE_HOME = '1';
+    const BANNER_TYPE_CATEGORY = '2';
+    const BANNER_TYPE_PRODUCT = '3';
+    const BANNER_TYPE_USER = '4';
+
+    const BANNER_TYPE_ARRAY = [
+        self::BANNER_TYPE_HOME => 'Home',
+        self::BANNER_TYPE_CATEGORY => 'Category',
+        self::BANNER_TYPE_PRODUCT => 'Product',
+        self::BANNER_TYPE_USER => 'User Dashboard',
+    ];  
 
 
     /**
@@ -55,5 +62,13 @@ class Banner extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+
+    /**
+     * Get the user that owns the banner.
+     */
+    public function getType()
+    {
+        return self::BANNER_TYPE_ARRAY[$this->banner_type];
     }
 }

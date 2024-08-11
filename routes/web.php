@@ -140,6 +140,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('delete-top-category', [HomeController::class, 'deleteTopProduct'])->name('delete.top.product');
         Route::get('get-top-product-type', [HomeController::class, 'getTopProductData'])->name('get.top.product');
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
+        Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
+        Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
+        Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
 
     });
 });
