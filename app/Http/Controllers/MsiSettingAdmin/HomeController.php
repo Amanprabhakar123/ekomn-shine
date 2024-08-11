@@ -77,7 +77,6 @@ class HomeController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
-
             $filename = time() . '.' . $request->banner->getClientOriginalExtension();
             if ($request->banner_type == Banner::BANNER_TYPE_HOME) {
                 $banner_path = storage('home_slider', file_get_contents($request->banner), [1], $filename, 'public');
@@ -160,9 +159,25 @@ class HomeController extends Controller
     public function getBanner(Request $request)
     {
         try {
-          
-            $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
-
+            if($request->has('type') && ($request->type == 'all')){
+                $banner = Banner::get();
+            }elseif($request->has('type') && ($request->type == 'home')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
+            }elseif($request->has('type') && ($request->type == 'category')){
+                $slug = $request->slug;
+                $category = Category::where('slug', $slug)->first();
+                if($category){
+                    $banner = Banner::where('banner_type', Banner::BANNER_TYPE_CATEGORY)
+                    ->where('category_id', $category->id)
+                    ->get();
+                }else{
+                    $banner = [];
+                }
+            }elseif($request->has('type') && ($request->type == 'product')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_PRODUCT)->get();
+            }elseif($request->has('type') && ($request->type == 'user')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_USER)->get();
+            }
             $transformData = $banner->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -262,10 +277,17 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
+            if($request->has('type') && $request->type =='banner'){
+                $categories = Category::select('id', 'name')->where('depth', 0)
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
+            }else{
+                $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
+                ->where('id', '!=', 1)
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }
 
             $categories_list = [];
             foreach ($categories as $key => $value) {
