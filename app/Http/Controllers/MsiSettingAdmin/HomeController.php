@@ -160,13 +160,7 @@ class HomeController extends Controller
     public function getBanner(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
-                return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
-                    'status' => __('statusCode.status403'),
-                    // 'message' => __('auth.unauthorizedAction'),
-                ]], __('statusCode.statusCode200'));
-            }
+          
             $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
 
             $transformData = $banner->map(function ($item) {

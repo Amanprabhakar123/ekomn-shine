@@ -634,18 +634,8 @@
                     }
                                
                     imagePath.forEach(element => {
-                        console.log(element)
                         html += `
-                          <div class="carousel-item active" data-bs-interval="10000">
-                                <img src="${element.image_path}" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="${element.image_path}" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="${element.image_path}" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
+                          <div class="carousel-item active" data-bs-interval="5000">
                                 <img src="${element.image_path}" class="d-block w-100" />
                             </div>
                             `;

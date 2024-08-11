@@ -28,9 +28,9 @@
                             <div id="bannerTypeErr" class="invalid-feedback"></div>
                         </div>
                     </div>
-                    <div class="profilesectionRight">
+                    <div class="profilesectionRight mt-3">
                     <label>Uplaod Banner image<span class="r_color">*</span></label>
-                    <label class="picture" style="height:200px;" for="banner" tabIndex="0">
+                    <label class="picture" style="height:250px;" for="banner" tabIndex="0">
                         <span class="" style="">
                             <!-- Uplaod banner image here -->
                             <img id="bannerImage" src="" alt="Banner Image" style="display: none; max-width: 100%;"/>
@@ -38,7 +38,7 @@
                     </label>
                     <input type="file" name="banner" id="banner" accept="image/jpeg, image/png, image/jpg image/webp" style="display: none;">
                     <div id="bannerErr" class="invalid-feedback"></div>
-                    <button id="deleteBanner" style="display: none;">Delete</button>
+                    <button id="deleteBanner" class="" style="display: none; border:none;">Delete</button>
                 </div>
                 </div>
 
