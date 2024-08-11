@@ -58,7 +58,7 @@
                         <ol class="ekbreadcrumb">
                             <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
                             <li class="ekbreadcrumb-item active" aria-current="page"><span class="me-2">All
-                                    Products</span>(3,711 <span>Results</span>)</li>
+                                    Products</span>(<span id='totalProduct'></span> <span>Results</span>)</li>
                         </ol>
                         <div class="h_filterbox">
                             <div class="checkboxdiv">
@@ -67,10 +67,10 @@
                                     <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
                                 </label>
                             </div>
-                            <button type="button" class="btn filterbtn" onclick="addToEnventory('Enventory')"><i
+                            <button type="button" class="btn filterbtn" onclick="addToInventory('Inventory')"><i
                                     class="fas fa-plus fs-12 me-2"></i>Add to
                                 Inventory List</button>
-                            <button type="button" class="btn filterbtn" onclick="addToEnventory('Download')"><i
+                            <button type="button" class="btn filterbtn" onclick="addToInventory('Download')"><i
                                     class="fas fa-download fs-13 me-2"></i>Download</button>
                             <select class="filterSelect ms-auto">
                                 <option value="">Sort By Most Relevent</option>
@@ -92,7 +92,6 @@
     </div>
 @endsection
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script type="text/javascript" src="{{ asset('assets/js/request.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
@@ -104,10 +103,16 @@
     let priceRange = ""; // Filter for price range (e.g., "min=10&max=100")
     let minimumStock = ""; // Filter for minimum stock (e.g., "minimumStock=10")
     let maximumStock = ""; // Filter for maximum stock (e.g., "maximumStock=100")
+    let contianer = null;
+    let page = 1;
+    let html = '';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        contianer = document.getElementById('allproductbox');
+        fetchData();
+    });
 
     $(document).ready(function() {
-        // Initial data fetch
-        fetchData();
         $("#selectAllCheckbox").on('click', function() {
             if ($(this).is(':checked')) {
                 $(".form-check-input").prop('checked', true);
@@ -120,8 +125,11 @@
         $(".inputokbtn").on('click', function() {
             let min = $("#min").val();
             let max = $("#max").val();
-            if (min == '' && max == '') {
-                priceRange = '';
+            let minimumStk = $("#minimumStk").val();
+            page = 1;
+            html = '';
+            if (min != '' && max != '') {
+                priceRange = `min=${min}&max=${max}`;
                 fetchData();
             } else if (min == '' && max != '') {
                 priceRange = `max=${max}`;
@@ -129,12 +137,7 @@
             } else if (min != '' && max == '') {
                 priceRange = `min=${min}`;
                 fetchData();
-            } else {
-                priceRange = `min=${min}&max=${max}`;
-                fetchData();
-            }
-            let minimumStk = $("#minimumStk").val();
-            if (minimumStk == '') {
+            }else if (minimumStk == '') {
                 minimumStock = '';
                 fetchData();
             } else {
@@ -179,9 +182,11 @@
         });
     });
 
+    
     // Function to fetch filtered data
     function fetchData() {
-        let apiUrl = `categories/${slug}?`;
+        // API URL for fetching products
+        let apiUrl = `categories/${slug}?&page=${page}&`;
 
         // Append filters to the API URL
         if (newArrived) apiUrl += `new_arrived=${newArrived}&`;
@@ -194,73 +199,74 @@
         ApiRequest(apiUrl, 'GET')
             .then(response => {
                 const data = response.data;
-                var container = $("#allproductbox");
-                container.empty()
                 if (data.statusCode == 200) {
                     const products = data.data.productVariations;
-                    let html = '';
-                    // console.log(products.data);
+                    document.getElementById('totalProduct').innerHTML = products.meta.pagination.total; // Update total product count
+                    // Clear previous content before appending new data
+                    contianer.innerHTML = ''; // Clear the container
 
                     // Populate the product listing
                     products.data.forEach(product => {
-                        var productId = product
-                            .id; // Assuming `product` is your JavaScript object with the `id` property
+                        var productId = product.id; // Assuming `product` is your JavaScript object with the `id` property
                         var url = '{{ route('product.details', ':id') }}';
                         url = url.replace(':id', productId);
                         html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
-                                <div class="ekom_card">
-                                    <div class="product_card">
-                                        <a href="${url}" class="text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="form-check onimg">
-                                                    <input type="checkbox" id="${product.id}" class="form-check-input">
-                                                    <label for="prod_1"></label>
+                                    <div class="ekom_card">
+                                        <div class="product_card">
+                                            <a href="${url}" class="text_u">
+                                                <div class="product_image_wraper">
+                                                    <div class="form-check onimg">
+                                                        <input type="checkbox" id="${product.id}" class="form-check-input">
+                                                        <label for="prod_1"></label>
+                                                    </div>
+                                                    <div class="product_image">
+                                                        <img src="${product.images}" class="_pdimg"
+                                                            tabindex="-1">
+                                                    </div>
+                                                    <div class="gray"></div>
                                                 </div>
-                                                <div class="product_image">
-                                                    <img src="${product.images}" class="_pdimg"
-                                                        tabindex="-1">
+                                                <div class="product_dec">
+                                                    <h3 class="product_title bold">${product.title}</h3>
+                                                    <div class="d-flex justify-content-between stockdiv align-items-center">
+                                                        <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>${product.stock} in
+                                                            Stock +</span>
+                                                        <span><i class="far fa-check-circle fs-13 me-1"></i>
+                                                            ${product.availability_status}</span>
+                                                    </div>
+                                                    <h5 class="productPrice fs-16 bold">${product.price}</h5>
                                                 </div>
-                                                <div class="gray"></div>
+                                            </a>
+                                            <div class="product_foot d-flex justify-content-between align-items-center">
+                                                <a href="" class="btn btnround cardaddinventry">Add to Inventory
+                                                    List</a>
+                                                <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
+                                                        alt=""></button>
                                             </div>
-                                            <div class="product_dec">
-                                                <h3 class="product_title bold">${product.title}</h3>
-                                                <div class="d-flex justify-content-between stockdiv align-items-center">
-                                                    <span><i class="fas fa-warehouse fs-12 opacity-75 me-1"></i>${product.stock} in
-                                                        Stock +</span>
-                                                    <span><i class="far fa-check-circle fs-13 me-1"></i>
-                                                        ${product.availability_status}</span>
-                                                </div>
-                                                <h5 class="productPrice fs-16 bold">${product.price}</h5>
-                                            </div>
-                                        </a>
-                                        <div class="product_foot d-flex justify-content-between align-items-center">
-                                            <a href="" class="btn btnround cardaddinventry">Add to Inventory
-                                                List</a>
-                                            <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                    alt=""></button>
                                         </div>
                                     </div>
-                                </div>
-                            </div>`;
+                                </div>`;
                     });
-                    // console.log(html);
-                    container.append(html);
-                }
 
+                    contianer.innerHTML = html; // Append the new HTML to the container
+
+                    page++;
+                }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
 
-    // Function to handle scroll event and implement pagination
-    $(window).scroll(function() {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
-            // Fetch next page of data
-            // Increment the page number and update the API URL
-            apiUrl += `page=${pageNumber}&`;
-            alert('Scrolled to bottom');
-            fetchData() //  to fetch the next page of data
+   // Function to check if the user has scrolled to the bottom of the page
+    function isScrolledToBottom() {
+        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    }
+
+    // Event listener for scroll events
+    window.addEventListener('scroll', () => {
+        // If the user has scrolled to the bottom, fetch more data
+        if (isScrolledToBottom()) {
+            fetchData();
         }
     });
 
@@ -271,15 +277,19 @@
         } else if (name == 'productWithVideos') {
             productWithVideos = value ? true : '';
         }
+        page = 1;
+        html = '';
         fetchData();
     }
     // Function to filter data based on all data
     function viewAll() {
-        slug = 'all'; 
+        slug = 'all';
+        page = 1;
+        html = '';
         fetchData();
     }
     // Function to add products to inventory or download them as a ZIP file
-    function addToEnventory(action) {
+    function addToInventory(action) {
         // Object to store selected product variation IDs
         let product_id = {
             variation_id: [],
@@ -311,8 +321,8 @@
             return; // Exit the function early if no products are selected
         }
 
-        // If action is 'Enventory', send a POST request to add products to the inventory
-        if (action == 'Enventory') {
+        // If action is 'Inventory', send a POST request to add products to the inventory
+        if (action == 'Inventory') {
             ApiRequest('store/product/inventory', 'POST', {
                     product_id
                 })
