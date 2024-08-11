@@ -7,19 +7,8 @@
                 @include('web.layout.main-category')
                 <div class="promotional_banner">
                     <div class="carousel slide carousel-fade" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_1.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_2.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_3.jpg" class="d-block w-100" />
-                            </div>
-                            <div class="carousel-item" data-bs-interval="10000">
-                                <img src="../assets/images/web/banner_4.jpg" class="d-block w-100" />
-                            </div>
+                        <div class="carousel-inner" id="banner">
+                         <!-- dynamic code here -->
                         </div>
                     </div>
                 </div>
@@ -53,61 +42,8 @@
                                 <a href="product_category.html" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
-                                <div class="row gx-3">
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold ">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Activo Compression Socks Get 3 Pairs Legwear For Healthy Lifestyle
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Twin Size Upholstered Platform Bed with Cartoon Ears Shaped Headboard
-                                                    and Trundle, White
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
+                                <div class="row gx-3" id="premium">
+                                   <!-- appned this code premium code dynamic -->
                                 </div>
                             </div>
                         </div>
@@ -119,61 +55,8 @@
                                 <a href="product_category.html" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
-                                <div class="row gx-3">
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    True Twin 2 In 1 Wireless Headphones With Powerbank
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_2.jpg" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Dell WM126 Wireless Mouse
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Foldable Outdoor BBQ Table Grilling Stand
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
+                                <div class="row gx-3" id="new_arrivals">
+                                   <!-- dynamic code here -->
                                 </div>
                             </div>
                         </div>
@@ -184,277 +67,8 @@
         <section class="ek-section featured_bg section_gap">
             <h2 class="sec_main_h">Featured Categories</h2>
             <div class="container-fluid pad_l_r">
-                <div class="row gx-3">
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Home, Garden & Tools</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/home_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/home_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/home_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Beauty & Health</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/beauty_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/beauty_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/beauty_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Outdoor</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/outdoor_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Toys, Kids & Baby</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/baby_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/baby_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/baby_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Electronocs</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_2.jpg" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-4 mb16">
-                        <div class="ekom_card">
-                            <div class="ekom_card_head">
-                                <h2 class="fs-16">Clothing, Shoes & Jewelry</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
-                            </div>
-                            <div class="ekom_card_body">
-                                <div class="row gx-3">
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/product_1.jpg" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/product_2.jpg" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row gx-3" id="category">
+                    <!-- dynamic code here -->
                 </div>
             </div>
         </section>
@@ -468,61 +82,8 @@
                                 <a href="product_category.html" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
-                                <div class="row gx-3">
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_2.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">Back pull point flannelette blue indoor
-                                                    leisure chair simple Nordic style</h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Activo Compression Socks Get 3 Pairs Legwear For Healthy Lifestyle
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/premium_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Twin Size Upholstered Platform Bed with Cartoon Ears Shaped Headboard
-                                                    and Trundle, White
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
+                                <div class="row gx-3" id="in_demand">
+                                    <!-- dynamic code here -->
                                 </div>
                             </div>
                         </div>
@@ -534,61 +95,8 @@
                                 <a href="product_category.html" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
-                                <div class="row gx-3">
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_1.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    True Twin 2 In 1 Wireless Headphones With Powerbank
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_2.jpg" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Dell WM126 Wireless Mouse
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <a href="product-details.html" class="product_card text_u">
-                                            <div class="product_image_wraper">
-                                                <div class="product_image">
-                                                    <img src="../assets/images/product/arrival_3.webp" class="_pdimg"
-                                                        tabindex="-1">
-                                                </div>
-                                                <div class="gray"></div>
-                                            </div>
-                                            <div class="product_dec p-0">
-                                                <h3 class="product_title bold mt5">
-                                                    Foldable Outdoor BBQ Table Grilling Stand
-                                                </h3>
-                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000
-                                                </h5>
-                                            </div>
-                                        </a>
-                                    </div>
+                                <div class="row gx-3" id="regular">
+                                    <!-- add dynamic data  -->
                                 </div>
                             </div>
                         </div>
@@ -963,6 +471,181 @@
             .fail(function() {
                 // Log error message to console if AJAX request fails
                 console.log("error");
+            });
+
+            ApiRequest('top-product-view-home', 'GET')
+            .then((res) => {
+                let list = res.data.data;
+                if(res.data.statusCode == 200){
+                    var premium = '';
+                    var new_arrival = '';
+                    var in_demand = '';
+                    var regular_available = '';
+                    var category = '';
+                    // Iterate through each key-value pair in the object
+                    $.each(list, function(key, value) {
+                        // Print each element in the array
+                        $.each(value, function(index, element) {
+                           if(key === 'premium'){
+                            premium +=  `
+                              <div class="col-sm-4">
+                                        <a href="${element.slug}" class="product_card text_u">
+                                            <div class="product_image_wraper">
+                                                <div class="product_image">
+                                                    <img src="${element.product_image}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </div>
+                                            <div class="product_dec p-0">
+                                                <h3 class="product_title bold mt5">
+                                                   ${element.title}
+                                                </h3>
+                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.price_before_tax}
+                                                </h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                 `;
+                               }
+
+                               if(key === 'new_arrival'){
+                                new_arrival +=  `
+                                    <div class="col-sm-4">
+                                        <a href="${element.slug}" class="product_card text_u">
+                                            <div class="product_image_wraper">
+                                                <div class="product_image">
+                                                    <img src="${element.product_image}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </div>
+                                            <div class="product_dec p-0">
+                                                <h3 class="product_title bold mt5">
+                                                   ${element.title}
+                                                </h3>
+                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.price_before_tax}
+                                                </h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    `;
+                               }
+
+                               if(key === 'in_demand'){
+                                in_demand +=  `
+                                          <div class="col-sm-4">
+                                        <a href="${element.slug}" class="product_card text_u">
+                                            <div class="product_image_wraper">
+                                                <div class="product_image">
+                                                    <img src="${element.product_image}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </div>
+                                            <div class="product_dec p-0">
+                                                <h3 class="product_title bold mt5">
+                                                   ${element.title}
+                                                </h3>
+                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.price_before_tax}
+                                                </h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                   
+                                          `;
+                                 }
+
+                               if(key === 'regular_available'){
+                                regular_available +=  `
+                                    <div class="col-sm-4">
+                                        <a href="${element.slug}" class="product_card text_u">
+                                            <div class="product_image_wraper">
+                                                <div class="product_image">
+                                                    <img src="${element.product_image}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </div>
+                                            <div class="product_dec p-0">
+                                                <h3 class="product_title bold mt5">
+                                                   ${element.title}
+                                                </h3>
+                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.price_before_tax}
+                                                </h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                      `;
+                               }
+
+                               if(key === 'feature_category'){
+                    
+                                    category +=  ` <div class="col-sm-12 col-md-4 mb16">
+                                    <div class="ekom_card">
+                            <div class="ekom_card_head">
+                                <h2 class="fs-16">${element.category_name}</h2>
+                                <a href="${element.category_link}" class="a_color">View All</a>
+                            </div>
+                            <div class="ekom_card_body">
+                                <div class="row gx-3">`
+
+                                element.products.forEach(product => {
+                                    category += `<div class="col">
+                                        <div class="product_card">
+                                            <a href="product_category.html" class="product_image_wraper">
+                                                <div class="product_image">
+                                                    <img src="${product.product_image}" class="_pdimg"
+                                                        tabindex="-1">
+                                                </div>
+                                                <div class="gray"></div>
+                                            </a>
+                                        </div>
+                                    </div>`
+                                });
+                                category += `</div>
+                                </div>
+                            </div>
+                            </div>
+                            </div>`;
+                             }
+                             
+
+                        });
+                    });
+
+                    $('#premium').html(premium);
+                    $('#new_arrivals').html(new_arrival);
+                    $('#in_demand').html(in_demand);
+                    $('#regular').html(regular_available);
+                    $('#category').html(category);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+            ApiRequest('get-banner', 'GET')
+            .then(res => {
+                if (res.data.statusCode == 200) {
+                    const imagePath = res.data.data;
+                    var html = '';
+                    if(res.data.data.length == 0){
+                    }
+                               
+                    imagePath.forEach(element => {
+                        html += `
+                          <div class="carousel-item active" data-bs-interval="5000">
+                                <img src="${element.image_path}" class="d-block w-100" />
+                            </div>
+                            `;
+                    });
+                    $('#banner').html(html);
+                } 
+            })
+            .catch(err => {
+                console.log(err);
+              
             });
     });
 </script>

@@ -121,5 +121,10 @@ return [
     'productExists' => 'Product Already Exists.',
     'deleteFailed' => 'Delete Product Failed.',
     'unauthorizeLogin' => 'Unauthorize action please login to buyer.',
+    'bannerCreated' => 'Banner Store Successfully.',
+    'bannerNotCreated' => 'Banner Not Created.',
+    'bannerDeleted' => 'Banner Deleted Successfully.',
+    'deleteFailed' => 'Delete Banner Failed.',
+    'bannerFailed' => 'Failed to receive banner.',
 
 ];

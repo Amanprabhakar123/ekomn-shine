@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TopProduct extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     const TYPE_PREMIUM_PRODUCT = 1;
     const TYPE_NEW_ARRIVAL = 2;
@@ -28,8 +30,24 @@ class TopProduct extends Model
         self::TYPE_REGULAR_AVAILABLE,
     ];
 
-    protected $fillable = ['product_id', 'top_category_id', 'type'];
+    protected $fillable = ['product_id', 'top_category_id', 'type', 'priority'];
 
+    /**
+     * Get the options for logging changes to the model.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'product_id',
+                'top_category_id',
+                'type',
+            ])
+            ->logOnlyDirty()
+            ->useLogName('Top Product Log')
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} Top Product with ID: {$this->id}");
+    }
+    
     /**
      * Get the category that owns the TopProduct
      *

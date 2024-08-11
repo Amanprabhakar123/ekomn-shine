@@ -19,7 +19,7 @@ class BuyerInventoryTransformer extends TransformerAbstract
         try {
             
             $product = $buyerInventory->product;
-            $media = $product->media->where(['is_master' => ProductVariationMedia::IS_MASTER_TRUE, 'media_type' => ProductVariationMedia::MEDIA_TYPE_IMAGE])->first();
+            $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
             if($media == null){
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             }else{
