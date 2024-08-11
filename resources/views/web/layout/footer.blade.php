@@ -59,8 +59,8 @@
     <div class="bodyOverlay"></div>
   </footer>
 </div>
-<script type="text/javascript" src="{{asset('assets/js/jquery-3.7.1.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('assets/assets/js/bootstrap.bundle.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/owl.carousel.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/ek.common.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/request.js')}}"></script>

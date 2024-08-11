@@ -58,10 +58,13 @@ class WebController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function productDetails()
+    public function productDetails($id)
     {
-        return view('web.product-details');
+        $id = salt_decrypt($id);
+        $productVariations = ProductVariation::where('id', $id)->with('media')->first();
+        $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
+
+        return view('web.product-details', compact('productVariations', 'shippingRatesTier'));
     }
 
     /**

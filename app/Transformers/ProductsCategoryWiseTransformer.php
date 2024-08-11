@@ -25,7 +25,7 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
             if ($media == null) {
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
             } else {
-                $thumbnail = url($media->thumbnail_path);
+                $thumbnail = url($media->file_path);
             }
 
             // Check if the user is authenticated
@@ -40,8 +40,8 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
             } else {
                 // If the user is not authenticated, show placeholder values and prompt to log in to see the price
                 $stock = '...';
-                $status = 'Availability';
-                $price = '<a style="color:inherit" href="'.route('login').'">Login to See Price</a> to see the price';
+                $status = 'Regular Availability';
+                $price = '<a style="color:inherit" href="'.route('login').'">Login to See Price</a>';
             }
 
             // Return an associative array with product details
