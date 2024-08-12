@@ -290,7 +290,7 @@
                 </div>
             </td>
             <td>
-                <div class="productTitle_t">
+                <div class="productTitle_t" title="${item.title}">
                     <a href="${item.link}" class="a_link" target="_blank">${item.title}</a>
                 </div>
             </td>

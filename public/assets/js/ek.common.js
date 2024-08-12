@@ -411,4 +411,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+// ################# Sideebar toggle ####################
+const collapseIcon = document.querySelector('.collapseIcon');
+const bodyElement = document.querySelector('body');
+if (collapseIcon) {
+  collapseIcon.addEventListener('click', () => {
+    bodyElement.classList.toggle('collapseNav');
+  });
+}
+// ## end sidebar toggle ##
+
+
+
+
+  const tableResponsive = document.querySelector('table');
+  const thead = tableResponsive.querySelector('thead');
+  function updateStickyHeader() {
+    const tableRect = tableResponsive.getBoundingClientRect();
+    const headerHeight = thead.offsetHeight + 58;
+    if (tableRect.top < 0 && tableRect.bottom > headerHeight) {
+      thead.style.transform = `translateY(${Math.abs(tableRect.top)}px)`;
+      thead.style.position = 'sticky';
+      thead.style.zIndex = 10;
+      thead.style.top = '58px';
+    } else {
+      thead.style.position = 'relative';
+      thead.style.zIndex = 'auto';
+      thead.style.top = 'auto';
+      thead.style.transform = 'translateY(0)';
+    }
+  }
+  window.addEventListener('scroll', updateStickyHeader);
+  tableResponsive.addEventListener('scroll', updateStickyHeader);
 
