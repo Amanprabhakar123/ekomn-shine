@@ -440,10 +440,7 @@ $('document').ready(function() {
                     imagePath.forEach(element => {
                         console.log(element.image_path)
                         html += `
-                          
                                  <img src="${element.image_path}" height="300"/>
-                               
-                            
                             `;
                     });
                     $('#dynamicBanner').html(html);
