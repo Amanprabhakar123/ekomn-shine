@@ -22,6 +22,13 @@ class ProductVariation extends Model
     const STATUS_OUT_OF_STOCK = ProductInventory::STATUS_OUT_OF_STOCK;
     const STATUS_DRAFT = ProductInventory::STATUS_DRAFT;
 
+    const STATUS_ARRAY = [
+        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_INACTIVE => 'Inactive',
+        self::STATUS_OUT_OF_STOCK => 'Out of Stock',
+        self::STATUS_DRAFT => 'Draft',
+    ];
+
     // Availability Status
     const TILL_STOCK_LAST = 1;
     const REGULAR_AVAILABLE = 2;
@@ -176,5 +183,6 @@ class ProductVariation extends Model
     {
         return $this->hasMany(TopProduct::class);
     }
+    
     
 }

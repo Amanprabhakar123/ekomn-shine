@@ -7,36 +7,22 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-5">
                             <div class="prod_image_box">
+                            
                                 <div class="img-card">
-                                    <img src="../assets/images/product/premium_3.webp" alt="" id="main-img">
+                                @foreach ($productVariations->media as $media)
+                                    @if($media->is_master == 1)
+                                    <img src="{{$media->thumbnail_path}}" alt="" id="main-img">
+                                    @endif
+                                @endforeach
                                 </div>
+                              
                                 <div class="carousel-container">
                                     <button class="carousel-button prev"><i class="fas fa-chevron-left"></i></button>
                                     <div class="carousel-wrapper">
                                         <div class="small-card">
-                                            <img src="../assets/images/product/premium_3.webp" alt=""
-                                                class="smImg active" data-src="../assets/images/product/premium_3.webp">
-                                            <img src="https://m.media-amazon.com/images/I/41UQHTRNzuL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src="https://cdn-icons-png.flaticon.com/256/1077/1077063.png">
-                                            <img src="https://m.media-amazon.com/images/I/41VOjSSrpnL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src="https://m.media-amazon.com/images/I/71b5r0AdJVL._SX569_.jpg">
-                                            <img src="https://m.media-amazon.com/images/I/41VOjSSrpnL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src="https://m.media-amazon.com/images/I/71b5r0AdJVL._SX569_.jpg">
-                                            <img src="https://m.media-amazon.com/images/I/41--XHvb-WL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src="https://m.media-amazon.com/images/I/61WnS0N6J3L._SX569_.jpg">
-                                            <img src="https://m.media-amazon.com/images/I/41Zgsam1gxL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src="https://m.media-amazon.com/images/I/61obUAZPZjL._SX569_.jpg">
-                                            <img src="https://m.media-amazon.com/images/I/41Zgsam1gxL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src=" https://m.media-amazon.com/images/I/61CTETLCU-L._SY879_.jpg">
-                                            <img src="https://m.media-amazon.com/images/I/41Zgsam1gxL._SS100_.jpg"
-                                                alt="" class="smImg"
-                                                data-src=" https://m.media-amazon.com/images/I/61CTETLCU-L._SY879_.jpg">
+                                            @foreach ($productVariations->media as $media)
+                                            <img src="{{ $media->file_path }}" alt="" class="smImg active" data-src="{{ $media->file_path }}">
+                                            @endforeach
                                         </div>
                                     </div>
                                     <button class="carousel-button next"><i class="fas fa-chevron-right"></i></button>
@@ -56,6 +42,7 @@
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
                                     <select class="changeStatus_t form-select h_30">
+                                        <option value="{{$productVariations->color}}" selected>{{$productVariations->color}}</option>
                                         <option value="red">Red</option>
                                         <option value="green">Green</option>
                                         <option value="blue">Blue</option>
@@ -66,7 +53,7 @@
                                     <div class="radioinline">
                                         <label class="radio-item">
                                             <input type="radio" checked name="size">
-                                            <span class="radio-text h_30">S</span>
+                                            <span class="radio-text h_30">{{$productVariations->size}}</span>
                                         </label>
                                         <label class="radio-item">
                                             <input type="radio" name="size">
@@ -107,22 +94,15 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                       
+                                                        @foreach ($tier_rate as $rateQnty)
                                                         <tr>
-                                                            <td>5</td>
-                                                            <td>50 </td>
+                                                            <td>{{ $rateQnty['range']['min'] }} - {{ $rateQnty['range']['max'] }}</td>
+                                                            <td>{{$rateQnty['price']}}</td>
                                                         </tr>
-                                                        <tr>
-                                                            <td>10</td>
-                                                            <td>48</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>20</td>
-                                                            <td>46</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>30+</td>
-                                                            <td>44</td>
-                                                        </tr>
+                              
+                                                         @endforeach
+                                                        
                                                     </tbody>
                                                 </table>
                                                 <div class="fs-14 mt3">Availability:<small class="ms-1 opacity-75">Till
@@ -132,6 +112,7 @@
                                     </div>
                                     <div class="col-md-6 align-self-end">
                                         <div class="det_btnbox">
+                                            @if($productVariations->status == 3)
                                             <div class="outofstock">
                                                 <strong class="text-danger me-2">Currently Out Of Stock</strong><span
                                                     class="opacity-75 me-1">Interested?</span><a href="#outStock"
@@ -144,6 +125,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                             <button type="button" class="btn btnekomn_dark btnround"><i
                                                     class="fas fa-plus fs-14 me-2"></i>Add to Inventory</button>
                                             <button type="button" class="btn btnekomn_dark btnround">Connect to
@@ -222,34 +204,10 @@
                                 <div class="descList">
                                     <h4 class="mt-0 fs-18 bold">Features </h4>
                                     <ul>
-                                        <li>
-                                            LUXURIOUSLY 2000 GSM THICK SOFT BATHMAT– Our microfibre Bath Mats are thick and
-                                            fluffy which makes these Bath Mats a good quality and a long lasting product.
-                                            Don’t sacrifice quality for durability. Your feet will say thank you when
-                                            stepping out of the shower on the soft microfibre mat. Use in your Bathroom,
-                                            Living room, Kitchen or as Door Mat.
-                                        </li>
-                                        <li>
-                                            NON SLIP – Anti Skid will help the bath mat stay still in wet areas. The
-                                            Bathroom Mats have been tested and can be machine washed. This non-skid backing
-                                            ensures the bathroom won’t move and you’ll be safe when stepping out of your
-                                            shower. We use hot melt glue which is stickier, stronger, and more durable for
-                                            long lasting use.
-                                        </li>
-                                        <li>
-                                            SUPER ABSORBENT– The Microfiber Bathmat is much more absorbent than cotton or
-                                            memory foam bath rugs, so it won't stay soggy all day or start to stink after
-                                            just a couple uses. High-pile, thick microfiber helps save your floors from
-                                            dripping water while you're stepping out of the bath, shower, or getting ready
-                                            by the sink. Moisture is trapped in the mat's deep pile, allowing the bath mat
-                                            to dry quickly.
-                                        </li>
-                                        <li>
-                                            MACHINE WASHABLE - After your toddler or kids get out of the bath tub, just
-                                            throw the bath mat into the washing machine. Hang to dry, and you’re done. Quick
-                                            drying and long lasting, the microfiber bath rugs are durable accessories for
-                                            your restroom and will last for years to come
-                                        </li>
+                                        @foreach( $productVariations->product->features as $feature)
+                                            <li>{{$feature->value}}</li>
+                                        @endforeach
+                                        
 
                                     </ul>
                                 </div>

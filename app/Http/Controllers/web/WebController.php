@@ -62,10 +62,11 @@ class WebController extends Controller
     public function productDetails($id)
     {
         $id = salt_decrypt($id);
-        $productVariations = ProductVariation::where('id', $id)->with('media')->first();
+        $productVariations = ProductVariation::with('media')->with('product.features')->find($id);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
-
-        return view('web.product-details', compact('productVariations', 'shippingRatesTier'));
+        $tier_rate = json_decode($productVariations->tier_rate, true);
+// dd($productVariations);
+        return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate'));
     }
 
     /**
