@@ -212,6 +212,20 @@
                     products.data.forEach(product => {
                         var productId = product.id; // Assuming `product` is your JavaScript object with the `id` property
                         var url = '{{ route('product.details', ':id') }}';
+                        var text = '';
+                        if(product.is_login == true){
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                                <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">Add to Inventory
+                                                    List</button>
+                                                <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></button>
+                                            </div>`;
+                        }else {
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                                <a href="${product.login_url}" class="btn btnround cardaddinventry" >Add to Inventory
+                                                    List</a>
+                                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></a>
+                                            </div>`;
+                        }
                         url = url.replace(':id', productId);
                         html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
@@ -239,12 +253,7 @@
                                                     <h5 class="productPrice fs-16 bold">${product.price}</h5>
                                                 </div>
                                             </a>
-                                            <div class="product_foot d-flex justify-content-between align-items-center">
-                                                <a href="" class="btn btnround cardaddinventry">Add to Inventory
-                                                    List</a>
-                                                <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                        alt=""></button>
-                                            </div>
+                                            ${text}
                                         </div>
                                     </div>
                                 </div>`;
@@ -292,7 +301,7 @@
         fetchData();
     }
     // Function to add products to inventory or download them as a ZIP file
-    function addToInventory(action) {
+    function addToInventory(action, id = '') {
         // Object to store selected product variation IDs
         let product_id = {
             variation_id: [],
@@ -302,6 +311,10 @@
         $(".form-check-input:checked").each(function() {
             product_id.variation_id.push($(this).attr('id'));
         });
+
+        if(id){
+            product_id.variation_id.push(id);
+        }
 
         // If no products are selected, show a warning using Swal
         if (product_id.variation_id.length == 0) {
@@ -345,8 +358,6 @@
                                 confirmButton.style.backgroundColor = '#feca40';
                                 confirmButton.style.color = 'white';
                             }
-                        }).then(() => {
-                            location.reload(); // Reload the page after success
                         });
                     }
                     // Handle error response with status code 201
@@ -422,7 +433,6 @@ $('document').ready(function() {
             .then(res => {
                 if (res.data.statusCode == 200) {
                     const imagePath = res.data.data;
-                    console.log(imagePath);
                     var html = '';
                     if(res.data.data.length == 0){
                     }

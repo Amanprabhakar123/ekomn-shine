@@ -29,13 +29,14 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
 
             // Check if the user is authenticated
             $userIsExist = auth()->check();
-
+            $is_login = false;
             // Depending on the user's authentication status, set the stock, price, and status
             if ($userIsExist) {
                 // If the user is authenticated, display actual stock, price, and availability status
                 $stock = $product->stock;
                 $price = '<i class="fas fa-rupee-sign me-1"></i>' . $product->price_before_tax;
                 $status = getAvailablityStatusName($product->availability_status);
+                $is_login = true;
             } else {
                 // If the user is not authenticated, show placeholder values and prompt to log in to see the price
                 $stock = '...';
@@ -55,6 +56,8 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
                 'price' => $price, // Product price (or prompt to log in if not logged in)
                 'availability_status' => $status, // Product availability status
                 'status' => getStatusName($product->status), // Product status name
+                'is_login' => (boolean) $is_login, // User authentication status
+                'login_url' => route('buyer.login'), // URL to the login page
             ];
 
             return $data;
