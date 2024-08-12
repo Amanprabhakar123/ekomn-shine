@@ -24,7 +24,7 @@
                         <div class="introbtnbox">
                             <button class="btn btnekomn btnround px-5">Join Our Webinar</button>
                         </div>
-                        <p class="mb15">
+                        <p  class="mb25">
                             eKomn provides all tools and resources for a successful Online business.
                         </p>
                         <div>To know more,<a href="" class="a_color mx-1 text_u">contact us</a>today!!</div>
@@ -318,28 +318,119 @@
                 </div>
             </div>
         </section>
-        <section class="ekAdvantageBlock">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="ekAdvantageImg">
-                            <img src="../assets/images/icon/eKomnadv.webp">
-                        </div>
-                    </div>
-                </div>
+        <section class="adv-section">
+      <div class="container">
+        <div class="row align-items-center ">
+          <div class="col-sm-12 col-md-6">
+            <div class="advantage">
+              <img src="../assets/images/icon/advantageText.svg" alt="">
+              <p class="fs-20 mt30">We literally give wings to your eCommerce enterprise!
+                More than 10K products across leading categories.</p>
+              <div class="d-flex justify-content-center mt40 pt-4 mbspace">
+                <button class="btn btnekomn_dark  py-2 px-4 btnround">Register Now</button>
+              </div>
             </div>
-        </section>
-        <section class="eKomn_commitment">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="ekAdvantageImg">
-                            <img src="../assets/images/icon/eKomn_commitment.webp">
-                        </div>
-                    </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="advantagecontent">
+              <div class="advstep">
+                <div class="advstephead">
+                  <div class="advhimg">
+                    <img src="../assets/images/icon/adv_1.svg" alt="">
+                  </div>
+                  <h3 class="fs-24 m-0">Growth Tools</h3>
                 </div>
+                <ul class="checkpoint ms-3">
+                  <li class="fs-18">Connect your store and put your Online business on auto mode</li>
+                  <li class="fs-18">Expand your business on multiple platforms and channels</li>
+                  <li class="fs-18">We equip you with all tools and business trainings to succeed</li>
+                </ul>
+              </div>
+              <div class="advstep">
+                <div class="advstephead">
+                  <div class="advhimg">
+                    <img src="../assets/images/icon/adv_2.svg" alt="">
+                  </div>
+                  <h3 class="fs-24 m-0">Product Sourcing</h3>
+                </div>
+                <ul class="checkpoint ms-3">
+                  <li class="fs-18">Find, Select & Sell profitably</li>
+                  <li class="fs-18">Access to Samples, Dropship, Bulk Orders & Resell programs</li>
+                  <li class="fs-18">Community Sourcing, A program for mutual support and success</li>
+                </ul>
+              </div>
+              <div class="advstep">
+                <div class="advstephead">
+                  <div class="advhimg">
+                    <img src="../assets/images/icon/adv_3.svg" alt="">
+                  </div>
+                  <h3 class="fs-24 m-0">Services</h3>
+                </div>
+                <ul class="checkpoint ms-3">
+                  <li class="fs-18">Innovative business solutions designed for Online Sellers</li>
+                  <li class="fs-18">Avail expert help at a click of a button</li>
+                  <li class="fs-18">Prompt support and dedicated account executives</li>
+                </ul>
+              </div>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="commit-section">
+      <div class="container">
+        <div class="row align-items-center ">
+          <div class="col-sm-12 col-md-6">
+            <div class="advantage">
+              <img src="../assets/images/icon/commit.svg" alt="">
+              <p class="fs-20 mt30">Committed to create and support over 1 mm thriving
+                online enterprises in India by 2027.</p>
+              <div class="d-flex justify-content-center mt40 pt-4 mbspace">
+                <button class="btn btnekomn py-2 px-4 btnround">Let's Join hands. Risk Free!!</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="advantagecontent">
+              <div class="advstep">
+                <div class="commstephead">
+                  <div class="advhimg mb10">
+                    <img src="../assets/images/icon/commit_1.svg" alt="">
+                  </div>
+                  <p class="fs-20 text-center m-0">Ever growing catalog of Innovative
+                    and winning products</p>
+                </div>
+              </div>
+              <div class="advstep">
+                <div class="commstephead">
+                  <div class="advhimg mb10">
+                    <img src="../assets/images/icon/commit_2.svg" alt="">
+                  </div>
+                  <p class="fs-20 text-center m-0">Competitive wholesale prices &
+                    Assured product quality</p>
+                </div>
+              </div>
+              <div class="advstep">
+                <div class="commstephead">
+                  <div class="advhimg mb10">
+                    <img src="../assets/images/icon/commit_3.svg" alt="">
+                  </div>
+                  <p class="fs-20 text-center m-0">Prompt support and help</p>
+                </div>
+              </div>
+              <div class="advstep">
+                <div class="commstephead">
+                  <div class="advhimg mb10">
+                    <img src="../assets/images/icon/commit_4.svg" alt="">
+                  </div>
+                  <p class="fs-20 text-center m-0">Business Trainings & Services</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
         <section class="process_sec">
             <div class="process_sec_h text-center">
                 <h2 class="sec_main_h mb-2">What Our Clients Say About Us</h2>
@@ -403,10 +494,31 @@
     </div>
 @endsection
 @section('scripts')
-<script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {
+    var owl = $('.testimonial_owl.owl-carousel');
+        owl.owlCarousel({
+        items: 3,
+        center: true,
+        loop: true,
+        margin: 0,
+        autoplay: true,
+        autoplayTimeout: 10000,
+        autoplayHoverPause: true,
+        smartSpeed: 600,
+        responsive: {
+            0: {
+            items: 1
+            },
+            600: {
+            items: 2
+            },
+            1000: {
+            items: 3
+            }
+        }
+        });
         // Perform an AJAX GET request to fetch category data
         $.ajax({
                 url: '{{ route('categories.list') }}', // URL endpoint for fetching categories
