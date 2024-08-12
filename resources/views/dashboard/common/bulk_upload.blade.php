@@ -13,7 +13,7 @@
             <i class="far fa-file-excel"></i>
             Download the excel template to add your product details
           </div>
-          <a href="{{ route('download-template') }}" class="btn btnekomn-border mt25 mb5">Download</a>
+          <a href="{{ route('download-template') }}" class="btn btnekomn-border downborder mt25 mb5">Download</a>
         </div>
         <div class="bt_arrow">
           <i class="fas fa-long-arrow-alt-right"></i>
@@ -41,6 +41,28 @@
           </div>
           <div id="fileInputErr" class="invalid-feedback"></div>
         </div>
+        <div class="video-container bulkuploadvideo">
+                    <div class="video-placeholder">
+                      <div style="margin: 4px 0px 2px 0px;">
+                        <svg viewBox="0 0 64 64" width="38" height="38" fill="#FAFAFA">
+                          <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.15)" />
+                          <polygon points="25,16 25,48 48,32" />
+                        </svg>
+                      </div>
+                      <h6>Upload Video</h6>
+                    </div>
+                    <video class="video-element">
+                      <source src="" class="video-source">
+                    </video>
+                    <div class="play-icon">
+                      <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
+                        <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.5)" />
+                        <polygon points="25,16 25,48 48,32" />
+                      </svg>
+                    </div>
+                    <div class="delete-icon">&#10006;</div>
+                    <input type="file" class="file-input" accept="video/*">
+                  </div>
       </div>
       <p class="mt15 opacity-50">
         The QC proces swill start after the upload of your product.
@@ -161,6 +183,83 @@
       }
     });
   });
+
+
+   // Start code Image Upload and video upload Step 4
+   document.addEventListener("DOMContentLoaded", function() {
+    // Function to initialize video upload functionality
+    function initializeVideoUpload(container) {
+      const fileInput = container.querySelector(".file-input");
+      const video = container.querySelector("video");
+      const source = container.querySelector(".video-source");
+      const placeholder = container.querySelector(".video-placeholder");
+      const deleteButton = container.querySelector(".delete-icon");
+      const playIcon = container.querySelector(".play-icon");
+
+      function togglePlayPause() {
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      }
+
+      function handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          source.src = URL.createObjectURL(file);
+          video.style.display = "block";
+          placeholder.style.display = "none";
+          playIcon.style.display = "block";
+          deleteButton.style.display = "block";
+          video.load();
+        }
+      }
+
+      function handleDeleteClick(event) {
+        event.stopPropagation();
+        if (!video.paused) {
+          video.pause();
+        } else {
+          resetVideo();
+        }
+      }
+
+      function resetVideo() {
+        source.src = "";
+        video.style.display = "none";
+        placeholder.style.display = "flex";
+        deleteButton.style.display = "none";
+        playIcon.style.display = "none";
+        fileInput.value = null;
+      }
+      container.addEventListener("click", (event) => {
+        if (event.target === video || event.target === playIcon) {
+          togglePlayPause();
+        } else if (event.target === deleteButton) {
+          handleDeleteClick(event);
+        } else {
+          fileInput.click();
+        }
+      });
+      fileInput.addEventListener("change", handleFileChange);
+      video.addEventListener("pause", () => {
+        playIcon.style.display = "block";
+        deleteButton.style.display = "block";
+      });
+      video.addEventListener("play", () => {
+        playIcon.style.display = "none";
+        deleteButton.style.display = "none";
+      });
+    }
+ 
+    // Initial setup for existing containers
+    const videoContainers = document.querySelectorAll(".video-container");
+    videoContainers.forEach((container) => {
+      initializeVideoUpload(container);
+    });
+  });
+  
 </script>
 
 <!-- <script>

@@ -2,6 +2,7 @@
 <div class="ek_nav">
     <div class="sidebar-header">
         <img src="{{ asset('assets/images/Logo.svg') }}" alt="logo" height="40px" />
+        <div class="collapseIcon"><i class="fas fa-angle-double-left"></i></div>
     </div>
     <div class="sidebar-menu">
         <ul class="navbar-nav" id="dashboard_ekomn">

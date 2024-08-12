@@ -78,7 +78,7 @@
                                         </span>
                                     </th>
                                     <th class="text-center">Action</th>
-                                    <th class="text-center">Download Invoice</th>
+                                    <th class="text-center">Invoice</th>
                                 </tr>
                             </thead>
                             <tbody id="dataContainer">
@@ -184,7 +184,7 @@
                                         </span>
                                     </th>
                                     <th class="text-center">Action</th>
-                                    <th class="text-center">Download Invoice</th>
+                                    <th class="text-center">Invoice</th>
 
                                 </tr>
                             </thead>
@@ -298,7 +298,7 @@
                                         </span>
                                     </th>
                                     <th class="text-center">Action</th>
-                                    <th class="text-center">Download Invoice</th>
+                                    <th class="text-center">Invoice</th>
 
                                 </tr>
                             </thead>
@@ -540,8 +540,8 @@
                   ${item.store_order}
                 </td>
                 <td>
-                  <div class="productTitle_t">
-                    <a href="${item.link}" class="a_link">${item.title}</a>
+                  <div class="productTitle_t" title="${item.title}">
+                    <a href="#" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
@@ -590,8 +590,8 @@
                   ${item.store_order}
                 </td>
                 <td>
-                  <div class="productTitle_t">
-                    <a href="${item.link}" class="a_link">${item.title}</a>
+                  <div class="productTitle_t" title="${item.title}">
+                    <a href="#" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
@@ -636,8 +636,8 @@
                   ${item.store_order}
                 </td>
                 <td>
-                  <div class="productTitle_t">
-                    <a href="${item.link}" class="a_link">${item.title}</a>
+                  <div class="productTitle_t" title="${item.title}">
+                    <a href="#" class="a_link">${item.title}</a>
                   </div>
                 </td>
                 <td>${item.customer_name}</td>
