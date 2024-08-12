@@ -24,7 +24,7 @@ class ImageService
     public function convertAndCompressToWebP($sourcePath, $destinationPath, $thumbWidth = 800, $thumbHeight = 800)
     {
         $source = Source::fromFile($sourcePath);
-        $webpPath = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $destinationPath);
+        $webpPath = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.webp', $destinationPath);
 
         // Resize the image
         $thumbnail = $source->resize([

@@ -27,9 +27,9 @@
                                             @foreach ($productVariations->media as $media)
                                                 @if($media->media_type == MEDIA_TYPE_IMAGE)
                                                     @if($media->is_master == IS_MASTER_TRUE)
-                                                        <img src="{{ url($media->file_path) }}" alt="Main-Image" class="smImg active" data-src="{{ url($media->file_path) }}">
+                                                        <img src="{{ url($media->thumbnail_path) }}" alt="Main-Image" class="smImg active" data-src="{{ url($media->file_path) }}">
                                                     @else
-                                                        <img src="{{ url($media->file_path) }}" alt="Other-Image" class="smImg" data-src="{{ url($media->file_path) }}">
+                                                        <img src="{{ url($media->thumbnail_path) }}" alt="Other-Image" class="smImg" data-src="{{ url($media->file_path) }}">
                                                     @endif
                                                 @else
                                                     <video class="smImg prod-video" poster="{{$main_image}}" data-src="{{ url('storage/'.$media->file_path) }}" controls controlsList="nodownload">
