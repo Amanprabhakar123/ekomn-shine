@@ -61,7 +61,7 @@ class WebController extends Controller
      */
     public function productDetails($slug)
     {
-        $productVariations = ProductVariation::where('slug', $slug)->with('media')->with('product.features')->first();
+        $productVariations = ProductVariation::where('slug', $slug)->with('media', 'company')->with('product.features')->first();
         $colors = ProductVariation::colorVariation($productVariations->product_id);
         $sizes = ProductVariation::sizeVariation($productVariations->product_id);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);

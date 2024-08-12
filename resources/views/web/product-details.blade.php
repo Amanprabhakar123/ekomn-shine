@@ -47,11 +47,14 @@
                             <div class="prod_name_stock">
                                 <h1 class="fs-22 m-0 bold">{{ $productVariations->title }}</h1>
                                 <div class="mt10 d-flex justify-content-between align-items-center">
-                                    <h3 class="m-0 fs-16 opacity-75">XYZ Product Store</h3>
+                                    <h3 class="m-0 fs-16 opacity-75">{{$productVariations->company->display_name}}</h3>
                                     <span class="_productID">Product SKU : {{ $productVariations->sku }}</span>
                                 </div>
-                                <h4 class="fs-24 bold my-3"><sup class="suptop"><i
-                                            class="fas fa-rupee-sign fs-14 me-1"></i></sup>{{ $productVariations->price_before_tax }}
+                                <h4 class="fs-26 bold my-3"><sup class="suptop"><i
+                                            class="fas fa-rupee-sign fs-14 me-1"></i></sup>{{ number_format($productVariations->price_before_tax,2) }} 
+                                            <del class="opacity-50 fs-16 ms-2"> 
+                                                <i class="fas fa-rupee-sign fs-13 me-1"></i>{{number_format($productVariations->potential_mrp, 2)}}</del>
+                                                <small class="ms-2 fs-16 text-success">25% Off</small>
                                 </h4>
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
@@ -100,7 +103,7 @@
                                                         @foreach ($tier_rate as $rateQnty)
                                                         <tr>
                                                             <td>{{ $rateQnty['range']['min'] }} - {{ $rateQnty['range']['max'] }}</td>
-                                                            <td>{{$rateQnty['price']}}</td>
+                                                            <td>{{number_format($rateQnty['price'], 2)}}</td>
                                                         </tr>
                               
                                                          @endforeach

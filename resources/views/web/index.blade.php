@@ -19,7 +19,7 @@
                             <li>Get access to verified winning Products</li>
                             <li>Sell on Multi-channels profitably</li>
                             <li>Learn the art of profitable Dropshipping</li>
-                            <li>Learn the art of profitable Dropshipping</li>
+                            <li>Avail technology enabled affordable eCommerce services</li>
                         </ul>
                         <div class="introbtnbox">
                             <button class="btn btnekomn btnround px-5">Join Our Webinar</button>

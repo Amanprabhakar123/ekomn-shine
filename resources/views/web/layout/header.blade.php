@@ -10,7 +10,7 @@
     <div class="main_header" id="main_header">
         <div class="barIcon" id="barIcon"><i class="fas fa-bars"></i></div>
         <div class="brandLogo">
-            <a href="index.html"><img src="../assets/images/Logo.svg" alt="Logo" height="40" /></a>
+            <a href="{{route('home')}}"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" height="40" /></a>
         </div>
         <div class="headersearch">
             <form role="search">
