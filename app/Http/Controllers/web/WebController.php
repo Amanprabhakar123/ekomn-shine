@@ -17,7 +17,7 @@ use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ProductsCategoryWiseTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-
+use Razorpay\Api\Product;
 
 class WebController extends Controller
 {
@@ -59,14 +59,14 @@ class WebController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function productDetails($id)
+    public function productDetails($slug)
     {
-        $id = salt_decrypt($id);
-        $productVariations = ProductVariation::with('media')->with('product.features')->find($id);
+        $productVariations = ProductVariation::where('slug', $slug)->with('media')->with('product.features')->first();
+        $colors = ProductVariation::colorVariation($productVariations->product_id);
+        $sizes = ProductVariation::sizeVariation($productVariations->product_id);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
         $tier_rate = json_decode($productVariations->tier_rate, true);
-// dd($productVariations);
-        return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate'));
+        return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate', 'colors', 'sizes'));
     }
 
     /**

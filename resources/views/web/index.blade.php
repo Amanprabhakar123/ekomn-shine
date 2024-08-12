@@ -402,6 +402,7 @@
         </section>
     </div>
 @endsection
+@section('scripts')
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
 <script>
@@ -649,3 +650,4 @@
             });
     });
 </script>
+@endsection

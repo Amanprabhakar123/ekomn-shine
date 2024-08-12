@@ -55,8 +55,8 @@
                 </div>
                 <div class="productListing">
                 <div class="sub_banner" id="dynamicBanner">
-            <!-- load dynamic banner here -->
-          </div>
+                    <!-- load dynamic banner here -->
+                </div>
                     <div class="pt-1">
                         <ol class="ekbreadcrumb">
                             <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
@@ -70,11 +70,19 @@
                                     <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
                                 </label>
                             </div>
+                            @if(auth()->check())
                             <button type="button" class="btn filterbtn" onclick="addToInventory('Inventory')"><i
                                     class="fas fa-plus fs-12 me-2"></i>Add to
                                 Inventory List</button>
                             <button type="button" class="btn filterbtn" onclick="addToInventory('Download')"><i
                                     class="fas fa-download fs-13 me-2"></i>Download</button>
+                            @else
+                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn"><i
+                                    class="fas fa-plus fs-12 me-2"></i>Add to
+                                Inventory List</a>
+                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn" ><i
+                                    class="fas fa-download fs-13 me-2"></i>Download</a>
+                            @endif
                             <select class="filterSelect ms-auto">
                                 <option value="">Sort By Most Relevent</option>
                             </select>
@@ -94,10 +102,8 @@
 
     </div>
 @endsection
-<script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 <script>
     // Initialize variables for sorting and filtering options
     let slug = "{{ $slug }}";
@@ -211,7 +217,7 @@
                     // Populate the product listing
                     products.data.forEach(product => {
                         var productId = product.id; // Assuming `product` is your JavaScript object with the `id` property
-                        var url = '{{ route('product.details', ':id') }}';
+                        
                         var text = '';
                         if(product.is_login == true){
                             text = ` <div class="product_foot d-flex justify-content-between align-items-center">
@@ -226,11 +232,10 @@
                                                 <a href="${product.login_url}" class="btn dow_inve"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></a>
                                             </div>`;
                         }
-                        url = url.replace(':id', productId);
                         html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
-                                            <a href="${url}" class="text_u">
+                                            <a href="${product.link}" class="text_u">
                                                 <div class="product_image_wraper">
                                                     <div class="form-check onimg">
                                                         <input type="checkbox" id="${product.id}" class="form-check-input">
@@ -298,6 +303,7 @@
         slug = 'all';
         page = 1;
         html = '';
+        $('#dynamicBanner').html('');
         fetchData();
     }
     // Function to add products to inventory or download them as a ZIP file
@@ -453,3 +459,4 @@ $('document').ready(function() {
 
 });
 </script>
+@endsection

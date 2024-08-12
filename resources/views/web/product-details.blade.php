@@ -7,21 +7,35 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-5">
                             <div class="prod_image_box">
-                            
                                 <div class="img-card">
+                                @php 
+                                $main_image = '';
+                                @endphp
                                 @foreach ($productVariations->media as $media)
-                                    @if($media->is_master == 1)
-                                    <img src="{{$media->thumbnail_path}}" alt="" id="main-img">
+                                    @if($media->is_master == IS_MASTER_TRUE)
+                                    @php 
+                                $main_image = url($media->file_path);
+                                @endphp
+                                    <img src="{{$main_image}}" alt="" id="main-img">
                                     @endif
                                 @endforeach
                                 </div>
-                              
                                 <div class="carousel-container">
                                     <button class="carousel-button prev"><i class="fas fa-chevron-left"></i></button>
                                     <div class="carousel-wrapper">
                                         <div class="small-card">
                                             @foreach ($productVariations->media as $media)
-                                            <img src="{{ $media->file_path }}" alt="" class="smImg active" data-src="{{ $media->file_path }}">
+                                                @if($media->media_type == MEDIA_TYPE_IMAGE)
+                                                    @if($media->is_master == IS_MASTER_TRUE)
+                                                        <img src="{{ url($media->file_path) }}" alt="Main-Image" class="smImg active" data-src="{{ url($media->file_path) }}">
+                                                    @else
+                                                        <img src="{{ url($media->file_path) }}" alt="Other-Image" class="smImg" data-src="{{ url($media->file_path) }}">
+                                                    @endif
+                                                @else
+                                                    <video class="smImg prod-video" poster="{{$main_image}}" data-src="{{ url('storage/'.$media->file_path) }}" controls controlsList="nodownload">
+                                                        <source src="{{ url('storage/'.$media->file_path) }}" type="video/mp4">
+                                                    </video>
+                                                @endif
                                             @endforeach
                                         </div>
                                     </div>
@@ -42,43 +56,31 @@
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
                                     <select class="changeStatus_t form-select h_30">
-                                        <option value="{{$productVariations->color}}" selected>{{$productVariations->color}}</option>
-                                        <option value="red">Red</option>
-                                        <option value="green">Green</option>
-                                        <option value="blue">Blue</option>
+                                        @foreach($colors as $color)
+                                            @if($productVariations->color == $color)
+                                                <option value="{{$productVariations->color}}" selected>{{ ucfirst($productVariations->color)}}</option>
+                                            @else
+                                                <option value="{{$color}}">{{ ucfirst($color) }}</option>
+                                            @endif
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label class="bold mb5 fs-16">Size:</label>
                                     <div class="radioinline">
+                                        @foreach($sizes as $size)
+                                            @if($productVariations->size == $size)
                                         <label class="radio-item">
                                             <input type="radio" checked name="size">
                                             <span class="radio-text h_30">{{$productVariations->size}}</span>
                                         </label>
+                                            @else
                                         <label class="radio-item">
                                             <input type="radio" name="size">
-                                            <span class="radio-text h_30">M</span>
+                                            <span class="radio-text h_30">{{$size}}</span>
                                         </label>
-                                        <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">L</span>
-                                        </label>
-                                        <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">XL</span>
-                                        </label>
-                                        <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">XXL</span>
-                                        </label>
-                                        <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">XXXL</span>
-                                        </label>
-                                        <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">1.5x3 feet</span>
-                                        </label>
+                                            @endif
+                                        @endforeach
                                     </div>
                                 </div>
                                 <div class="row">
@@ -126,14 +128,24 @@
                                                 </div>
                                             </div>
                                             @endif
-                                            <button type="button" class="btn btnekomn_dark btnround"><i
+                                            @if(auth()->check())
+                                            <button type="button" class="btn btnekomn_dark btnround" onclick="addToInventory('Inventory', '{{salt_encrypt($productVariations->id)}}')"><i
                                                     class="fas fa-plus fs-14 me-2"></i>Add to Inventory</button>
                                             <button type="button" class="btn btnekomn_dark btnround">Connect to
                                                 Amazon</button>
-                                            <button type="button" class="btn btnekomn btnround"><i
+                                            <button type="button" class="btn btnekomn btnround" onclick="addToCart('{{salt_encrypt($productVariations->id)}}')"><i
                                                     class="fas fa-shopping-cart me-2"></i>Buy Now</button>
-                                            <button type="button" class="btn btnekomn-border btnround"><i
+                                            <button type="button" class="btn btnekomn-border btnround" onclick="addToInventory('Download', '{{salt_encrypt($productVariations->id)}}')"><i
                                                     class="fa fa-download me-2"></i>Download</button>
+                                            @else
+                                            <a href="{{route('buyer.login')}}" class="btn btnekomn_dark btnround" ><i
+                                                    class="fas fa-plus fs-14 me-2"></i>Add to Inventory</a>
+                                            <a href="{{route('buyer.login')}}" class="btn btnekomn_dark btnround">Connect to Amazon</a>
+                                            <a href="{{route('buyer.login')}}" class="btn btnekomn btnround"><i
+                                                    class="fas fa-shopping-cart me-2"></i>Buy Now</a>
+                                            <a href="{{route('buyer.login')}}" class="btn btnekomn-border btnround"><i
+                                                    class="fa fa-download me-2"></i>Download</a> 
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
@@ -294,4 +306,178 @@
             </div>
         </section>
     </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Function to add products to inventory or download them as a ZIP file
+    function addToInventory(action, id = '') {
+        // Object to store selected product variation IDs
+        let product_id = {
+            variation_id: [],
+        };
+
+        if(id){
+            product_id.variation_id.push(id);
+        }
+
+        // If no products are selected, show a warning using Swal
+        if (product_id.variation_id.length == 0) {
+            Swal.fire({
+                title: "No products selected!",
+                text: "Please select at least one checkbox.",
+                icon: "warning",
+                didOpen: () => {
+                    // Apply inline CSS to the title
+                    const titleElement = Swal.getTitle();
+                    titleElement.style.color = 'red';
+                    titleElement.style.fontSize = '20px';
+
+                    // Apply inline CSS to the confirm button
+                    const confirmButton = Swal.getConfirmButton();
+                    confirmButton.style.backgroundColor = '#feca40';
+                    confirmButton.style.color = 'white';
+                }
+            });
+            return; // Exit the function early if no products are selected
+        }
+
+        // If action is 'Inventory', send a POST request to add products to the inventory
+        if (action == 'Inventory') {
+            ApiRequest('store/product/inventory', 'POST', {
+                    product_id
+                })
+                .then(response => {
+                    // Handle success response
+                    if (response.data.statusCode == 200) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'green';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                    // Handle error response with status code 201
+                    else if (response.data.statusCode == 201) {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'green';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                    // Handle other error responses
+                    else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response.data.message,
+                            icon: "error",
+                            didOpen: () => {
+                                const titleElement = Swal.getTitle();
+                                titleElement.style.color = 'red';
+                                titleElement.style.fontSize = '20px';
+
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        });
+                    }
+                });
+        }
+        // If action is 'Download', download the selected products as a ZIP file
+        else if (action == 'Download') { // Corrected the syntax here
+            fetch('{{ route('product.inventory.export') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product_id)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob(); // Convert response to a Blob
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'products_' + Date.now() + '.zip'; // Set download file name
+                    document.body.appendChild(a);
+                    a.click(); // Programmatically click the link to trigger download
+                    window.URL.revokeObjectURL(url); // Revoke the URL after download
+                })
+                .catch(error => {
+                    console.error('Error downloading products:', error); // Log any errors
+                });
+        }
+    }
+
+    function addToCart(id){
+        let product_id = [];
+
+        if(id){
+            product_id.push(id);
+        }
+        ApiRequest("product/add-to-cart", 'POST', {
+            product_id: product_id
+        })
+        .then(response => {
+            if (response.data.statusCode == 200) {
+                Swal.fire({
+                    title: "Success!",
+                    text: response.data.message,
+                    icon: "success",
+                    didOpen: () => {
+                        const titleElement = Swal.getTitle();
+                        titleElement.style.color = 'green';
+                        titleElement.style.fontSize = '20px';
+
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                }).then(() => {
+                    window.location.href = "{{ route('create.order') }}";
+                });
+            }
+            else {
+                Swal.fire({
+                    title: "Error!",
+                    text: response.data.message,
+                    icon: "error",
+                    didOpen: () => {
+                        const titleElement = Swal.getTitle();
+                        titleElement.style.color = 'red';
+                        titleElement.style.fontSize = '20px';
+
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
+        });
+    }
+    </script>
 @endsection

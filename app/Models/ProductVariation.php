@@ -7,10 +7,12 @@ use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
 use App\Models\ChannelProductMap;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Razorpay\Api\Product;
 
 class ProductVariation extends Model
 {
@@ -183,6 +185,29 @@ class ProductVariation extends Model
     {
         return $this->hasMany(TopProduct::class);
     }
-    
+
+    /**
+     * get the product variation color
+     *
+     * @param int $product_id
+     * @return void
+     */
+    public static function colorVariation($product_id)
+    {
+        return self::select('color')->distinct()->where('product_id', $product_id)->pluck('color');
+    }
+
+    /**
+     * get the product variation size
+     *
+     * @param int $product_id
+     * @return void
+     */
+    public static function sizeVariation($product_id)
+    {
+        return self::select('size')->distinct()->where('product_id', $product_id)->pluck('size');
+    }
+
+
     
 }

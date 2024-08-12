@@ -311,6 +311,7 @@ class BuyerInventoryController extends Controller
                     'message' => __('auth.unauthorizeLogin'),
                 ]], __('statusCode.statusCode201'));
             }
+            
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'variation_id' => 'required|array',

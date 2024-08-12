@@ -44,6 +44,14 @@ class OrderController extends Controller
     public function addToCart(Request $request)
     {
         try {
+            if (! auth()->check()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizeLogin'),
+                ]], __('statusCode.statusCode200'));
+            }
+
             // Validate the request data
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|array',
@@ -93,8 +101,21 @@ class OrderController extends Controller
             }
 
             if (! empty($cart)) {
-                // Create a new Add To Cart record
-                AddToCart::insert($cart);
+                // Upsert the cart items
+                foreach ($cart as $cartItem) {
+                    AddToCart::updateOrCreate(
+                        [
+                            'buyer_id' => $cartItem['buyer_id'],
+                            'product_id' => $cartItem['product_id']
+                        ],
+                        [
+                            'buyer_id' => $cartItem['buyer_id'],
+                            'product_id' => $cartItem['product_id'],
+                            'quantity' => $cartItem['quantity'],
+                            'added_at' => $cartItem['added_at'],
+                        ]
+                    );
+                }
             }
 
             // Return a success message

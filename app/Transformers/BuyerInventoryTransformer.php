@@ -33,7 +33,7 @@ class BuyerInventoryTransformer extends TransformerAbstract
                 'id' => salt_encrypt($buyerInventory->id),
                 'product_image' => $thumbnail,
                 'title' => $product->title,
-                'link' => url($product->slug),
+                'link' => route('product.details', $product->slug),
                 'sku' => $product->sku,
                 'product_id' => $product->product_slug_id,
                 'stock' => $product->stock,

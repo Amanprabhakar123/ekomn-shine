@@ -50,7 +50,7 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
                 'title' => $product->title, // Product title
                 'slug' => $product->slug, // URL-friendly slug for the product
                 'images' => $thumbnail, // URL to the product image or placeholder
-                'link' => url($product->slug), // URL to the product page
+                'link' => route('product.details', $product->slug), // URL to the product page
                 'description' => $product->description, // Product description
                 'stock' => $stock, // Product stock (or placeholder if not logged in)
                 'price' => $price, // Product price (or prompt to log in if not logged in)
