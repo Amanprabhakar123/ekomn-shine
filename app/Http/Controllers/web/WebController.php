@@ -12,11 +12,12 @@ use App\Models\ProductVariation;
 use App\Services\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ProductInventory;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ProductsCategoryWiseTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-
+use Razorpay\Api\Product;
 
 class WebController extends Controller
 {
@@ -58,13 +59,14 @@ class WebController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function productDetails($id)
+    public function productDetails($slug)
     {
-        $id = salt_decrypt($id);
-        $productVariations = ProductVariation::where('id', $id)->with('media')->first();
+        $productVariations = ProductVariation::where('slug', $slug)->with('media')->with('product.features')->first();
+        $colors = ProductVariation::colorVariation($productVariations->product_id);
+        $sizes = ProductVariation::sizeVariation($productVariations->product_id);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
-
-        return view('web.product-details', compact('productVariations', 'shippingRatesTier'));
+        $tier_rate = json_decode($productVariations->tier_rate, true);
+        return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate', 'colors', 'sizes'));
     }
 
     /**
@@ -93,7 +95,7 @@ class WebController extends Controller
             $min = $request->input('min', '');
             $max = $request->input('max', '');
             $minimumStock = $request->input('minimumStock', '');
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', 8);
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
@@ -103,26 +105,37 @@ class WebController extends Controller
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
-
-            // Get category details
-            $categoryService = new CategoryService;
-            $categoryDetails = $categoryService->getCategoryBySlug($slug);
             $product_ids = [];
             $categorySlug = '';
+            if ($slug !== 'all') {
+                // Get category details
+                $categoryService = new CategoryService;
+                $categoryDetails = $categoryService->getCategoryBySlug($slug);
 
-            if ($categoryDetails['status'] === true) {
-                $product_ids = $categoryDetails['result']['productIds'];
-                $categorySlug = $categoryDetails['result']['category'];
+                if ($categoryDetails['status'] === true) {
+                    $product_ids = $categoryDetails['result']['productIds'];
+                    $categorySlug = $categoryDetails['result']['category'];
+                }
+
+                // Query for product variations
+                $productVariations = ProductVariation::whereIn('status', [
+                    ProductVariation::STATUS_OUT_OF_STOCK,
+                    ProductVariation::STATUS_ACTIVE,
+                ])->whereIn('product_id', $product_ids)->with('media');
+            } else {
+                $productVariations = ProductVariation::whereIn('status', [
+                    ProductVariation::STATUS_OUT_OF_STOCK,
+                    ProductVariation::STATUS_ACTIVE,
+                ])->with('media');
+                // $productVariations = ProductInventory::with('variations')
+                //     ->whereHas('variations', function ($query) {
+                //         $query->whereIn('status', [
+                //             ProductVariation::STATUS_OUT_OF_STOCK,
+                //             ProductVariation::STATUS_ACTIVE,
+                //         ])->with('media');
+                //     });
             }
-
-            // Query for product variations
-            $productVariations = ProductVariation::whereIn('status', [
-                ProductVariation::STATUS_OUT_OF_STOCK,
-                ProductVariation::STATUS_ACTIVE,
-            ])
-                ->whereIn('product_id', $product_ids)
-                ->with('media')
-                ->when($searchTerm, function ($query) use ($searchTerm) {
+            $productVariations = $productVariations->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
                         $query->where('title', 'like', '%' . $searchTerm . '%')
                             ->orWhere('slug', 'like', '%' . $searchTerm . '%')
@@ -161,7 +174,6 @@ class WebController extends Controller
                     $productVariations = $productVariations->where('stock', '>=', $minimumStock);
                 }
             }
-
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
                 ->paginate($perPage);
@@ -194,6 +206,7 @@ class WebController extends Controller
                 'line' => $e->getLine(),
             ];
 
+            dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 

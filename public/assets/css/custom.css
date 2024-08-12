@@ -134,6 +134,13 @@
 }
 
 
+.prod-video{
+  width: 22%;
+  height: 0%;
+  object-fit: cover;
+  display: block !important;
+}
+
 
 
 

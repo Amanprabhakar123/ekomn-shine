@@ -64,4 +64,5 @@
 <script type="text/javascript" src="{{asset('assets/js/owl.carousel.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/ek.common.js')}}"></script>
 <script type="text/javascript" src="{{asset('assets/js/request.js')}}"></script>
+@yield('scripts')
   

@@ -7,6 +7,7 @@ use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Http\JsonResponse;
+use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -44,6 +45,11 @@ const BULK_UPLOAD_STATUS_FAILED = 4;
 const BULK_UPLOAD_STATUS_QUEUED = 5;
 const BULK_UPLOAD_STATUS_VALIDATION_ERROR = 6;
 
+// Media Type
+const MEDIA_TYPE_IMAGE = ProductVariationMedia::MEDIA_TYPE_IMAGE;
+const MEDIA_TYPE_VIDEO = ProductVariationMedia::MEDIA_TYPE_VIDEO;
+const IS_MASTER_TRUE = ProductVariationMedia::IS_MASTER_TRUE;
+const IS_MASTER_FALSE = ProductVariationMedia::IS_MASTER_FALSE;
 
 /**
  * Encrypts a string using a salt key.

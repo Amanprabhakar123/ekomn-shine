@@ -19,7 +19,7 @@ class CategoryService
         // Generate all combinations of tags
         $combinations = $this->generateCombinations($tags);
         try {
-            if (!empty($combinations)) {
+            if (! empty($combinations)) {
                 foreach ($combinations as $combination) {
                     [$tag1, $tag2] = $combination;
 
@@ -77,7 +77,7 @@ class CategoryService
 
             // Check if the any one  tag has a matching main category
             foreach ($tags as $firstTag) {
-                if (!empty($firstTag)) {
+                if (! empty($firstTag)) {
                     $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
                     //i want to update this logic if $category1->depth === 3 and $category1->depth === 2 i want to check root_parent_id and parent_id data root_parent_id is main category and parent_id is sub category another case if $category1->depth === 1 i want to check root_parent_id if root_parent_id is null then i want to set main category and sub category is same if $category1->depth === 0 i want to set main category and sub category is same and same for $category2
 

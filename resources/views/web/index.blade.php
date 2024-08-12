@@ -402,6 +402,7 @@
         </section>
     </div>
 @endsection
+@section('scripts')
 <script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
 <script>
@@ -625,7 +626,7 @@
                 console.log(err);
             });
 
-            ApiRequest('get-banner', 'GET')
+            ApiRequest('get-banner?type=home', 'GET')
             .then(res => {
                 if (res.data.statusCode == 200) {
                     const imagePath = res.data.data;
@@ -649,3 +650,4 @@
             });
     });
 </script>
+@endsection
