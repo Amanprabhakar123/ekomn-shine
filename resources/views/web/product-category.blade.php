@@ -54,6 +54,9 @@
                     </div>
                 </div>
                 <div class="productListing">
+                <div class="sub_banner" id="dynamicBanner">
+            <!-- load dynamic banner here -->
+          </div>
                     <div class="pt-1">
                         <ol class="ekbreadcrumb">
                             <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
@@ -412,4 +415,34 @@
                 });
         }
     }
+
+    // banner api call
+$('document').ready(function() {
+    ApiRequest(`get-banner?type=category&slug=${slug}`, 'GET')
+            .then(res => {
+                if (res.data.statusCode == 200) {
+                    const imagePath = res.data.data;
+                    console.log(imagePath);
+                    var html = '';
+                    if(res.data.data.length == 0){
+                    }
+                               
+                    imagePath.forEach(element => {
+                        console.log(element.image_path)
+                        html += `
+                          
+                                 <img src="${element.image_path}" height="300"/>
+                               
+                            
+                            `;
+                    });
+                    $('#dynamicBanner').html(html);
+                } 
+            })
+            .catch(err => {
+                console.log(err);
+              
+            });
+
+});
 </script>
