@@ -41,7 +41,7 @@ class RecommendationService
                     }
                     $productIds = $productIds->pluck('product_id');
             }
-             // i need a logic if the product list is count is less than 12 i will fetch the remaining products from the product inventory
+            // Fetch the remaining products
             if (count($productIds) < $limit) {
                 $remainingProductIds = $limit - count($productIds);
                 $productList = ProductVariation::whereIn('product_id', function ($query) {
