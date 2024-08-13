@@ -6,21 +6,26 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "algolia/algoliasearch-client-php": "^3.4",
         "barryvdh/laravel-dompdf": "^2.2",
         "darkaonline/l5-swagger": "^8.6",
         "guzzlehttp/guzzle": "^7.2",
+        "http-interop/http-factory-guzzle": "^1.2",
         "josiasmontag/laravel-recaptchav3": "^1.0",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
+        "laravel/scout": "^10.11",
         "laravel/socialite": "^5.14",
         "laravel/tinker": "^2.8",
         "league/fractal": "^0.20.1",
         "maatwebsite/excel": "^3.1",
+        "meilisearch/meilisearch-php": "^1.9",
         "razorpay/razorpay": "2.*",
         "spatie/laravel-activitylog": "^4.8",
         "spatie/laravel-permission": "^6.7",
         "tinify/tinify": "^1.6",
-        "tymon/jwt-auth": "^2.1"
+        "tymon/jwt-auth": "^2.1",
+        "typesense/typesense-php": "^4.9"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
