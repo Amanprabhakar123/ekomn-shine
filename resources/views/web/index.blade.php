@@ -39,7 +39,7 @@
                         <div class="ekom_card">
                             <div class="ekom_card_head">
                                 <h2>Premium Products</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
+                                <a href="{{ route('product.type', ['type' => 'premium']) }}" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
                                 <div class="row gx-3" id="premium">
@@ -52,7 +52,8 @@
                         <div class="ekom_card">
                             <div class="ekom_card_head">
                                 <h2>New Arrivals</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
+                                <a href="{{ route('product.type', ['type' => 'new-arrivals']) }}" class="a_color">View
+                                    All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
                                 <div class="row gx-3" id="new_arrivals">
@@ -79,7 +80,7 @@
                         <div class="ekom_card">
                             <div class="ekom_card_head">
                                 <h2>In Demand</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
+                                <a href="{{ route('product.type', ['type' => 'in-demand']) }}" class="a_color">View All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
                                 <div class="row gx-3" id="in_demand">
@@ -92,7 +93,8 @@
                         <div class="ekom_card">
                             <div class="ekom_card_head">
                                 <h2>Regular available</h2>
-                                <a href="product_category.html" class="a_color">View All</a>
+                                <a href="{{ route('product.type', ['type' => 'regular-available']) }}" class="a_color">View
+                                    All</a>
                             </div>
                             <div class="ekom_card_body prod_3">
                                 <div class="row gx-3" id="regular">

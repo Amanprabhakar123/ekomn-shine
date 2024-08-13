@@ -56,7 +56,7 @@ Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name
 Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('product.category');
 Route::get('product-details/{slug}', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
-Route::get('/products/{type}', [WebController::class, 'productsTypeWise'])->name('products.type');
+Route::get('/product/{type}', [WebController::class, 'productsType'])->name('product.type');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -165,6 +165,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 
     // Home Page Category Wise Product Listing
+    Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
     Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');

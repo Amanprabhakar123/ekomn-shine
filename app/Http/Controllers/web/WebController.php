@@ -369,6 +369,136 @@ class WebController extends Controller
 
     public function productsTypeWise(Request $request, $type)
     {
-        dd($type);
+        try {
+            // Retrieve input parameters for filtering, sorting, and pagination
+            $productWithVideos = $request->input('productWithVideos', false);
+            $newArrived = $request->input('new_arrived', false);
+            $min = $request->input('min', '');
+            $max = $request->input('max', '');
+            $minimumStock = $request->input('minimumStock', '');
+            $perPage = $request->input('per_page', 8);
+            $searchTerm = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort field is 'id'
+            $sortOrder = $request->input('categories', 'desc'); // Default sort direction is 'desc'
+            $sortByStatus = (int) $request->input('status', 1); // Default status filter
+
+            // Define allowed fields for sorting to prevent SQL injection
+            $allowedSorts = ['type', 'sku', 'title', 'description', 'created_at', 'status'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
+
+            // Determine product type based on the given type parameter
+            $product_ids = [];
+            switch ($type) {
+                case 'new-arrival':
+                    $productType = TopProduct::TYPE_NEW_ARRIVAL;
+                    break;
+                case 'premium':
+                    $productType = TopProduct::TYPE_PREMIUM_PRODUCT;
+                    break;
+                case 'in-demand':
+                    $productType = TopProduct::TYPE_IN_DEMAND;
+                    break;
+                case 'regular-available':
+                    $productType = TopProduct::TYPE_REGULAR_AVAILABLE;
+                    break;
+                default:
+                    $productType = 'unknown';
+                    break;
+            }
+
+            // Fetch products of the determined type
+            $topProducts = TopProduct::where('type', $productType)->get();
+            foreach ($topProducts as $product) {
+                $product_ids[] = $product->product_id;
+            }
+
+            // Query for product variations based on status and product IDs
+            if ($type !== '') {
+                $productVariations = ProductVariation::whereIn('status', [
+                    ProductVariation::STATUS_OUT_OF_STOCK,
+                    ProductVariation::STATUS_ACTIVE,
+                ])->whereIn('product_id', $product_ids)->with('media');
+            }
+
+            // Apply search filter if a search term is provided
+            $productVariations = $productVariations->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
+                });
+            });
+
+            // Filter by new arrival if specified
+            if ($newArrived) {
+                $productVariations = $productVariations->where('created_at', '>=', Carbon::now()->subDays(30))->latest();
+            }
+
+            // Filter by products with video content
+            if ($productWithVideos) {
+                $productVariations = $productVariations->whereHas('media', function ($query) {
+                    $query->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO);
+                });
+            }
+
+            // Apply price range filter if specified
+            if ($min != '' && $max == '') {
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($max != '' && $min == '') {
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            } elseif ($min !== '' && $max !== '') {
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
+            }
+
+            // Filter by minimum stock if specified
+            if ($minimumStock !== '') {
+                $minimumStock = (int) $minimumStock;
+                if ($minimumStock > 0) {
+                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
+                }
+            }
+
+            // Apply sorting and pagination
+            $productVariations = $productVariations->orderBy($sort, $sortOrder)
+                ->paginate($perPage);
+
+            // Transform the product variations using Fractal
+            $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
+            $resource->setPaginator(new IlluminatePaginatorAdapter($productVariations));
+            $products = $this->fractal->createData($resource)->toArray();
+
+            // Prepare and return the response
+            $data = [
+                'Type' => $type,
+                'productVariations' => $products,
+            ];
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $data,
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Handle and log exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+
+            // Return a JSON response with error details
+            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+        }
+    }
+
+
+    public function productsType($type)
+    {
+        return view('web.product-type', compact('type'));
     }
 }
