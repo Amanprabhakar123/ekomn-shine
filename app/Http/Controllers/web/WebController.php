@@ -15,12 +15,8 @@ use App\Services\RecommendationService;
 use App\Services\UserActivityService;
 use App\Transformers\ProductsCategoryWiseTransformer;
 use Carbon\Carbon;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\DB;
-use League\Fractal\Manager;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Resource\Collection;
@@ -251,7 +247,7 @@ class WebController extends Controller
 
             // Execute the query with bindings to prevent SQL injection
             $topProducts = DB::select($rankedProductsQuery, TopProduct::TYPE_ARRAY_FOR_SELECT);
-            dd($topProducts);
+            // dd($topProducts);
             if (empty($topProducts)) {
                 return response()->json([
                     'data' => [
