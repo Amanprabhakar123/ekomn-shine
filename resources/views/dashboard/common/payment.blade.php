@@ -299,7 +299,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="productTitle_t">
-                                    <a href="${item.view_order}" class="a_link">${item.order_no}</a>
+                                    <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
                                 </div>
                             </td>
                             @if(auth()->user()->hasRole(ROLE_ADMIN))

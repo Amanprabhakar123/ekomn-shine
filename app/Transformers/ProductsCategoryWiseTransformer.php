@@ -20,7 +20,6 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
         try {
             // Retrieve the master media associated with the product, if available
             $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
-            
             // If no master media is found, use a placeholder image; otherwise, use the file path from the media
             if ($media == null) {
                 $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
@@ -30,18 +29,19 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
 
             // Check if the user is authenticated
             $userIsExist = auth()->check();
-
+            $is_login = false;
             // Depending on the user's authentication status, set the stock, price, and status
             if ($userIsExist) {
                 // If the user is authenticated, display actual stock, price, and availability status
                 $stock = $product->stock;
-                $price = $product->price_before_tax;
+                $price = '<i class="fas fa-rupee-sign me-1"></i>' . $product->price_before_tax;
                 $status = getAvailablityStatusName($product->availability_status);
+                $is_login = true;
             } else {
                 // If the user is not authenticated, show placeholder values and prompt to log in to see the price
                 $stock = '...';
                 $status = 'Regular Availability';
-                $price = '<a style="color:inherit" href="'.route('login').'">Login to See Price</a>';
+                $price = '<a style="color:inherit" href="'.route('buyer.login').'">Login to See Price</a>';
             }
 
             // Return an associative array with product details
@@ -50,12 +50,14 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
                 'title' => $product->title, // Product title
                 'slug' => $product->slug, // URL-friendly slug for the product
                 'images' => $thumbnail, // URL to the product image or placeholder
-                'link' => url($product->slug), // URL to the product page
+                'link' => route('product.details', $product->slug), // URL to the product page
                 'description' => $product->description, // Product description
                 'stock' => $stock, // Product stock (or placeholder if not logged in)
                 'price' => $price, // Product price (or prompt to log in if not logged in)
                 'availability_status' => $status, // Product availability status
                 'status' => getStatusName($product->status), // Product status name
+                'is_login' => (boolean) $is_login, // User authentication status
+                'login_url' => route('buyer.login'), // URL to the login page
             ];
 
             return $data;

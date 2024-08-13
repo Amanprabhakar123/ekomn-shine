@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\MsiSettingAdmin;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Banner;
 use App\Models\Category;
+use App\Models\TopProduct;
+use App\Models\TopCategory;
+use Illuminate\Support\Str;
+use League\Fractal\Manager;
+use Illuminate\Http\Request;
+use App\Events\ExceptionEvent;
+use App\Services\ImageService;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\TopCategory;
-use App\Models\TopProduct;
-use App\Models\User;
-use Illuminate\Http\Request;
-use League\Fractal\Manager;
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
@@ -52,8 +55,212 @@ class HomeController extends Controller
             abort(403);
         }
 
-        return view('dashboard.admin.banners');
+        $type = Banner::BANNER_TYPE_ARRAY;
+        return view('dashboard.admin.banners', compact('type'));
     }
+
+    /**
+     * post banner api function
+     * @param  Request  $request
+     *  
+     * @return \Illuminate\Http\Response
+     */
+
+    public function storeBanner(Request $request)
+    {
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            $filename = time() . '.' . $request->banner->getClientOriginalExtension();
+            if ($request->banner_type == Banner::BANNER_TYPE_HOME) {
+                $banner_path = storage('home_slider', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/home-slider/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_CATEGORY) {
+                $banner_path = storage('category_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/category-banner/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_PRODUCT) {
+                $banner_path = storage('product_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/product-banner/' . Str::random(40) . '.webp';
+            } elseif ($request->banner_type == Banner::BANNER_TYPE_USER) {
+                $banner_path = storage('user_dashboard_banner', file_get_contents($request->banner), [1], $filename, 'public');
+                $destinationPath = 'app/user-dashboard-banner/' . Str::random(40) . '.webp';
+            }
+
+            // Get the original path of the image
+            $originalPath = str_replace('public/', '', $banner_path);
+            $originalFullPath = storage_path('app/public/' . $originalPath);
+
+            // Convert and compress the image to WebP format
+            $imageService = new ImageService();
+            $imageService->convertAndCompressToWebP($originalFullPath, $destinationPath);
+            // Delete the original image
+            unlink($originalFullPath);
+
+            // Create a new banner
+            $banner = Banner::create([
+                'title' => $request->title,
+                'image_path' => 'storage/' . $destinationPath,
+                'banner_type' => $request->banner_type
+            ]);
+
+            // Save the category ID if it exists
+            if ($request->category_id) {
+                $banner->category_id = salt_decrypt($request->category_id);
+                $banner->save();
+            }
+
+            // Save the user role if it exists
+            if ($request->user_role) {
+                $banner->user_role = $request->user_role;
+                $banner->save();
+            }
+
+            // Return response
+            if ($banner) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.bannerCreated'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            } else {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status403'),
+                        'message' => __('auth.bannerNotCreate'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+        }
+    }
+
+    /**
+     * get banner api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getBanner(Request $request)
+    {
+        try {
+            if($request->has('type') && ($request->type == 'all')){
+                $banner = Banner::get();
+            }elseif($request->has('type') && ($request->type == 'home')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
+            }elseif($request->has('type') && ($request->type == 'category')){
+                $slug = $request->slug;
+                $category = Category::where('slug', $slug)->first();
+                if($category){
+                    $banner = Banner::where('banner_type', Banner::BANNER_TYPE_CATEGORY)
+                    ->where('category_id', $category->id)
+                    ->get();
+                }else{
+                    $banner = [];
+                }
+            }elseif($request->has('type') && ($request->type == 'product')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_PRODUCT)->get();
+            }elseif($request->has('type') && ($request->type == 'user')){
+                $banner = Banner::where('banner_type', Banner::BANNER_TYPE_USER)->get();
+            }
+            $transformData = $banner->map(function ($item) {
+                return [
+                    'id' => salt_encrypt($item->id),
+                    'title' => $item->title,
+                    'image_path' => url($item->image_path),
+                    'banner_type' => $item->getType(),
+                ];
+            });
+            // Return response
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $transformData,
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.bannerFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * create banner delete api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteBanner(Request $request)
+    {
+        try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_BANNER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    // 'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $banner = Banner::find(salt_decrypt($request->id));
+            unlink($banner->image_path);
+            $banner->delete();
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.bannerDelete'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.deleteFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+
 
     /**
      * get category list api function
@@ -70,10 +277,17 @@ class HomeController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
-            $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
+            if($request->has('type') && $request->type =='banner'){
+                $categories = Category::select('id', 'name')->where('depth', 0)
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
+            }else{
+                $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
+                ->where('id', '!=', 1)
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }
 
             $categories_list = [];
             foreach ($categories as $key => $value) {
@@ -125,8 +339,8 @@ class HomeController extends Controller
                 ->pluck('id');
 
             $product = ProductVariation::whereIn('product_id', $product_ids)
-            ->where('status', ProductInventory::STATUS_ACTIVE)
-            ->select('title', 'id')->get();
+                ->where('status', ProductInventory::STATUS_ACTIVE)
+                ->select('title', 'id')->get();
             $product = $product->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),
@@ -328,7 +542,7 @@ class HomeController extends Controller
             event(new ExceptionEvent($exceptionDetails));
 
             // Return a JSON response with error details
-            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
+            return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
         }
     }
 
@@ -533,6 +747,5 @@ class HomeController extends Controller
                 ],
             ], __('statusCode.statusCode500'));
         }
-
     }
 }

@@ -304,7 +304,7 @@
                                         if (res.data.statusCode == 200) {
                                             Swal.fire({
                                                 title: "Deleted!",
-                                                text: "Your file has been deleted.",
+                                                text: "Your banner has been deleted.",
                                                 icon: "success",
                                                 didOpen: () => {
                                                     const title = Swal.getTitle();
