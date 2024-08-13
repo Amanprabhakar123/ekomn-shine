@@ -11,18 +11,29 @@ class UserActivity extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'user_id',
         'product_id',
         'activity_type',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     const ACTIVITY_TYPE_VIEW = 1;
     const ACTIVITY_TYPE_BUY_NOW_OR_ADD_TO_CART = 2;
     const ACTIVITY_TYPE_ADD_TO_INVENTORY = 3;
     const ACTIVITY_TYPE_SEARCH = 4;
-    const ACTIVITY_TYPE_CLICK = 5;
+    const ACTIVITY_TYPE_CLICK = 5; // not used
     const ACTIVITY_TYPE_PURCHASE = 6;
+    const ACTIVITY_TYPE_DOWNLOAD = 7;
 
     // Define the relationship with the user Buyer
     public function user()
@@ -58,8 +69,12 @@ class UserActivity extends Model
             case self::ACTIVITY_TYPE_PURCHASE:
                 return 'Purchase';
                 break;
+            case self::ACTIVITY_TYPE_DOWNLOAD:
+                return 'Download';
+                break;
             default:
                 return 'Unknown';
         }
     }
+    
 }

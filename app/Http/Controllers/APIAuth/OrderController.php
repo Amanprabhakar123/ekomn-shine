@@ -11,6 +11,7 @@ use App\Models\AddToCart;
 use App\Models\ShipmentAwb;
 use League\Fractal\Manager;
 use App\Models\OrderPayment;
+use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Services\OrderService;
@@ -18,6 +19,7 @@ use App\Models\ProductVariation;
 use App\Models\OrderItemAndCharges;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Services\UserActivityService;
 use App\Events\OrderStatusChangedEvent;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -100,9 +102,12 @@ class OrderController extends Controller
                 }
             }
 
+            $userActivityService = new UserActivityService;
             if (! empty($cart)) {
                 // Upsert the cart items
                 foreach ($cart as $cartItem) {
+                    // Log the user add to cart activity
+                    $userActivityService->logActivity($cartItem['product_id'], UserActivity::ACTIVITY_TYPE_BUY_NOW_OR_ADD_TO_CART);
                     AddToCart::updateOrCreate(
                         [
                             'buyer_id' => $cartItem['buyer_id'],
@@ -199,6 +204,7 @@ class OrderController extends Controller
                 if (! empty($productVariationSku)) {
 
                     if ($productVariationSku->stock > 0) {
+                        $userActivityService = new UserActivityService;
                         // Create a new Add To Cart record
                         AddToCart::create([
                             'buyer_id' => $user->id,
@@ -206,6 +212,8 @@ class OrderController extends Controller
                             'quantity' => AddToCart::DEFAULT_QUANTITY,
                             'added_at' => now(),
                         ]);
+
+                        $userActivityService->logActivity($productVariationSku->id, UserActivity::ACTIVITY_TYPE_BUY_NOW_OR_ADD_TO_CART);
 
                         // Return a success message
                         return response()->json(['data' => [

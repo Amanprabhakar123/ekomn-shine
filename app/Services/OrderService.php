@@ -12,6 +12,7 @@ use App\Models\OrderRefund;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
+use App\Models\UserActivity;
 use App\Models\SupplierPayment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OrderTransaction;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderItemAndCharges;
 use App\Events\NewOrderCreatedEvent;
 use App\Models\CompanyAddressDetail;
+use App\Services\UserActivityService;
 use Illuminate\Support\Facades\Storage;
 use App\Models\OrderPaymentDistribution;
 
@@ -414,6 +416,7 @@ class OrderService
                 'status' => OrderTransaction::STATUS_SUCCESS,
             ]);
 
+            $userActivityService = new UserActivityService;
             // Update product stock
             $order_item = OrderItemAndCharges::where('order_id', $orderPayment->order_id)->get();
             foreach ($order_item as $item) {
@@ -423,6 +426,7 @@ class OrderService
 
                 // Remove Cart Item
                 AddToCart::where('product_id', $item->product_id)->delete();
+                $userActivityService->logActivity($item->product_id, UserActivity::ACTIVITY_TYPE_PURCHASE);
             }
 
             $response = [
