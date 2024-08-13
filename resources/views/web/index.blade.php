@@ -113,7 +113,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/outdoor_1.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/outdoor_1.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -130,7 +130,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/premium_3.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/premium_3.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -147,7 +147,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/product_2.jpg" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/product_2.jpg')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -164,7 +164,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/arrival_3.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/arrival_3.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -181,7 +181,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/arrival_1.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/arrival_1.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -198,7 +198,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/outdoor_3.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/outdoor_3.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -215,7 +215,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/new_1.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/new_1.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -232,7 +232,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/new_2.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/new_2.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -249,7 +249,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/new_3.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/new_3.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -266,7 +266,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/new_4.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/new_4.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -283,7 +283,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/new_5.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/new_5.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -300,7 +300,7 @@
                             <a href="product-details.html" class="product_card text_u">
                                 <div class="product_image_wraper">
                                     <div class="product_image">
-                                        <img src="../assets/images/product/premium_2.webp" class="_pdimg" tabindex="-1">
+                                        <img src="{{asset('assets/images/product/premium_2.webp')}}" class="_pdimg" tabindex="-1">
                                     </div>
                                     <div class="gray"></div>
                                 </div>
@@ -323,7 +323,7 @@
         <div class="row align-items-center ">
           <div class="col-sm-12 col-md-6">
             <div class="advantage">
-              <img src="../assets/images/icon/advantageText.svg" alt="">
+              <img src="{{asset('assets/images/icon/advantageText.svg')}}" alt="">
               <p class="fs-20 mt30">We literally give wings to your eCommerce enterprise!
                 More than 10K products across leading categories.</p>
               <div class="d-flex justify-content-center mt40 pt-4 mbspace">
@@ -336,7 +336,7 @@
               <div class="advstep">
                 <div class="advstephead">
                   <div class="advhimg">
-                    <img src="../assets/images/icon/adv_1.svg" alt="">
+                    <img src="{{asset('assets/images/icon/adv_1.svg')}}" alt="">
                   </div>
                   <h3 class="fs-24 m-0">Growth Tools</h3>
                 </div>
@@ -349,7 +349,7 @@
               <div class="advstep">
                 <div class="advstephead">
                   <div class="advhimg">
-                    <img src="../assets/images/icon/adv_2.svg" alt="">
+                    <img src="{{asset('assets/images/icon/adv_2.svg')}}" alt="">
                   </div>
                   <h3 class="fs-24 m-0">Product Sourcing</h3>
                 </div>
@@ -362,7 +362,7 @@
               <div class="advstep">
                 <div class="advstephead">
                   <div class="advhimg">
-                    <img src="../assets/images/icon/adv_3.svg" alt="">
+                    <img src="{{asset('assets/images/icon/adv_3.svg')}}" alt="">
                   </div>
                   <h3 class="fs-24 m-0">Services</h3>
                 </div>
@@ -382,7 +382,7 @@
         <div class="row align-items-center ">
           <div class="col-sm-12 col-md-6">
             <div class="advantage">
-              <img src="../assets/images/icon/commit.svg" alt="">
+              <img src="{{asset('assets/images/icon/commit.svg')}}" alt="">
               <p class="fs-20 mt30">Committed to create and support over 1 mm thriving
                 online enterprises in India by 2027.</p>
               <div class="d-flex justify-content-center mt40 pt-4 mbspace">
@@ -395,7 +395,7 @@
               <div class="advstep">
                 <div class="commstephead">
                   <div class="advhimg mb10">
-                    <img src="../assets/images/icon/commit_1.svg" alt="">
+                    <img src="{{asset('assets/images/icon/commit_1.svg')}}" alt="">
                   </div>
                   <p class="fs-20 text-center m-0">Ever growing catalog of Innovative
                     and winning products</p>
@@ -404,7 +404,7 @@
               <div class="advstep">
                 <div class="commstephead">
                   <div class="advhimg mb10">
-                    <img src="../assets/images/icon/commit_2.svg" alt="">
+                    <img src="{{asset('assets/images/icon/commit_2.svg')}}" alt="">
                   </div>
                   <p class="fs-20 text-center m-0">Competitive wholesale prices &
                     Assured product quality</p>
@@ -413,7 +413,7 @@
               <div class="advstep">
                 <div class="commstephead">
                   <div class="advhimg mb10">
-                    <img src="../assets/images/icon/commit_3.svg" alt="">
+                    <img src="{{asset('assets/images/icon/commit_3.svg')}}" alt="">
                   </div>
                   <p class="fs-20 text-center m-0">Prompt support and help</p>
                 </div>
@@ -421,7 +421,7 @@
               <div class="advstep">
                 <div class="commstephead">
                   <div class="advhimg mb10">
-                    <img src="../assets/images/icon/commit_4.svg" alt="">
+                    <img src="{{asset('assets/images/icon/commit_4.svg')}}" alt="">
                   </div>
                   <p class="fs-20 text-center m-0">Business Trainings & Services</p>
                 </div>

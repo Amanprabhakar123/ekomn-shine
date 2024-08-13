@@ -78,8 +78,8 @@
                                         @foreach($sizes as $size)
                                             @if($productVariations->size == $size['size'])
                                         <label class="radio-item">
-                                            <input type="radio" checked name="size" value="{{route('product.details', $productVariations->slug)}}">
-                                            <span class="radio-text h_30">{{$productVariations->size}}</span>
+                                            <input type="radio" checked name="size" value="{route('product.details', $size['slug'])}}">
+                                            <span class="radio-text h_30">{{$size['size']}}</span>
                                         </label>
                                             @else
                                         <label class="radio-item">
@@ -192,7 +192,7 @@
                                         <tbody>
                                             <tr>
                                                 <td>Brand Name</td>
-                                                <td>XYZ</td>
+                                                <td></td>
                                             </tr>
                                             <tr>
                                                 <td>SKU</td>
@@ -200,11 +200,11 @@
                                             </tr>
                                             <tr>
                                                 <td>HSN</td>
-                                                <td>{{ $productVariations->hsn }}</td>
+                                                <td>{{ $productVariations->product->hsn }}</td>
                                             </tr>
                                             <tr>
                                                 <td>GST Bracket</td>
-                                                <td>18%</td>
+                                                <td>{{$productVariations->product->gst_percentage}}%</td>
                                             </tr>
                                             <tr>
                                                 <td>Product Dimensions</td>
