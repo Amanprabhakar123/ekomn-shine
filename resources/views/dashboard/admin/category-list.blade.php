@@ -250,7 +250,7 @@
                             `);
                         }
                         data.forEach((item) => {
-                            const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
+                            const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u" target="_blank">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
                                 <tr>
                                     <td>${item.category}</td>

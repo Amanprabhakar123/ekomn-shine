@@ -9,12 +9,14 @@ use App\Models\TopProduct;
 use App\Models\TopCategory;
 use Illuminate\Support\Str;
 use League\Fractal\Manager;
+use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Services\ImageService;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Http\Controllers\Controller;
+use App\Services\UserActivityService;
 
 class HomeController extends Controller
 {
@@ -570,7 +572,7 @@ class HomeController extends Controller
                     'product' => $item->topProduct->map(function ($product) {
                         return [
                             'title' => $product->productVarition->title,
-                            'slug' => url($product->productVarition->slug),
+                            'slug' => route('product.details',$product->productVarition->slug),
                         ];
                     })->toArray(),
                 ];
@@ -672,6 +674,7 @@ class HomeController extends Controller
                     'id' => salt_encrypt($item->id),
                     'title' => $item->productVarition->title,
                     'type' => $item->getType(),
+                    'slug' => route('product.details',$item->productVarition->slug),
                 ];
             });
 
@@ -736,6 +739,48 @@ class HomeController extends Controller
                 'line' => $e->getLine(),
             ];
 
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.deleteFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * add click count api function
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function addClickCount(Request $request)
+    {
+        try {
+            // remove the base url from the request url
+            $slug = str_replace(url('/').'/product-details/', '', $request->url);
+            // Find the product by slug
+            $product = ProductVariation::where('slug', $slug)->pluck('id')->first();
+            
+            $userActivityService = new UserActivityService;
+            // Log the user view activity
+            $userActivityService->logActivity($product, UserActivity::ACTIVITY_TYPE_CLICK);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 

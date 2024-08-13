@@ -249,47 +249,39 @@ class WebController extends Controller
 
             // Execute the query with bindings to prevent SQL injection
             $topProducts = DB::select($rankedProductsQuery, TopProduct::TYPE_ARRAY_FOR_SELECT);
-            // dd($topProducts);
-            if (empty($topProducts)) {
-                return response()->json([
-                    'data' => [
-                        'statusCode' => __('statusCode.statusCode404'),
-                        'status' => __('statusCode.status404'),
-                        'message' => __('statusCode.message404'),
-                    ],
-                ], __('statusCode.statusCode404'));
-            }
+        
             $data = [];
-            foreach ($topProducts as $product) {
-                if ($product->type == TopProduct::TYPE_PREMIUM_PRODUCT) {
-                    $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
-                        'title' => $product->title,
-                       'slug' => route('product.details', $product->slug),
-                        'price_before_tax' => $product->price_before_tax,
-                        'product_image' => url($product->thumbnail_path),
-
-                    ];
-                } elseif ($product->type == TopProduct::TYPE_NEW_ARRIVAL) {
-                    $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
-                        'title' => $product->title,
-                       'slug' => route('product.details', $product->slug),
-                        'price_before_tax' => $product->price_before_tax,
-                        'product_image' => url($product->thumbnail_path),
-                    ];
-                } elseif ($product->type == TopProduct::TYPE_IN_DEMAND) {
-                    $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
-                        'title' => $product->title,
-                        'slug' => route('product.details', $product->slug),
-                        'price_before_tax' => $product->price_before_tax,
-                        'product_image' => url($product->thumbnail_path),
-                    ];
-                } elseif ($product->type == TopProduct::TYPE_REGULAR_AVAILABLE) {
-                    $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
-                        'title' => $product->title,
-                        'slug' => route('product.details', $product->slug),
-                        'price_before_tax' => $product->price_before_tax,
-                        'product_image' => url($product->thumbnail_path),
-                    ];
+            if(!empty($topProducts)){
+                foreach ($topProducts as $product) {
+                    if ($product->type == TopProduct::TYPE_PREMIUM_PRODUCT) {
+                        $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
+                            'title' => $product->title,
+                            'slug' => route('product.details', $product->slug),
+                            'price_before_tax' => $product->price_before_tax,
+                            'product_image' => url($product->thumbnail_path),
+                        ];
+                    } elseif ($product->type == TopProduct::TYPE_NEW_ARRIVAL) {
+                        $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
+                            'title' => $product->title,
+                            'slug' => route('product.details', $product->slug),
+                            'price_before_tax' => $product->price_before_tax,
+                            'product_image' => url($product->thumbnail_path),
+                        ];
+                    } elseif ($product->type == TopProduct::TYPE_IN_DEMAND) {
+                        $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
+                            'title' => $product->title,
+                            'slug' => route('product.details', $product->slug),
+                            'price_before_tax' => $product->price_before_tax,
+                            'product_image' => url($product->thumbnail_path),
+                        ];
+                    } elseif ($product->type == TopProduct::TYPE_REGULAR_AVAILABLE) {
+                        $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
+                            'title' => $product->title,
+                            'slug' => route('product.details', $product->slug),
+                            'price_before_tax' => $product->price_before_tax,
+                            'product_image' => url($product->thumbnail_path),
+                        ];
+                    }
                 }
             }
 
@@ -360,7 +352,6 @@ class WebController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            dd($exceptionDetails);
 
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
