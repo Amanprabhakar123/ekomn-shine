@@ -166,10 +166,11 @@
                             `);
                         }
                         data.forEach((item) => {
+                            console.log(item);
                             // const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
                                 <tr>
-                                    <td><div class="w_500_f wordbreak">${item.title}</div></td>
+                                    <td><div class="w_500_f wordbreak"><a href="${item.slug}" class="text_u" target="_blank">${item.title}</a></div></td>
                                     <td>${item.type}</td>
                                     <td>
                                         <button class="btn btn-sm btn-danger" onclick="deleteProduct('${item.id}')">Delete</button>

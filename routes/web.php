@@ -171,7 +171,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
-
+    Route::post('add-click-count', [HomeController::class, 'addClickCount'])->name('add.click.count');
+    
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');

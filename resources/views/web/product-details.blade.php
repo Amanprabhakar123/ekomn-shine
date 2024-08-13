@@ -495,17 +495,28 @@
         });
     }
 
+     // Function to add a click count to the product variation
+     function addToClickCount(url) {
+        // Send a POST request to the API endpoint
+        ApiRequest('add-click-count', 'POST', { url: url })
+            .then(response => {
+                window.location.href = url; // Redirect to the selected URL
+            })
+            .catch(error => {
+                console.error('Error adding click count:', error); // Log any errors
+            });
+    }
     // Function to handle the change event of the color dropdown
     document.getElementById('colorChange').addEventListener('change', function() {
         var selectedOption = this.options[this.selectedIndex];
-        window.location.href = selectedOption.value;
-        // alert(selectedOption.value);
+        addToClickCount(selectedOption.value);
+        
     });
 
     document.querySelectorAll('input[name="size"]').forEach(function(radio) {
     radio.addEventListener('change', function() {
         if (this.checked) {
-            window.location.href = this.value;
+            addToClickCount(this.value);
         }
     });
 });
