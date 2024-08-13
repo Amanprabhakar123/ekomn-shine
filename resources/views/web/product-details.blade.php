@@ -11,7 +11,6 @@
                                 @php 
                                 $main_image = '';
                                 @endphp
-                                @if(!empty($productVariations->media))
                                 @foreach ($productVariations->media as $media)
                                     @if($media->is_master == IS_MASTER_TRUE)
                                     @php 
@@ -20,13 +19,11 @@
                                     <img src="{{$main_image}}" alt="" id="main-img">
                                     @endif
                                 @endforeach
-                                @endif
                                 </div>
                                 <div class="carousel-container">
                                     <button class="carousel-button prev"><i class="fas fa-chevron-left"></i></button>
                                     <div class="carousel-wrapper">
                                         <div class="small-card">
-                                            @if(!empty($productVariations->media))
                                             @foreach ($productVariations->media as $media)
                                                 @if($media->media_type == MEDIA_TYPE_IMAGE)
                                                     @if($media->is_master == IS_MASTER_TRUE)
@@ -40,8 +37,6 @@
                                                     </video>
                                                 @endif
                                             @endforeach
-                                            @endif
-
                                         </div>
                                     </div>
                                     <button class="carousel-button next"><i class="fas fa-chevron-right"></i></button>
