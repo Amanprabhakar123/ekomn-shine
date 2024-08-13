@@ -141,6 +141,10 @@
   display: block !important;
 }
 
+.det_btnbox .btn{
+  padding-top: 5px !important;
+}
+
 
 
 

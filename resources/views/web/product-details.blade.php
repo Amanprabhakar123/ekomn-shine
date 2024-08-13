@@ -54,16 +54,20 @@
                                             class="fas fa-rupee-sign fs-14 me-1"></i></sup>{{ number_format($productVariations->price_before_tax,2) }} 
                                             <del class="opacity-50 fs-16 ms-2"> 
                                                 <i class="fas fa-rupee-sign fs-13 me-1"></i>{{number_format($productVariations->potential_mrp, 2)}}</del>
-                                                <small class="ms-2 fs-16 text-success">25% Off</small>
+                                                @php
+                                                $diff = $productVariations->potential_mrp - $productVariations->price_before_tax;
+                                                $discount = ($diff / $productVariations->potential_mrp) * 100;
+                                                @endphp
+                                                <small class="ms-2 fs-16 text-success">%{{number_format(round($discount))}} Off</small>
                                 </h4>
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
                                     <select class="changeStatus_t form-select h_30">
                                         @foreach($colors as $color)
-                                            @if($productVariations->color == $color)
-                                                <option value="{{$productVariations->color}}" selected>{{ ucfirst($productVariations->color)}}</option>
+                                            @if($productVariations->color == $color['color'])
+                                                <option value="{{salt_encrypt($productVariations->id)}}" selected>{{ ucfirst($productVariations->color)}}</option>
                                             @else
-                                                <option value="{{$color}}">{{ ucfirst($color) }}</option>
+                                                <option value="{{salt_encrypt($color['id'])}}">{{ ucfirst($color['color']) }}</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -72,15 +76,15 @@
                                     <label class="bold mb5 fs-16">Size:</label>
                                     <div class="radioinline">
                                         @foreach($sizes as $size)
-                                            @if($productVariations->size == $size)
+                                            @if($productVariations->size == $size['size'])
                                         <label class="radio-item">
-                                            <input type="radio" checked name="size">
+                                            <input type="radio" checked name="size" value="{{salt_encrypt($productVariations->id)}}">
                                             <span class="radio-text h_30">{{$productVariations->size}}</span>
                                         </label>
                                             @else
                                         <label class="radio-item">
-                                            <input type="radio" name="size">
-                                            <span class="radio-text h_30">{{$size}}</span>
+                                            <input type="radio" name="size" value="{{salt_encrypt($size['id'])}}">
+                                            <span class="radio-text h_30">{{$size['size']}}</span>
                                         </label>
                                             @endif
                                         @endforeach
@@ -110,8 +114,7 @@
                                                         
                                                     </tbody>
                                                 </table>
-                                                <div class="fs-14 mt3">Availability:<small class="ms-1 opacity-75">Till
-                                                        Stock Last</small></div>
+                                                <div class="fs-14 mt3">Availability:<small class="ms-1 opacity-75">{{getAvailablityStatusName($productVariations->availability_status)}}</small></div>
                                             </div>
                                         </div>
                                     </div>
