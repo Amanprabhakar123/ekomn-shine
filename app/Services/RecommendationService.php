@@ -34,7 +34,7 @@ class RecommendationService
                 // Fetch popular products for guest users
                 $productIds = ProductMatrics::select('product_id')
                     ->orderBy('view_count', 'desc')
-                    ->orderBy('click_count', 'desc')
+                    ->orderBy('add_to_inventory_count', 'desc')
                     ->orderBy('purchase_count', 'desc');
                     if(!is_null($limit)){
                         $productIds = $productIds->limit(12);
