@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // add product keywords
   const tagContainer = document.querySelector(".tag-container");
   const input = document.querySelector("#tag-input");
+  if(tagContainer && input) {
   function createTag(label) {
     const div = document.createElement("div");
     div.setAttribute("class", "tag");
@@ -148,32 +149,34 @@ document.addEventListener('DOMContentLoaded', function () {
   input.addEventListener("blur", function () {
     addTag();
   });
+}
   // end
 
-  // ######### Radio Check to Show/Hide #######
-  const yesRadio = document.getElementById('yes');
-  const noRadio = document.getElementById('no');
-  const yesBlock = document.querySelector('.yesblock');
-  const noBlock = document.querySelector('.noblock');
-  function showYesBlock() {
-    yesBlock.style.display = 'block';
-    noBlock.style.display = 'none';
-  }
-  function showNoBlock() {
-    yesBlock.style.display = 'none';
-    noBlock.style.display = 'block';
-  }
-  if (noRadio.checked) {
-    showNoBlock();
-  } else if (yesRadio.checked) {
-    showYesBlock();
-  }
-  yesRadio.addEventListener('change', showYesBlock);
-  noRadio.addEventListener('change', showNoBlock);
-  // ####### end radio check ######
+  
+ // ######### Radio Check to Show/Hide #######
+ const yesRadio = document.getElementById('yes');
+ const noRadio = document.getElementById('no');
+ const yesBlock = document.querySelector('.yesblock');
+ const noBlock = document.querySelector('.noblock');
+ function updateBlocks() {
+   if (yesRadio && noRadio && yesBlock && noBlock) {
+     yesBlock.style.display = yesRadio.checked ? 'block' : 'none';
+     noBlock.style.display = noRadio.checked ? 'block' : 'none';
+   }
+ }
+ if (yesRadio && noRadio) {
+   yesRadio.addEventListener('change', updateBlocks);
+   noRadio.addEventListener('change', updateBlocks);
+   updateBlocks();
+ }
+ // ## end radio check ##
+  
   
 
 });
+
+
+
 
 
   // ########## Header Search ############
@@ -411,4 +414,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+// ################# Sideebar toggle ####################
+const collapseIcon = document.querySelector('.collapseIcon');
+const bodyElement = document.querySelector('body');
+if (collapseIcon) {
+  collapseIcon.addEventListener('click', () => {
+    bodyElement.classList.toggle('collapseNav');
+  });
+}
+// ## end sidebar toggle ##
+
+
+
+
+  const tableResponsive = document.querySelector('table');
+  if(tableResponsive){
+    const thead = tableResponsive.querySelector('thead');
+    function updateStickyHeader() {
+      const tableRect = tableResponsive.getBoundingClientRect();
+      const headerHeight = thead.offsetHeight + 58;
+      if (tableRect.top < 0 && tableRect.bottom > headerHeight) {
+        thead.style.transform = `translateY(${Math.abs(tableRect.top)}px)`;
+        thead.style.position = 'sticky';
+        thead.style.zIndex = 10;
+        thead.style.top = '58px';
+      } else {
+        thead.style.position = 'relative';
+        thead.style.zIndex = 'auto';
+        thead.style.top = 'auto';
+        thead.style.transform = 'translateY(0)';
+      }
+    }
+  
+  window.addEventListener('scroll', updateStickyHeader);
+  tableResponsive.addEventListener('scroll', updateStickyHeader);
+}
 

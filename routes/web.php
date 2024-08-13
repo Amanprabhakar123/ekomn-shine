@@ -54,7 +54,7 @@ Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('ve
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
 Route::get('payment-failed', [AuthViewController::class, 'loginFormView'])->name('payment.failed');
 Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('product.category');
-Route::get('product-details/{id}', [WebController::class, 'productDetails'])->name('product.details');
+Route::get('product-details/{slug}', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 
 // Define routes for Google authentication
@@ -140,14 +140,13 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
-
     });
 });
 
 // If we use json post and get data that time we will use this route
 Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
     Route::prefix('api')->group(function () {
-        Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+        // Define routes for authenticated API routes
     });
 });
 
@@ -163,14 +162,13 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
-   
-    // Home page web api call here 
-    Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
 
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
     Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
+    Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+    Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
 

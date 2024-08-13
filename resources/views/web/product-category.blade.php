@@ -54,6 +54,9 @@
                     </div>
                 </div>
                 <div class="productListing">
+                <div class="sub_banner" id="dynamicBanner">
+                    <!-- load dynamic banner here -->
+                </div>
                     <div class="pt-1">
                         <ol class="ekbreadcrumb">
                             <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
@@ -67,11 +70,19 @@
                                     <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
                                 </label>
                             </div>
+                            @if(auth()->check())
                             <button type="button" class="btn filterbtn" onclick="addToInventory('Inventory')"><i
                                     class="fas fa-plus fs-12 me-2"></i>Add to
                                 Inventory List</button>
                             <button type="button" class="btn filterbtn" onclick="addToInventory('Download')"><i
                                     class="fas fa-download fs-13 me-2"></i>Download</button>
+                            @else
+                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn"><i
+                                    class="fas fa-plus fs-12 me-2"></i>Add to
+                                Inventory List</a>
+                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn" ><i
+                                    class="fas fa-download fs-13 me-2"></i>Download</a>
+                            @endif
                             <select class="filterSelect ms-auto">
                                 <option value="">Sort By Most Relevent</option>
                             </select>
@@ -91,10 +102,8 @@
 
     </div>
 @endsection
-<script type="text/javascript" src="{{ asset('assets/js/jquery.min.js') }}"></script>
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 <script>
     // Initialize variables for sorting and filtering options
     let slug = "{{ $slug }}";
@@ -208,12 +217,25 @@
                     // Populate the product listing
                     products.data.forEach(product => {
                         var productId = product.id; // Assuming `product` is your JavaScript object with the `id` property
-                        var url = '{{ route('product.details', ':id') }}';
-                        url = url.replace(':id', productId);
+                        
+                        var text = '';
+                        if(product.is_login == true){
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                                <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">Add to Inventory
+                                                    List</button>
+                                                <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></button>
+                                            </div>`;
+                        }else {
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                                <a href="${product.login_url}" class="btn btnround cardaddinventry" >Add to Inventory
+                                                    List</a>
+                                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></a>
+                                            </div>`;
+                        }
                         html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
-                                            <a href="${url}" class="text_u">
+                                            <a href="${product.link}" class="text_u">
                                                 <div class="product_image_wraper">
                                                     <div class="form-check onimg">
                                                         <input type="checkbox" id="${product.id}" class="form-check-input">
@@ -236,12 +258,7 @@
                                                     <h5 class="productPrice fs-16 bold">${product.price}</h5>
                                                 </div>
                                             </a>
-                                            <div class="product_foot d-flex justify-content-between align-items-center">
-                                                <a href="" class="btn btnround cardaddinventry">Add to Inventory
-                                                    List</a>
-                                                <button class="btn dow_inve"><img src="../assets/images/icon/download.png"
-                                                        alt=""></button>
-                                            </div>
+                                            ${text}
                                         </div>
                                     </div>
                                 </div>`;
@@ -286,10 +303,11 @@
         slug = 'all';
         page = 1;
         html = '';
+        $('#dynamicBanner').html('');
         fetchData();
     }
     // Function to add products to inventory or download them as a ZIP file
-    function addToInventory(action) {
+    function addToInventory(action, id = '') {
         // Object to store selected product variation IDs
         let product_id = {
             variation_id: [],
@@ -299,6 +317,10 @@
         $(".form-check-input:checked").each(function() {
             product_id.variation_id.push($(this).attr('id'));
         });
+
+        if(id){
+            product_id.variation_id.push(id);
+        }
 
         // If no products are selected, show a warning using Swal
         if (product_id.variation_id.length == 0) {
@@ -342,8 +364,6 @@
                                 confirmButton.style.backgroundColor = '#feca40';
                                 confirmButton.style.color = 'white';
                             }
-                        }).then(() => {
-                            location.reload(); // Reload the page after success
                         });
                     }
                     // Handle error response with status code 201
@@ -412,4 +432,31 @@
                 });
         }
     }
+
+    // banner api call
+$('document').ready(function() {
+    ApiRequest(`get-banner?type=category&slug=${slug}`, 'GET')
+            .then(res => {
+                if (res.data.statusCode == 200) {
+                    const imagePath = res.data.data;
+                    var html = '';
+                    if(res.data.data.length == 0){
+                    }
+                               
+                    imagePath.forEach(element => {
+                        console.log(element.image_path)
+                        html += `
+                                 <img src="${element.image_path}" height="300"/>
+                            `;
+                    });
+                    $('#dynamicBanner').html(html);
+                } 
+            })
+            .catch(err => {
+                console.log(err);
+              
+            });
+
+});
 </script>
+@endsection

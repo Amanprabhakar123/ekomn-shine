@@ -39,7 +39,7 @@ class OrderTrackingTransformer extends TransformerAbstract
             $data = [
                 'id' => salt_encrypt($order->id),
                 'title' => $title,
-                'link' => url($slug),
+                'link' => route('product.details', $slug),
                 'order_number' => $order->order_number,
                 'order_date' => $order->order_date->toDateString(),
                 'status' => $order->getStatus(),

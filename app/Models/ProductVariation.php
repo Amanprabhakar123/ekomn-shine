@@ -7,10 +7,12 @@ use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
 use App\Models\ChannelProductMap;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Razorpay\Api\Product;
 
 class ProductVariation extends Model
 {
@@ -21,6 +23,13 @@ class ProductVariation extends Model
     const STATUS_INACTIVE = ProductInventory::STATUS_INACTIVE;
     const STATUS_OUT_OF_STOCK = ProductInventory::STATUS_OUT_OF_STOCK;
     const STATUS_DRAFT = ProductInventory::STATUS_DRAFT;
+
+    const STATUS_ARRAY = [
+        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_INACTIVE => 'Inactive',
+        self::STATUS_OUT_OF_STOCK => 'Out of Stock',
+        self::STATUS_DRAFT => 'Draft',
+    ];
 
     // Availability Status
     const TILL_STOCK_LAST = 1;
@@ -176,5 +185,26 @@ class ProductVariation extends Model
     {
         return $this->hasMany(TopProduct::class);
     }
-    
+
+    /**
+     * get the product variation color
+     *
+     * @param int $product_id
+     * @return void
+     */
+    public static function colorVariation($product_id)
+    {
+        return self::select('color', 'slug')->where('product_id', $product_id)->groupBy('color')->get()->toArray();
+    }
+
+    /**
+     * get the product variation size
+     *
+     * @param int $product_id
+     * @return void
+     */
+    public static function sizeVariation($product_id, $color)
+    {
+        return self::select('size', 'slug')->where(['product_id' => $product_id, 'color' => $color])->groupBy('size')->get()->toArray();
+    }
 }
