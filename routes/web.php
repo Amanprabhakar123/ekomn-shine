@@ -162,15 +162,13 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('send-email-link', [VerificationController::class, 'sendEmailLink'])->name('sendEmailLink');
     Route::post('supplier/register', [SupplierRegistraionController::class, 'supplierPostData']);
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
-   
-    // Home page web api call here 
-    Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
 
     // Home Page Category Wise Product Listing
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
     Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
     Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
+    Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
 
