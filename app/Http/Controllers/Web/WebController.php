@@ -3,21 +3,24 @@
 namespace App\Http\Controllers\Web;
 
 use Carbon\Carbon;
+use Razorpay\Api\Product;
 use App\Models\TopProduct;
 use App\Models\TopCategory;
 use League\Fractal\Manager;
+use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
+use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Services\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\ProductInventory;
 use App\Models\ProductVariationMedia;
+use App\Services\UserActivityService;
+use App\Services\RecommendationService;
 use League\Fractal\Resource\Collection;
 use App\Transformers\ProductsCategoryWiseTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use Razorpay\Api\Product;
 
 class WebController extends Controller
 {
@@ -66,6 +69,9 @@ class WebController extends Controller
         $sizes = ProductVariation::sizeVariation($productVariations->product_id, $productVariations->color);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
         $tier_rate = json_decode($productVariations->tier_rate, true);
+        $userActivityService = new UserActivityService;
+        // Log the user view activity
+        $userActivityService->logActivity($productVariations->id, UserActivity::ACTIVITY_TYPE_VIEW);
         return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate', 'colors', 'sizes'));
     }
 
@@ -314,7 +320,29 @@ class WebController extends Controller
                 ];
             });
             $data['feature_category'] = $futureProduct;
-            // dd($transform);
+
+            // Just For You
+            $recommendationService = new RecommendationService;
+            $userId = auth()->check() ? auth()->id() : null;
+            $products = $recommendationService->getRecommendations($userId, $limit = 12);
+            $just_for_you = $products->map(function ($product) {
+                $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
+                if ($media == null) {
+                    $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
+                } else {
+                    $thumbnail = url($media->thumbnail_path);
+                }
+                return [
+                    'product_id' => salt_encrypt($product->product_id),
+                    'product_name' => $product->title,
+                    'product_image' => $thumbnail,
+                    'product_slug' => route('product.details', $product->slug), 
+                    'product_price' => $product->price_before_tax,
+                ];
+            });
+
+            $data['just_for_you'] = $just_for_you;
+            
             // Return the response
             return response()->json([
                 'data' => [
@@ -332,6 +360,7 @@ class WebController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
+            dd($exceptionDetails);
 
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));

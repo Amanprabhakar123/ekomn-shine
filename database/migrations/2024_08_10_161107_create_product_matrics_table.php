@@ -18,6 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('search_count')->default(0);
             $table->unsignedBigInteger('click_count')->default(0);
             $table->unsignedBigInteger('purchase_count')->default(0);
+            $table->unsignedBigInteger('buy_now_or_add_to_cart_count')->default(0);
+            $table->unsignedBigInteger('add_to_inventory_count')->default(0);
+            $table->unsignedBigInteger('download_count')->default(0);
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product_variations')->onDelete('cascade');

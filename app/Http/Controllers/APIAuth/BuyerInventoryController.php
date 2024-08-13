@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\APIAuth;
 
+use ZipArchive;
+use App\Models\User;
+use League\Fractal\Manager;
+use App\Models\UserActivity;
+use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
 use App\Models\BuyerInventory;
-use App\Models\ChannelProductMap;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\ChannelProductMap;
+use App\Http\Controllers\Controller;
 use App\Models\ProductVariationMedia;
-use App\Models\User;
-use App\Transformers\BuyerInventoryTransformer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use League\Fractal\Manager;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\UserActivityService;
 use League\Fractal\Resource\Collection;
-use ZipArchive;
+use Illuminate\Support\Facades\Validator;
+use App\Transformers\BuyerInventoryTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class BuyerInventoryController extends Controller
 {
@@ -198,10 +200,14 @@ class BuyerInventoryController extends Controller
             // Filter out products that are already in the buyer's inventory
             $newProductIds = array_diff($productIds, $existingProductIds);
 
+            $userActivityService = new UserActivityService;
+            
             // Prepare the data for bulk insert
             $insertData = [];
             foreach ($newProductIds as $productId) {
                 $product = ProductVariation::find($productId);
+                // Log the user add to inventory activity
+                $userActivityService->logActivity($productId, UserActivity::ACTIVITY_TYPE_ADD_TO_INVENTORY);
                 $insertData[] = [
                     'buyer_id' => $userId,
                     'product_id' => $product->id,
@@ -382,8 +388,11 @@ class BuyerInventoryController extends Controller
                 mkdir($basePath, 0777, true);
             }
 
+            $userActivityService = new UserActivityService;
             // Process each product variation
             foreach ($allProductVariations as $key => $productVariation) {
+                // Log the download activity
+                $userActivityService->logActivity($productVariation->id, UserActivity::ACTIVITY_TYPE_DOWNLOAD);
                 $product = $productVariation->product;
                 $productVariationList = $product->variations;
                 $productCategory = $product->category;
