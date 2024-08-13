@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers\Web;
 
-use Carbon\Carbon;
-use App\Models\TopProduct;
-use App\Models\TopCategory;
-use League\Fractal\Manager;
-use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
-use App\Models\ProductVariation;
-use App\Services\CategoryService;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\ProductInventory;
+use App\Models\ProductVariation;
 use App\Models\ProductVariationMedia;
-use League\Fractal\Resource\Collection;
+use App\Models\TopCategory;
+use App\Models\TopProduct;
+use App\Services\CategoryService;
 use App\Transformers\ProductsCategoryWiseTransformer;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use League\Fractal\Manager;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
 use Razorpay\Api\Product;
 
 class WebController extends Controller
 {
     /**
-     *
      * This class is responsible for handling web requests and controlling the web application.
      */
     protected $fractal;
@@ -37,7 +36,6 @@ class WebController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function index()
     {
         return view('web.index');
@@ -61,11 +59,12 @@ class WebController extends Controller
      */
     public function productDetails($slug)
     {
-        $productVariations = ProductVariation::where('slug', $slug)->with('media', 'company','product')->with('product.features')->first();
+        $productVariations = ProductVariation::where('slug', $slug)->with('media', 'company', 'product')->with('product.features')->first();
         $colors = ProductVariation::colorVariation($productVariations->product_id);
         $sizes = ProductVariation::sizeVariation($productVariations->product_id, $productVariations->color);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
         $tier_rate = json_decode($productVariations->tier_rate, true);
+
         return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate', 'colors', 'sizes'));
     }
 
@@ -74,7 +73,6 @@ class WebController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function subCategory()
     {
         return view('web.sub-category');
@@ -136,13 +134,13 @@ class WebController extends Controller
                 //     });
             }
             $productVariations = $productVariations->when($searchTerm, function ($query) use ($searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('title', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('slug', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('sku', 'like', '%' . $searchTerm . '%');
-                    });
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('title', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('slug', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('sku', 'like', '%'.$searchTerm.'%');
                 });
+            });
 
             // Filter by new arrival
             if ($newArrived) {
@@ -208,7 +206,7 @@ class WebController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
-            return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
+            return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
     }
 
@@ -226,12 +224,12 @@ class WebController extends Controller
             $rankedProductsQuery = "
             WITH Media as (select * from product_variation_media where is_master = 1 and media_type = 1),
             RankedProducts AS (
-            SELECT 
+            SELECT
                 *,
                 ROW_NUMBER() OVER (PARTITION BY `type` ORDER BY id DESC) AS rn
-            FROM 
+            FROM
                 `top_products`
-            WHERE 
+            WHERE
                 `type` IN ($typePlaceholders)
             )
             SELECT RankedProducts.*, product_variations.title, product_variations.slug, product_variations.price_before_tax, Media.thumbnail_path
@@ -243,7 +241,7 @@ class WebController extends Controller
 
             // Execute the query with bindings to prevent SQL injection
             $topProducts = DB::select($rankedProductsQuery, TopProduct::TYPE_ARRAY_FOR_SELECT);
-            // dd($topProducts);
+            dd($topProducts);
             if (empty($topProducts)) {
                 return response()->json([
                     'data' => [
@@ -258,7 +256,7 @@ class WebController extends Controller
                 if ($product->type == TopProduct::TYPE_PREMIUM_PRODUCT) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                       'slug' => route('product.details', $product->slug),
+                        'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
 
@@ -266,7 +264,7 @@ class WebController extends Controller
                 } elseif ($product->type == TopProduct::TYPE_NEW_ARRIVAL) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                       'slug' => route('product.details', $product->slug),
+                        'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
                     ];
@@ -294,7 +292,7 @@ class WebController extends Controller
                 return [
                     'category_id' => salt_encrypt($category->category_id),
                     'category_name' => $category->category->name,
-                    'category_link' => url('category/' . $category->category->slug),
+                    'category_link' => url('category/'.$category->category->slug),
                     'priority' => $category->priority,
                     'products' => $category->topProduct->map(function ($product) {
                         $media = $product->productVarition->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
@@ -303,24 +301,26 @@ class WebController extends Controller
                         } else {
                             $thumbnail = url($media->thumbnail_path);
                         }
+
                         return [
                             'product_id' => salt_encrypt($product->product_id),
                             'product_name' => $product->productVarition->title,
                             'product_image' => $thumbnail,
-                            'product_slug' => route('product.details', $product->productVarition->slug), 
+                            'product_slug' => route('product.details', $product->productVarition->slug),
                             'product_price' => $product->productVarition->price_before_tax,
                         ];
                     }),
                 ];
             });
             $data['feature_category'] = $futureProduct;
+
             // dd($transform);
             // Return the response
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
-                    'data' => $data
+                    'data' => $data,
                 ],
             ], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
@@ -336,5 +336,10 @@ class WebController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
         }
+    }
+
+    public function productsTypeWise(Request $request, $type)
+    {
+        dd($type);
     }
 }
