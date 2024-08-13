@@ -194,7 +194,7 @@ class ProductVariation extends Model
      */
     public static function colorVariation($product_id)
     {
-        return self::select('color', 'id')->where('product_id', $product_id)->groupBy('color')->get()->toArray();
+        return self::select('color', 'slug')->where('product_id', $product_id)->groupBy('color')->get()->toArray();
     }
 
     /**
@@ -205,8 +205,20 @@ class ProductVariation extends Model
      */
     public static function sizeVariation($product_id)
     {
-        return self::select('size', 'id')->where('product_id', $product_id)->groupBy('size')->get()->toArray();
+        return self::select('size', 'slug')->where('product_id', $product_id)->groupBy('size')->get()->toArray();
     }
+
+    /**
+     * get the product variation size
+     *
+     * @param int $product_id
+     * @return void
+     */
+
+    //  public static function slugVariation($product_id)
+    //  {
+    //     return self::select('slug', 'size')->where('product_id', $product_id)->groupBy('slug')->get()->toArray();
+    //  }
 
 
     

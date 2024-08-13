@@ -62,12 +62,12 @@
                                 </h4>
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
-                                    <select class="changeStatus_t form-select h_30">
+                                    <select class="changeStatus_t form-select h_30" id="colorChange">
                                         @foreach($colors as $color)
                                             @if($productVariations->color == $color['color'])
-                                                <option value="{{salt_encrypt($productVariations->id)}}" selected>{{ ucfirst($productVariations->color)}}</option>
+                                                <option value="{{route('product.details', $productVariations->slug)}}" selected>{{ ucfirst($productVariations->color)}}</option>
                                             @else
-                                                <option value="{{salt_encrypt($color['id'])}}">{{ ucfirst($color['color']) }}</option>
+                                                <option value="{{route('product.details', $color['slug'])}}">{{ ucfirst($color['color']) }}</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -78,12 +78,12 @@
                                         @foreach($sizes as $size)
                                             @if($productVariations->size == $size['size'])
                                         <label class="radio-item">
-                                            <input type="radio" checked name="size" value="{{salt_encrypt($productVariations->id)}}">
+                                            <input type="radio" checked name="size" value="{{route('product.details', $productVariations->slug)}}">
                                             <span class="radio-text h_30">{{$productVariations->size}}</span>
                                         </label>
                                             @else
                                         <label class="radio-item">
-                                            <input type="radio" name="size" value="{{salt_encrypt($size['id'])}}">
+                                            <input type="radio" name="size" value="{{route('product.details', $size['slug'])}}">
                                             <span class="radio-text h_30">{{$size['size']}}</span>
                                         </label>
                                             @endif
@@ -218,6 +218,10 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="decList">
+                                    <h4 class="mt-0 fs-18 bold">Description</h4>
+                                    <p>{{ $productVariations->product->description }}</p>
                                 </div>
                                 <div class="descList">
                                     <h4 class="mt-0 fs-18 bold">Features </h4>
@@ -485,5 +489,20 @@
             }
         });
     }
+
+    // Function to handle the change event of the color dropdown
+    document.getElementById('colorChange').addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        window.location.href = selectedOption.value;
+        // alert(selectedOption.value);
+    });
+
+    document.querySelectorAll('input[name="size"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        if (this.checked) {
+            window.location.href = this.value;
+        }
+    });
+});
     </script>
 @endsection

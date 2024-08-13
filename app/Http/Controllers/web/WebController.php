@@ -66,6 +66,7 @@ class WebController extends Controller
         $sizes = ProductVariation::sizeVariation($productVariations->product_id);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
         $tier_rate = json_decode($productVariations->tier_rate, true);
+        // dd($colors);
         return view('web.product-details', compact('productVariations', 'shippingRatesTier', 'tier_rate', 'colors', 'sizes'));
     }
 
@@ -205,8 +206,6 @@ class WebController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
-            dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
@@ -260,28 +259,29 @@ class WebController extends Controller
                 if ($product->type == TopProduct::TYPE_PREMIUM_PRODUCT) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                        'slug' => $product->slug,
+                       'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
+
                     ];
                 } elseif ($product->type == TopProduct::TYPE_NEW_ARRIVAL) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                        'slug' => $product->slug,
+                       'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
                     ];
                 } elseif ($product->type == TopProduct::TYPE_IN_DEMAND) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                        'slug' => $product->slug,
+                        'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
                     ];
                 } elseif ($product->type == TopProduct::TYPE_REGULAR_AVAILABLE) {
                     $data[strtolower(str_replace(' ', '_', TopProduct::TYPE_ARRAY[$product->type]))][] = [
                         'title' => $product->title,
-                        'slug' => $product->slug,
+                        'slug' => route('product.details', $product->slug),
                         'price_before_tax' => $product->price_before_tax,
                         'product_image' => url($product->thumbnail_path),
                     ];
@@ -308,7 +308,7 @@ class WebController extends Controller
                             'product_id' => salt_encrypt($product->product_id),
                             'product_name' => $product->productVarition->title,
                             'product_image' => $thumbnail,
-                            'product_slug' => $product->productVarition->slug,
+                            'product_slug' => route('product.details', $product->productVarition->slug), 
                             'product_price' => $product->productVarition->price_before_tax,
                         ];
                     }),

@@ -599,6 +599,7 @@
                     $.each(list, function(key, value) {
                         // Print each element in the array
                         $.each(value, function(index, element) {
+                            console.log(element);
                            if(key === 'premium'){
                             premium +=  `
                               <div class="col-sm-4">
@@ -693,7 +694,7 @@
                                }
 
                                if(key === 'feature_category'){
-                    
+                                 console.log(element);
                                     category +=  ` <div class="col-sm-12 col-md-4 mb16">
                                     <div class="ekom_card">
                             <div class="ekom_card_head">
@@ -706,7 +707,7 @@
                                 element.products.forEach(product => {
                                     category += `<div class="col">
                                         <div class="product_card">
-                                            <a href="product_category.html" class="product_image_wraper">
+                                            <a href="${product.product_slug}" class="product_image_wraper">
                                                 <div class="product_image">
                                                     <img src="${product.product_image}" class="_pdimg"
                                                         tabindex="-1">
