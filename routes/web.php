@@ -171,6 +171,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
     Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
     Route::get('top-product-view-home', [WebController::class, 'topProductViewHome'])->name('top.product.home');
+    Route::get('view-more', [WebController::class, 'justForYouViewMore'])->name('view.more');
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
     Route::post('add-click-count', [HomeController::class, 'addClickCount'])->name('add.click.count');

@@ -929,7 +929,7 @@
       });
   var newFeature = '';
   @foreach($variations->product->features as $key => $feature)
-  let featureName{{$key}} = "{{$feature->feature_name}}";
+  let featureName{{$key}} = "{{$feature->value}}";
   newFeature = $('<li>');
       newFeature.html(`
             <div class="featurescontent">

@@ -131,7 +131,7 @@
                     
                 </div>
                 <div class="d-flex justify-content-center mt10">
-                    <button type="button" class="btn btnekomn-border btnround">View More</button>
+                    <button type="button" id='viewMore' class="btn btnekomn-border btnround">View More</button>
                 </div>
             </div>
         </section>
@@ -597,5 +597,46 @@
 
                 });
         });
+
+        // View more button click event
+
+var perPage = 1;
+$('#viewMore').click( function() {
+    // alert('clicked');
+  perPage ++;
+
+    ApiRequest('view-more?perpage='+perPage, 'GET' )
+        .then((res) => {
+            let list = res.data.data;
+            if (res.data.statusCode == 200) {
+                var viewMore = '';
+                // Iterate through each key-value pair in the object
+                $.each(list, function(key, element) {
+                        viewMore += `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
+                                                    <div class="ekom_card">
+                                                        <a href="${element.product_slug}" class="product_card text_u">
+                                                            <div class="product_image_wraper">
+                                                                <div class="product_image">
+                                                                    <img src="${element.product_image}" class="_pdimg" tabindex="-1">
+                                                                </div>
+                                                                <div class="gray"></div>
+                                                            </div>
+                                                            <div class="product_dec">
+                                                                <h3 class="product_title bold">${element.product_name}</h3>
+                                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.product_price}</h5>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>`;
+                    
+                });
+                // console.log(viewMore);
+                $('#appendJusforYou').append(viewMore);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
     </script>
 @endsection
