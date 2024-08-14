@@ -93,11 +93,15 @@
     </div>
     <div class="bottom_header">
         <ul class="b_h_list">
-            <li><a href="../amazon-orders.html" class="active">Regular Available</a></li>
-            <li><a href="../create-order.html">In Demand</a></li>
-            <li><a href="">Premium Products</a></li>
-            <li><a href="">New Arrivals</a></li>
+            <li><a href="{{route('product.type', 'regular-available')}}" class="active">Regular Available</a></li>
+            <li><a href="{{route('product.type', 'in-demand')}}">In Demand</a></li>
+            <li><a href="{{route('product.type', 'premium')}}">Premium Products</a></li>
+            <li><a href="{{route('product.type', 'new-arrivals')}}">New Arrivals</a></li>
+            @if(Request::path() == '/' || Request::path() == 'product/premium' || Request::path() == 'product/in-demand' || Request::path() == 'product/new-arrivals')
+            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
+            @else
             <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
+            @endif
         </ul>
     </div>
 </header>

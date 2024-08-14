@@ -80,5 +80,44 @@ class TopProduct extends Model
         return self::TYPE_ARRAY[$this->type];
     }
 
+    /**
+     * Get the priority of the TopProduct
+     *
+     * @return string
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * Get the type of the TopProduct
+     *
+     * @return string
+     */
+    public static function getProductType($type = null) : int
+    {
+        switch ($type) {
+            case 'new-arrivals':
+                $productType = self::TYPE_NEW_ARRIVAL;
+                break;
+            case 'premium':
+                $productType = self::TYPE_PREMIUM_PRODUCT;
+                break;
+            case 'in-demand':
+                $productType = self::TYPE_IN_DEMAND;
+                break;
+            case 'regular-available':
+                $productType = self::TYPE_REGULAR_AVAILABLE;
+                break;
+            default:
+                $productType = 0;
+                break;
+        }
+        
+        return $productType;
+    }
+
+
 
 }
