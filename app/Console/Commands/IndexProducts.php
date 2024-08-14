@@ -76,77 +76,80 @@ class IndexProducts extends Command
                                     'description' => ['type' => 'text'],
                                     'description_suggest' => ['type' => 'completion'],
                                     'slug' => ['type' => 'keyword'],
+                                    'hsn' => ['type' => 'keyword'],
+                                    'hsn_suggest' => ['type' => 'completion'],
+                                    'features' => ['type' => 'keyword'],
+                                    'features_suggest' => ['type' => 'completion'],
+                                    'keywords' => ['type' => 'keyword'],
+                                    'keywords_suggest' => ['type' => 'completion'],
+                                    'category' => ['type' => 'keyword'],
+                                    'category_suggest' => ['type' => 'completion'],
+                                    'category_slug' => ['type' => 'keyword'],
+                                    'sub_category' => ['type' => 'keyword'],
+                                    'sub_category_suggest' => ['type' => 'completion'],
                                 ],
-                            ],
-                            'hsn' => ['type' => 'keyword'],
-                            'hsn_suggest' => ['type' => 'completion'],
-                            'features' => ['type' => 'keyword'],
-                            'features_suggest' => ['type' => 'completion'],
-                            'keywords' => ['type' => 'keyword'],
-                            'keywords_suggest' => ['type' => 'completion'],
-                            'category' => ['type' => 'keyword'],
-                            'category_suggest' => ['type' => 'completion'],
-                            'category_slug' => ['type' => 'keyword'],
-                            'sub_category' => ['type' => 'keyword'],
-                            'sub_category_suggest' => ['type' => 'completion'],
+                            ]
                         ],
                     ],
                 ],
             ];
 
+
         // Create the index with the mapping
         $this->elasticsearchService->createIndex($params);
             // Index each product
             foreach ($products as $product) {
-
-                // Prepare the data to be indexed
-                $parameter = [
-                    'index' => 'products',
-                    'id'    => $product->id,
-                    'body'  => [
-                        'variations'  => $product->variations->whereIn('status', [ProductInventory::STATUS_ACTIVE, ProductInventory::STATUS_OUT_OF_STOCK])->map(function ($variation) {
-                            return [
-                                'title' => $variation->title,
-                                'title_suggest' => [
-                                    'input' => $variation->title
-                                ],
-                                'sku'   => $variation->sku,
-                                'sku_suggest' => [
-                                    'input' => $variation->sku
-                                ],
-                                'description' => $variation->description,
-                                'description_suggest' => [
-                                    'input' => $variation->description
-                                ],
-                                'slug'  => $variation->slug,
-                            ];
-                        })->toArray(),
-                        'keywords'    => $product->keywords->pluck('keyword')->toArray(),
-                        'category'    => $product->category->name,
-                        'category_slug' => $product->category->slug,
-                        'sub_category' => $product->subCategory->name,
-                        'hsn'         => $product->hsn,
-                        'hsn_suggest' => [
-                            'input' => $product->hsn
-                        ],
-                        'features'    => $product->features->pluck('value')->toArray(),
-                        'features_suggest' => [
-                            'input' => $product->features->pluck('value')->toArray()
-                        ],
-                        'keywords_suggest' => [
-                            'input' => $product->keywords->pluck('keyword')->toArray()
-                        ],
-                        'category_suggest' => [
-                            'input' => $product->category->name
-                        ],
-                        'sub_category_suggest' => [
-                            'input' => $product->subCategory->name
-                        ],
-                    ],
-                ];
-
+                foreach ($product->variations as $variation) {
+                    if ($variation->status == ProductInventory::STATUS_ACTIVE || $variation->status == ProductInventory::STATUS_OUT_OF_STOCK) {
+                        $list = [
+                            'title' => $variation->title,
+                            'title_suggest' => [
+                                'input' => $variation->title
+                            ],
+                            'sku'   => $variation->sku,
+                            'sku_suggest' => [
+                                'input' => $variation->sku
+                            ],
+                            'description' => $variation->description,
+                            'description_suggest' => [
+                                'input' => $variation->description
+                            ],
+                            'slug'  => $variation->slug,
+                            'keywords'    => $product->keywords->pluck('keyword')->toArray(),
+                            'category'    => $product->category->name,
+                            'category_slug' => $product->category->slug,
+                            'sub_category' => $product->subCategory->name,
+                            'hsn'         => $product->hsn,
+                            'hsn_suggest' => [
+                                'input' => $product->hsn
+                            ],
+                            'features'    => $product->features->pluck('value')->toArray(),
+                            'features_suggest' => [
+                                'input' => $product->features->pluck('value')->toArray()
+                            ],
+                            'keywords_suggest' => [
+                                'input' => $product->keywords->pluck('keyword')->toArray()
+                            ],
+                            'category_suggest' => [
+                                'input' => $product->category->name
+                            ],
+                            'sub_category_suggest' => [
+                                'input' => $product->subCategory->name
+                            ],
+                        ];
+                        $parameter = [
+                            'index' => 'products',
+                            'id'    => $variation->id,
+                            'body'  => [
+                                'variations'  => $list
+                            ],
+                        ];
+                        $this->elasticsearchService->index($parameter);
+                    }else{
+                        continue;
+                    }
+                }
                 // Index the product First time
-                $this->elasticsearchService->index($parameter);
 
                 // // Check if the product is already indexed
                 // $existingProduct = $this->elasticsearchService->get(['index' => 'products', 'id' => $product->id]);
@@ -160,6 +163,7 @@ class IndexProducts extends Command
                 //     $this->elasticsearchService->update($params);
                 // }
             }
+
 
             $this->info('Products have been indexed.');
         } catch (\Exception $e) {

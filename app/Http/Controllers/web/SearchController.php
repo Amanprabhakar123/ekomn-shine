@@ -33,21 +33,21 @@ class SearchController extends Controller
                     'keywords_suggest' => [
                         'prefix'    => $query, // Your search term here
                         'completion' => [
-                            'field' => 'keywords_suggest',
+                            'field' => 'variations.keywords_suggest',
                             'size'  => 5
                         ]
                     ],
                     'category_suggest' => [
                         'prefix'    => $query, // Your search term here
                         'completion' => [
-                            'field' => 'category_suggest',
+                            'field' => 'variations.category_suggest',
                             'size'  => 5
                         ]
                     ],
                     'sub_category_suggest' => [
                         'prefix'    => $query, // Your search term here
                         'completion' => [
-                            'field' => 'sub_category_suggest',
+                            'field' => 'variations.sub_category_suggest',
                             'size'  => 5
                         ]
                     ],
@@ -61,7 +61,7 @@ class SearchController extends Controller
                     'hsn_suggest' => [
                         'prefix'    => $query, // Your search term here
                         'completion' => [
-                            'field' => 'hsn_suggest',
+                            'field' => 'variations.hsn_suggest',
                             'size'  => 5
                         ]
                     ],
@@ -75,7 +75,7 @@ class SearchController extends Controller
                     'features_suggest' => [
                         'prefix'    => $query, // Your search term here
                         'completion' => [
-                            'field' => 'features_suggest',
+                            'field' => 'variations.features_suggest',
                             'size'  => 5
                         ]
                     ]
@@ -111,9 +111,15 @@ class SearchController extends Controller
                     if (isset($results['suggest'][$key][0]['options'])) {
                         $suggestions[] = array_map(function ($item) use ($key) {
                             if ($key === 'category_suggest') {
-                                return ['url' => route('product.category', $item['_source']['category_slug']), 'text' => $item['text']]; 
+                                return ['url' => route('product.category', $item['_source']['variations']['category_slug']), 'text' => $item['_source']['variations']['title'] .' - ( '.$item['text'].' )']; 
+                            }elseif($key === 'sub_category_suggest'){
+                                return ['url' => route('product.category', $item['_source']['variations']['category_slug']), 'text' => $item['_source']['variations']['title'] .' - ( '.$item['text'].' )'];
+                            }elseif($key === 'sku_suggest'){
+                                return ['url' => route('product.details', $item['_source']['variations']['slug']), 'text' => $item['_source']['variations']['title'] .' ( '.$item['text'].' )'];
+                            }elseif($key === 'hsn_suggest'){
+                                return ['url' => route('product.details', $item['_source']['variations']['slug']), 'text' => $item['_source']['variations']['title'] .' ( '.$item['text'].' )'];
                             }else{
-                                return ['url' => route('product.details', $item['_source']['variations'][0]['slug']), 'text' => $item['text']];
+                                return ['url' => route('product.details', $item['_source']['variations']['slug']), 'text' =>  $item['_source']['variations']['title']];
                             }
                         }, $results['suggest'][$key][0]['options']);
                     }
