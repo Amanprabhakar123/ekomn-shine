@@ -17,7 +17,7 @@ class RecommendationService
      * @param int $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getRecommendations($userId = null, $limit = null)
+    public function getRecommendations($userId = null, $limit = null, $per_page = 1)
     {
         try{
             if ($userId) {
@@ -27,7 +27,7 @@ class RecommendationService
                     ->groupBy('product_id')
                     ->orderBy('activity_count', 'desc');
                     if(!is_null($limit)){
-                        $productIds = $productIds->limit(12);
+                        $productIds = $productIds->limit($limit);
                     }
                     $productIds = $productIds->pluck('product_id');
             } else {
@@ -38,7 +38,7 @@ class RecommendationService
                     ->orderBy('add_to_inventory_count', 'desc')
                     ->orderBy('purchase_count', 'desc');
                     if(!is_null($limit)){
-                        $productIds = $productIds->limit(12);
+                        $productIds = $productIds->limit($limit);
                     }
                     $productIds = $productIds->pluck('product_id');
             }
