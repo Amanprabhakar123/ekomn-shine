@@ -612,7 +612,6 @@
                         $.each(list, function(key, value) {
                             // Print each element in the array
                             $.each(value, function(index, element) {
-                                console.log(element);
                                 if (key === 'premium') {
                                     premium += `
                               <div class="col-sm-4">
@@ -707,7 +706,6 @@
                                 }
 
                                 if (key === 'feature_category') {
-                                    console.log(element);
                                     category += ` <div class="col-sm-12 col-md-4 mb16">
                                     <div class="ekom_card">
                             <div class="ekom_card_head">

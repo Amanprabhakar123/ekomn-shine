@@ -107,6 +107,7 @@
 <script>
     // Initialize variables for sorting and filtering options
     let type = "{{ $type }}";
+    let slug = "{{ $type }}";
     let newArrived = ""; // Sort field for new arrivals (e.g., "true" or "false")
     let productWithVideos = ""; // Filter for products with videos (e.g., "true" or "false")
     let priceRange = ""; // Filter for price range (e.g., "min=10&max=100")
@@ -432,31 +433,5 @@
                 });
         }
     }
-
-    // banner api call
-$('document').ready(function() {
-    ApiRequest(`get-banner?type=category&slug=${slug}`, 'GET')
-            .then(res => {
-                if (res.data.statusCode == 200) {
-                    const imagePath = res.data.data;
-                    var html = '';
-                    if(res.data.data.length == 0){
-                    }
-
-                    imagePath.forEach(element => {
-                        console.log(element.image_path)
-                        html += `
-                                 <img src="${element.image_path}" height="300"/>
-                            `;
-                    });
-                    $('#dynamicBanner').html(html);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-
-            });
-
-});
 </script>
 @endsection

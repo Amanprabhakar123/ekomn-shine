@@ -178,6 +178,15 @@ class HomeController extends Controller
             }elseif($request->has('type') && ($request->type == 'user')){
                 $banner = Banner::where('banner_type', Banner::BANNER_TYPE_USER)->get();
             }
+            if(empty($banner)){
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status403'),
+                        'message' => __('auth.bannerNotCreate'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
             $transformData = $banner->map(function ($item) {
                 return [
                     'id' => salt_encrypt($item->id),

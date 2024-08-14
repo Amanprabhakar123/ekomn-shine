@@ -367,6 +367,21 @@ class WebController extends Controller
         }
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function productsType($type)
+    {
+        return view('web.product-type', compact('type'));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function productsTypeWise(Request $request, $type)
     {
         try {
@@ -389,36 +404,17 @@ class WebController extends Controller
 
             // Determine product type based on the given type parameter
             $product_ids = [];
-            switch ($type) {
-                case 'new-arrival':
-                    $productType = TopProduct::TYPE_NEW_ARRIVAL;
-                    break;
-                case 'premium':
-                    $productType = TopProduct::TYPE_PREMIUM_PRODUCT;
-                    break;
-                case 'in-demand':
-                    $productType = TopProduct::TYPE_IN_DEMAND;
-                    break;
-                case 'regular-available':
-                    $productType = TopProduct::TYPE_REGULAR_AVAILABLE;
-                    break;
-                default:
-                    $productType = 'unknown';
-                    break;
-            }
+            $productType = TopProduct::getProductType($type);
 
             // Fetch products of the determined type
-            $topProducts = TopProduct::where('type', $productType)->get();
-            foreach ($topProducts as $product) {
-                $product_ids[] = $product->product_id;
-            }
+            $product_ids = TopProduct::where('type', $productType)->pluck('product_id');
 
             // Query for product variations based on status and product IDs
             if ($type !== '') {
                 $productVariations = ProductVariation::whereIn('status', [
                     ProductVariation::STATUS_OUT_OF_STOCK,
                     ProductVariation::STATUS_ACTIVE,
-                ])->whereIn('product_id', $product_ids)->with('media');
+                ])->whereIn('id', $product_ids)->with('media');
             }
 
             // Apply search filter if a search term is provided
@@ -462,7 +458,7 @@ class WebController extends Controller
 
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
-                ->paginate($perPage);
+            ->paginate($perPage);
 
             // Transform the product variations using Fractal
             $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
@@ -494,11 +490,5 @@ class WebController extends Controller
             // Return a JSON response with error details
             return response()->json(['error' => $e->getLine().' '.$e->getMessage()]);
         }
-    }
-
-
-    public function productsType($type)
-    {
-        return view('web.product-type', compact('type'));
     }
 }

@@ -196,10 +196,6 @@
                                     <table class="decinnertable">
                                         <tbody>
                                             <tr>
-                                                <td>Brand Name</td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
                                                 <td>SKU</td>
                                                 <td>{{ $productVariations->sku }}</td>
                                             </tr>
@@ -213,13 +209,13 @@
                                             </tr>
                                             <tr>
                                                 <td>Product Dimensions</td>
-                                                <td>{{ $productVariations->package_lenght ?? 0 }}L x
-                                                    {{ $productVariations->package_width ?? 0 }}W x
-                                                    {{ $productVariations->package_height ?? 0 }}H Centimeters</td>
+                                                <td>{{ $productVariations->length ?? 0 }} L x
+                                                    {{ $productVariations->width ?? 0 }} W x
+                                                    {{ $productVariations->height ?? 0 }} {{$productVariations->dimension_class}} </td>
                                             </tr>
                                             <tr>
                                                 <td>Product Weight</td>
-                                                <td>{{ $productVariations->package_weight ?? 0 }} Grams</td>
+                                                <td>{{ $productVariations->weight ?? 0 }} {{$productVariations->weight_class}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
