@@ -20,9 +20,6 @@
                 </div>
                 <div class="header_search_card">
                     <ul class="searchList">
-                        <li><a href="">Searchlist</a></li>
-                        <li><a href="">searchlist</a></li>
-                        <li><a href="">searchlist</a></li>
                     </ul>
                 </div>
             </form>
