@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\WebController;
+use App\Http\Controllers\MisSettingController;
 use App\Http\Controllers\Web\SearchController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\MisSettingController;
+use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +88,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
     Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
     Route::get('banner', [HomeController::class, 'banner'])->name('banner');
+    Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
+    Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
+
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -145,6 +149,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
         Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
+        Route::get('mis-setting-categories', [CategoryManagmentController::class, 'misCategories'])->name('mis.setting.categories');
+        Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
     });
 });
 

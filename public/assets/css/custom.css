@@ -1,15 +1,15 @@
 /* bulk uplaod list css popup  */
 
 /* table paginataion backgorund color */
-/* .pager_ a:hover, .pager_ a.active {
-  background-color: #feca40;
-  color: #fff;
-  border-color: #feca40;
-} */
+ .pager_ a:hover, .pager_ a.active {
+  background-color: #feca40 !important;
+  color: #fff !important;
+  border-color: #feca40 !important;
+}
 .normalTable tbody tr td .wordbreak{
   word-break: break-all!important;
   white-space: normal!important;
-}
+} 
 
 .popup-button{
     /* color: #feca40; */
