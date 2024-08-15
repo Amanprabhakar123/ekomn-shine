@@ -128,10 +128,10 @@
                             </a>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="d-flex justify-content-center mt10">
-                    <button type="button" class="btn btnekomn-border btnround">View More</button>
+                    <button type="button" id='viewMore' class="btn btnekomn-border btnround">View More</button>
                 </div>
             </div>
         </section>
@@ -343,6 +343,7 @@
                     success: function(res) {
                         // jQuery object for the primary category menu
                         $menu = $("#primary_category");
+                        $mobileMenu = $("#mob_cat_list");
 
                         // Clear any existing content in the menu
                         $menu.empty();
@@ -354,6 +355,7 @@
 
                             // Clear existing content (redundant with the above empty())
                             $menu.empty();
+                            $mobileMenu.empty();
 
                             // Iterate through each main category in the data
                             $.each(data, function(index, category) {
@@ -382,6 +384,8 @@
                                             '</a></li>';
                                     });
 
+
+
                                     // Close the list and sub-parent HTML structure
                                     subParentHtml += '</ul></div>';
                                     mainCategoryHtml += subParentHtml;
@@ -392,6 +396,41 @@
 
                                 // Append the constructed HTML to the menu
                                 $menu.append(mainCategoryHtml);
+
+                                // Begin HTML structure for mobile menu
+                                var mobileCategory = '<li class="nav-item">';
+                                mobileCategory += `<a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#${category.parent_slug}"
+                                                    data-bs-parent="#mob_cat_list" id="components">
+                                                    <span class="nav-link-text">${category.parent_name}</span>
+                                                    <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
+                                                    </a>`;
+
+                                // Loop through sub-parent categories and build HTML for each
+                                $.each(category.sub_parents, function(index, subParent) {
+                                    // Begin HTML structure for sub-parent category
+                                    var mobilesubParentHtml =
+                                        `<ul class="sidenav-second-level collapse" id="${category.parent_slug}" data-bs-parent="#mob_cat_list">`;
+
+                                    // Loop through child categories of the sub-parent
+                                    $.each(subParent.children, function(index, child) {
+                                        // Add child category links dynamically using its slug and name
+                                        mobilesubParentHtml +=
+                                            '<li><a class="nav-link" href="' + url
+                                            .replace('SLUG', child.child_slug) +
+                                            '">' + child.child_name + '</a></li>';
+                                    });
+
+                                    // Close the sub-parent's child category list
+                                    mobilesubParentHtml += '</ul>';
+
+                                    // Append the sub-parent HTML to the main category structure
+                                    mobileCategory += mobilesubParentHtml;
+                                });
+
+                                // Append the completed category structure to the mobile menu
+                                $mobileMenu.append(mobileCategory);
+
+
                             });
                         }
                     }
@@ -539,9 +578,9 @@
                             </div>`;
                                 }
 
-                                if(key === 'just_for_you'){
-                                
-                                just_for_you +=  `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
+                                if (key === 'just_for_you') {
+
+                                    just_for_you += `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
                                                     <div class="ekom_card">
                                                         <a href="${element.product_slug}" class="product_card text_u">
                                                             <div class="product_image_wraper">
@@ -557,7 +596,7 @@
                                                         </a>
                                                     </div>
                                                 </div>`;
-                                                }
+                                }
 
 
                             });
@@ -597,5 +636,46 @@
 
                 });
         });
+
+        // View more button click event
+
+var perPage = 1;
+$('#viewMore').click( function() {
+    // alert('clicked');
+  perPage ++;
+
+    ApiRequest('view-more?perpage='+perPage, 'GET' )
+        .then((res) => {
+            let list = res.data.data;
+            if (res.data.statusCode == 200) {
+                var viewMore = '';
+                // Iterate through each key-value pair in the object
+                $.each(list, function(key, element) {
+                        viewMore += `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
+                                                    <div class="ekom_card">
+                                                        <a href="${element.product_slug}" class="product_card text_u">
+                                                            <div class="product_image_wraper">
+                                                                <div class="product_image">
+                                                                    <img src="${element.product_image}" class="_pdimg" tabindex="-1">
+                                                                </div>
+                                                                <div class="gray"></div>
+                                                            </div>
+                                                            <div class="product_dec">
+                                                                <h3 class="product_title bold">${element.product_name}</h3>
+                                                                <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>${element.product_price}</h5>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>`;
+                    
+                });
+                // console.log(viewMore);
+                $('#appendJusforYou').append(viewMore);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
     </script>
 @endsection

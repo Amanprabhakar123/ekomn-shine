@@ -20,6 +20,7 @@ class RecommendationService
     public function getRecommendations($userId = null, $limit = null, $per_page = 1)
     {
         try{
+            $offset = ($per_page - 1) * $limit;
             if ($userId) {
                 // Fetch recommendations based on user activity
                 $productIds = UserActivity::where('user_id', $userId)
@@ -27,7 +28,7 @@ class RecommendationService
                     ->groupBy('product_id')
                     ->orderBy('activity_count', 'desc');
                     if(!is_null($limit)){
-                        $productIds = $productIds->limit($limit);
+                        $productIds = $productIds->limit($limit)->offset($offset);
                     }
                     $productIds = $productIds->pluck('product_id');
             } else {
@@ -38,13 +39,16 @@ class RecommendationService
                     ->orderBy('add_to_inventory_count', 'desc')
                     ->orderBy('purchase_count', 'desc');
                     if(!is_null($limit)){
-                        $productIds = $productIds->limit($limit);
+                        $productIds = $productIds->limit($limit)->offset($offset);
                     }
                     $productIds = $productIds->pluck('product_id');
             }
             // Fetch the remaining products
             if (count($productIds) < $limit) {
                 $remainingProductIds = $limit - count($productIds);
+                // if($remainingProductIds > 0){
+                //     $offset = 0;
+                // }
                 $productList = ProductVariation::whereIn('product_id', function ($query) {
                     $query->selectRaw('MAX(id)')
                         ->from('product_inventories')
@@ -53,6 +57,7 @@ class RecommendationService
                 })->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
                 ->whereNotIn('id', $productIds)
                 ->limit($remainingProductIds)
+                ->offset($offset)
                 ->pluck('id');
                 $productIds = $productIds->merge($productList);
             }
@@ -68,7 +73,7 @@ class RecommendationService
                         ->groupBy('product_subcategory');
                 })->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])->with('media');
                 if(!is_null($limit)){
-                    $productList = $productList->limit($limit);
+                    $productList = $productList->limit($limit)->offset($offset);
                 }
                 $productList = $productList->get();
                 return $productList;

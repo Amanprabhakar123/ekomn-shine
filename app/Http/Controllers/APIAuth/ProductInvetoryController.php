@@ -313,7 +313,7 @@ class ProductInvetoryController extends Controller
                     "$variant_key.*.size" => 'required|array|min:1',
                     "$variant_key.*.size.*" => 'required|string',
                     "$variant_key.*.media" => 'required|array|min:5',
-                    "$variant_key.*.media.*" => 'required|mimes:png,jpeg,jpg,mp4',
+                    "$variant_key.*.media.*" => 'required|mimes:png,jpeg,jpg,webp,mp4',
                     "$variant_key.*.color" => 'required|string',
                 ]);
 
@@ -499,13 +499,13 @@ class ProductInvetoryController extends Controller
                             ProductFeature::create([
                                 'product_id' => $product_id,
                                 'company_id' => $company_id,
-                                'feature_name' => $feature,
+                                'feature_name' => $key,
                                 'value' => $feature,
                             ]);
                         }
                     }
 
-                    $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
+                    $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG', 'webp', 'WEBP'];
                     $vide_ext = ['mp4', 'MP4'];
                     $sku_counter = 1;
                     // Insert Product Variation table
@@ -715,7 +715,7 @@ class ProductInvetoryController extends Controller
                     "$variant_key.*.size" => 'required|array|min:1',
                     "$variant_key.*.size.*" => 'required|string',
                     "$variant_key.*.media" => 'array|min:1',
-                    "$variant_key.*.media.*" => 'mimes:png,jpeg,jpg,mp4',
+                    "$variant_key.*.media.*" => 'mimes:png,jpeg,jpg,webp,mp4',
                     "$variant_key.*.color" => 'required|string',
                 ]);
 
@@ -915,13 +915,13 @@ class ProductInvetoryController extends Controller
                                 ProductFeature::create([
                                     'product_id' => $product_id,
                                     'company_id' => $company_id,
-                                    'feature_name' => $feature,
+                                    'feature_name' => $key,
                                     'value' => $feature,
                                 ]);
                             }
                         }
 
-                        $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
+                        $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG', 'webp', 'WEBP'];
                         $vide_ext = ['mp4', 'MP4'];
                         $existingMedia = ProductVariationMedia::where('product_id', $product_id)->where('product_variation_id', $productVariation->id)->get();
                         $update_only_first_record = true;
@@ -1152,7 +1152,7 @@ class ProductInvetoryController extends Controller
                         }
                         // }
 
-                        $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
+                        $img_ext = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG', 'webp', 'WEBP'];
                         $vide_ext = ['mp4', 'MP4'];
                         $existingMedia = ProductVariationMedia::where('product_id', $product_id)->where('product_variation_id', $productVariation->id)->get();
 
@@ -1287,7 +1287,6 @@ class ProductInvetoryController extends Controller
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                 ];
-
                 // Trigger the event
                 event(new ExceptionEvent($exceptionDetails));
 

@@ -186,7 +186,7 @@ class ImageCompression extends Command
                 return;
             }
 
-            $allowedExtensions = ['png', 'jpeg', 'jpg', 'PNG', 'JPEG', 'JPG'];
+            $allowedExtensions = ['png', 'jpeg', 'jpg', 'webp', 'PNG', 'JPEG', 'JPG', 'WEBP'];
             foreach ($imagePaths as $image) {
 
                 $this->info($image->id);
