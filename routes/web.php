@@ -59,6 +59,7 @@ Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('
 Route::get('product-details/{slug}', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('/product/{type}', [WebController::class, 'productsType'])->name('product.type');
+Route::get('/search', [SearchController::class, 'displayProductSearch'])->name('product.search');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -168,9 +169,11 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 
     // Home Page Category Wise Product Listing
+    Route::get('/search', [SearchController::class, 'searchByKeyWord'])->name('search');
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
+    Route::get('/search/{slug}', [WebController::class, 'productSearchByKeyWord'])->name('product.slug');
     Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
     Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');
