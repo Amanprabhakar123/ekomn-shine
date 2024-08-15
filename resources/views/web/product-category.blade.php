@@ -322,7 +322,7 @@
 
         // Function to check if the user has scrolled to the bottom of the page
         function isScrolledToBottom() {
-            return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+            return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight || document.body.scrollHeight);
         }
 
         // Event listener for scroll events
@@ -331,6 +331,16 @@
             if (isScrolledToBottom()) {
                 fetchData();
             }
+        });
+
+        let debounceTimer;
+        window.addEventListener('scroll', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                if (isScrolledToBottom()) {
+                    fetchData();
+                }
+            }, 300); // Adjust delay as needed
         });
 
         // Function to filter data based on checkbox input
