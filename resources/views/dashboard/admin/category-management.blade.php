@@ -243,7 +243,7 @@
                                         confirmButton.style.color = 'white';
                                     }
                                 }).then(() => {
-                                    window.location.href = '/category-management';
+                                    window.location.href = `{{ route('category.management') }}`;
                                 });
                             }
         })

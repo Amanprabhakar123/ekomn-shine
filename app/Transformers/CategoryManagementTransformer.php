@@ -6,7 +6,7 @@ use League\Fractal\TransformerAbstract;
 use App\Models\Category;
 
 
-class CategoryManagementTransform extends TransformerAbstract
+class CategoryManagementTransformer extends TransformerAbstract
 {
     /**
      * Transform the given Category model into a formatted array.
@@ -28,7 +28,7 @@ class CategoryManagementTransform extends TransformerAbstract
             return $data;
         } catch (\Exception $e) {
             Log::error('Error in CategoryManagementTransform: ' . $e->getMessage());
-            return [];
+            throw $e;
         }
     }
 }
