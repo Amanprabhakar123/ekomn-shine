@@ -132,6 +132,32 @@
                     <span class="nav-link-text">Profile</span>
                 </a>
             </li>
+            @if(auth()->user()->hasPermissionTo(PERMISSION_MIS_SETTING_INVENTORY) )
+            <li class="nav-item">
+                <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#misSetting"
+                    data-bs-parent="#dashboard_ekomn" id="components">
+                    <i class="fas fa-boxes menuIcon"></i>
+                    <span class="nav-link-text">MIS Setting</span>
+                    <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
+                </a>
+                <ul class="sidenav-second-level collapse" id="misSetting" data-bs-parent="#dashboard_ekomn">
+                  
+                    <li>
+                        <a class="nav-link" href="{{route('mis.setting.inventory')}}">Inventory</a>
+                    </li>
+                 
+                    <!-- <li>
+                        <a class="nav-link" href="#">Edit Log</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#">Category Management</a>
+                    </li> -->
+                   
+                                     
+                </ul>
+            </li>
+            @endif
+
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#AdminControl"
                     data-bs-parent="#dashboard_ekomn" id="components">
@@ -150,9 +176,11 @@
                     <li>
                         <a class="nav-link" href="#">Content Update</a>
                     </li>
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_MIS_SETTING_INVENTORY) )
                     <li>
                         <a class="nav-link" href="#">MIS for Admin</a>
                     </li>
+                    @endif
                     <li>
                         <a class="nav-link" href="#">Edit Log</a>
                     </li>
