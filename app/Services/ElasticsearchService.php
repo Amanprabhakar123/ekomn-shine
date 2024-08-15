@@ -11,6 +11,8 @@ class ElasticsearchService
     {
         $this->client = ClientBuilder::create()
             ->setHosts(config('elasticsearch.hosts'))
+            ->setSSLVerification(false) // Only use this for development
+            ->setBasicAuthentication(env('ELASTICSEARCH_USER'), env('ELASTICSEARCH_PASSWORD'))
             ->build();
     }
 
