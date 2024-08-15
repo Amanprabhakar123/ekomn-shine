@@ -179,23 +179,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-  // ########## Header Search ############
-  const searchInput = document.querySelector('.serchinput');
-  const searchCard = document.querySelector('.header_search_card');
-  if (searchInput && searchCard) {
-    searchInput.addEventListener('input', function() {
-      searchCard.style.display = 'block';
-    });
-    document.addEventListener('click', function(event) {
-      if (!searchCard.contains(event.target) && !searchInput.contains(event.target)) {
-        searchCard.style.display = 'none';
-      }
-    });
-  }
-  // ## end header search ##
-
-
-
   // ############# Mobile Drawer ##########
   const barclick = document.getElementById('barIcon');
   const filtershow = document.querySelector('.mobileMenu');
