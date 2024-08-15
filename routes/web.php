@@ -24,6 +24,7 @@ use App\Http\Controllers\APIAuth\BuyerInventoryController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\MisSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,6 +143,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
+        Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
     });
 });
 
