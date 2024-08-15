@@ -2110,7 +2110,7 @@ textarea.resizer_none{resize:none!important;}
   background-color: #fff;
   border-radius: 2px 2px 5px 5px;
   min-height: 100px;
-  max-height: 200px;
+  max-height: 300px;
   overflow: hidden;
   overflow-y: auto;
   position: absolute;

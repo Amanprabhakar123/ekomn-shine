@@ -86,9 +86,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.querySelector('.serchinput');
   const searchList = document.querySelector('.searchList');
   const searchCard = document.querySelector('.header_search_card');
+  const searchBtnInput = document.getElementById('searchBtnInput');
 
   if (searchInput && searchList) {
-    searchInput.addEventListener('input', async (e) => {
+    searchInput.addEventListener('keyup', async (e) => {
       const query = e.target.value;
       if (query.length < 2) {
         searchCard.style.display = 'none';
@@ -119,16 +120,92 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Hide the search card when clicking outside
-    document.addEventListener('click', function(event) {
-      if (!searchCard.contains(event.target) && !searchInput.contains(event.target)) {
-        searchCard.style.display = 'none';
-      }
-    });
-  }
+
+//     searchBtnInput.addEventListener('click', function() {
+//     searchCard.style.display = 'none';
+//     const query = searchInput.value;
+//     // Clear previous suggestions
+//     searchList.innerHTML = '';
+
+//     fetch(`{{ route("search") }}?query=${query}`)
+//         .then(response => {
+//           console.log(response);
+//         })
+//         .catch(error => {
+//             console.error('Error fetching suggestions:', error);
+//         });
+// });
+
+
+searchBtnInput.addEventListener('click', function() {
+    searchCard.style.display = 'none';
+    const query = searchInput.value;
+    // Clear previous suggestions
+    searchList.innerHTML = '';
+
+    // Construct the URL with the correct query parameter
+    const url = `{{ route("search") }}?query=${query}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Process the data
+            if (data.length > 0) {
+              searchCard.style.display = 'block';
+              window.location.href = data[0].url;
+
+            } else {
+              searchCard.style.display = 'none';
+              window.location.href = `{{ url('/')}}/search?q=keyword&term='${query}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching suggestions:', error);
+        });
 });
 
 
+searchInput.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    searchCard.style.display = 'none';
+    const query = searchInput.value;
+    // Clear previous suggestions
+    searchList.innerHTML = '';
+
+    // Construct the URL with the correct query parameter
+    const url = `{{ route("search") }}?query=${query}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Process the data
+            if (data.length > 0) {
+              searchCard.style.display = 'block';
+              window.location.href = data[0].url;
+            } else {
+              searchCard.style.display = 'none';
+              window.location.href = `{{ url('/')}}/search?q=keyword&term='${query}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching suggestions:', error);
+        });
+  }
+});
+
+  }
+});
   // ## end header search ##
 </script>
 @yield('scripts')
