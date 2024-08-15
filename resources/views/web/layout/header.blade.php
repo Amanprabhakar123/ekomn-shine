@@ -13,16 +13,15 @@
             <a href="{{route('home')}}"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" height="40" /></a>
         </div>
         <div class="headersearch">
-            <form role="search">
+            
                 <div class="productSearch">
                     <input class="form-control serchinput" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                    <button class="btn" id="searchBtnInput" type="button"><i class="fas fa-search"></i></button>
                 </div>
                 <div class="header_search_card">
                     <ul class="searchList">
                     </ul>
                 </div>
-            </form>
         </div>
         @if (Auth::check())
             <div class="userAction">
@@ -97,10 +96,11 @@
             <li><a href="{{route('product.type', 'in-demand')}}">In Demand</a></li>
             <li><a href="{{route('product.type', 'premium')}}">Premium Products</a></li>
             <li><a href="{{route('product.type', 'new-arrivals')}}">New Arrivals</a></li>
-            @if(Request::path() == '/' || Request::path() == 'product/premium' || Request::path() == 'product/in-demand' || Request::path() == 'product/new-arrivals')
-            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
-            @else
+            
+            @if(str_contains(Request::path(), 'category'))
             <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
+            @else
+            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
             @endif
         </ul>
     </div>

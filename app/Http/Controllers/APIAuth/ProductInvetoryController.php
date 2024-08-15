@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
-use App\Models\CompanyDetail;
-use App\Models\Import;
-use App\Models\ProductFeature;
-use App\Models\ProductInventory;
-use App\Models\ProductKeyword;
-use App\Models\ProductVariation;
-use App\Models\ProductVariationMedia;
 use App\Models\User;
-use App\Transformers\BulkDataTransformer;
-use App\Transformers\ProductVariationTransformer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Import;
 use Illuminate\Support\Str;
 use League\Fractal\Manager;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
+use App\Models\ProductVariationMedia;
+use App\Services\ElasticsearchService;
+use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
+use App\Transformers\BulkDataTransformer;
+use Illuminate\Support\Facades\Validator;
+use App\Transformers\ProductVariationTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class ProductInvetoryController extends Controller
 {
@@ -405,6 +406,7 @@ class ProductInvetoryController extends Controller
 
                 $user_id = null;
                 $company_id = null;
+                $elasticsearchService = new ElasticsearchService();
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $user_id = auth()->user()->id;
                     $company_id = auth()->user()->companyDetails->id;
@@ -491,6 +493,20 @@ class ProductInvetoryController extends Controller
                                 'company_id' => $company_id,
                                 'keyword' => $product_keyword,
                             ]);
+
+                            $key = str_replace('-', ' ', $product_keyword);
+                            // Add keyword Elastic search
+                            $list = [
+                                'keyword' => $key,
+                                'keyword_suggest' => [
+                                    'input' => $key
+                                ],
+                            ];
+                            $parameter = [
+                                'index' => 'keywords',
+                                'body'  => $list,
+                            ];
+                            $elasticsearchService->index($parameter);
                         }
                     }
 
@@ -596,6 +612,21 @@ class ProductInvetoryController extends Controller
                             $productVariation->product_slug_id = $generateProductID;
                             $productVariation->slug = generateSlug($request->product_name, $generateProductID);
                             $productVariation->save();
+
+                            // Elastic search Index
+                            $title_index = strtolower($productVariation->title);
+                            // Index each title
+                            $list2 = [
+                                'title' => $title_index,
+                                'title_suggest' => [
+                                    'input' => $title_index
+                                ],
+                            ];
+                            $parameter = [
+                                'index' => 'keywords',
+                                'body'  => $list2,
+                            ];
+                            $elasticsearchService->index($parameter);
 
                             foreach ($media_images as $media) {
                                 ProductVariationMedia::create([
@@ -806,6 +837,7 @@ class ProductInvetoryController extends Controller
 
                 $user_id = null;
                 $company_id = null;
+                $elasticsearchService = new ElasticsearchService();
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $user_id = auth()->user()->id;
                     $company_id = auth()->user()->companyDetails->id;
@@ -904,6 +936,20 @@ class ProductInvetoryController extends Controller
                                     'company_id' => $company_id,
                                     'keyword' => $product_keyword,
                                 ]);
+
+                                $key = str_replace('-', ' ', $product_keyword);
+                                // Add keyword Elastic search
+                                $list = [
+                                    'keyword' => $key,
+                                    'keyword_suggest' => [
+                                        'input' => $key
+                                    ],
+                                ];
+                                $parameter = [
+                                    'index' => 'keywords',
+                                    'body'  => $list,
+                                ];
+                                $elasticsearchService->index($parameter);
                             }
                         }
 
@@ -1017,6 +1063,21 @@ class ProductInvetoryController extends Controller
                                     $productVariation->allow_editable = $allow_editable;
                                     $productVariation->save();
                                     $update_only_first_record = false;
+
+                                    // Elastic search Index
+                                    $title_index = strtolower($productVariation->title);
+                                    // Index each title
+                                    $list2 = [
+                                        'title' => $title_index,
+                                        'title_suggest' => [
+                                            'input' => $title_index
+                                        ],
+                                    ];
+                                    $parameter = [
+                                        'index' => 'keywords',
+                                        'body'  => $list2,
+                                    ];
+                                    $elasticsearchService->index($parameter);
                                 } else {
                                     $productVariation = ProductVariation::create([
                                         'product_id' => $product_id,
@@ -1057,6 +1118,21 @@ class ProductInvetoryController extends Controller
                                     $productVariation->product_slug_id = $generateProductID;
                                     $productVariation->slug = generateSlug($request->product_name, $generateProductID);
                                     $productVariation->save();
+
+                                    // Elastic search Index
+                                    $title_index = strtolower($request->product_name.' ( '.$color.', '.$value1.' ) ');
+                                    // Index each title
+                                    $list2 = [
+                                        'title' => $title_index,
+                                        'title_suggest' => [
+                                            'input' => $title_index
+                                        ],
+                                    ];
+                                    $parameter = [
+                                        'index' => 'keywords',
+                                        'body'  => $list2,
+                                    ];
+                                    $elasticsearchService->index($parameter);
 
                                 }
                                 // Insertor Update Product Variation Media table
@@ -1134,6 +1210,20 @@ class ProductInvetoryController extends Controller
                                     'company_id' => $company_id,
                                     'keyword' => $product_keyword,
                                 ]);
+
+                                $key = str_replace('-', ' ', $product_keyword);
+                                // Add keyword Elastic search
+                                $list = [
+                                    'keyword' => $key,
+                                    'keyword_suggest' => [
+                                        'input' => $key
+                                    ],
+                                ];
+                                $parameter = [
+                                    'index' => 'keywords',
+                                    'body'  => $list,
+                                ];
+                                $elasticsearchService->index($parameter);
                             }
                         }
 
@@ -1227,6 +1317,21 @@ class ProductInvetoryController extends Controller
                                     $productVariation->tier_shipping_rate = json_encode($tierShippingRate);
                                     $productVariation->allow_editable = $allow_editable;
                                     $productVariation->save();
+
+                                    // Elastic search Index
+                                    $title_index = strtolower($productVariation->title);
+                                    // Index each title
+                                    $list2 = [
+                                        'title' => $title_index,
+                                        'title_suggest' => [
+                                            'input' => $title_index
+                                        ],
+                                    ];
+                                    $parameter = [
+                                        'index' => 'keywords',
+                                        'body'  => $list2,
+                                    ];
+                                    $elasticsearchService->index($parameter);
                                 }
                             }
                             foreach ($media_images as $key => $media) {

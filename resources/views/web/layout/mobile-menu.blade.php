@@ -7,7 +7,9 @@
         @if (Auth::check())
             <div class="user align-items-start">
                 <h4 style="text-align: justify;">{{ auth()->user()->name }}</h4>
+                @if(auth()->user()->hasRole(ROLE_BUYER) || auth()->user()->hasRole(ROLE_SUPPLIER))
                 <p class="m-0">User ID: {{ auth()->user()->companyDetails->company_serial_id }}</p>
+                @endif
             </div>
         @else
             <div class="userAction">

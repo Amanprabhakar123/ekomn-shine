@@ -15,6 +15,12 @@ class SearchController extends Controller
         $this->elasticsearchService = $elasticsearchService;
     }
 
+    /**
+     * Search for products
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -131,5 +137,93 @@ class SearchController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Search for keywords
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByKeyWord(Request $request)
+    {
+        $query = $request->input('query');
+
+        $indexParams = [
+            'index' => 'keywords',
+            'body'  => [
+                'suggest' => [
+                    'keywords_suggest' => [
+                        'prefix'    => $query, // Your search term here
+                        'completion' => [
+                            'field' => 'keyword_suggest',
+                            'size'  => 10
+                        ]
+                    ],
+                    'title_suggest' => [
+                        'prefix'    => $query, // Your search term here
+                        'completion' => [
+                            'field' => 'title_suggest',
+                            'size'  => 10
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        try {
+            // Execute the search and extract suggestions
+                $results = $this->elasticsearchService->search($indexParams);
+
+                // Initialize an array to hold all suggestions
+                $suggestions = [];
+
+                // List of suggestion keys to process
+                $suggestionKeys = [
+                    'keywords_suggest',
+                    'title_suggest'
+                ];
+                
+                // Extract suggestions for each key
+                foreach ($suggestionKeys as $key) {
+                    // Check if the suggestion exists and extract text from each suggestion
+                    if (isset($results['suggest'][$key][0]['options'])) {
+                        $suggestions[] = array_map(function ($item) use ($key) {
+                                if ($key == 'keywords_suggest') {
+                                return ['url' => url('/').'/search?q=keyword&term=' . $item['_source']['keyword'], 'text' =>  $item['text']];
+                            }elseif($key == 'title_suggest'){
+                                return ['url' => url('/').'/search?q=title&term=' . $item['_source']['title'], 'text' =>  $item['_source']['title']];
+                            }
+                        }, $results['suggest'][$key][0]['options']);
+                    }
+                }
+                // Flatten the array of arrays into a single array
+                $suggestions = array_merge(...$suggestions);
+
+            return response()->json($suggestions);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function displayProductSearch()
+    {
+        // Retrieve the full query string from the URL
+        $fullQueryString = request()->getQueryString();
+
+        // Parse the query string into an associative array
+        parse_str($fullQueryString, $queryArray);
+
+        $type = $queryArray['q'];
+        // Extract the specific term value (e.g., term2pcs)
+        $query = $queryArray['term'] ?? 'default_value'; // Use 'default_value' if 'term2pcs' is not set
+        
+        return view('web.product-search', compact('query', 'type'));
     }
 }
