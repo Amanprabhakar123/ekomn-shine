@@ -35,6 +35,7 @@
                         <i class="far fa-bell"></i>
                     </a>
                 </div>
+            
                 <div class="dropdown userDropdown">
                     <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user">
@@ -74,6 +75,7 @@
                         </li>
                     </ul>
                 </div>
+                @if(auth()->user()->hasRole(ROLE_BUYER))
                 <div class="cartAction">
                     <a href="" class="cart">
                         <span class="counter">0</span>
@@ -81,6 +83,7 @@
                             alt="Cart" class="_1XmrCc" width="30" height="30">
                     </a>
                 </div>
+                @endif
             </div>
         @else
             <div class="userAction">

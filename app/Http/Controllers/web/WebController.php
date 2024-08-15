@@ -312,11 +312,10 @@ class WebController extends Controller
             });
             $data['feature_category'] = $futureProduct;
 
-            // dd($transform);
             // Just For You
             $recommendationService = new RecommendationService;
             $userId = auth()->check() ? auth()->id() : null;
-            $products = $recommendationService->getRecommendations($userId, $limit = 12);
+            $products = $recommendationService->getRecommendations($userId, 12);
             $just_for_you = $products->map(function ($product) {
                 $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
                 if ($media == null) {
@@ -358,6 +357,57 @@ class WebController extends Controller
             event(new ExceptionEvent($exceptionDetails));
         }
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+     public function justForYouViewMore(Request $request){
+        try {
+            $recommendationService = new RecommendationService;
+            $userId = auth()->check() ? auth()->id() : null;
+            $products = $recommendationService->getRecommendations($userId, 12, $request->perpage);
+            $just_for_you = $products->map(function ($product) {
+                $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
+                if ($media == null) {
+                    $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
+                } else {
+                    $thumbnail = url($media->thumbnail_path);
+                }
+
+                return [
+                    'product_id' => salt_encrypt($product->product_id),
+                    'product_name' => $product->title,
+                    'product_image' => $thumbnail,
+                    'product_slug' => route('product.details', $product->slug),
+                    'product_price' => $product->price_before_tax,
+                ];
+            });
+
+            // Return the response
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'data' => $just_for_you,
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Return a JSON response with error details
+
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+        }
+     }
 
     /**
      * Display a listing of the resource.
