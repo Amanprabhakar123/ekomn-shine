@@ -13,6 +13,26 @@
                             Demand - Export</button>
 
                     </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-login btnekomn"
+                            onclick="exportMisReport('out_of_stock')">Product Out of Stock - Export</button>
+
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-login btnekomn"
+                            onclick="exportMisReport('product_events')">Product Events - Export</button>
+
+                    </div>
+                    <div class="col-md-4 mt-5">
+                        <button type="button" class="btn btn-login btnekomn"
+                            onclick="exportMisReport('product_inventory_price')">Product Price History - Export</button>
+
+                    </div>
+                    <div class="col-md-4 mt-5">
+                        <button type="button" class="btn btn-login btnekomn"
+                            onclick="exportMisReport('product_inventory_stock')">Product Stock History - Export</button>
+
+                    </div>
 
                 </div>
             </div>

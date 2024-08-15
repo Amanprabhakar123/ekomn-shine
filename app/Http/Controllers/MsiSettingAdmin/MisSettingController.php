@@ -17,6 +17,10 @@ class MisSettingController extends Controller
      */
     public function misSettingInventory()
     {
+        $csvData = [];
+
+        // After looping, dump all the collected SKUs and prices
+
         return view('dashboard.admin.mis-setting-inventory');
     }
 
