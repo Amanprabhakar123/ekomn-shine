@@ -627,7 +627,7 @@ class WebController extends Controller
                 ->paginate($perPage);
 
             // Transform the product variations using Fractal
-            $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer);
+            $resource = new Collection($productVariations, new ProductsCategoryWiseTransformer(true));
             $resource->setPaginator(new IlluminatePaginatorAdapter($productVariations));
             $products = $this->fractal->createData($resource)->toArray();
 

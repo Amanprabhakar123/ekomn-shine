@@ -170,7 +170,7 @@ Route::group(['prefix' => 'api'], function () {
 
     // Home Page Category Wise Product Listing
     Route::get('/search', [SearchController::class, 'searchByKeyWord'])->name('search');
-    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    // Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
     Route::get('/search/{slug}', [WebController::class, 'productSearchByKeyWord'])->name('product.slug');

@@ -96,10 +96,11 @@
             <li><a href="{{route('product.type', 'in-demand')}}">In Demand</a></li>
             <li><a href="{{route('product.type', 'premium')}}">Premium Products</a></li>
             <li><a href="{{route('product.type', 'new-arrivals')}}">New Arrivals</a></li>
-            @if(Request::path() == '/' || Request::path() == 'product/premium' || Request::path() == 'product/in-demand' || Request::path() == 'product/new-arrivals')
-            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
-            @else
+            
+            @if(str_contains(Request::path(), 'category'))
             <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
+            @else
+            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
             @endif
         </ul>
     </div>
