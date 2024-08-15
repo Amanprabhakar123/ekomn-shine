@@ -46,9 +46,9 @@ class RecommendationService
             // Fetch the remaining products
             if (count($productIds) < $limit) {
                 $remainingProductIds = $limit - count($productIds);
-                if($remainingProductIds > 0){
-                    $offset = 0;
-                }
+                // if($remainingProductIds > 0){
+                //     $offset = 0;
+                // }
                 $productList = ProductVariation::whereIn('product_id', function ($query) {
                     $query->selectRaw('MAX(id)')
                         ->from('product_inventories')
