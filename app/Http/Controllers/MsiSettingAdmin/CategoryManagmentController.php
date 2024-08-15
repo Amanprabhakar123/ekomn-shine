@@ -74,9 +74,8 @@ class CategoryManagmentController extends Controller
 
     public function updateCategoryStatus(Request $request){
         try {
-            
             $category = Category::find(salt_decrypt($request->input('id')));
-            $category->is_active = $request->input('is_active');
+            $category->is_active = !$category->is_active;
             $category->save();
             return response()->json(['data' => 
             [
