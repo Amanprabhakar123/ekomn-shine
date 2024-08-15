@@ -1,30 +1,30 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\WebController;
-use App\Http\Controllers\Web\SearchController;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\BulkUploadController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\FeedBackController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\BulkUploadController;
-use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\OrderController;
 use App\Http\Controllers\APIAuth\OrderPaymentController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\MsiSettingAdmin\HomeController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\MisSettingController;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\MsiSettingAdmin\HomeController;
+use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
+use App\Http\Controllers\Web\SearchController;
+use App\Http\Controllers\Web\WebController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -156,6 +156,7 @@ Route::middleware(['api', 'jwt.auth', 'emailverified'])->group(function () {
 
 // Route group for API authentication and unauthenticated routes
 Route::group(['prefix' => 'api'], function () {
+
     Route::post('register', [RegisterController::class, 'registerUser']);
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
@@ -168,6 +169,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 
     // Home Page Category Wise Product Listing
+
+    Route::get('/mis-export-csv/{type}', [MisSettingController::class, 'misReportExportCSV'])->name('mis.export.csv');
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
@@ -179,7 +182,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('categories-list', [HomeController::class, 'listCategories'])->name('categories.list');
     Route::get('get-banner', [HomeController::class, 'getBanner'])->name('get.banner');
     Route::post('add-click-count', [HomeController::class, 'addClickCount'])->name('add.click.count');
-    
+
     // Razorpay payment gateway routes
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');

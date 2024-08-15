@@ -7,7 +7,7 @@
         @if (Auth::check())
             <div class="user align-items-start">
                 <h4 style="text-align: justify;">{{ auth()->user()->name }}</h4>
-                <p class="m-0">User ID: {{ auth()->user()->companyDetails->company_serial_id }}</p>
+                <p class="m-0">User ID: 000012</p>
             </div>
         @else
             <div class="userAction">
