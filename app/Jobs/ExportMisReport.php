@@ -23,6 +23,9 @@ class ExportMisReport implements ShouldQueue
 
     /**
      * Create a new job instance.
+     *
+     * @param  string  $type
+     * @param  string  $email
      */
     public function __construct($type, $email)
     {
@@ -41,15 +44,15 @@ class ExportMisReport implements ShouldQueue
             $csvHeaders = [];
             $email = $this->email;
 
+            // Determine the report type and set up file name and headers accordingly
             if ($this->type === 'in_demand') {
                 $fileName = 'MIS_In_Demand.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Company Serial ID'];
 
-                // Fetch products in chunks
+                // Fetch products with their related models in chunks
                 ProductInventory::with(['variations', 'ProductMatrics', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
-                            // Check if the relationships exist before accessing them
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
@@ -71,12 +74,10 @@ class ExportMisReport implements ShouldQueue
                 $fileName = 'MIS_Out_Of_Stock.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Company Serial ID'];
 
-                // Fetch products in chunks
+                // Fetch products with their related models in chunks
                 ProductInventory::with(['variations', 'ProductMatrics', 'company'])
-
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
-                            // Check if the relationships exist before accessing them
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
@@ -96,11 +97,10 @@ class ExportMisReport implements ShouldQueue
                 $fileName = 'MIS_PRODUCT_EVENTS.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Add', 'Product Download', 'Company Serial ID'];
 
-                // Fetch products in chunks
+                // Fetch products with their related models in chunks
                 ProductInventory::with(['variations', 'ProductMatrics', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
-                            // Check if the relationships exist before accessing them
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
@@ -130,17 +130,16 @@ class ExportMisReport implements ShouldQueue
                 $fileName = 'MIS_PRODUCT_INVENTORY_STOCK.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Company Serial ID', 'Updated Stocks'];
 
-                // Fetch products in chunks
+                // Fetch products with their related models in chunks
                 ProductInventory::with(['variations', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
-                            // Check if the relationships exist before accessing them
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
                             $companySerialId = $product->company->company_serial_id ?? '';
 
-                            // Fetch the updated stock values from the activity log
+                            // Retrieve updated stock values from the activity log
                             $updatedStocks = Activity::where('subject_type', 'App\\Models\\ProductVariation')
                                 ->where('subject_id', $product->variations->id)
                                 ->where(function ($query) {
@@ -148,9 +147,8 @@ class ExportMisReport implements ShouldQueue
                                         ->whereColumn('properties->attributes->stock', '!=', 'properties->old->stock');
                                 })
                                 ->pluck('properties->attributes->stock')
-                                ->toArray(); // Get the updated stock values
+                                ->toArray();
 
-                            // Convert the updated stock values to a comma-separated string
                             $updatedStocksString = implode(', ', $updatedStocks);
 
                             $csvData[] = [
@@ -160,7 +158,7 @@ class ExportMisReport implements ShouldQueue
                                 $stock,
                                 $status,
                                 $companySerialId,
-                                $updatedStocksString, // Add the updated stock values
+                                $updatedStocksString,
                             ];
                         }
                     });
@@ -168,17 +166,16 @@ class ExportMisReport implements ShouldQueue
                 $fileName = 'MIS_PRODUCT_INVENTORY_PRICE.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Price', 'Status', 'Company Serial ID', 'Updated Prices'];
 
-                // Fetch products in chunks
+                // Fetch products with their related models in chunks
                 ProductInventory::with(['variations', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
-                            // Check if the relationships exist before accessing them
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
                             $companySerialId = $product->company->company_serial_id ?? '';
 
-                            // Fetch the updated stock values from the activity log
+                            // Retrieve updated price values from the activity log
                             $updatedPrices = Activity::where('subject_type', 'App\\Models\\ProductVariation')
                                 ->where('subject_id', $product->variations->id)
                                 ->where(function ($query) {
@@ -186,9 +183,8 @@ class ExportMisReport implements ShouldQueue
                                         ->whereColumn('properties->attributes->price_after_tax', '!=', 'properties->old->price_after_tax');
                                 })
                                 ->pluck('properties->attributes->price_after_tax')
-                                ->toArray(); // Get the updated price_after_tax values
+                                ->toArray();
 
-                            // Convert the updated price_after_tax values to a comma-separated string
                             $updatedPricesString = implode(', ', $updatedPrices);
 
                             $csvData[] = [
@@ -198,13 +194,13 @@ class ExportMisReport implements ShouldQueue
                                 $stock,
                                 $status,
                                 $companySerialId,
-                                $updatedPricesString, // Add the updated stock values
+                                $updatedPricesString,
                             ];
                         }
                     });
             }
 
-            // Call the ExportFileService and pass the $csvData and $this->email as parameters
+            // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportServices;
             $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email);
 
@@ -215,9 +211,8 @@ class ExportMisReport implements ShouldQueue
                 'line' => $e->getLine(),
             ];
 
-            // Trigger an event or just log the error
+            // Trigger an event and log the error if an exception occurs
             event(new ExceptionEvent($exceptionDetails));
-            // Log the error details
             Log::error('ExportMisReport Job Error: '.$e->getMessage(), [
                 'exception' => $e,
                 'file' => $e->getFile(),
