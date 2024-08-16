@@ -30,7 +30,7 @@
                         }
                     }).then(() => {
                         // Redirect to the inventory page after the alert is closed
-                        window.location.href = "{{ route('mis.setting.inventory') }}";
+                        location.reload();
                     });
                 }
             })

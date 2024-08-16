@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\ExceptionEvent;
+use App\Models\CompanyDetail;
 use App\Models\Order;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
@@ -219,7 +220,7 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'product_inventory_growth') {
                 $fileName = 'MIS_PRODUCT_GROWTH.csv';
-                $csvHeaders = ['Title', 'SKU', 'Supplier ID', 'Category Name',  'Product Listing Date'];
+                $csvHeaders = ['Title', 'SKU', 'Supplier ID', 'Category Name', 'Sub Category', 'Product Listing Date'];
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'company'])
@@ -243,7 +244,7 @@ class ExportMisReport implements ShouldQueue
 
             } elseif ($this->type === 'orders') {
                 $fileName = 'MIS_ORDERS.csv';
-                $csvHeaders = ['Order ID', 'Order Value', 'Order Date', 'Supplier ID', 'Buyer ID',  'Order Status', 'Order Type (Dropship,Bulk,Reseller)', 'Order Channel Type', 'Total Quantity'];
+                $csvHeaders = ['Order ID', 'Order Value', 'Order Date', 'Supplier ID', 'Buyer ID',  'Order Status', 'Order Type', 'Order Channel Type', 'Total Quantity'];
 
                 // Fetch products with their related models in chunks
                 Order::with(['orderItemsCharges', 'buyer', 'supplier'])
@@ -278,6 +279,25 @@ class ExportMisReport implements ShouldQueue
                                 $user->user->email,
                                 $user->companyDetail->company_serial_id,
                                 $user->last_login,
+
+                            ];
+                        }
+                    });
+            } elseif ($this->type === 'total_supplier') {
+                $fileName = 'MIS_TOTAL_SUPPLIER.csv';
+                $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
+                CompanyDetail::with(['address', 'variations', 'products', 'loginHistory'])
+                    ->chunk(100, function ($companyDetails) use (&$csvData) {
+                        foreach ($companyDetails as $com) {
+
+                            $csvData[] = [
+                                $com->getFullName(),
+                                $com->address->where('address_type', 1)->first()->getFullAddress(),
+                                $com->company_serial_id,
+                                $com->gst_no,
+                                $com->variations->count(),
+                                $com->created_at,
+                                $com->loginHistory->latest()->first()->created_at,
 
                             ];
                         }
