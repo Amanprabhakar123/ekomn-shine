@@ -13,9 +13,10 @@ class ExportServices
      * @param  array  $data  The array of data for CSV rows.
      * @param  string  $filename  The filename for the CSV file.
      * @param  string  $recipient  The email recipient's address.
+     * @param  string  $subject  The email subject.
      * @return void
      */
-    public function sendCSVByEmail(array $headers, array $data, string $filename, string $recipient)
+    public function sendCSVByEmail(array $headers, array $data, string $filename, string $recipient, string $subject)
     {
         // Open a memory stream
         $handle = fopen('php://memory', 'r+');
@@ -38,9 +39,9 @@ class ExportServices
         fclose($handle);
 
         // Send the CSV as an email attachment
-        Mail::raw('Please find the attached CSV file.', function ($message) use ($recipient, $csvContent, $filename) {
+        Mail::raw('Please find the attached CSV file.', function ($message) use ($recipient, $csvContent, $filename, $subject) {
             $message->to($recipient)
-                ->subject('CSV Export')
+                ->subject(strtoupper($subject).' Export')
                 ->attachData($csvContent, $filename, [
                     'mime' => 'text/csv',
                 ]);

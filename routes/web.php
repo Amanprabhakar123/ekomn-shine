@@ -86,6 +86,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('top-product', [HomeController::class, 'productAddView'])->name('top.product');
     Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
     Route::get('banner', [HomeController::class, 'banner'])->name('banner');
+    Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -143,7 +144,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('delete-top-product', [HomeController::class, 'deleteTopProductData'])->name('delete.top.product');
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
-        Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
+        Route::get('/mis-export-csv/{type}', [MisSettingController::class, 'misReportExportCSV'])->name('mis.export.csv');
     });
 });
 
@@ -170,7 +171,6 @@ Route::group(['prefix' => 'api'], function () {
 
     // Home Page Category Wise Product Listing
 
-    Route::get('/mis-export-csv/{type}', [MisSettingController::class, 'misReportExportCSV'])->name('mis.export.csv');
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');

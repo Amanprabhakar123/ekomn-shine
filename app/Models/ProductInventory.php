@@ -126,7 +126,7 @@ class ProductInventory extends Model
     /**
      * Get the product metrics for the product.
      */
-    public function ProductMatrics()
+    public function productMatrics()
     {
         return $this->hasMany(ProductMatrics::class, 'product_id', 'id');
     }

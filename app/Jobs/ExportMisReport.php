@@ -50,13 +50,13 @@ class ExportMisReport implements ShouldQueue
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Company Serial ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'ProductMatrics', 'company'])
+                ProductInventory::with(['variations', 'productMatrics', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
-                            $purchaseCount = $product->ProductMatrics->purchase_count ?? 0;
+                            $purchaseCount = $product->productMatrics->purchase_count ?? 0;
                             $companySerialId = $product->company->company_serial_id ?? '';
 
                             $csvData[] = [
@@ -75,7 +75,7 @@ class ExportMisReport implements ShouldQueue
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Company Serial ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'ProductMatrics', 'company'])
+                ProductInventory::with(['variations', 'productMatrics', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
                             $sku = $product->variations->sku ?? '';
@@ -98,17 +98,17 @@ class ExportMisReport implements ShouldQueue
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Add', 'Product Download', 'Company Serial ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'ProductMatrics', 'company'])
+                ProductInventory::with(['variations', 'productMatrics', 'company'])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $product) {
                             $sku = $product->variations->sku ?? '';
                             $stock = $product->variations->stock ?? '';
                             $status = $product->variations->status ?? '';
-                            $purchaseCount = $product->ProductMatrics->purchase_count ?? 0;
-                            $clickCount = $product->ProductMatrics->click_count ?? 0;
-                            $viewCount = $product->ProductMatrics->view_count ?? 0;
-                            $addToInventoryCount = $product->ProductMatrics->add_to_inventory_count ?? 0;
-                            $downloadCount = $product->ProductMatrics->download_count ?? 0;
+                            $purchaseCount = $product->productMatrics->purchase_count ?? 0;
+                            $clickCount = $product->productMatrics->click_count ?? 0;
+                            $viewCount = $product->productMatrics->view_count ?? 0;
+                            $addToInventoryCount = $product->productMatrics->add_to_inventory_count ?? 0;
+                            $downloadCount = $product->productMatrics->download_count ?? 0;
                             $companySerialId = $product->company->company_serial_id ?? '';
 
                             $csvData[] = [
@@ -202,7 +202,7 @@ class ExportMisReport implements ShouldQueue
 
             // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportServices;
-            $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email);
+            $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email, $this->type);
 
         } catch (\Exception $e) {
             $exceptionDetails = [
