@@ -573,6 +573,13 @@ class WebController extends Controller
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
                 });
+                    if(empty($product_ids)){
+                        $keyword = str_replace('-', ' ', $keyword);
+                        ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
+                        ->map(function ($item) use (&$product_ids) {
+                            $product_ids[] = $item->id;
+                    });
+                }
             }else{
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
