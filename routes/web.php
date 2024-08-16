@@ -1,31 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\WebController;
-use App\Http\Controllers\Web\SearchController;
-use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\Auth\AuthViewController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\APIAuth\PaymentController;
+use App\Http\Controllers\APIAuth\BulkUploadController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\FeedBackController;
-use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\BulkUploadController;
-use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\APIAuth\OrderController;
 use App\Http\Controllers\APIAuth\OrderPaymentController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\MsiSettingAdmin\HomeController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\ProductInvetoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
-use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
+use App\Http\Controllers\APIAuth\RegisterController;
+use App\Http\Controllers\APIAuth\ResetController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\APIAuth\VerificationController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Auth\CourierDetailsController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
+use App\Http\Controllers\MsiSettingAdmin\HomeController;
+use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
+use App\Http\Controllers\Web\SearchController;
+use App\Http\Controllers\Web\WebController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +89,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
     Route::get('banner', [HomeController::class, 'banner'])->name('banner');
     Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
+    Route::get('mis-setting-order', [MisSettingController::class, 'misSettingOrder'])->name('mis.setting.order');
+    Route::get('mis-setting-supplier', [MisSettingController::class, 'misSettingSupplier'])->name('mis.setting.supplier');
     Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
     Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
 
