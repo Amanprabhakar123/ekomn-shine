@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Mail;
 
-class ExportServices
+class ExportFileServices
 {
     /**
      * Generates a CSV file and emails it as an attachment.

@@ -58,14 +58,8 @@ class MisSettingController extends Controller
                 'file' => $e->getFile(), // File where the exception occurred
                 'line' => $e->getLine(), // Line number where the exception occurred
             ];
-<<<<<<< Updated upstream
-
-            // Trigger an event to handle the exception (optional, uncomment if needed)
-            // event(new ExceptionEvent($exceptionDetails));
-=======
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
->>>>>>> Stashed changes
 
             // Log the exception details for debugging and monitoring
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());

@@ -122,12 +122,4 @@ class ProductInventory extends Model
     {
         return $this->belongsTo(Category::class, 'product_subcategory', 'id');
     }
-
-    /**
-     * Get the product metrics for the product.
-     */
-    public function productMatrics()
-    {
-        return $this->hasMany(ProductMatrics::class, 'product_id', 'id');
-    }
 }

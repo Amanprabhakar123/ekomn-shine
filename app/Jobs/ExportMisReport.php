@@ -2,16 +2,17 @@
 
 namespace App\Jobs;
 
-use App\Events\ExceptionEvent;
-use App\Models\ProductInventory; // Import ProductInventory model
-use App\Services\ExportServices;
 use Illuminate\Bus\Queueable;
+use App\Events\ExceptionEvent;
+use App\Models\ProductVariation;
+use Illuminate\Support\Facades\Log;
+use App\Services\ExportFileServices;
+use Illuminate\Queue\SerializesModels;
+use Spatie\Activitylog\Models\Activity;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Spatie\Activitylog\Models\Activity;
+use App\Models\ProductInventory; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
 {
@@ -47,76 +48,84 @@ class ExportMisReport implements ShouldQueue
             // Determine the report type and set up file name and headers accordingly
             if ($this->type === 'in_demand') {
                 $fileName = 'MIS_In_Demand.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Company Serial ID'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Availablity Status', 'Supplier ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'productMatrics', 'company'])
-                    ->chunk(100, function ($products) use (&$csvData) {
-                        foreach ($products as $product) {
-                            $sku = $product->variations->sku ?? '';
-                            $stock = $product->variations->stock ?? '';
-                            $status = $product->variations->status ?? '';
-                            $purchaseCount = $product->productMatrics->purchase_count ?? 0;
-                            $companySerialId = $product->company->company_serial_id ?? '';
+                ProductVariation::with(['product', 'productMatrics', 'company'])
+                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
+                ->whereHas('productMatrics', function ($query) {
+                    $query->where('purchase_count', '>', 0);
+                })->chunk(100, function ($products) use (&$csvData) {
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+                            $stock = $pro->stock ?? '';
+                            $status = $pro->status ?? '';
+                            $purchaseCount = $pro->productMatrics->purchase_count ?? 0;
+                            $companySerialId = $pro->company->company_serial_id ?? '';
 
                             $csvData[] = [
-                                $product->title,
-                                $product->hsn,
+                                $pro->title,
+                                $pro->product->hsn,
                                 $sku,
                                 $stock,
-                                $status,
+                                getStatusName($status),
                                 $purchaseCount,
+                                getAvailablityStatusName($pro->availability_status),
                                 $companySerialId,
                             ];
                         }
                     });
             } elseif ($this->type === 'out_of_stock') {
                 $fileName = 'MIS_Out_Of_Stock.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Company Serial ID'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Availablity Status',  'Supplier ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'productMatrics', 'company'])
+                ProductVariation::with(['product', 'productMatrics', 'company'])
+                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
-                        foreach ($products as $product) {
-                            $sku = $product->variations->sku ?? '';
-                            $stock = $product->variations->stock ?? '';
-                            $status = $product->variations->status ?? '';
-                            $companySerialId = $product->company->company_serial_id ?? '';
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+                            $stock = $pro->stock ?? '';
+                            $status = $pro->status ?? '';
+                            $companySerialId = $pro->company->company_serial_id ?? '';
 
                             $csvData[] = [
-                                $product->title,
-                                $product->hsn,
+                                $pro->title,
+                                $pro->product->hsn,
                                 $sku,
                                 $stock,
-                                $status,
+                                getStatusName($status),
+                                getAvailablityStatusName($pro->availability_status),
                                 $companySerialId,
                             ];
                         }
                     });
             } elseif ($this->type === 'product_events') {
                 $fileName = 'MIS_PRODUCT_EVENTS.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Add', 'Product Download', 'Company Serial ID'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status',  'Availablity Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Add', 'Product Download', 'Supplier ID'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'productMatrics', 'company'])
+                ProductVariation::with(['product', 'productMatrics', 'company'])
+                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
-                        foreach ($products as $product) {
-                            $sku = $product->variations->sku ?? '';
-                            $stock = $product->variations->stock ?? '';
-                            $status = $product->variations->status ?? '';
-                            $purchaseCount = $product->productMatrics->purchase_count ?? 0;
-                            $clickCount = $product->productMatrics->click_count ?? 0;
-                            $viewCount = $product->productMatrics->view_count ?? 0;
-                            $addToInventoryCount = $product->productMatrics->add_to_inventory_count ?? 0;
-                            $downloadCount = $product->productMatrics->download_count ?? 0;
-                            $companySerialId = $product->company->company_serial_id ?? '';
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+                            $stock = $pro->stock ?? '';
+                            $status = $pro->status ?? '';
+                            $purchaseCount = $pro->productMatrics->purchase_count ?? 0;
+                            $clickCount = $pro->productMatrics->click_count ?? 0;
+                            $viewCount = $pro->productMatrics->view_count ?? 0;
+                            $addToInventoryCount = $pro->productMatrics->add_to_inventory_count ?? 0;
+                            $downloadCount = $pro->productMatrics->download_count ?? 0;
+                            $companySerialId = $pro->company->company_serial_id ?? '';
 
                             $csvData[] = [
-                                $product->title,
-                                $product->hsn,
+                                $pro->product->title,
+                                $pro->product->hsn,
                                 $sku,
                                 $stock,
-                                $status,
+                                getStatusName($status),
+                                getAvailablityStatusName($pro->availability_status),
                                 $purchaseCount,
                                 $clickCount,
                                 $viewCount,
@@ -128,35 +137,38 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'product_inventory_stock') {
                 $fileName = 'MIS_PRODUCT_INVENTORY_STOCK.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Company Serial ID', 'Updated Stocks'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Supplier ID', 'Updated Stocks'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'company'])
+                ProductVariation::with(['product', 'productMatrics', 'company'])
+                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
-                        foreach ($products as $product) {
-                            $sku = $product->variations->sku ?? '';
-                            $stock = $product->variations->stock ?? '';
-                            $status = $product->variations->status ?? '';
-                            $companySerialId = $product->company->company_serial_id ?? '';
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+                            $stock = $pro->stock ?? '';
+                            $status = $pro->status ?? '';
+                            $companySerialId = $pro->company->company_serial_id ?? '';
 
                             // Retrieve updated stock values from the activity log
                             $updatedStocks = Activity::where('subject_type', 'App\\Models\\ProductVariation')
-                                ->where('subject_id', $product->variations->id)
-                                ->where(function ($query) {
-                                    $query->whereNotNull('properties->old->stock')
-                                        ->whereColumn('properties->attributes->stock', '!=', 'properties->old->stock');
-                                })
-                                ->pluck('properties->attributes->stock')
-                                ->toArray();
+                            ->where('subject_id', $pro->id)
+                            ->whereNotNull('properties->old->stock')
+                            ->whereRaw("json_extract(properties, '$.attributes.stock') != json_extract(properties, '$.old.stock')")
+                            ->get()
+                            ->map(function ($activity) {
+                                return data_get($activity->properties, 'attributes.stock');
+                            })
+                            ->filter()
+                            ->toArray();
 
                             $updatedStocksString = implode(', ', $updatedStocks);
 
                             $csvData[] = [
-                                $product->title,
-                                $product->hsn,
+                                $pro->title,
+                                $pro->hsn,
                                 $sku,
                                 $stock,
-                                $status,
+                                getStatusName($status),
                                 $companySerialId,
                                 $updatedStocksString,
                             ];
@@ -164,35 +176,38 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'product_inventory_price') {
                 $fileName = 'MIS_PRODUCT_INVENTORY_PRICE.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Price', 'Status', 'Company Serial ID', 'Updated Prices'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Price', 'Status', 'Supplier ID', 'Updated Prices'];
 
                 // Fetch products with their related models in chunks
-                ProductInventory::with(['variations', 'company'])
+                ProductVariation::with(['product', 'productMatrics', 'company'])
+                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
-                        foreach ($products as $product) {
-                            $sku = $product->variations->sku ?? '';
-                            $stock = $product->variations->stock ?? '';
-                            $status = $product->variations->status ?? '';
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+                            $stock = $pro->stock ?? '';
+                            $status = $pro->status ?? '';
                             $companySerialId = $product->company->company_serial_id ?? '';
 
                             // Retrieve updated price values from the activity log
                             $updatedPrices = Activity::where('subject_type', 'App\\Models\\ProductVariation')
-                                ->where('subject_id', $product->variations->id)
-                                ->where(function ($query) {
-                                    $query->whereNotNull('properties->old->price_after_tax')
-                                        ->whereColumn('properties->attributes->price_after_tax', '!=', 'properties->old->price_after_tax');
-                                })
-                                ->pluck('properties->attributes->price_after_tax')
-                                ->toArray();
+                            ->where('subject_id', $pro->id)
+                            ->whereNotNull('properties->old->price_after_tax')
+                            ->whereRaw("json_extract(properties, '$.attributes.price_after_tax') != json_extract(properties, '$.old.price_after_tax')")
+                            ->get()
+                            ->map(function ($activity) {
+                                return data_get($activity->properties, 'attributes.price_after_tax');
+                            })
+                            ->filter()
+                            ->toArray();
 
                             $updatedPricesString = implode(', ', $updatedPrices);
 
                             $csvData[] = [
-                                $product->title,
-                                $product->hsn,
+                                $pro->title,
+                                $pro->hsn,
                                 $sku,
                                 $stock,
-                                $status,
+                                getStatusName($status),
                                 $companySerialId,
                                 $updatedPricesString,
                             ];
@@ -201,7 +216,7 @@ class ExportMisReport implements ShouldQueue
             }
 
             // Use ExportServices to generate and send the CSV file via email
-            $exportFileService = new ExportServices;
+            $exportFileService = new ExportFileServices;
             $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email, $this->type);
 
         } catch (\Exception $e) {
@@ -210,7 +225,6 @@ class ExportMisReport implements ShouldQueue
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger an event and log the error if an exception occurs
             event(new ExceptionEvent($exceptionDetails));
             Log::error('ExportMisReport Job Error: '.$e->getMessage(), [
