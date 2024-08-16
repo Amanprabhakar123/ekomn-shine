@@ -320,7 +320,11 @@ class WebController extends Controller
             $just_for_you = $products->map(function ($product) {
                 $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
                 if ($media == null) {
-                    $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
+                    if(empty($media->file_path)){
+                        $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
+                    }else{
+                        $thumbnail = 'storage/'.$media->file_path;
+                    }
                 } else {
                     $thumbnail = url($media->thumbnail_path);
                 }
@@ -567,13 +571,21 @@ class WebController extends Controller
                 // Determine product type based on the given type parameter
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
-                        $product_ids[] = $item->product_id;
+                        $product_ids[] = $item->id;
                 });
             }else{
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
-                        $product_ids[] = $item->product_id;
+                        $product_ids[] = $item->id;
                 });
+                if(empty($product_ids)){
+                    $keyword = str_replace(' ', '-', $keyword);
+                    // Determine product type based on the given type parameter
+                    ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
+                        ->map(function ($item) use (&$product_ids) {
+                            $product_ids[] = $item->id;
+                    });
+                }
             }
             
             // Query for product variations based on status and product IDs

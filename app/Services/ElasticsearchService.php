@@ -92,4 +92,26 @@ class ElasticsearchService
     {
         return $this->client->indices()->create($params);
     }
+
+    /**
+     * Search for a keyword
+     *
+     * @param string $title
+     * @return array
+     */
+    public function searchKeyword($title)
+    {
+        // Prepare the search parameters
+        $searchParams = [
+            'index' => 'keywords',
+            'body'  => [
+                'query' => [
+                    'term' => [
+                        'title.keyword' => $title // Using term query on a keyword field for exact match
+                    ]
+                ]
+            ]
+        ];
+        return $this->client->search($searchParams);
+    }
 }

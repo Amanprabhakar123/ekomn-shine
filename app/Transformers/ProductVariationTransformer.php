@@ -18,9 +18,17 @@ class ProductVariationTransformer extends TransformerAbstract
         try {
             $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
             if($media == null){
-                $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
+                if(empty($media->file_path)){
+                    $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at'; 
+                }else{
+                    $thumbnail = 'storage/'.$media->file_path;
+                }
             }else{
-                $thumbnail  = $media->thumbnail_path;
+                if( $media->thumbnail_path == null){
+                    $thumbnail = 'storage/'.$media->file_path;
+                }else{
+                    $thumbnail  = $media->thumbnail_path;
+                }
             }
             $data = [
                 'id' => salt_encrypt($product->id),

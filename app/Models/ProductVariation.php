@@ -207,4 +207,12 @@ class ProductVariation extends Model
     {
         return self::select('size', 'slug')->where(['product_id' => $product_id, 'color' => $color])->groupBy('size')->get()->toArray();
     }
+
+    /**
+     * Get the product metrics for the product.
+     */
+    public function productMatrics()
+    {
+        return $this->hasOne(ProductMatrics::class, 'product_id', 'id');
+    }
 }

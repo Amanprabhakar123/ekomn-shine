@@ -422,6 +422,9 @@ class OrderService
             foreach ($order_item as $item) {
                 $product = ProductVariation::find($item->product_id);
                 $product->stock = $product->stock - $item->quantity;
+                if($product->stock  == 0) {
+                    $product->status = ProductVariation::STATUS_OUT_OF_STOCK;
+                }
                 $product->save();
 
                 // Remove Cart Item

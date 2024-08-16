@@ -506,7 +506,12 @@ class ProductInvetoryController extends Controller
                                 'index' => 'keywords',
                                 'body'  => $list,
                             ];
-                            $elasticsearchService->index($parameter);
+                            $searchResult = $elasticsearchService->searchKeyword($key);
+
+                            // Check if any hits were returned
+                            if (count($searchResult['hits']['hits']) === 0) {
+                                $elasticsearchService->index($parameter);
+                            }
                         }
                     }
 
@@ -626,7 +631,13 @@ class ProductInvetoryController extends Controller
                                 'index' => 'keywords',
                                 'body'  => $list2,
                             ];
-                            $elasticsearchService->index($parameter);
+
+                            $searchResult = $elasticsearchService->searchKeyword($title_index);
+
+                            // Check if any hits were returned
+                            if (count($searchResult['hits']['hits']) === 0) {
+                                $elasticsearchService->index($parameter);
+                            }
 
                             foreach ($media_images as $media) {
                                 ProductVariationMedia::create([
@@ -949,7 +960,12 @@ class ProductInvetoryController extends Controller
                                     'index' => 'keywords',
                                     'body'  => $list,
                                 ];
-                                $elasticsearchService->index($parameter);
+                                $searchResult = $elasticsearchService->searchKeyword($key);
+
+                                // Check if any hits were returned
+                                if (count($searchResult['hits']['hits']) === 0) {
+                                    $elasticsearchService->index($parameter);
+                                }
                             }
                         }
 
@@ -1077,7 +1093,13 @@ class ProductInvetoryController extends Controller
                                         'index' => 'keywords',
                                         'body'  => $list2,
                                     ];
-                                    $elasticsearchService->index($parameter);
+                                    $searchResult = $elasticsearchService->searchKeyword($title_index);
+
+                                    // Check if any hits were returned
+                                    if (count($searchResult['hits']['hits']) === 0) {
+                                        $elasticsearchService->index($parameter);
+                                    }
+
                                 } else {
                                     $productVariation = ProductVariation::create([
                                         'product_id' => $product_id,
@@ -1132,7 +1154,13 @@ class ProductInvetoryController extends Controller
                                         'index' => 'keywords',
                                         'body'  => $list2,
                                     ];
-                                    $elasticsearchService->index($parameter);
+
+                                    $searchResult = $elasticsearchService->searchKeyword($title_index);
+
+                                    // Check if any hits were returned
+                                    if (count($searchResult['hits']['hits']) === 0) {
+                                        $elasticsearchService->index($parameter);
+                                    }
 
                                 }
                                 // Insertor Update Product Variation Media table
@@ -1223,7 +1251,12 @@ class ProductInvetoryController extends Controller
                                     'index' => 'keywords',
                                     'body'  => $list,
                                 ];
-                                $elasticsearchService->index($parameter);
+                                $searchResult = $elasticsearchService->searchKeyword($key);
+
+                                // Check if any hits were returned
+                                if (count($searchResult['hits']['hits']) === 0) {
+                                    $elasticsearchService->index($parameter);
+                                }
                             }
                         }
 
@@ -1331,7 +1364,7 @@ class ProductInvetoryController extends Controller
                                         'index' => 'keywords',
                                         'body'  => $list2,
                                     ];
-                                    $elasticsearchService->index($parameter);
+                                    $elasticsearchService->index($title_index);
                                 }
                             }
                             foreach ($media_images as $key => $media) {
