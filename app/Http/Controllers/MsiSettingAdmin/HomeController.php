@@ -293,7 +293,20 @@ class HomeController extends Controller
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
-            }else{
+            }elseif($request->has('type') && $request->type == 'sub-category'){
+                $categories = Category::select('id', 'name')->where('depth', 1)
+                ->where('id', '!=', 1)
+                ->where('parent_id',  salt_decrypt($request->category_id))
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }elseif($request->has('type') && $request->type == 'child-category'){
+                $categories = Category::select('id', 'name')->where('depth', 2)
+                ->where('id', '!=', 1)
+                ->where('parent_id',  salt_decrypt($request->category_id))
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }
+            else{
                 $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)

@@ -151,6 +151,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
         Route::get('mis-setting-categories', [CategoryManagmentController::class, 'misCategories'])->name('mis.setting.categories');
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
+        Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
     });
 });
 
