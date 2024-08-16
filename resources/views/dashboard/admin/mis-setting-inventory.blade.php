@@ -15,7 +15,7 @@
                     </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-login btnekomn"
-                            onclick="exportMisReport('out_of_stock')">Product Master - Export</button>
+                            onclick="exportMisReport('product_master')">Product Master - Export</button>
 
                     </div>
                     <div class="col-md-4">

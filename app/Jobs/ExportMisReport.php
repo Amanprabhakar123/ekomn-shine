@@ -75,8 +75,8 @@ class ExportMisReport implements ShouldQueue
                             ];
                         }
                     });
-            } elseif ($this->type === 'out_of_stock') {
-                $fileName = 'MIS_Out_Of_Stock.csv';
+            } elseif ($this->type === 'product_master') {
+                $fileName = 'MIS_Master.csv';
                 $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status', 'Availablity Status',  'Supplier ID'];
 
                 // Fetch products with their related models in chunks
@@ -102,7 +102,7 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'product_events') {
                 $fileName = 'MIS_PRODUCT_EVENTS.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status',  'Availablity Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Add', 'Product Download', 'Supplier ID'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status',  'Availablity Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Added to Invetory', 'Product Download', 'Supplier ID'];
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
@@ -184,18 +184,18 @@ class ExportMisReport implements ShouldQueue
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
-                            $stock = $pro->stock ?? '';
+                            $price_before_tax = $pro->price_before_tax ?? '';
                             $status = $pro->status ?? '';
-                            $companySerialId = $product->company->company_serial_id ?? '';
+                            $companySerialId = $pro->company->company_serial_id ?? '';
 
                             // Retrieve updated price values from the activity log
                             $updatedPrices = Activity::where('subject_type', 'App\\Models\\ProductVariation')
                             ->where('subject_id', $pro->id)
-                            ->whereNotNull('properties->old->price_after_tax')
-                            ->whereRaw("json_extract(properties, '$.attributes.price_after_tax') != json_extract(properties, '$.old.price_after_tax')")
+                            ->whereNotNull('properties->old->price_before_tax')
+                            ->whereRaw("json_extract(properties, '$.attributes.price_before_tax') != json_extract(properties, '$.old.price_before_tax')")
                             ->get()
                             ->map(function ($activity) {
-                                return data_get($activity->properties, 'attributes.price_after_tax');
+                                return data_get($activity->properties, 'attributes.price_before_tax');
                             })
                             ->filter()
                             ->toArray();
@@ -206,7 +206,7 @@ class ExportMisReport implements ShouldQueue
                                 $pro->title,
                                 $pro->hsn,
                                 $sku,
-                                $stock,
+                                $price_before_tax,
                                 getStatusName($status),
                                 $companySerialId,
                                 $updatedPricesString,

@@ -41,7 +41,7 @@ class ExportFileServices
         // Send the CSV as an email attachment
         Mail::raw('Please find the attached CSV file.', function ($message) use ($recipient, $csvContent, $filename, $subject) {
             $message->to($recipient)
-                ->subject(strtoupper($subject).' Export')
+                ->subject(strtoupper($subject).' EXPORT')
                 ->attachData($csvContent, $filename, [
                     'mime' => 'text/csv',
                 ]);
