@@ -192,7 +192,7 @@ class SearchController extends Controller
                                 if ($key == 'keywords_suggest') {
                                 return ['url' => url('/').'/search?q=keyword&term=' . $item['_source']['keyword'], 'text' =>  $item['text']];
                             }elseif($key == 'title_suggest'){
-                                return ['url' => url('/').'/search?q=title&term=' . $item['_source']['title'], 'text' =>  $item['_source']['title']];
+                                return ['url' => url('/').'/search?q=title&term=' . $item['text'], 'text' =>  $item['_source']['title']];
                             }
                         }, $results['suggest'][$key][0]['options']);
                     }
