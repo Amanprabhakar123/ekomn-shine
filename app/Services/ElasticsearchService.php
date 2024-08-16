@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Elastic\Elasticsearch\ClientBuilder;
@@ -99,17 +100,31 @@ class ElasticsearchService
      */
     public function searchKeyword($title)
     {
+        $title = strtolower(trim($title));
         // Prepare the search parameters
         $searchParams = [
             'index' => 'keywords',
             'body'  => [
                 'query' => [
-                    'term' => [
-                        'title.keyword' => $title // Using term query on a keyword field for exact match
+                    'bool' => [
+                        'should' => [
+                            [
+                                'term' => [
+                                    'keyword' => $title
+                                ]
+                            ],
+                            [
+                                'term' => [
+                                    'title' => $title
+                                ]
+                            ]
+                        ],
+                        'minimum_should_match' => 1 // Ensures at least one condition must match
                     ]
                 ]
             ]
         ];
+
         return $this->client->search($searchParams);
     }
 }
