@@ -197,8 +197,8 @@
     // Function to fetch filtered data
     function fetchData() {
         // API URL for fetching products
-        let apiUrl = `search/${query}?&page=${page}&query_type=${query_type}`;
-
+        let apiUrl = `search/${query}?&page=${page}&query_type=`+query_type;
+        
         // Append filters to the API URL
         if (newArrived) apiUrl += `new_arrived=${newArrived}&`;
         if (productWithVideos) apiUrl += `productWithVideos=${productWithVideos}&`;
