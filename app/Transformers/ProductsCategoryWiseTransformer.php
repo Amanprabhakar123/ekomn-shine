@@ -2,13 +2,21 @@
 
 namespace App\Transformers;
 
+use App\Models\UserActivity;
 use App\Models\ProductVariation;
-use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Log;
+use App\Models\ProductVariationMedia;
+use App\Services\UserActivityService;
 use League\Fractal\TransformerAbstract;
 
 class ProductsCategoryWiseTransformer extends TransformerAbstract
 {
+    protected $search_impression;
+
+    public function __construct($search_impression = false)
+    {
+        $this->search_impression = $search_impression;
+    }
     /**
      * Transform the product variation data.
      *
@@ -60,6 +68,12 @@ class ProductsCategoryWiseTransformer extends TransformerAbstract
                 'login_url' => route('buyer.login'), // URL to the login page
             ];
 
+            // add search impression data
+            if (isset($this->search_impression) && $this->search_impression) {
+                $userActivityService = new UserActivityService;
+                $userActivityService->logActivity($product->id, UserActivity::ACTIVITY_TYPE_SEARCH);
+
+            }
             return $data;
 
         } catch (\Exception $e) {

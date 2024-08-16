@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Category;
 use Illuminate\Console\Command;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
@@ -95,8 +96,33 @@ class IndexProducts extends Command
             ];
 
 
-        // Create the index with the mapping
-        $this->elasticsearchService->createIndex($params);
+            // Create the index with the mapping
+            $this->elasticsearchService->createIndex($params);
+
+            $this->elasticsearchService->deleteIndex(['index' => 'keywords']);
+
+            // Define Keyword Seraching params
+            $kwywordParams = [
+                'index' => 'keywords',
+                'body' => [
+                    'settings' => [
+                        'number_of_shards' => 1,
+                        'number_of_replicas' => 0,
+                    ],
+                    'mappings' => [
+                        'properties' => [
+                            'keyword' => ['type' => 'keyword'],
+                            'keyword_suggest' => ['type' => 'completion'],
+                            'title' => ['type' => 'text'],
+                            'title_suggest' => ['type' => 'completion'],
+                        ],
+                    ],
+                ],
+            ];
+
+            // Create the index with the mapping
+            $this->elasticsearchService->createIndex($kwywordParams);
+            
             // Index each product
             foreach ($products as $product) {
                 foreach ($product->variations as $variation) {
@@ -139,33 +165,68 @@ class IndexProducts extends Command
                         ];
                         $parameter = [
                             'index' => 'products',
-                            'id'    => $variation->id,
                             'body'  => [
                                 'variations'  => $list
                             ],
+                        ];
+                        $this->elasticsearchService->index($parameter);
+
+                        $title = strtolower($variation->title);
+                        // Index each title
+                        $list2 = [
+                            'title' => $title,
+                            'title_suggest' => [
+                                'input' => $title
+                            ],
+                        ];
+                        $parameter = [
+                            'index' => 'keywords',
+                            'body'  => $list2,
                         ];
                         $this->elasticsearchService->index($parameter);
                     }else{
                         continue;
                     }
                 }
-                // Index the product First time
+            }
+            
+            $this->info('Products have been indexed.');
 
-                // // Check if the product is already indexed
-                // $existingProduct = $this->elasticsearchService->get(['index' => 'products', 'id' => $product->id]);
-                // // If the product is not indexed, index it
-                // if (!$existingProduct) {
-                //     $this->elasticsearchService->index($params);
-                // }
-
-                // // add if any changes found in the product data update it
-                // if ($existingProduct['_source'] != $params['body']) {
-                //     $this->elasticsearchService->update($params);
-                // }
+            // Index each keyword
+            $keywords = ProductKeyword::all();
+            foreach ($keywords as $keyword) {
+                $key= str_replace('-', ' ', $keyword->keyword);
+                $list = [
+                    'keyword' => $key,
+                    'keyword_suggest' => [
+                        'input' => $key
+                    ],
+                ];
+                $parameter = [
+                    'index' => 'keywords',
+                    'body'  => $list,
+                ];
+                $this->elasticsearchService->index($parameter);
             }
 
-
-            $this->info('Products have been indexed.');
+            $categories = Category::where('depth', 3)->select('name')->get();
+            foreach ($categories as $category) {
+                $key= strtolower($category->name);
+                $list = [
+                    'keyword' => $key,
+                    'keyword_suggest' => [
+                        'input' => $key
+                    ],
+                ];
+                $parameter = [
+                    'index' => 'keywords',
+                    'body'  => $list,
+                ];
+                $this->elasticsearchService->index($parameter);
+            }
+            
+            // // Check if the keyword is already indexed
+            $this->info('Keywords have been indexed.');
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }

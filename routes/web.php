@@ -1,30 +1,31 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\WebController;
+use App\Http\Controllers\Web\SearchController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\BulkUploadController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\ResetController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\FeedBackController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\OrderPaymentController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\APIAuth\BulkUploadController;
 use App\Http\Controllers\Auth\CourierDetailsController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\APIAuth\OrderPaymentController;
+use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\MsiSettingAdmin\HomeController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
-use App\Http\Controllers\Web\SearchController;
-use App\Http\Controllers\Web\WebController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,7 @@ Route::get('category/{slug}', [WebController::class, 'productCategory'])->name('
 Route::get('product-details/{slug}', [WebController::class, 'productDetails'])->name('product.details');
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('/product/{type}', [WebController::class, 'productsType'])->name('product.type');
+Route::get('/search', [SearchController::class, 'displayProductSearch'])->name('product.search');
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
@@ -87,6 +89,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('category-list', [HomeController::class, 'index'])->name('category.list');
     Route::get('banner', [HomeController::class, 'banner'])->name('banner');
     Route::get('mis-setting-inventory', [MisSettingController::class, 'misSettingInventory'])->name('mis.setting.inventory');
+    Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
+    Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
+
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -145,6 +150,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('store-banner', [HomeController::class, 'storeBanner'])->name('post.banner');
         Route::post('delete-banner', [HomeController::class, 'deleteBanner'])->name('delete.banner');
         Route::get('/mis-export-csv/{type}', [MisSettingController::class, 'misReportExportCSV'])->name('mis.export.csv');
+        Route::get('mis-setting-categories', [CategoryManagmentController::class, 'misCategories'])->name('mis.setting.categories');
+        Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
     });
 });
 
@@ -170,10 +177,11 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('buyer/register', [BuyerRegistrationController::class, 'buyerPostData']);
 
     // Home Page Category Wise Product Listing
-
-    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::get('/search', [SearchController::class, 'searchByKeyWord'])->name('search');
+    // Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::get('/products/{slug}', [WebController::class, 'productsTypeWise'])->name('products.type');
     Route::get('/categories/{slug}', [WebController::class, 'productsCategoryWise'])->name('category.slug');
+    Route::get('/search/{slug}', [WebController::class, 'productSearchByKeyWord'])->name('product.slug');
     Route::post('store/product/inventory', [BuyerInventoryController::class, 'store'])->name('product.inventory.store');
     Route::post('/export/product/inventory/', [BuyerInventoryController::class, 'exportProductVariationData'])->name('product.inventory.export');
     Route::post('product/add-to-cart', [OrderController::class, 'addToCart'])->name('add-to-cart');

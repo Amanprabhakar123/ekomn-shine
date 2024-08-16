@@ -145,13 +145,16 @@
                     <li>
                         <a class="nav-link" href="{{route('mis.setting.inventory')}}">Inventory</a>
                     </li>
-                 
+                    <li>
+                        <a class="nav-link" href="{{route('add.category')}}">Add new category</a>
+                    </li> 
+                    <li>
+                        <a class="nav-link" href="{{route('category.management')}}">Category Management</a>
+                    </li> 
                     <!-- <li>
                         <a class="nav-link" href="#">Edit Log</a>
                     </li>
-                    <li>
-                        <a class="nav-link" href="#">Category Management</a>
-                    </li> -->
+                 -->
                    
                                      
                 </ul>
@@ -183,9 +186,6 @@
                     @endif
                     <li>
                         <a class="nav-link" href="#">Edit Log</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Category Management</a>
                     </li>
                     @if(auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY) )
                     <li class="nav-item">
