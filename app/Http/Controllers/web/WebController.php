@@ -566,7 +566,7 @@ class WebController extends Controller
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
             $product_ids = [];
-            if($request->has('query_type') && isset($request->query_type) == 'keyword'){
+            if($request->has('query_type') && $request->query_type == 'keyword'){
                 $keyword = str_replace(' ', '-', $keyword);
                 // Determine product type based on the given type parameter
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
