@@ -242,6 +242,6 @@ class CompanyDetail extends Model
      */
     public function loginHistory()
     {
-        return $this->hasMany(UserLoginHistory::class, 'user_id', 'id');
+        return $this->hasOne(UserLoginHistory::class, 'user_id', 'id');
     }
 }

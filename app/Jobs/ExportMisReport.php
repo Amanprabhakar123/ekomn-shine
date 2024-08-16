@@ -2,19 +2,20 @@
 
 namespace App\Jobs;
 
-use App\Events\ExceptionEvent;
-use App\Models\CompanyDetail;
 use App\Models\Order;
+use App\Models\CompanyDetail;
+use Illuminate\Bus\Queueable;
+use App\Events\ExceptionEvent;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Models\UserLoginHistory;
+use Illuminate\Support\Facades\Log;
+use App\Models\CompanyAddressDetail;
 use App\Services\ExportFileServices;
-use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
@@ -247,7 +248,7 @@ class ExportMisReport implements ShouldQueue
                 $csvHeaders = ['Order ID', 'Order Value', 'Order Date', 'Supplier ID', 'Buyer ID',  'Order Status', 'Order Type', 'Order Channel Type', 'Total Quantity'];
 
                 // Fetch products with their related models in chunks
-                Order::with(['orderItemsCharges', 'buyer', 'supplier'])
+                Order::with(['orderItemsCharges', 'buyer', 'supplier', 'buyer.companyDetails', 'supplier.companyDetails'])
                     ->chunk(100, function ($orders) use (&$csvData, &$totalQuantity) {
                         foreach ($orders as $ord) {
                             $csvData[] = [
@@ -273,7 +274,6 @@ class ExportMisReport implements ShouldQueue
                 UserLoginHistory::with(['user', 'companyDetail'])
                     ->chunk(100, function ($userLogin) use (&$csvData) {
                         foreach ($userLogin as $user) {
-
                             $csvData[] = [
                                 $user->companyDetail->getFullName(),
                                 $user->user->email,
@@ -285,19 +285,22 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'total_supplier') {
                 $fileName = 'MIS_TOTAL_SUPPLIER.csv';
-                $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
+                $csvHeaders = ['Company Name', 'Company ID', 'GST No', 'Product Count', 'Registered Date', 'State', 'City', 'Pincode',  'Address', 'Last Login'];
                 CompanyDetail::with(['address', 'variations', 'products', 'loginHistory'])
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
-
+                            $address = $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
                             $csvData[] = [
                                 $com->getFullName(),
-                                $com->address->where('address_type', 1)->first()->getFullAddress(),
                                 $com->company_serial_id,
                                 $com->gst_no,
                                 $com->variations->count(),
                                 $com->created_at,
-                                $com->loginHistory->latest()->first()->created_at,
+                                $address->state,
+                                $address->city,
+                                $address->pincode,
+                                $address->getFullAddress(),
+                                $com->loginHistory->last_login,
 
                             ];
                         }
