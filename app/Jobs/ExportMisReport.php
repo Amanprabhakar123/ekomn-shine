@@ -2,17 +2,17 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
 use App\Events\ExceptionEvent;
+use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use Illuminate\Support\Facades\Log;
 use App\Services\ExportFileServices;
-use Illuminate\Queue\SerializesModels;
-use Spatie\Activitylog\Models\Activity;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\ProductInventory; // Import ProductInventory model
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
 {
@@ -52,10 +52,10 @@ class ExportMisReport implements ShouldQueue
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
-                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
-                ->whereHas('productMatrics', function ($query) {
-                    $query->where('purchase_count', '>', 0);
-                })->chunk(100, function ($products) use (&$csvData) {
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
+                    ->whereHas('productMatrics', function ($query) {
+                        $query->where('purchase_count', '>', 0);
+                    })->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
                             $stock = $pro->stock ?? '';
@@ -81,7 +81,7 @@ class ExportMisReport implements ShouldQueue
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
-                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
@@ -102,11 +102,11 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'product_events') {
                 $fileName = 'MIS_PRODUCT_EVENTS.csv';
-                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status',  'Availablity Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Added to Invetory', 'Product Download', 'Supplier ID'];
+                $csvHeaders = ['Title', 'HSN', 'SKU', 'Stock', 'Status',  'Availablity Status', 'Purchase Count', 'Product Click', 'Product View', 'Product Added to Invetory', 'Product Download', 'Product Search', 'Supplier ID'];
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
-                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
@@ -117,6 +117,7 @@ class ExportMisReport implements ShouldQueue
                             $viewCount = $pro->productMatrics->view_count ?? 0;
                             $addToInventoryCount = $pro->productMatrics->add_to_inventory_count ?? 0;
                             $downloadCount = $pro->productMatrics->download_count ?? 0;
+                            $searchCount = $pro->productMatrics->search_count ?? 0;
                             $companySerialId = $pro->company->company_serial_id ?? '';
 
                             $csvData[] = [
@@ -131,6 +132,7 @@ class ExportMisReport implements ShouldQueue
                                 $viewCount,
                                 $addToInventoryCount,
                                 $downloadCount,
+                                $searchCount,
                                 $companySerialId,
                             ];
                         }
@@ -141,7 +143,7 @@ class ExportMisReport implements ShouldQueue
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
-                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
@@ -151,15 +153,15 @@ class ExportMisReport implements ShouldQueue
 
                             // Retrieve updated stock values from the activity log
                             $updatedStocks = Activity::where('subject_type', 'App\\Models\\ProductVariation')
-                            ->where('subject_id', $pro->id)
-                            ->whereNotNull('properties->old->stock')
-                            ->whereRaw("json_extract(properties, '$.attributes.stock') != json_extract(properties, '$.old.stock')")
-                            ->get()
-                            ->map(function ($activity) {
-                                return data_get($activity->properties, 'attributes.stock');
-                            })
-                            ->filter()
-                            ->toArray();
+                                ->where('subject_id', $pro->id)
+                                ->whereNotNull('properties->old->stock')
+                                ->whereRaw("json_extract(properties, '$.attributes.stock') != json_extract(properties, '$.old.stock')")
+                                ->get()
+                                ->map(function ($activity) {
+                                    return data_get($activity->properties, 'attributes.stock');
+                                })
+                                ->filter()
+                                ->toArray();
 
                             $updatedStocksString = implode(', ', $updatedStocks);
 
@@ -180,7 +182,7 @@ class ExportMisReport implements ShouldQueue
 
                 // Fetch products with their related models in chunks
                 ProductVariation::with(['product', 'productMatrics', 'company'])
-                ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
                     ->chunk(100, function ($products) use (&$csvData) {
                         foreach ($products as $pro) {
                             $sku = $pro->sku ?? '';
@@ -190,15 +192,15 @@ class ExportMisReport implements ShouldQueue
 
                             // Retrieve updated price values from the activity log
                             $updatedPrices = Activity::where('subject_type', 'App\\Models\\ProductVariation')
-                            ->where('subject_id', $pro->id)
-                            ->whereNotNull('properties->old->price_before_tax')
-                            ->whereRaw("json_extract(properties, '$.attributes.price_before_tax') != json_extract(properties, '$.old.price_before_tax')")
-                            ->get()
-                            ->map(function ($activity) {
-                                return data_get($activity->properties, 'attributes.price_before_tax');
-                            })
-                            ->filter()
-                            ->toArray();
+                                ->where('subject_id', $pro->id)
+                                ->whereNotNull('properties->old->price_before_tax')
+                                ->whereRaw("json_extract(properties, '$.attributes.price_before_tax') != json_extract(properties, '$.old.price_before_tax')")
+                                ->get()
+                                ->map(function ($activity) {
+                                    return data_get($activity->properties, 'attributes.price_before_tax');
+                                })
+                                ->filter()
+                                ->toArray();
 
                             $updatedPricesString = implode(', ', $updatedPrices);
 
