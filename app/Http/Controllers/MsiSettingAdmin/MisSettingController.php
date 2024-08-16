@@ -5,7 +5,9 @@ namespace App\Http\Controllers\MsiSettingAdmin;
 use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportMisReport;
+use App\Models\Order;
 use App\Models\QueueName;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 class MisSettingController extends Controller
@@ -22,6 +24,26 @@ class MisSettingController extends Controller
     }
 
     /**
+     * Display the view for MIS setting order.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function misSettingOrder()
+    {
+        return view('dashboard.admin.mis-setting-order');
+    }
+
+    /**
+     * Display the view for MIS setting supplier.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function misSettingSupplier()
+    {
+        return view('dashboard.admin.mis-setting-supplier');
+    }
+
+    /**
      * display the MIS settings for CSV type
      *
      * @param  string  $type
@@ -30,6 +52,15 @@ class MisSettingController extends Controller
     public function misReportExportCSV($type)
     {
         try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_MIS_SETTING_INVENTORY)) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode403'), // HTTP status code 403 (Forbidden)
+                        'status' => __('statusCode.status403'), // Status message for forbidden operation
+                        'message' => __('You are not authorized to perform this operation.'), // Informative message
+                    ],
+                ], __('statusCode.statusCode403')); // HTTP status code 403 (Forbidden)
+            }
             // Get the email address of the currently authenticated user
             $email = auth()->user()->email;
 

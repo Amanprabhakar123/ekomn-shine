@@ -2,16 +2,20 @@
 
 namespace App\Jobs;
 
+use App\Models\Order;
+use App\Models\CompanyDetail;
+use Illuminate\Bus\Queueable;
 use App\Events\ExceptionEvent;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\UserLoginHistory;
+use Illuminate\Support\Facades\Log;
+use App\Models\CompanyAddressDetail;
 use App\Services\ExportFileServices;
-use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
@@ -212,6 +216,92 @@ class ExportMisReport implements ShouldQueue
                                 getStatusName($status),
                                 $companySerialId,
                                 $updatedPricesString,
+                            ];
+                        }
+                    });
+            } elseif ($this->type === 'product_inventory_growth') {
+                $fileName = 'MIS_PRODUCT_GROWTH.csv';
+                $csvHeaders = ['Title', 'SKU', 'Supplier ID', 'Category Name', 'Sub Category', 'Product Listing Date'];
+
+                // Fetch products with their related models in chunks
+                ProductVariation::with(['product', 'company'])
+                    ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK, ProductVariation::STATUS_INACTIVE])
+                    ->chunk(100, function ($products) use (&$csvData) {
+                        foreach ($products as $pro) {
+                            $sku = $pro->sku ?? '';
+
+                            $companySerialId = $pro->company->company_serial_id ?? '';
+
+                            $csvData[] = [
+                                $pro->product->title,
+                                $sku,
+                                $companySerialId,
+                                $pro->product->category->name,
+                                $pro->product->subCategory->name,
+                                $pro->created_at,
+                            ];
+                        }
+                    });
+
+            } elseif ($this->type === 'orders') {
+                $fileName = 'MIS_ORDERS.csv';
+                $csvHeaders = ['Order ID', 'Order Value', 'Order Date', 'Supplier ID', 'Buyer ID',  'Order Status', 'Order Type', 'Order Channel Type', 'Total Quantity'];
+
+                // Fetch products with their related models in chunks
+                Order::with(['orderItemsCharges', 'buyer', 'supplier', 'buyer.companyDetails', 'supplier.companyDetails'])
+                    ->chunk(100, function ($orders) use (&$csvData, &$totalQuantity) {
+                        foreach ($orders as $ord) {
+                            $csvData[] = [
+                                $ord->order_number,
+                                $ord->total_amount,
+                                $ord->order_date,
+                                $ord->buyer->companyDetails->company_serial_id,
+                                $ord->supplier->companyDetails->company_serial_id,
+                                $ord->getStatus(),
+                                $ord->getOrderType(),
+                                $ord->getOrderChannelType(),
+                                // Calculate the sum of orderItemsCharges quantity
+                                $totalQuantity = $ord->orderItemsCharges->sum('quantity') ?? 0,
+                            ];
+
+                        }
+                    });
+            } elseif ($this->type === 'supplier_login_history') {
+                $fileName = 'MIS_SUPPLIER_LOGIN_HISTORY.csv';
+                $csvHeaders = ['User Name', 'Email', 'Supplier ID/ Buyer ID', 'Login Date'];
+
+                // Fetch products with their related models in chunks
+                UserLoginHistory::with(['user', 'companyDetail'])
+                    ->chunk(100, function ($userLogin) use (&$csvData) {
+                        foreach ($userLogin as $user) {
+                            $csvData[] = [
+                                $user->companyDetail->getFullName(),
+                                $user->user->email,
+                                $user->companyDetail->company_serial_id,
+                                $user->last_login,
+
+                            ];
+                        }
+                    });
+            } elseif ($this->type === 'total_supplier') {
+                $fileName = 'MIS_TOTAL_SUPPLIER.csv';
+                $csvHeaders = ['Company Name', 'Company ID', 'GST No', 'Product Count', 'Registered Date', 'State', 'City', 'Pincode',  'Address', 'Last Login'];
+                CompanyDetail::with(['address', 'variations', 'products', 'loginHistory'])
+                    ->chunk(100, function ($companyDetails) use (&$csvData) {
+                        foreach ($companyDetails as $com) {
+                            $address = $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+                            $csvData[] = [
+                                $com->getFullName(),
+                                $com->company_serial_id,
+                                $com->gst_no,
+                                $com->variations->count(),
+                                $com->created_at,
+                                $address->state,
+                                $address->city,
+                                $address->pincode,
+                                $address->getFullAddress(),
+                                $com->loginHistory->last_login,
+
                             ];
                         }
                     });
