@@ -566,33 +566,29 @@ class WebController extends Controller
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
             $product_ids = [];
-            if($request->has('query_type') && $request->query_type == 'keyword'){
+            if($request->has('query_type') && isset($request->query_type) == 'keyword'){
                 $keyword = str_replace(' ', '-', $keyword);
                 // Determine product type based on the given type parameter
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
                 });
-                    if(empty($product_ids)){
-                        $keyword = str_replace('-', ' ', $keyword);
-                        ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
-                        ->map(function ($item) use (&$product_ids) {
-                            $product_ids[] = $item->id;
-                    });
-                }
+                    $keyword = str_replace('-', ' ', $keyword);
+                    ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
+                    ->map(function ($item) use (&$product_ids) {
+                    $product_ids[] = $item->id;
+                });
             }else{
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
                 });
-                if(empty($product_ids)){
-                    $keyword = str_replace(' ', '-', $keyword);
-                    // Determine product type based on the given type parameter
-                    ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
-                        ->map(function ($item) use (&$product_ids) {
-                            $product_ids[] = $item->id;
-                    });
-                }
+                $keyword = str_replace(' ', '-', $keyword);
+                // Determine product type based on the given type parameter
+                ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
+                    ->map(function ($item) use (&$product_ids) {
+                        $product_ids[] = $item->id;
+                });
             }
             
             // Query for product variations based on status and product IDs
