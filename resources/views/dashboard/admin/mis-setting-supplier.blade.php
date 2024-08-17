@@ -14,12 +14,12 @@
                             - Export</button>
 
                     </div>
-                    {{-- <div class="col-md-4">
+                    <div class="col-md-4">
                         <button type="button" class="btn btn-login btnekomn"
-                            onclick="exportMisReport('product_inventory_growth')">Category Wise Supplier
+                            onclick="exportMisReport('total_active_buyer')">Total Active Buyer Subscription
                             - Export</button>
 
-                    </div> --}}
+                    </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-login btnekomn"
                             onclick="exportMisReport('supplier_login_history')">Supplier Login History

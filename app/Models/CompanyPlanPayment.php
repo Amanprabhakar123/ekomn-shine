@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Spatie\Activitylog\LogOptions;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class CompanyPlanPayment extends Model
 {
     use HasFactory, LogsActivity;
 
     const PAYMENT_STATUS_PENDING = 'pending';
+
     const PAYMENT_STATUS_SUCCESS = 'success';
+
     const PAYMENT_STATUS_FAILED = 'failed';
 
     /**
@@ -72,6 +74,30 @@ class CompanyPlanPayment extends Model
             ])
             ->logOnlyDirty()
             ->useLogName('Company Plan Payment Log')
-            ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} company plan payments with ID: {$this->id}");
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} company plan payments with ID: {$this->id}");
+    }
+
+    /**
+     * Get the company details associated with the company plan payment.
+     */
+    public function companyDetails()
+    {
+        return $this->belongsTo(CompanyDetail::class, 'company_id');
+    }
+
+    /**
+     * Get the company plans associated with the company plan payment.
+     */
+    public function companyPlans()
+    {
+        return $this->belongsTo(CompanyPlan::class);
+    }
+
+    /**
+     * Get the plan associated with the company plan payment.
+     */
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class, 'plan_id');
     }
 }

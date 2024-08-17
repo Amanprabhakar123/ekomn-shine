@@ -10,15 +10,30 @@ class Plan extends Model
     use HasFactory;
 
     const STATUS_ACTIVE = 1;
+
     const STATUS_INACTIVE = 0;
 
-    protected $fillable =[
+    protected $fillable = [
         'name',
         'is_trial_plan',
         'description',
         'price',
         'duration',
         'features',
-        'status'
+        'status',
     ];
+
+    /**
+     * Get the plan type.
+     *
+     * @return string
+     */
+    public function getPlanType()
+    {
+        if ($this->is_trial_plan == 1) {
+            return 'Trail';
+        } else {
+            return 'Paid';
+        }
+    }
 }
