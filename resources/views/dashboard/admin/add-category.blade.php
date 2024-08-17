@@ -428,7 +428,7 @@ document.getElementById('btnSubmit').addEventListener('click', function(){
                 Swal.fire({
                                     title: 'Success',
                                     icon: "success",
-                                    text: response.data.message,
+                                    text: res.data.message,
                                     didOpen: () => {
                                         const title = Swal.getTitle();
                                         title.style.fontSize = '25px';
@@ -440,7 +440,7 @@ document.getElementById('btnSubmit').addEventListener('click', function(){
                                         confirmButton.style.color = 'white';
                                     }
                                 }).then(() => {
-                                    window.location.href = `{{ route('add.category') }}`;
+                                    window.location.href = `{{ route('category.management') }}`;
                                 });
             }
         })
