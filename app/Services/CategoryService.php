@@ -24,14 +24,14 @@ class CategoryService
                     [$tag1, $tag2] = $combination;
 
                     // Search in the database using LIKE query for these tags
-                    $category1 = Category::where('slug', 'LIKE', "%$tag1%")->first();
-                    $category2 = Category::where('slug', 'LIKE', "%$tag2%")->first();
+                    $category1 = Category::where('slug', 'LIKE', "%$tag1%")->where('is_active', Category::IS_ACTIVE_TRUE)->first();
+                    $category2 = Category::where('slug', 'LIKE', "%$tag2%")->where('is_active', Category::IS_ACTIVE_TRUE)->first();
 
                     if ($category1 && $category2) {
                         if ($category1->depth === 3 && $category2->depth === 2) {
-                            $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->first();
-                            $parentCategory1 = Category::where('id', $category1->parent_id)->first();
-                            $rootParentCategory2 = Category::where('id', $category2->root_parent_id)->first();
+                            $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
+                            $parentCategory1 = Category::where('id', $category1->parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
+                            $rootParentCategory2 = Category::where('id', $category2->root_parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                             // $parentCategory2 = Category::where('id', $category2->parent_id)->first();
 
                             $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
@@ -55,7 +55,7 @@ class CategoryService
                                 $subCategoryName = $mainCategoryName;
                                 $subCategoryId = $mainCategoryId;
                             } else {
-                                $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->first();
+                                $rootParentCategory1 = Category::where('id', $category1->root_parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                                 $mainCategoryName = $rootParentCategory1->name ?? 'unknown';
                                 $mainCategoryId = $rootParentCategory1->id ?? 0;
                                 $subCategoryName = $category1->name ?? 'unknown';
@@ -78,13 +78,13 @@ class CategoryService
             // Check if the any one  tag has a matching main category
             foreach ($tags as $firstTag) {
                 if (! empty($firstTag)) {
-                    $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->first();
+                    $firstTagCategory = Category::where('slug', 'LIKE', "%$firstTag%")->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                     //i want to update this logic if $category1->depth === 3 and $category1->depth === 2 i want to check root_parent_id and parent_id data root_parent_id is main category and parent_id is sub category another case if $category1->depth === 1 i want to check root_parent_id if root_parent_id is null then i want to set main category and sub category is same if $category1->depth === 0 i want to set main category and sub category is same and same for $category2
 
                     if ($firstTagCategory) {
                         if ($firstTagCategory->depth === 3 || $firstTagCategory->depth === 2) {
-                            $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
-                            $parentCategory = Category::where('id', $firstTagCategory->parent_id)->first();
+                            $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
+                            $parentCategory = Category::where('id', $firstTagCategory->parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                             $mainCategoryName = $rootParentCategory->name ?? 'unknown';
                             $mainCategoryId = $rootParentCategory->id ?? 0;
                             $subCategoryName = $parentCategory->name ?? 'unknown';
@@ -98,7 +98,7 @@ class CategoryService
                                 $subCategoryName = $mainCategoryName;
                                 $subCategoryId = $mainCategoryId;
                             } else {
-                                $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->first();
+                                $rootParentCategory = Category::where('id', $firstTagCategory->root_parent_id)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                                 $mainCategoryName = $rootParentCategory->name ?? 'unknown';
                                 $mainCategoryId = $rootParentCategory->id ?? 0;
                                 $subCategoryName = $firstTagCategory->name ?? 'unknown';
@@ -120,7 +120,7 @@ class CategoryService
 
             // Return "no data found" if no matches found
 
-            $firstUnknownCategory = Category::where('id', 1)->first();
+            $firstUnknownCategory = Category::where('id', 1)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
 
             if ($firstUnknownCategory) {
                 $mainCategoryName = $firstUnknownCategory->name ?? 'unknown';
@@ -188,7 +188,7 @@ class CategoryService
     {
         try {
             // Find the category based on the slug
-            $category = Category::select('name', 'slug', 'root_parent_id', 'id')->where('slug', $slug)->firstOrFail();
+            $category = Category::select('name', 'slug', 'root_parent_id', 'id')->where('slug', $slug)->where('is_active', Category::IS_ACTIVE_TRUE)->firstOrFail();
 
             // Initialize a collection to hold relevant categories
             $categories = collect();

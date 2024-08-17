@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\MsiSettingAdmin;
 
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use League\Fractal\Manager;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
+use Illuminate\Support\Facades\Validator;
 use App\Transformers\CategoryManagementTransformer;
 
 class CategoryManagmentController extends Controller
@@ -40,10 +42,30 @@ class CategoryManagmentController extends Controller
      */
     public function misCategories(Request $request)
     {
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
         try {
             $perPage = $request->input('per_page', 10);
-            $categories = Category::query()->paginate($perPage);
-
+            $search = $request->input('query', null);
+            //
+            if($search){
+                $categories = Category::query()->where('name', 'like', '%' . $search . '%')
+                ->where('id', '!=', 1)
+                ->orderBy('id', 'desc')
+                ->paginate($perPage);
+            }else{
+                $categories = Category::query()
+                ->where('id', '!=', 1)
+                ->orderBy('id', 'desc')
+                ->paginate($perPage);
+            }
             $resource = new Collection($categories, new CategoryManagementTransformer);
 
             $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($categories));
@@ -79,6 +101,15 @@ class CategoryManagmentController extends Controller
      */
     public function addCategoryView()
     {
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
         return view('dashboard.admin.add-category');
     }
 
@@ -90,6 +121,15 @@ class CategoryManagmentController extends Controller
      */
     public function updateCategoryStatus(Request $request)
     {
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
         try {
             $category = Category::find(salt_decrypt($request->input('id')));
             $category->is_active = !$category->is_active;
@@ -131,6 +171,34 @@ class CategoryManagmentController extends Controller
      */
     public function addCategory(Request $request)
     {
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
+        $validator = Validator::make($request->all(), [
+            'categoryName' => 'required',
+            'categoryTree' => 'required',
+            'subCategory' => 'required',
+            'childCategory' => 'required',
+            'keywordName' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ],
+            ], __('statusCode.statusCode422'));
+        }
+
+
         try {
             if ($request->categoryTree == 0) {
                 $parent_category = [
@@ -268,6 +336,96 @@ class CategoryManagmentController extends Controller
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
                     'message' => __('auth.categoryAdded'),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.categoryFailed'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * edit category view
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function editCategoryView(Request $request, $id){
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
+        $category = Category::find(salt_decrypt($id));
+        $depth = $request->input('depth');
+        
+        $data = $category->depth;
+        // dd($data);
+
+        return view('dashboard.admin.edit-category-management', compact('category', 'depth'));
+    }
+
+    /**
+     * update category
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateCategory(Request $request){
+        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.permissionDenied'),
+                ],
+            ], __('statusCode.statusCode403'));
+        }
+        $validator = Validator::make($request->all(), [
+            'category' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ],
+            ], __('statusCode.statusCode422'));
+        }
+
+        try {
+            $category = Category::find(salt_decrypt($request->input('id')));
+            $category->name = $request->input('category');
+            $category->slug = Str::slug($request->input('category'));
+            $category->save();
+
+            return response()->json([
+                'data' =>
+                [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.categoryUpdated'),
                 ]
             ]);
         } catch (\Exception $e) {

@@ -19,7 +19,7 @@
                                 <option value="2"> Child Category</option>
                                 <option value="3"> Keyword</option>
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="categoryErr" class="invalid-feedback">dsfdsa</div>
                         </div>
                     </div>
                 </div>
@@ -57,14 +57,14 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Category Name</label>
                             <input type="text" class="form-control" id="categoryName" placeholder="Enter Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="categoryNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     <div class="col-md-6 mt-3">
                         <div class="ek_f_input">
                             <label for="category">Sub Category Name</label>
                             <input type="text" class="form-control" id="subCategory" placeholder="Enter Sub Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="subCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -72,7 +72,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Child Category Name</label>
                             <input type="text" class="form-control" id="childCategory" placeholder="Enter Child Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="childCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -80,7 +80,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Keyword Name</label>
                             <input type="text" class="form-control" id="keywordName" placeholder="Enter keyword Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="keywordNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     `;
@@ -93,14 +93,14 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                             <select class="form-select" id="categoryName">
                                 <option value="" selected>Select Category Name</option>
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="categoryNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     <div class="col-md-6 mt-3">
                         <div class="ek_f_input">
                             <label for="category">Sub Category Name</label>
                             <input type="text" class="form-control" id="subCategory" placeholder="Enter Sub Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="subCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Child Category Name</label>
                             <input type="text" class="form-control" id="childCategory" placeholder="Enter Child Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="childCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -116,7 +116,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Keyword Name</label>
                             <input type="text" class="form-control" id="keywordName" placeholder="Enter keyword Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="keywordNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     `;
@@ -151,7 +151,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                             <select class="form-select" id="categoryName">
                                 <option value="" selected>Select Category</option>
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="categoryNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     
@@ -161,7 +161,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                             <select class="form-select" id="subCategory">
                                 <option value="" selected>Select Category</option>
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="subCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
                   
@@ -170,7 +170,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Child Category Name</label>
                             <input type="text" class="form-control" id="childCategory" placeholder="Enter Child Category Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="childCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
 
@@ -178,7 +178,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Keyword Name</label>
                             <input type="text" class="form-control" id="keywordName" placeholder="Enter keyword Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="keywordNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     `;
@@ -244,7 +244,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                                 <option value="" selected>Select Category</option>
                                 
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="categoryNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     
@@ -254,7 +254,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                             <label for="category">Sub Category name</label>
                             <select class="form-select" id="subCategory">
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="subCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
                    
@@ -263,7 +263,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                             <label for="category">Child Category</label>
                             <select class="form-select" id="childCategory">
                             </select>
-                            <div id="categoryErr" class="invalid-feedback"></div>
+                            <div id="childCategoryErr" class="invalid-feedback"></div>
                         </div>
                     </div>
  
@@ -271,7 +271,7 @@ document.getElementById('categoryTree').addEventListener('change', function(){
                         <div class="ek_f_input">
                             <label for="category">Keyword Name</label>
                             <input type="text" class="form-control" id="keywordName" placeholder="Enter keyword Name">
-                            <div id="priorityErr" class="invalid-feedback"></div>
+                            <div id="keywordNameErr" class="invalid-feedback"></div>
                         </div>
                     </div>
     `;
@@ -359,15 +359,62 @@ document.getElementById('categoryTree').addEventListener('change', function(){
 })
 
 document.getElementById('btnSubmit').addEventListener('click', function(){
-    var categoryTree = $('#categoryTree').val();
-    // var categoryName = $('#categoryName').val();
-    // var subCategoryName = $('#subCategoryName').val();
-    // var childCategoryName = $('#childCategoryName').val();
+    var isValid = true;
 
+    if (!$('#categoryTree').val()) {
+        $('#categoryTree').addClass('is-invalid');
+        $('#categoryErr').text('Category Tree is required');
+        isValid = false;
+    } else {
+        $('#categoryTree').removeClass('is-invalid');
+        $('#categoryErr').html('');
+    }
+
+    if ($('#categoryName').val() == '') {
+        $('#categoryName').addClass('is-invalid');
+        $('#categoryNameErr').text('Category Name is required');
+        isValid = false;
+    } else {
+        $('#categoryName').removeClass('is-invalid');
+        $('#categoryNameErr').text('');
+    }
+
+    if ($('#subCategory').val() == '') {
+        $('#subCategory').addClass('is-invalid');
+        $('#subCategoryErr').text('Sub Category is required');
+        isValid = false;
+    } else {
+        $('#subCategory').removeClass('is-invalid');
+        $('#subCategoryErr').text('');
+    }
+
+    if ($('#childCategory').val() == '') {
+        $('#childCategory').addClass('is-invalid');
+        $('#childCategoryErr').text('Child Category is required');
+        isValid = false;
+    } else {
+        $('#childCategory').removeClass('is-invalid');
+        $('#childCategoryErr').text('');
+    }
+
+    if ($('#keywordName').val() == '') {
+        $('#keywordName').addClass('is-invalid');
+        $('#keywordNameErr').text('Keyword Name is required');
+        isValid = false;
+    } else {
+        $('#keywordName').removeClass('is-invalid');
+        $('#keywordNameErr').text('');
+    }
+
+    if (isValid) {
+    
+    var categoryTree = $('#categoryTree').val();
     var categoryName = $('#categoryName').val();
     var subCategory = $('#subCategory').val();
     var childCategory = $('#childCategory').val();
     var keywordName = $('#keywordName').val();
+
+    
     var data = {
         categoryTree: categoryTree,
         categoryName: categoryName,
@@ -379,28 +426,28 @@ document.getElementById('btnSubmit').addEventListener('click', function(){
         .then((res) => {
             if (res.data.statusCode == 200) {
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: res.data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                setTimeout(() => {
-                    window.location.href = "{{route('add.category')}}";
-                }, 1500);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: res.data.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                                    title: 'Success',
+                                    icon: "success",
+                                    text: response.data.message,
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                }).then(() => {
+                                    window.location.href = `{{ route('add.category') }}`;
+                                });
             }
         })
         .catch((err) => {
             console.log(err);
         });
+    }
 });
 
                

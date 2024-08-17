@@ -21,7 +21,9 @@ class CategoryManagementTransformer extends TransformerAbstract
                 'id' => salt_encrypt($category->id),
                 'name' => $category->name,
                 'slug' => $category->slug,
+                'edit' => route('admin.categories.edit', salt_encrypt($category->id)).'?depth='.$category->depth,
                 'is_active' => $category->is_active,
+                'depth' => $category->depthName,
                 'created_at' => $category->created_at->toDateTimeString(),
                 'updated_at' => $category->updated_at->toDateTimeString(),
             ];
