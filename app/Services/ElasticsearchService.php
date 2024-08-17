@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Elastic\Elasticsearch\ClientBuilder;
@@ -89,5 +90,41 @@ class ElasticsearchService
     public function createIndex($params)
     {
         return $this->client->indices()->create($params);
+    }
+
+    /**
+     * Search for a keyword
+     *
+     * @param string $title
+     * @return array
+     */
+    public function searchKeyword($title)
+    {
+        $title = strtolower(trim($title));
+        // Prepare the search parameters
+        $searchParams = [
+            'index' => 'keywords',
+            'body'  => [
+                'query' => [
+                    'bool' => [
+                        'should' => [
+                            [
+                                'term' => [
+                                    'keyword' => $title
+                                ]
+                            ],
+                            [
+                                'term' => [
+                                    'title' => $title
+                                ]
+                            ]
+                        ],
+                        'minimum_should_match' => 1 // Ensures at least one condition must match
+                    ]
+                ]
+            ]
+        ];
+
+        return $this->client->search($searchParams);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\APIAuth;
 use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserLoginHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -125,9 +126,17 @@ class AuthController extends Controller
                     'message' => __('auth.failed'),
                 ]], __('statusCode.statusCode401'));
             }
+            // Get the authenticated user's ID
+            $userId = JWTAuth::user()->id; // Alternatively, you can use Auth::id()
             if (config('app.front_end_tech') == false) {
                 Auth::attempt(['email' => $request->email, 'password' => $request->password]);
             }
+            // Update the last login time of the user
+            // Create user login history
+            UserLoginHistory::create([
+                'user_id' => $userId,
+                'last_login' => now(),
+            ]);
 
             return $this->respondWithToken($token);
         } catch (\Exception $e) {

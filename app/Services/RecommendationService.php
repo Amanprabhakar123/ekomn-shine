@@ -61,7 +61,7 @@ class RecommendationService
                 ->pluck('id');
                 $productIds = $productIds->merge($productList);
             }
-            $productList = ProductVariation::whereIn('id', $productIds)->with('media')->get();
+            $productList = ProductVariation::whereIn('id', $productIds)->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])->with('media')->get();
            
             if($productList->isNotEmpty()){
                 return $productList;

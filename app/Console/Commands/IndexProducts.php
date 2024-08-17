@@ -193,7 +193,7 @@ class IndexProducts extends Command
             $this->info('Products have been indexed.');
 
             // Index each keyword
-            $keywords = ProductKeyword::all();
+            $keywords = ProductKeyword::distinct('keyword')->select('keyword')->get();
             foreach ($keywords as $keyword) {
                 $key= str_replace('-', ' ', $keyword->keyword);
                 $list = [
@@ -209,7 +209,7 @@ class IndexProducts extends Command
                 $this->elasticsearchService->index($parameter);
             }
 
-            $categories = Category::where('depth', 3)->select('name')->get();
+            $categories = Category::distinct('name')->where('depth', 3)->select('name')->where('is_active', Category::IS_ACTIVE_TRUE)->get();
             foreach ($categories as $category) {
                 $key= strtolower($category->name);
                 $list = [

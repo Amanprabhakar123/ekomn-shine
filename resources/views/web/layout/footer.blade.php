@@ -121,86 +121,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-//     searchBtnInput.addEventListener('click', function() {
-//     searchCard.style.display = 'none';
-//     const query = searchInput.value;
-//     // Clear previous suggestions
-//     searchList.innerHTML = '';
-
-//     fetch(`{{ route("search") }}?query=${query}`)
-//         .then(response => {
-//           console.log(response);
-//         })
-//         .catch(error => {
-//             console.error('Error fetching suggestions:', error);
-//         });
-// });
-
 
 searchBtnInput.addEventListener('click', function() {
     searchCard.style.display = 'none';
-    const query = searchInput.value;
+    const query = searchInput.value.trim();
     // Clear previous suggestions
     searchList.innerHTML = '';
 
     // Construct the URL with the correct query parameter
-    const url = `{{ route("search") }}?query=${query}`;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Process the data
-            if (data.length > 0) {
-              searchCard.style.display = 'block';
-              window.location.href = data[0].url;
-
-            } else {
-              searchCard.style.display = 'none';
-              window.location.href = `{{ url('/')}}/search?q=keyword&term='${query}`;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching suggestions:', error);
-        });
+    const url =  `{{ url('/')}}/search?q=title&term=`+query;
+    window.location.href = url;
+    
 });
 
-
+// http://localhost:8083/search?q=keyword&term='Fashion Section Shoes
+// http://localhost:8083/search?q=title&term=fashion section shoes (black,10)
 searchInput.addEventListener('keydown', function(event) {
   if (event.key === 'Enter') {
     event.preventDefault();
     searchCard.style.display = 'none';
-    const query = searchInput.value;
+    const query = searchInput.value.trim();
     // Clear previous suggestions
     searchList.innerHTML = '';
 
     // Construct the URL with the correct query parameter
-    const url = `{{ route("search") }}?query=${query}`;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Process the data
-            if (data.length > 0) {
-              searchCard.style.display = 'block';
-              window.location.href = data[0].url;
-            } else {
-              searchCard.style.display = 'none';
-              window.location.href = `{{ url('/')}}/search?q=keyword&term='${query}`;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching suggestions:', error);
-        });
+    const url =  `{{ url('/')}}/search?q=title&term=`+query;
+    window.location.href = url;
   }
 });
 

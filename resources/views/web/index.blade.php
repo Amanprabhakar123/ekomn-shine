@@ -110,25 +110,6 @@
             <h2 class="sec_main_h mb15">Just for You</h2>
             <div class="container-fluid pad_l_r">
                 <div class="row gx-3" id="appendJusforYou">
-                    <div class="col-sm-6 col-md-4 col-lg-2 mb16">
-                        <div class="ekom_card">
-                            <a href="product-details.html" class="product_card text_u">
-                                <div class="product_image_wraper">
-                                    <div class="product_image">
-                                        <img src="{{ asset('assets/images/product/outdoor_1.webp') }}" class="_pdimg"
-                                            tabindex="-1">
-                                    </div>
-                                    <div class="gray"></div>
-                                </div>
-                                <div class="product_dec">
-                                    <h3 class="product_title bold">Back pull point flannelette blue indoor leisure chair
-                                        simple Nordic style</h3>
-                                    <h5 class="productPrice"><i class="fas fa-rupee-sign fs-12 me-1"></i>1000</h5>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
                 </div>
                 <div class="d-flex justify-content-center mt10">
                     <button type="button" id='viewMore' class="btn btnekomn-border btnround">View More</button>

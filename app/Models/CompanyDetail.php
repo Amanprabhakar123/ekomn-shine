@@ -2,29 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Import;
-use App\Models\CompanyPlan;
-use App\Models\BuyerInventory;
-use App\Models\ProductFeature;
-use App\Models\ProductKeyword;
-use App\Models\CompanyCanHandle;
-use App\Models\CompanyOperation;
-use App\Models\ProductInventory;
-use App\Models\ProductVariation;
-use Spatie\Activitylog\LogOptions;
-use App\Models\CompanyBusinessType;
-use App\Models\CompanySalesChannel;
-use App\Models\CompanyAddressDetail;
-use App\Models\CompanyProductCategory;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class CompanyDetail extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     /**
      * @property string $business_name
@@ -84,38 +70,39 @@ class CompanyDetail extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly([
-            'user_id',
-            'company_serial_id',
-            'business_name',
-            'display_name',
-            'designation',
-            'first_name',
-            'last_name',
-            'email',
-            'mobile_no',
-            'pan_no',
-            'gst_no',
-            'pan_no_file_path',
-            'gst_no_file_path',
-            'pan_verified',
-            'gst_verified',
-            'language_i_can_read',
-            'language_i_can_understand',
-            'alternate_business_contact',
-            'bank_name',
-            'bank_account_no',
-            'ifsc_code',
-            'swift_code',
-            'cancelled_cheque_file_path',
-            'signature_image_file_path',
-            'bank_account_verified',
-        ])
-        ->logOnlyDirty()
-        ->useLogName('Company Details Log')
-        ->setDescriptionForEvent(fn(string $eventName) => "{$eventName} company details with ID: {$this->id}");
+            ->logOnly([
+                'user_id',
+                'company_serial_id',
+                'business_name',
+                'display_name',
+                'designation',
+                'first_name',
+                'last_name',
+                'email',
+                'mobile_no',
+                'pan_no',
+                'gst_no',
+                'pan_no_file_path',
+                'gst_no_file_path',
+                'pan_verified',
+                'gst_verified',
+                'language_i_can_read',
+                'language_i_can_understand',
+                'alternate_business_contact',
+                'bank_name',
+                'bank_account_no',
+                'ifsc_code',
+                'swift_code',
+                'cancelled_cheque_file_path',
+                'signature_image_file_path',
+                'bank_account_verified',
+            ])
+            ->logOnlyDirty()
+            ->useLogName('Company Details Log')
+            ->setDescriptionForEvent(fn (string $eventName) => "{$eventName} company details with ID: {$this->id}");
 
     }
+
     /**
      * Get the addresses associated with the company.
      *
@@ -238,5 +225,23 @@ class CompanyDetail extends Model
     public function buyerInventory()
     {
         return $this->hasMany(BuyerInventory::class, 'company_id', 'id');
+    }
+
+    /**
+     * Get the full name of the user.
+     */
+    public function getFullName(): string
+    {
+        return $this->first_name.' '.$this->last_name;
+    }
+
+    /**
+     * Get the login history associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function loginHistory()
+    {
+        return $this->hasOne(UserLoginHistory::class, 'user_id', 'id');
     }
 }

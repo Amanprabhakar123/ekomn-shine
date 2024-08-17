@@ -34,8 +34,8 @@ class AuthUserLoginSeeder extends Seeder
 
         $admin = User::create([
             'id' => 3, // If your table uses auto-increment for ID, you can omit this field
-            'name' => 'admin',
-            'email' => 'admin@yopmail.com',
+            'name' => 'Ekomn Admin',
+            'email' => 'ekomnops@ekomn.com',
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('Test@123'), // Change to a hashed password
         ]);
