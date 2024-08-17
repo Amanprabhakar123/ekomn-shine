@@ -23,6 +23,11 @@ class Plan extends Model
         'status',
     ];
 
+    /**
+     * Get the plan type.
+     *
+     * @return string
+     */
     public function getPlanType()
     {
         if ($this->is_trial_plan == 1) {
