@@ -85,11 +85,19 @@ class OrderController extends Controller
                 // Decrypt the product ID
                 $product = ProductVariation::find(salt_decrypt($product_id));
                 if (! empty($product)) {
+                    $o_qty = $request->quantity[$key] ?? AddToCart::DEFAULT_QUANTITY;
+                    if($product->stock < $o_qty) {
+                        return response()->json(['data' => [
+                            'statusCode' => __('statusCode.statusCode400'),
+                            'status' => __('statusCode.status404'),
+                            'message' => __('auth.quantityExceedsStock'),
+                        ]], __('statusCode.statusCode200'));
+                    }
                     // Create a new Add To Cart record
                     $cart[] = [
                         'buyer_id' => auth()->user()->id,
                         'product_id' => $product->id,
-                        'quantity' => $request->quantity[$key] ?? AddToCart::DEFAULT_QUANTITY,
+                        'quantity' => $o_qty,
                         'added_at' => now(),
                     ];
                 } else {
@@ -138,7 +146,7 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
+            dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
