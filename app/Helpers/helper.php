@@ -1,16 +1,14 @@
 <?php
 
-use App\Models\User;
+use App\Models\AddToCart;
 use App\Models\Category;
-use Illuminate\Support\Str;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use Illuminate\Http\JsonResponse;
 use App\Models\ProductVariationMedia;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
-
-
 
 // User roles define for entire application
 const ROLE_BUYER = User::ROLE_BUYER;
@@ -55,22 +53,22 @@ const IS_MASTER_FALSE = ProductVariationMedia::IS_MASTER_FALSE;
 /**
  * Encrypts a string using a salt key.
  *
- * @param string $string The string to be encrypted.
- *
- * @return string|array If successful, returns the encrypted string. 
+ * @param  string  $string  The string to be encrypted.
+ * @return string|array If successful, returns the encrypted string.
  *                      If no string provided, returns an array with status false and an error message.
  */
-if (!function_exists('salt_encrypt')) {
+if (! function_exists('salt_encrypt')) {
     function salt_encrypt($string)
     {
         //return $string;
-        if (!empty($string)) {
-            $encrypted = encrypt(env('SALT_KEY') . $string);
+        if (! empty($string)) {
+            $encrypted = encrypt(env('SALT_KEY').$string);
+
             return $encrypted;
         } else {
             return [
                 'status' => false,
-                'message' => 'Error: Please provide string to be decrypted.'
+                'message' => 'Error: Please provide string to be decrypted.',
             ];
         }
     }
@@ -79,28 +77,27 @@ if (!function_exists('salt_encrypt')) {
 /**
  * Decrypts an encrypted string, removing the salt key from it.
  *
- * @param string $string The encrypted string to be decrypted.
- *
- * @return string|array If successful, returns the decrypted string. 
+ * @param  string  $string  The encrypted string to be decrypted.
+ * @return string|array If successful, returns the decrypted string.
  *                      If no encrypted string provided, returns an array with status false and an error message.
  */
-if (!function_exists('salt_decrypt')) {
+if (! function_exists('salt_decrypt')) {
     function salt_decrypt($string)
     {
         //return $string;
-        if (!empty($string)) {
+        if (! empty($string)) {
             $decrypted = decrypt($string);
             $mainString = str_replace(env('SALT_KEY'), '', $decrypted);
+
             return $mainString;
         } else {
             return [
                 'status' => false,
-                'message' => 'Error: Please provide encrypted string.'
+                'message' => 'Error: Please provide encrypted string.',
             ];
         }
     }
 }
-
 
 /**
  * Prints the human-readable representation of a variable and exits the script.
@@ -108,11 +105,10 @@ if (!function_exists('salt_decrypt')) {
  * This function is useful for debugging purposes to print out the contents of a variable
  * in a human-readable format and then exit the script execution.
  *
- * @param mixed $string The variable to be printed.
- *
+ * @param  mixed  $string  The variable to be printed.
  * @return void This function does not return a value.
  */
-if (!function_exists('printR')) {
+if (! function_exists('printR')) {
     function printR($string)
     {
         echo '<pre>';
@@ -125,14 +121,14 @@ if (!function_exists('printR')) {
 /**
  * Generate a unique username based on the given name and next number.
  *
- * @param string $name The name of the user.
- * @param int $nextNumber The next number to be appended to the username.
+ * @param  string  $name  The name of the user.
+ * @param  int  $nextNumber  The next number to be appended to the username.
  * @return string The generated username.
  */
-if (!function_exists('generateUniqueCompanyUsername')) {
+if (! function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName = null)
     {
-        if (!$companyName) {
+        if (! $companyName) {
             // Extract the initials
             $username = '';
             $words = explode(' ', $companyName);
@@ -149,7 +145,7 @@ if (!function_exists('generateUniqueCompanyUsername')) {
 
             // Ensure the username is unique
             while (CompanyDetail::where('display_name', $username)->exists()) {
-                $username = $originalUsername . $counter;
+                $username = $originalUsername.$counter;
                 $counter++;
             }
 
@@ -163,8 +159,8 @@ if (!function_exists('generateUniqueCompanyUsername')) {
 /**
  * Generate a unique username based on the given name and next number.
  *
- * @param string $name The name of the user.
- * @param int $nextNumber The next number to be appended to the username.
+ * @param  string  $name  The name of the user.
+ * @param  int  $nextNumber  The next number to be appended to the username.
  * @return string The generated username.
  */
 function convertImageToBase64($imagePath)
@@ -181,7 +177,7 @@ function convertImageToBase64($imagePath)
         $imageType = pathinfo($imagePath, PATHINFO_EXTENSION);
 
         // Return the Base64 encoded image with the appropriate data URL prefix
-        return 'data:image/' . $imageType . ';base64,' . $base64Image;
+        return 'data:image/'.$imageType.';base64,'.$base64Image;
     } else {
         // Handle the error if the file does not exist
         return null;
@@ -190,40 +186,35 @@ function convertImageToBase64($imagePath)
 
 /**
  * Generate an error response.
- *
- * @param string $message
- * @return JsonResponse
  */
 function errorResponse(string $message): JsonResponse
 {
-    $parts = explode("-", $message);
+    $parts = explode('-', $message);
     $key = '';
-    if (!empty($parts)) {
+    if (! empty($parts)) {
         $message = $parts[0];
         $key = $parts[1] ?? null;
     }
     $response = [
         'statusCode' => __('statusCode.statusCode422'),
         'status' => __('statusCode.status422'),
-        'message' => $message
+        'message' => $message,
     ];
     if ($key) {
         if (strpos($key, '.') !== false) {
             $a = explode('.', trim($key));
-            $key = $a[0][0] . '_' . $a[1];
+            $key = $a[0][0].'_'.$a[1];
         }
         $response['key'] = trim($key);
     }
+
     return response()->json(['data' => $response], __('statusCode.statusCode200'));
 }
 
 /**
  * Generate a success response.
- *
- * @param int|null $id
- * @return JsonResponse
  */
-function successResponse(int $id = null, array $data = null): JsonResponse
+function successResponse(?int $id = null, ?array $data = null): JsonResponse
 {
     $response = [
         'statusCode' => __('statusCode.statusCode200'),
@@ -238,22 +229,21 @@ function successResponse(int $id = null, array $data = null): JsonResponse
         $response['data'] = $data;
     }
 
-    return response()->json(['data' => $response],  __('statusCode.statusCode200'));
+    return response()->json(['data' => $response], __('statusCode.statusCode200'));
 }
 
 /**
  * Generate a company serial ID based on the given ID and type.
  *
- * @param int $id The ID of the company.
- * @param string $type The type of the company.
+ * @param  int  $id  The ID of the company.
+ * @param  string  $type  The type of the company.
  * @return string The generated company serial ID.
  */
 function generateCompanySerialId($id, $type)
 {
     // Format the new supplier ID with leading zeros and 's' prefix
-    return $type . str_pad($id, 6, '0', STR_PAD_LEFT);
+    return $type.str_pad($id, 6, '0', STR_PAD_LEFT);
 }
-
 
 /**
  * Generates a unique SKU for a product based on its name, category and the current time.
@@ -266,8 +256,8 @@ function generateCompanySerialId($id, $type)
  *
  * Ensures the generated SKU is unique by checking against existing SKUs in the database.
  *
- * @param string $name The name of the product.
- * @param string $category The category of the product.
+ * @param  string  $name  The name of the product.
+ * @param  string  $category  The category of the product.
  * @return string The generated SKU, which is a maximum of 10 characters long.
  */
 function generateSKU($name, $category)
@@ -280,11 +270,11 @@ function generateSKU($name, $category)
 
     $randomPart = mt_rand(1000, 9999);
 
-    $sku = $namePart . $categoryPart . $timePart . $randomPart;
+    $sku = $namePart.$categoryPart.$timePart.$randomPart;
 
     while (ProductVariation::where('sku', $sku)->exists()) {
         $randomPart = mt_rand(1000, 9999);
-        $sku = $namePart . $categoryPart . $timePart . $randomPart;
+        $sku = $namePart.$categoryPart.$timePart.$randomPart;
     }
 
     return substr($sku, 0, 12);
@@ -301,10 +291,10 @@ function generateSKU($name, $category)
  *
  * Ensures the generated SKU code is unique by checking against existing SKU codes in the database.
  *
- * @param string $sku The SKU of the product.
- * @param string $color The color of the product.
- * @param string $size The size of the product.
- * @param int $i The counter value.
+ * @param  string  $sku  The SKU of the product.
+ * @param  string  $color  The color of the product.
+ * @param  string  $size  The size of the product.
+ * @param  int  $i  The counter value.
  * @return string The generated SKU code.
  */
 function generateSKUCode($sku, $color, $size, $i)
@@ -314,32 +304,34 @@ function generateSKUCode($sku, $color, $size, $i)
     $color = strtoupper(substr($color, 0, 1));
     // get size first 1 letter in upper case
     $size = strtoupper(substr($size, 0, 1));
-    $sku = $sku . '-' . $color . $size . '-' . $i;
+    $sku = $sku.'-'.$color.$size.'-'.$i;
     while (ProductVariation::where('sku', $sku)->exists()) {
         // $i++;
-        $sku = $sku . '-' . $i;
+        $sku = $sku.'-'.$i;
     }
+
     return $sku;
 }
 
 /**
  * Generates a slug from the given product name.
  *
- * @param string $name The product name.
+ * @param  string  $name  The product name.
  * @return string The generated slug.
  */
 function generateSlug($name, $p_id)
 {
     $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name)));
     $p_id = strtolower($p_id);
-    return $slug . '-' . $p_id;
+
+    return $slug.'-'.$p_id;
 }
 
 /**
  * Generate a unique product ID based on the given title and next number.
  *
- * @param string $title The title of the product.
- * @param int $nextNumber The next number to be appended to the product ID.
+ * @param  string  $title  The title of the product.
+ * @param  int  $nextNumber  The next number to be appended to the product ID.
  * @return string The generated product ID.
  */
 function generateProductID($title, $nextNumber)
@@ -354,9 +346,8 @@ function generateProductID($title, $nextNumber)
     $numericPart = str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
     // Combine prefix and numeric part to form the ProductID
-    return $prefix . $numericPart;
+    return $prefix.$numericPart;
 }
-
 
 /**
  * Print the SQL query along with the parameter bindings for debugging purposes.
@@ -365,10 +356,8 @@ function generateProductID($title, $nextNumber)
  * and the parameter bindings from the query. It then combines them to create a complete
  * SQL query with actual parameter values for display and debugging purposes.
  *
- * @param \Illuminate\Database\Query\Builder $query The query builder instance to print.
- *
+ * @param  \Illuminate\Database\Query\Builder  $query  The query builder instance to print.
  * @return string The combined SQL query with actual parameter values.
- *
  *
  * @example
  * $query = DB::table('users')
@@ -396,7 +385,7 @@ function printQueryWithParameters($query)
 /**
  * Get the string representation of a status based on its type value.
  *
- * @param int $type The type value of the status.
+ * @param  int  $type  The type value of the status.
  * @return string The string representation of the status.
  */
 function getStatusName($type)
@@ -418,7 +407,7 @@ function getStatusName($type)
 /**
  * Get the string representation of an availability status based on its type value.
  *
- * @param int $type The type value of the availability status.
+ * @param  int  $type  The type value of the availability status.
  * @return string The string representation of the availability status.
  */
 function getAvailablityStatusName($type)
@@ -436,8 +425,8 @@ function getAvailablityStatusName($type)
 /**
  * Calculate the inclusive price and exclusive tax amount based on GST.
  *
- * @param float $exclusivePrice Price before GST.
- * @param float $gstRate GST rate in percentage.
+ * @param  float  $exclusivePrice  Price before GST.
+ * @param  float  $gstRate  GST rate in percentage.
  * @return array Associative array containing inclusive price and exclusive tax amount.
  */
 function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): array
@@ -447,16 +436,17 @@ function calculateInclusivePriceAndTax(float $exclusivePrice, float $gstRate): a
 
     return [
         'price_after_tax' => $inclusivePrice,
-        'price_before_tax' => $exclusivePrice
+        'price_before_tax' => $exclusivePrice,
     ];
 }
 
 /**
  * Convert weight in kilograms to the specified unit.
  *
- * @param float $weightInKg The weight in kilograms to be converted.
- * @param string $unit The unit to convert to. Supported units are 'mg', 'gm', 'ml', 'ltr', and 'kg'.
+ * @param  float  $weightInKg  The weight in kilograms to be converted.
+ * @param  string  $unit  The unit to convert to. Supported units are 'mg', 'gm', 'ml', 'ltr', and 'kg'.
  * @return float The converted weight.
+ *
  * @throws Exception If an unsupported unit is provided.
  */
 function convertKg($weightInKg, $unit)
@@ -480,11 +470,12 @@ function convertKg($weightInKg, $unit)
 /**
  * Calculate the volumetric weight in kilograms based on the dimensions and unit.
  *
- * @param float $length The length of the object.
- * @param float $breadth The breadth of the object.
- * @param float $height The height of the object.
- * @param string $unit The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
+ * @param  float  $length  The length of the object.
+ * @param  float  $breadth  The breadth of the object.
+ * @param  float  $height  The height of the object.
+ * @param  string  $unit  The unit of dimensions. Supported units are 'mm', 'cm', and 'inch'.
  * @return float The volumetric weight in kilograms.
+ *
  * @throws Exception If an unsupported unit is provided.
  */
 function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
@@ -528,12 +519,13 @@ function calculateVolumetricWeight($length, $breadth, $height, $unit = 'cm')
 
     // Calculate the volumetric weight in kilograms
     $volumetricWeight = ($length * $breadth * $height) / $dimensionalWeightFactor;
+
     return $volumetricWeight;
 }
 /**
  * Unlink a file or delete a directory along with its contents.
  *
- * @param string $path The path to the file or directory.
+ * @param  string  $path  The path to the file or directory.
  * @return void
  */
 function unlinkFile($path)
@@ -558,13 +550,11 @@ function unlinkFile($path)
     }
 }
 
-
 /**
  * Recursively add a folder to a zip archive
  *
- * @param ZipArchive $zip
- * @param string $folder
- * @param string $parentFolder
+ * @param  string  $folder
+ * @param  string  $parentFolder
  * @return void
  */
 function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
@@ -576,7 +566,7 @@ function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
 
     foreach ($files as $fileinfo) {
         $filePath = $fileinfo->getRealPath();
-        $relativePath = $parentFolder . '/' . substr($filePath, strlen($folder) + 1);
+        $relativePath = $parentFolder.'/'.substr($filePath, strlen($folder) + 1);
 
         if ($fileinfo->isDir()) {
             $zip->addEmptyDir($relativePath);
@@ -586,21 +576,17 @@ function addFolderToZip(ZipArchive $zip, $folder, $parentFolder = '')
     }
 }
 
-
-
-if (!function_exists('storage')) {
+if (! function_exists('storage')) {
 
     /**
      * Store or retrieve or delete data file from storage.
      *
-     * @param string     $key   The storage key.
-     * @param mixed|null $data  The data to store. Pass `null` to retrieve data.
-     * @param array      $args  Additional arguments for formatting the storage path.
-     * @param string|null $name The name of the file to store.
-     *
+     * @param  string  $key  The storage key.
+     * @param  mixed|null  $data  The data to store. Pass `null` to retrieve data.
+     * @param  array  $args  Additional arguments for formatting the storage path.
+     * @param  string|null  $name  The name of the file to store.
      * @return mixed Returns the stored file path or content, or `null` if retrieval fails.
      */
-
     function storage(string $key, $data = null, array $args = [], $name = null)
     {
         $isFileOnS3 = config('app.FILE_STORAGE_PLACE');
@@ -611,9 +597,9 @@ if (!function_exists('storage')) {
             // delete the file from local storage or s3 depends on environment
             return Storage::disk($isFileOnS3 ? 's3' : 'local')->delete($key);
         } else {
-            $config = config('paths.' . $key);
+            $config = config('paths.'.$key);
             if (is_string($data)) {
-                $path = vsprintf($config['path'], $args) . '/' . $name;
+                $path = vsprintf($config['path'], $args).'/'.$name;
                 $visibility = $config['visibility'];
             } else {
                 $path = vsprintf($config['path'], $args);
@@ -622,65 +608,75 @@ if (!function_exists('storage')) {
 
             // store the file from local storage or s3 depends on environment
             $file = Storage::disk($isFileOnS3 ? 's3' : 'local')->put($path, $data, $visibility);
+
             return is_string($data) ? $path : $file;
         }
     }
 }
 
-    /**
-     * Convert a number to its equivalent words.
-     *
-     * @param int $number The number to convert.
-     * @return string The equivalent words for the number.
-     */
-    function convertNumberToWords($number)
-    {
-        $words = array(
-            '0' => 'Zero', '1' => 'One', '2' => 'Two',
-            '3' => 'Three', '4' => 'Four', '5' => 'Five',
-            '6' => 'Six', '7' => 'Seven', '8' => 'Eight',
-            '9' => 'Nine', '10' => 'Ten', '11' => 'Eleven',
-            '12' => 'Twelve', '13' => 'Thirteen', '14' => 'Fourteen',
-            '15' => 'Fifteen', '16' => 'Sixteen', '17' => 'Seventeen',
-            '18' => 'Eighteen', '19' => 'Nineteen', '20' => 'Twenty',
-            '30' => 'Thirty', '40' => 'Forty', '50' => 'Fifty', '60' => 'Sixty',
-            '70' => 'Seventy', '80' => 'Eighty', '90' => 'Ninety'
-        );
+/**
+ * Convert a number to its equivalent words.
+ *
+ * @param  int  $number  The number to convert.
+ * @return string The equivalent words for the number.
+ */
+function convertNumberToWords($number)
+{
+    $words = [
+        '0' => 'Zero', '1' => 'One', '2' => 'Two',
+        '3' => 'Three', '4' => 'Four', '5' => 'Five',
+        '6' => 'Six', '7' => 'Seven', '8' => 'Eight',
+        '9' => 'Nine', '10' => 'Ten', '11' => 'Eleven',
+        '12' => 'Twelve', '13' => 'Thirteen', '14' => 'Fourteen',
+        '15' => 'Fifteen', '16' => 'Sixteen', '17' => 'Seventeen',
+        '18' => 'Eighteen', '19' => 'Nineteen', '20' => 'Twenty',
+        '30' => 'Thirty', '40' => 'Forty', '50' => 'Fifty', '60' => 'Sixty',
+        '70' => 'Seventy', '80' => 'Eighty', '90' => 'Ninety',
+    ];
 
-        if ($number <= 20) {
-            return $words[$number];
+    if ($number <= 20) {
+        return $words[$number];
+    } elseif ($number < 100) {
+        return $words[10 * floor($number / 10)]
+            .($number % 10 > 0 ? ' '.$words[$number % 10] : '');
+    } else {
+        $output = '';
+        if ($number >= 1000000000) {
+            $output .= convertNumberToWords(floor($number / 1000000000))
+                .' Billion ';
+            $number %= 1000000000;
         }
-        elseif ($number < 100) {
-            return $words[10 * floor($number / 10)]
-                . ($number % 10 > 0 ? ' ' . $words[$number % 10] : '');
+        if ($number >= 1000000) {
+            $output .= convertNumberToWords(floor($number / 1000000))
+                .' Million ';
+            $number %= 1000000;
         }
-        else {
-            $output = '';
-            if ($number >= 1000000000) {
-                $output .= convertNumberToWords(floor($number / 1000000000))
-                    . ' Billion ';
-                $number %= 1000000000;
-            }
-            if ($number >= 1000000) {
-                $output .= convertNumberToWords(floor($number / 1000000))
-                    . ' Million ';
-                $number %= 1000000;
-            }
-            if ($number >= 1000) {
-                $output .= convertNumberToWords(floor($number / 1000))
-                    . ' Thousand ';
-                $number %= 1000;
-            }
-            if ($number >= 100) {
-                $output .= convertNumberToWords(floor($number / 100))
-                    . ' Hundred ';
-                $number %= 100;
-            }
-            if ($number > 0) {
-                $output .= ($number <= 20) ? $words[$number] :
-                $words[10 * floor($number / 10)] . ' '
-                    . ($number % 10 > 0 ? $words[$number % 10] : '');
-            }
-            return trim($output); 
+        if ($number >= 1000) {
+            $output .= convertNumberToWords(floor($number / 1000))
+                .' Thousand ';
+            $number %= 1000;
         }
+        if ($number >= 100) {
+            $output .= convertNumberToWords(floor($number / 100))
+                .' Hundred ';
+            $number %= 100;
+        }
+        if ($number > 0) {
+            $output .= ($number <= 20) ? $words[$number] :
+            $words[10 * floor($number / 10)].' '
+                .($number % 10 > 0 ? $words[$number % 10] : '');
+        }
+
+        return trim($output);
     }
+}
+/**
+ * Get the count of items in the cart for a logged-in buyer.
+ *
+ * @param  int  $buyerId  The ID of the logged-in buyer.
+ * @return int The count of items in the cart.
+ */
+function getCartItemCount($buyerId)
+{
+    return AddToCart::where('buyer_id', $buyerId)->count();
+}

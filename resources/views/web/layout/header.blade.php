@@ -10,18 +10,19 @@
     <div class="main_header" id="main_header">
         <div class="barIcon" id="barIcon"><i class="fas fa-bars"></i></div>
         <div class="brandLogo">
-            <a href="{{route('home')}}"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" height="40" /></a>
+            <a href="{{ route('home') }}"><img src="{{ asset('assets/images/Logo.svg') }}" alt="Logo"
+                    height="40" /></a>
         </div>
         <div class="headersearch">
-            
-                <div class="productSearch">
-                    <input class="form-control serchinput" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn" id="searchBtnInput" type="button"><i class="fas fa-search"></i></button>
-                </div>
-                <div class="header_search_card">
-                    <ul class="searchList">
-                    </ul>
-                </div>
+
+            <div class="productSearch">
+                <input class="form-control serchinput" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn" id="searchBtnInput" type="button"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header_search_card">
+                <ul class="searchList">
+                </ul>
+            </div>
         </div>
         @if (Auth::check())
             <div class="userAction">
@@ -31,7 +32,7 @@
                         <i class="far fa-bell"></i>
                     </a>
                 </div>
-            
+
                 <div class="dropdown userDropdown">
                     <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user">
@@ -41,7 +42,8 @@
                                     <p class="m-0">Admin</p>
                                 @elseif(auth()->user()->hasRole(ROLE_BUYER) ||
                                         auth()->user()->hasRole(ROLE_SUPPLIER))
-                                    <p class="m-0">User ID: {{ auth()->user()->companyDetails->company_serial_id }}
+                                    <p class="m-0">User ID:
+                                        {{ auth()->user()->companyDetails->company_serial_id ?? '00000' }}
                                     </p>
                                 @endif
                             @endif
@@ -71,14 +73,17 @@
                         </li>
                     </ul>
                 </div>
-                @if(auth()->user()->hasRole(ROLE_BUYER))
-                <div class="cartAction">
-                    <a href="" class="cart">
-                        <span class="counter">0</span>
-                        <img src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/header_cart-eed150.svg"
-                            alt="Cart" class="_1XmrCc" width="30" height="30">
-                    </a>
-                </div>
+                @if (auth()->user()->hasRole(ROLE_BUYER))
+                    @php
+                        $user_id = auth()->user()->id;
+                    @endphp
+                    <div class="cartAction">
+                        <a href="{{ route('create.order') }}" class="cart">
+                            <span class="counter">{{ getCartItemCount($user_id) }}</span>
+                            <img src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/header_cart-eed150.svg"
+                                alt="Cart" class="_1XmrCc" width="30" height="30">
+                        </a>
+                    </div>
                 @endif
             </div>
         @else
@@ -92,15 +97,15 @@
     </div>
     <div class="bottom_header">
         <ul class="b_h_list">
-            <li><a href="{{route('product.type', 'regular-available')}}" class="active">Regular Available</a></li>
-            <li><a href="{{route('product.type', 'in-demand')}}">In Demand</a></li>
-            <li><a href="{{route('product.type', 'premium')}}">Premium Products</a></li>
-            <li><a href="{{route('product.type', 'new-arrivals')}}">New Arrivals</a></li>
-            
-            @if(str_contains(Request::path(), 'category'))
-            <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
+            <li><a href="{{ route('product.type', 'regular-available') }}" class="active">Regular Available</a></li>
+            <li><a href="{{ route('product.type', 'in-demand') }}">In Demand</a></li>
+            <li><a href="{{ route('product.type', 'premium') }}">Premium Products</a></li>
+            <li><a href="{{ route('product.type', 'new-arrivals') }}">New Arrivals</a></li>
+
+            @if (str_contains(Request::path(), 'category'))
+                <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
             @else
-            <li><a href="{{route('product.category', 'all')}}">View All</a></li>
+                <li><a href="{{ route('product.category', 'all') }}">View All</a></li>
             @endif
         </ul>
     </div>
