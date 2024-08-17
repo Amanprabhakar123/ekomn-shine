@@ -1364,7 +1364,11 @@ class ProductInvetoryController extends Controller
                                         'index' => 'keywords',
                                         'body'  => $list2,
                                     ];
-                                    $elasticsearchService->index($title_index);
+                                    $searchResult = $elasticsearchService->searchKeyword($title_index);
+                                    // Check if any hits were returned
+                                    if (count($searchResult['hits']['hits']) === 0) {
+                                        $elasticsearchService->index($parameter);
+                                    }
                                 }
                             }
                             foreach ($media_images as $key => $media) {
