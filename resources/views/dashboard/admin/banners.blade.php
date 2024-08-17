@@ -41,7 +41,7 @@
 
                 <div class="profilesectionRight mt-3">
                     <label>Uplaod Banner image<span class="r_color">*</span></label>
-                    <label class="picture" style="height:250px;" for="banner" tabIndex="0">
+                    <label class="picture" for="banner" tabIndex="0">
                         <span class="" style="">
                             <!-- Uplaod banner image here -->
                             <img id="bannerImage" src="" alt="Banner Image" style="display: none; max-width: 100%;" />

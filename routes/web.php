@@ -93,6 +93,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('mis-setting-supplier', [MisSettingController::class, 'misSettingSupplier'])->name('mis.setting.supplier');
     Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
     Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
+    Route::get('edit-category/{id}', [CategoryManagmentController::class, 'editCategoryView'])->name('admin.categories.edit');
 
 });
 
@@ -154,6 +155,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('/mis-export-csv/{type}', [MisSettingController::class, 'misReportExportCSV'])->name('mis.export.csv');
         Route::get('mis-setting-categories', [CategoryManagmentController::class, 'misCategories'])->name('mis.setting.categories');
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
+        Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
+        Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
     });
 });
 

@@ -7,17 +7,9 @@
                 <div class="cardhead">
                     <h3 class="cardtitle">Category Management</h3>
                 </div>
-            <!-- <div class="cardhead">
-                <h3 class="cardtitle">My Inventory</h3>
-                @if(auth()->user()->hasRole(ROLE_ADMIN))
-                @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_PRODUCT))
-                <a class="btn btnekomn btn-sm" href="{{route('add.inventory')}}"><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
-                @endif
-                @endif
-            </div> -->
-            <!-- <div class="tableTop">
+            <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-                <div class="filter">
+                <!-- <div class="filter">
                     <div class="ek_group m-0">
                          <label class="eklabel w_50_f">Sort by:</label>
                         <div class="ek_f_input w_150_f">
@@ -30,8 +22,8 @@
                             </select>
                         </div>
                     </div>
-                </div>
-            </div> -->
+                </div> -->
+            </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable whitespace">
                     <thead>
@@ -40,6 +32,9 @@
                                 
                             </th>
                             <th class="">Slug
+                                
+                            </th>
+                            <th class="">Tree
                                 
                             </th>
                             <th class="">Action
@@ -92,9 +87,26 @@
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
 
+           // Event listener for the search input field
+           const searchQuery = document.getElementById("searchQuery");
+        searchQuery.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                fetchData();
+            }
+        });
+
+        // Event listener for clicking outside the search input field
+        searchQuery.addEventListener("blur", (e) => {
+            fetchData();
+        });
+
         function fetchData() {
             // Make an API request to fetch inventory data
             let apiUrl = `mis-setting-categories?per_page=${rows}&page=${currentPage}`;
+
+            if (searchQuery) {
+            apiUrl += `&query=${searchQuery.value}`;
+            }
 
 
             ApiRequest(apiUrl, 'GET')
@@ -205,8 +217,9 @@
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.slug}</td>
+                    <td>${item.depth}</td>
                     <td>
-                        <a href="#" class="nbtn btn-link btn-sm">Edit</a>
+                        <a href="${item.edit}" target="_blank" class="nbtn btn-link btn-sm">Edit</a>
                     </td>
                     <td>
                         <select onChange="updateStatus('${item.id}')" class="form-select">
