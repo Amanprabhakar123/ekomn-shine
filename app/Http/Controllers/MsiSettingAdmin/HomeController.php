@@ -167,7 +167,7 @@ class HomeController extends Controller
                 $banner = Banner::where('banner_type', Banner::BANNER_TYPE_HOME)->get();
             }elseif($request->has('type') && ($request->type == 'category')){
                 $slug = $request->slug;
-                $category = Category::where('slug', $slug)->first();
+                $category = Category::where('slug', $slug)->where('is_active', Category::IS_ACTIVE_TRUE)->first();
                 if($category){
                     $banner = Banner::where('banner_type', Banner::BANNER_TYPE_CATEGORY)
                     ->where('category_id', $category->id)
@@ -293,7 +293,20 @@ class HomeController extends Controller
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->get();
-            }else{
+            }elseif($request->has('type') && $request->type == 'sub-category'){
+                $categories = Category::select('id', 'name')->where('depth', 1)
+                ->where('id', '!=', 1)
+                ->where('parent_id',  salt_decrypt($request->category_id))
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }elseif($request->has('type') && $request->type == 'child-category'){
+                $categories = Category::select('id', 'name')->where('depth', 2)
+                ->where('id', '!=', 1)
+                ->where('parent_id',  salt_decrypt($request->category_id))
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
+                ->get();
+            }
+            else{
                 $categories = Category::select('id', 'name')->whereIn('depth', [0, 1])
                 ->where('id', '!=', 1)
                 ->where('is_active', Category::IS_ACTIVE_TRUE)
@@ -494,6 +507,7 @@ class HomeController extends Controller
             // Retrieve categories with depth 0, excluding the category with id 1
             $categories = Category::where('depth', 0)
                 ->where('id', '<>', 1)
+                ->where('is_active', Category::IS_ACTIVE_TRUE)
                 ->with(['children' => function ($query) {
                     // Retrieve immediate children with depth 1
                     $query->where('depth', 1)

@@ -127,5 +127,6 @@ return [
     'deleteFailed' => 'Delete Banner Failed.',
     'bannerFailed' => 'Failed to receive banner.',
     'categoryStatus' => 'Category Status Updated Successfully.',
+    'categoryUpdated' => 'Category Updated Successfully.',
 
 ];

@@ -46,4 +46,25 @@ class Category extends Model
     {
         return $this->hasMany(TopCategory::class);
     }
+
+    /**
+     * Get all of the productInventories for the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    function getDepthNameAttribute()
+    {
+        $depth = $this->depth;
+        $depthName = '';
+        if ($depth == 0) {
+            $depthName = 'Main Category';
+        } elseif ($depth == 1) {
+            $depthName = 'Sub Category';
+        } elseif ($depth == 2) {
+            $depthName = 'Chid Category';
+        } elseif ($depth == 3) {
+            $depthName = 'Keyword';
+        }
+        return $depthName;
+    }
 }
