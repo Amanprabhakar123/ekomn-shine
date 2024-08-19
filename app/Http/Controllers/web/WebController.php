@@ -110,7 +110,7 @@ class WebController extends Controller
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
-            $sortByStatus = (int) $request->input('status', 1); // Default status filter
+            $sortByStatus = (int) $request->input('status', 0); // Default status filter
 
             // Define allowed sort fields to prevent SQL injection
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
@@ -189,6 +189,22 @@ class WebController extends Controller
                 $minimumStock = (int) $minimumStock;
                 if ($minimumStock > 0) {
                     $productVariations = $productVariations->where('stock', '>=', $minimumStock);
+                }
+            }
+
+            if ($sortByStatus > 0) {
+                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('stock', 'desc');
+                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('stock', 'asc');
+                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
+                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
+                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
+                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
                 }
             }
             // Apply sorting and pagination
@@ -454,7 +470,7 @@ class WebController extends Controller
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field is 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction is 'desc'
-            $sortByStatus = (int) $request->input('status', 1); // Default status filter
+            $sortByStatus = (int) $request->input('status', 0); // Default status filter
 
             // Define allowed fields for sorting to prevent SQL injection
             $allowedSorts = ['type', 'sku', 'title', 'description', 'created_at', 'status'];
@@ -532,6 +548,22 @@ class WebController extends Controller
                 }
             }
 
+            if ($sortByStatus > 0) {
+                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('stock', 'desc');
+                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('stock', 'asc');
+                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
+                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
+                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
+                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
+                }
+            }
+
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
                 ->paginate($perPage);
@@ -587,7 +619,7 @@ class WebController extends Controller
             $searchTerm = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort field is 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction is 'desc'
-            $sortByStatus = (int) $request->input('status', 1); // Default status filter
+            $sortByStatus = (int) $request->input('status', 0); // Default status filter
 
             // Define allowed fields for sorting to prevent SQL injection
             $allowedSorts = ['type', 'sku', 'title', 'description', 'created_at', 'status'];
@@ -666,6 +698,22 @@ class WebController extends Controller
                 }
             }
 
+            if ($sortByStatus > 0) {
+                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('stock', 'desc');
+                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('stock', 'asc');
+                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
+                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                    $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
+                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
+                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                    $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
+                }
+            }
+            
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
                 ->paginate($perPage);
