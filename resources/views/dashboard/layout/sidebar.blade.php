@@ -196,7 +196,7 @@
                     @if (auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY))
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('category.list') }}">
-                                <span class="nav-link-text">Top Categories</span>
+                                <span class="nav-link-text">Featured Categories</span>
                             </a>
                         </li>
                     @endif

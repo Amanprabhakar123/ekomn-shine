@@ -83,8 +83,14 @@
                                 <a href="{{ route('buyer.login') }}" type="button" class="btn filterbtn"><i
                                         class="fas fa-download fs-13 me-2"></i>Download</a>
                             @endif
-                            <select class="filterSelect ms-auto">
-                                <option value="">Sort By Most Relevent</option>
+                            <select class="filterSelect ms-auto" id ="product-sorting">
+                                <option value="0">Sort By Relevence</option>
+                                <option value="{{SORTING_STOCK_HIGH_TO_LOW}}">Stock - High to Low</option>
+                                <option value="{{SORTING_STOCK_LOW_TO_HIGH}}">Stock - Low to High</option>
+                                <option value="{{SORTING_PRICE_HIGH_TO_LOW}}">Price - High to Low</option>
+                                <option value="{{SORTING_PRICE_LOW_TO_HIGH}}">Price - Low to High</option>
+                                <option value="{{SORTING_REGULAR_AVAILABLE}}">Regular Available</option>
+                                <option value="{{SORTING_TILL_STOCK_LAST}}">Till Stock Last</option>
                             </select>
                         </div>
                     </div>
@@ -118,6 +124,7 @@
         let min = '';
         let max = '';
         let minimumStk = '';
+        let productSorting = '';
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -247,6 +254,7 @@
             if (priceRange) apiUrl += `${priceRange}&`;
             if (minimumStock) apiUrl += `${minimumStock}&`;
             if (maximumStock) apiUrl += `${maximumStock}`;
+            if (productSorting) apiUrl += `&status=${productSorting}`;
 
             // Make API request and handle the response
             ApiRequest(apiUrl, 'GET')
@@ -512,6 +520,14 @@
 
                 });
 
+        });
+
+        // onchange event for sorting
+        $('#product-sorting').on('change', function() {
+            productSorting = $(this).val();
+            page = 1;
+            html = '';
+            fetchData();
         });
     </script>
 @endsection

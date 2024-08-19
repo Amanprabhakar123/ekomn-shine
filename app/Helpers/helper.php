@@ -50,6 +50,14 @@ const MEDIA_TYPE_VIDEO = ProductVariationMedia::MEDIA_TYPE_VIDEO;
 const IS_MASTER_TRUE = ProductVariationMedia::IS_MASTER_TRUE;
 const IS_MASTER_FALSE = ProductVariationMedia::IS_MASTER_FALSE;
 
+// Product Inventory Sorting Status
+const SORTING_STOCK_HIGH_TO_LOW = 1;
+const SORTING_STOCK_LOW_TO_HIGH = 2;
+const SORTING_PRICE_HIGH_TO_LOW = 3;
+const SORTING_PRICE_LOW_TO_HIGH = 4;
+const SORTING_REGULAR_AVAILABLE = 5;
+const SORTING_TILL_STOCK_LAST = 6;
+
 /**
  * Encrypts a string using a salt key.
  *

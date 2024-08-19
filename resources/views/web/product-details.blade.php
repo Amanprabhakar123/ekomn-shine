@@ -249,7 +249,7 @@
                                                 <td>Product Dimensions</td>
                                                 <td>{{ $productVariations->length ?? 0 }} L x
                                                     {{ $productVariations->width ?? 0 }} W x
-                                                    {{ $productVariations->height ?? 0 }}
+                                                    {{ $productVariations->height ?? 0 }} H 
                                                     {{ $productVariations->dimension_class }} </td>
                                             </tr>
                                             <tr>

@@ -97,15 +97,15 @@
     </div>
     <div class="bottom_header">
         <ul class="b_h_list">
-            <li><a href="{{ route('product.type', 'regular-available') }}" class="active">Regular Available</a></li>
-            <li><a href="{{ route('product.type', 'in-demand') }}">In Demand</a></li>
-            <li><a href="{{ route('product.type', 'premium') }}">Premium Products</a></li>
-            <li><a href="{{ route('product.type', 'new-arrivals') }}">New Arrivals</a></li>
+            <li><a href="{{ route('product.type', 'regular-available') }}" class="{{(str_contains(Request::path(), 'regular-available')) ? 'active' : ''}}">Regular Available</a></li>
+            <li><a href="{{ route('product.type', 'in-demand') }}" class="{{(str_contains(Request::path(), 'in-demand')) ? 'active' : ''}}">In Demand</a></li>
+            <li><a href="{{ route('product.type', 'premium') }}" class="{{(str_contains(Request::path(), 'premium')) ? 'active' : ''}}">Premium Products</a></li>
+            <li><a href="{{ route('product.type', 'new-arrivals') }}" class="{{(str_contains(Request::path(), 'new-arrivals')) ? 'active' : ''}}">New Arrivals</a></li>
 
             @if (str_contains(Request::path(), 'category'))
-                <li><a href="javascript:void(0)" onclick="viewAll();">View All</a></li>
+                <li><a href="javascript:void(0)" onclick="viewAll();" class="{{(str_contains(Request::path(), 'all')) ? 'active' : ''}}">View All</a></li>
             @else
-                <li><a href="{{ route('product.category', 'all') }}">View All</a></li>
+                <li><a href="{{ route('product.category', 'all') }}" class="{{(str_contains(Request::path(), 'all')) ? 'active' : ''}}">View All</a></li>
             @endif
         </ul>
     </div>

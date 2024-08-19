@@ -219,6 +219,7 @@ class CategoryService
                 'categories' => $categories,
                 'category' => $category->slug,
                 'productIds' => $productIds,
+                'category_id' => $category->id,
             ];
 
             // Return the category data
