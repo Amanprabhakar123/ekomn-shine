@@ -23,8 +23,8 @@
                         <div class="ek_f_input">
                             <label for="category">Product type</label>
                             <select class="form-select" class="number" id="product-type"
-                                aria-placeholder="Select PRoduct Type">
-                                <option value="" selected>Select State</option>
+                                aria-placeholder="Select Product Type">
+                                <option value="" selected>Select Product Type</option>
                             </select>
                             <div id="productTypeErr" class="invalid-feedback"></div>
                         </div>
@@ -95,7 +95,7 @@
                         // Initialize Select2 with options
                         $('#product-type').select2({
                             data: keyValue,
-                            placeholder: 'Select a category',
+                            placeholder: 'Select a product type',
                             allowClear: true
                         });
                     }
