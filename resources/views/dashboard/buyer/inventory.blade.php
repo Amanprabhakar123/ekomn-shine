@@ -347,7 +347,7 @@
                 <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${item.selling_price}</div>
             </td>
             <td>
-                <div>${item.product_category}</div>
+                <div class="productTitle_t">${item.product_category}</div>
             </td>
             <td>
                 <div>${item.availability_status}</div>

@@ -11,6 +11,7 @@ use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Models\ProductKeyword;
+use App\Models\ProductMatrics;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Services\CategoryService;
@@ -63,7 +64,12 @@ class WebController extends Controller
      */
     public function productDetails($slug)
     {
-        $productVariations = ProductVariation::where('slug', $slug)->with('media', 'company', 'product')->with('product.features')->first();
+        $productVariations = ProductVariation::where('slug', $slug)
+        ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
+        ->with('media', 'company', 'product')->with('product.features')->first();
+        if(!$productVariations){
+            abort(404);
+        }
         $colors = ProductVariation::colorVariation($productVariations->product_id);
         $sizes = ProductVariation::sizeVariation($productVariations->product_id, $productVariations->color);
         $shippingRatesTier = json_decode($productVariations->tier_shipping_rate, true);
@@ -120,6 +126,12 @@ class WebController extends Controller
                 if ($categoryDetails['status'] === true) {
                     $product_ids = $categoryDetails['result']['productIds'];
                     $categorySlug = $categoryDetails['result']['category'];
+                    $category_id = $categoryDetails['result']['category_id'];
+                }
+
+                $topCategory = TopCategory::where('category_id', $category_id)->with('topProduct')->first();
+                if ($topCategory) {
+                    $product_ids->merge($topCategory->topProduct->pluck('product_id'));
                 }
 
                 // Query for product variations
@@ -456,6 +468,23 @@ class WebController extends Controller
             // Fetch products of the determined type
             $product_ids = TopProduct::where('type', $productType)->pluck('product_id');
 
+            // Query for product variations based on status and product IDs
+            if($productType == TopProduct::TYPE_NEW_ARRIVAL){
+                $product_ids = ProductVariation::where('created_at', '>=', Carbon::now()->subDays(30))->pluck('id');
+            }
+
+            // Query for product variations based on status and product IDs
+            if($productType == TopProduct::TYPE_REGULAR_AVAILABLE){
+                $product_ids = ProductVariation::where('availability_status', ProductVariation::REGULAR_AVAILABLE)->pluck('id');
+            }
+            
+            if($productType == TopProduct::TYPE_IN_DEMAND){
+                $product_ids = ProductMatrics::orderBy('purchase_count', 'desc')
+                ->orderBy('buy_now_or_add_to_cart_count', 'desc')
+                ->orderBy('add_to_inventory_count', 'desc')
+                ->orderBy('view_count', 'desc')
+                ->pluck('product_id');
+            }
             // Query for product variations based on status and product IDs
             if ($type !== '') {
                 $productVariations = ProductVariation::whereIn('status', [
