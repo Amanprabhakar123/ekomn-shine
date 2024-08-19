@@ -35,7 +35,9 @@
                     <button type="button" id="btnSubmit" class="btn btn-login btnekomn card_f_btn"
                         id="generaltab">Submit</button>
                 </div>
-                <table class="normalTable tableSorting whitespace mt-5">
+                <div class="table-responsive tres_border mt-5">
+
+                <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -47,6 +49,7 @@
                         <!--  Data display here Dynamic -->
                     </tbody>
                 </table>
+                </div>
             </div>
 
         </div>
@@ -82,7 +85,6 @@
 
 
                         let keyValue = entries.map(([key, value]) => {
-                            console.log(key, value);
                             return {
                                 id: key,
                                 text: value
@@ -166,7 +168,6 @@
                             `);
                         }
                         data.forEach((item) => {
-                            console.log(item);
                             // const productTitles = item.product.map(p => `<li><a href="${p.slug}" class="text_u">${p.title.trim()}</a></li><br>`).join('');
                             $('tbody').append(`
                                 <tr>
