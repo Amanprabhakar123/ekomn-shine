@@ -295,9 +295,11 @@ class ExportMisReport implements ShouldQueue
                             $loginHistory = $com->loginHistory->first();
                             isset($loginHistory) ? $loginHistory = $loginHistory->last_login : $loginHistory = '';
                             if($role && ($role == ROLE_SUPPLIER)){
+                                $fullAddress = $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+                                isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
                                     $com->getFullName(),
-                                    $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first()->getFullAddress(),
+                                    $fullAddress,
                                     $com->company_serial_id,
                                     $role,
                                     $com->gst_no,
@@ -306,9 +308,11 @@ class ExportMisReport implements ShouldQueue
                                     $loginHistory,
                                 ];
                             }elseif($role && ($role == ROLE_BUYER)){
+                                $fullAddress = $com->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
+                                isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
                                     $com->getFullName(),
-                                    $com->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first()->getFullAddress(),
+                                    $fullAddress,
                                     $com->company_serial_id,
                                     $role,
                                     $com->gst_no,
