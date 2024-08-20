@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <button type="button" class="btn btn-login btnekomn" onclick="exportMisReport('total_supplier')">Total
-                            Supplier
+                            Supplier/Buyer
                             - Export</button>
 
                     </div>
