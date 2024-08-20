@@ -287,17 +287,19 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'total_supplier') {
                 $fileName = 'MIS_TOTAL_SUPPLIER.csv';
-                $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
+                $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'User Role', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
                 CompanyDetail::with(['address', 'variations', 'products', 'loginHistory', 'user'])
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
-                            $role = $com->user->getRoleNames()->first();
-                            $loginHistory = $com->loginHistory->orderBy('last_login', 'desc')->first()->last_login ?? '';   
+                            $role = $com->user->getRoleNames()->first(); 
+                            $loginHistory = $com->loginHistory->first();
+                            isset($loginHistory) ? $loginHistory = $loginHistory->last_login : $loginHistory = '';
                             if($role && ($role == ROLE_SUPPLIER)){
                                 $csvData[] = [
                                     $com->getFullName(),
                                     $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first()->getFullAddress(),
                                     $com->company_serial_id,
+                                    $role,
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
@@ -308,6 +310,7 @@ class ExportMisReport implements ShouldQueue
                                     $com->getFullName(),
                                     $com->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first()->getFullAddress(),
                                     $com->company_serial_id,
+                                    $role,
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
