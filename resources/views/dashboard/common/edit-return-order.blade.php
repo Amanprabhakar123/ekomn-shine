@@ -15,30 +15,30 @@
                 <section class="">
                     <div class="row">
                         <div class="col-sm-12 col-md-3">
-                            <div class="ek_group">
-                                <label class="req">
-                                    <span>Return Request:<span class="req_star">*</span></span>
+                           
+                                <label class="bold">
+                                    Return Request:
                                 </label>
                                 <div class="ek_f_input">
                                     <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
                                     <div id="full_nameErr" class="invalid-feedback"></div>
                                 </div>
-                            </div>
+                            
                         </div>
                         <div class="col-sm-12 col-md-3">
-                            <div class="ek_group">
-                                <label class=" req">
+                            
+                                <label class="bold">
                                     <span>Order No:<span class="req_star">*</span></span>
                                 </label>
                                 <div class="ek_f_input">
                                     <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
                                     <div id="full_nameErr" class="invalid-feedback"></div>
                                 </div>
-                            </div>
+                            
                         </div>
                         <div class="col-sm-12 col-md-3">
-                            <div class="ek_group">
-                                <label class=" req">Courier Name:<span class="r_color">*</span></label>
+                            
+                                <label class="bold">Courier Name:<span class="r_color">*</span></label>
                                 <div class="ek_f_input">
                                     <select class="form-select" id="reason">
                                         <option value="0" selected> Select Reason </option>
@@ -52,21 +52,21 @@
                                     </select>
                                     <div id="reasonErr" class="invalid-feedback"></div>
                                 </div>
-                            </div>
+                            
                         </div>
                         <div class="col-sm-12 col-md-3">
-                            <div class="ek_group">
-                                <label class=" req">
+                            
+                                <label class="bold">
                                     <span>Tracking Number:<span class="req_star">*</span></span>
                                 </label>
                                 <div class="ek_f_input">
                                     <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
                                     <div id="full_nameErr" class="invalid-feedback"></div>
                                 </div>
-                            </div>
+                            
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mt-5">
                         
                     </div>
                     <div class="row">
@@ -215,7 +215,7 @@
                             
                         </div>
                         <div class="ek_group">
-                            <h5 class="ps-5">Amount to ret</h5><input type="text" class="border ms-5 ps-2" value="3443">
+                            <h5 class="ps-5">Amount to refund</h5><input type="text" class="border ms-5 ps-2" value="3443">
                         </div>
                     </div>
                     <div class="col-md-4">
