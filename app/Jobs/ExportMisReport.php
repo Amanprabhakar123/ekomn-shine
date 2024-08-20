@@ -2,20 +2,21 @@
 
 namespace App\Jobs;
 
-use App\Events\ExceptionEvent;
-use App\Models\CompanyDetail;
-use App\Models\CompanyPlanPayment;
 use App\Models\Order;
+use App\Models\CompanyDetail;
+use Illuminate\Bus\Queueable;
+use App\Events\ExceptionEvent;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Models\UserLoginHistory;
+use App\Models\CompanyPlanPayment;
+use Illuminate\Support\Facades\Log;
+use App\Models\CompanyAddressDetail;
 use App\Services\ExportFileServices;
-use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
@@ -287,20 +288,31 @@ class ExportMisReport implements ShouldQueue
             } elseif ($this->type === 'total_supplier') {
                 $fileName = 'MIS_TOTAL_SUPPLIER.csv';
                 $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
-                CompanyDetail::with(['address', 'variations', 'products', 'loginHistory'])
+                CompanyDetail::with(['address', 'variations', 'products', 'loginHistory', 'user'])
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
-
-                            $csvData[] = [
-                                $com->getFullName(),
-                                $com->address->where('address_type', 1)->first()->getFullAddress(),
-                                $com->company_serial_id,
-                                $com->gst_no,
-                                $com->variations->count(),
-                                $com->created_at,
-                                $com->loginHistory->latest()->first()->created_at,
-
-                            ];
+                            $role = $com->user->getRoleNames()->first();
+                            if($role && ($role == ROLE_SUPPLIER)){
+                                $csvData[] = [
+                                    $com->getFullName(),
+                                    $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first()->getFullAddress(),
+                                    $com->company_serial_id,
+                                    $com->gst_no,
+                                    $com->variations->count(),
+                                    $com->created_at,
+                                    $com->loginHistory->latest()->first()->created_at,
+                                ];
+                            }elseif($role && ($role == ROLE_BUYER)){
+                                $csvData[] = [
+                                    $com->getFullName(),
+                                    $com->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first()->getFullAddress(),
+                                    $com->company_serial_id,
+                                    $com->gst_no,
+                                    $com->variations->count(),
+                                    $com->created_at,
+                                    $com->loginHistory->latest()->first()->created_at,
+                                ];
+                            }
                         }
                     });
             } elseif ($this->type === 'total_active_buyer') {
@@ -324,7 +336,6 @@ class ExportMisReport implements ShouldQueue
                         }
                     });
             }
-
             // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportFileServices;
             $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email, $this->type);

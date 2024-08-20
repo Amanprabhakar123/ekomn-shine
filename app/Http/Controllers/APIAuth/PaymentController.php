@@ -273,7 +273,7 @@ class PaymentController extends Controller
                 'state' => $user->state,
                 'city' => $user->city,
                 'pincode' => $user->pin_code,
-                'address_type' => CompanyAddressDetail::TYPE_SHIPPING_ADDRESS,
+                'address_type' => CompanyAddressDetail::TYPE_DELIVERY_ADDRESS,
                 'is_primary' => true,
             ]);
 
