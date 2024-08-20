@@ -292,6 +292,7 @@ class ExportMisReport implements ShouldQueue
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
                             $role = $com->user->getRoleNames()->first();
+                            $loginHistory = $com->loginHistory->orderBy('last_login', 'desc')->first()->last_login ?? '';   
                             if($role && ($role == ROLE_SUPPLIER)){
                                 $csvData[] = [
                                     $com->getFullName(),
@@ -300,7 +301,7 @@ class ExportMisReport implements ShouldQueue
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
-                                    $com->loginHistory->latest()->first()->created_at,
+                                    $loginHistory,
                                 ];
                             }elseif($role && ($role == ROLE_BUYER)){
                                 $csvData[] = [
@@ -310,7 +311,7 @@ class ExportMisReport implements ShouldQueue
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
-                                    $com->loginHistory->latest()->first()->created_at,
+                                    $loginHistory,
                                 ];
                             }
                         }
