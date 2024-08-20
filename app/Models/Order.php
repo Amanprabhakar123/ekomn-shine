@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\FeedBack;
 use App\Models\Shipment;
 use App\Models\OrderRefund;
+use App\Models\ReturnOrder;
 use App\Models\OrderAddress;
 use App\Models\OrderInvoice;
 use App\Models\OrderPayment;
@@ -406,6 +407,16 @@ class Order extends Model
     public function feedBack()
     {
         return $this->hasOne(FeedBack::class, 'order_id', 'id');
+    }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    public function returnOrder()
+    {
+        return $this->hasOne(ReturnOrder::class, 'order_id', 'id');
     }
 
     /**
