@@ -7,7 +7,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class ReturnOrder extends Seeder
+class ReturnOrderSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,10 +17,8 @@ class ReturnOrder extends Seeder
         Permission::create(['name' => PERMISSION_CREATE_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_LIST_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_EDITE_RETURN_ORDER]);
-
-        
       
-              // assign permission to admin role
+        // assign permission to admin role
         $role = Role::findByName(ROLE_BUYER);
         $role->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
         $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);

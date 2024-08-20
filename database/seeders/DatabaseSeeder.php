@@ -9,6 +9,7 @@ use App\Models\EkomnDetails;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\CourierList;
+use Database\Seeders\ReturnOrderSeeder;
 use Database\Seeders\AddTDSCharges;
 use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AddTDSCharges::class);
         $this->call(MisAdminPermission::class);
         $this->call(EkomnDetails::class);
+        $this->call(ReturnOrderSeeder::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);
