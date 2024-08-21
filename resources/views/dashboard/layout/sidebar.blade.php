@@ -79,6 +79,7 @@
                 </ul>
             </li>
 
+            @if (auth()->user()->hasPermissionTo(PERMISSION_LIST_RETURN_ORDER))
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Return"
                     data-bs-parent="#dashboard_ekomn" id="components">
@@ -87,18 +88,24 @@
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
                 <ul class="sidenav-second-level collapse" id="Return" data-bs-parent="#dashboard_ekomn">
-
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_CREATE_RETURN_ORDER))
                     <li>
                         <a class="nav-link" href="{{route('create.return.order')}}">Create Retrun Order</a>
                     </li>
+                    @endif
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_LIST_RETURN_ORDER))
                     <li>
                         <a class="nav-link" href="{{route('list.return.order')}}">List Return Order</a>
                     </li>
+                    @endif
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_EDIT_RETURN_ORDER))
                     <li>
                         <a class="nav-link" href="{{route('edit.return.order')}}">Edit Return Order</a>
                     </li>
+                    @endif
                 </ul>
             </li>
+            @endif
             @if (auth()->user()->hasPermissionTo(PERMISSION_PAYMENT_LIST))
                 <li class="nav-item">
                     <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#payment"
