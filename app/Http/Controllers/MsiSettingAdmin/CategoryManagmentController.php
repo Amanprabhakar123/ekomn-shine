@@ -54,18 +54,25 @@ class CategoryManagmentController extends Controller
         try {
             $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
+            $sort_by_status = $request->input('sort_by_status', null);
             //
             if($search){
-                $categories = Category::query()->where('name', 'like', '%' . $search . '%')
+                $categories = Category::with('parent')->query()->where('name', 'like', '%' . $search . '%')
+                
                 ->where('id', '!=', 1)
-                ->orderBy('id', 'desc')
-                ->paginate($perPage);
+                ->orderBy('id', 'desc');
             }else{
                 $categories = Category::query()
                 ->where('id', '!=', 1)
-                ->orderBy('id', 'desc')
-                ->paginate($perPage);
+                ->orderBy('id', 'desc');
             }
+
+            if(!is_null($sort_by_status)){
+                $categories = $categories->where('depth', $sort_by_status)
+                ->where('id', '!=', 1)
+                ->orderBy('id', 'desc');
+            }
+            $categories = $categories->paginate($perPage);
             $resource = new Collection($categories, new CategoryManagementTransformer);
 
             $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($categories));
@@ -79,7 +86,6 @@ class CategoryManagmentController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 

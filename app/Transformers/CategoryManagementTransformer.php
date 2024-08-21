@@ -17,6 +17,7 @@ class CategoryManagementTransformer extends TransformerAbstract
     public function transform(Category $category)
     {
         try {
+            
             $data = [
                 'id' => salt_encrypt($category->id),
                 'name' => $category->name,
@@ -27,6 +28,18 @@ class CategoryManagementTransformer extends TransformerAbstract
                 'created_at' => $category->created_at->toDateTimeString(),
                 'updated_at' => $category->updated_at->toDateTimeString(),
             ];
+            if($category->depth == 0){
+                $data['parent'] = 'Main Category';
+            }
+            if($category->depth == 1){
+                $data['parent'] = $category->parent->name.' < '.$category->name;
+            }
+            if($category->depth == 2){
+                $data['parent'] = $category->parent->parent->name.' < '.$category->parent->name.' < '.$category->name;
+            }
+            if($category->depth == 3){
+                $data['parent'] = $category->parent->parent->name.' < '.$category->parent->name.' < '.$category->name;
+            }
             return $data;
         } catch (\Exception $e) {
             Log::error('Error in CategoryManagementTransform: ' . $e->getMessage());
