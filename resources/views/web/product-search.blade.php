@@ -84,7 +84,7 @@
                                     class="fas fa-download fs-13 me-2"></i>Download</a>
                             @endif
                             <select class="filterSelect ms-auto" id ="product-sorting">
-                                <option value="0">Sort By Relevence</option>
+                                <option value="0">Sort By Relevance</option>
                                 <option value="{{SORTING_STOCK_HIGH_TO_LOW}}">Stock - High to Low</option>
                                 <option value="{{SORTING_STOCK_LOW_TO_HIGH}}">Stock - Low to High</option>
                                 <option value="{{SORTING_PRICE_HIGH_TO_LOW}}">Price - High to Low</option>

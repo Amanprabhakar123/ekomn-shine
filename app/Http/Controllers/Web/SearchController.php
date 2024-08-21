@@ -166,6 +166,13 @@ class SearchController extends Controller
                             'field' => 'title_suggest',
                             'size'  => 10
                         ]
+                    ],
+                    'sku_suggest' => [
+                        'prefix'    => $query, // Your search term here
+                        'completion' => [
+                            'field' => 'sku_suggest',
+                            'size'  => 10
+                        ]
                     ]
                 ]
             ]
@@ -181,7 +188,8 @@ class SearchController extends Controller
                 // List of suggestion keys to process
                 $suggestionKeys = [
                     'keywords_suggest',
-                    'title_suggest'
+                    'title_suggest',
+                    'sku_suggest'
                 ];
                 
                 // Extract suggestions for each key
@@ -189,10 +197,12 @@ class SearchController extends Controller
                     // Check if the suggestion exists and extract text from each suggestion
                     if (isset($results['suggest'][$key][0]['options'])) {
                         $suggestions[] = array_map(function ($item) use ($key) {
-                                if ($key == 'keywords_suggest') {
+                            if ($key == 'keywords_suggest') {
                                 return ['url' => url('/').'/search?q=keyword&term=' . $item['_source']['keyword'], 'text' =>  $item['text']];
                             }elseif($key == 'title_suggest'){
                                 return ['url' => url('/').'/search?q=title&term=' . $item['text'], 'text' =>  $item['_source']['title']];
+                            }else{
+                                return ['url' => url('/').'/search?q=keyword&term=' . $item['_source']['sku'], 'text' =>  $item['text']];
                             }
                         }, $results['suggest'][$key][0]['options']);
                     }
