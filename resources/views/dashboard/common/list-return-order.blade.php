@@ -7,7 +7,7 @@
             <div class="cardhead">
                 <h3 class="cardtitle">Courier List</h3>
             </div>
-            <div class="table-responsive tres_border">
+            
             <div class="tableTop mt10">
                         <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name"
                             class="form-control w_300_f searchicon" placeholder="Search">
@@ -29,6 +29,8 @@
 
                     </div>
 
+
+                    <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
@@ -55,6 +57,22 @@
                     </tbody>
                 </table>
             </div>
+            <div class="ek_pagination">
+                        <span class="row_select rowcount" id="rowInfo"></span>
+                        <div class="pager_box">
+                            <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
+                            <ul class="pager_" id="pagination"></ul>
+                            <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="row_select jumper">Go to
+                            <select id="rowsPerPage">
+                                <option value="10" selected>10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                            </select>
+                        </div>
+                    </div>
         </div>
     </div>
     @include('dashboard.layout.copyright')
