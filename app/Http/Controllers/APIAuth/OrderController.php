@@ -541,9 +541,10 @@ class OrderController extends Controller
                 $orderList = $orderList->where('orders.supplier_id', auth()->user()->id);
                 $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
             } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+                $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
                 $orderList = $orderList->where('buyer_id', auth()->user()->id);
             } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
-                $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
+                // $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
             }
 
             if ($sort == 'quantity') {

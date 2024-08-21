@@ -254,8 +254,13 @@ function successResponse(?int $id = null, ?array $data = null): JsonResponse
  */
 function generateCompanySerialId($id, $type)
 {
+    $company_serial_id = $type.mt_rand(100000, 999999);
+        while (CompanyDetail::where('company_serial_id', $company_serial_id)->exists()) {
+            $company_serial_id = $type.mt_rand(100000, 999999);
+        }
     // Format the new supplier ID with leading zeros and 's' prefix
-    return $type.str_pad($id, 6, '0', STR_PAD_LEFT);
+    // return $type.str_pad($id, 6, '0', STR_PAD_LEFT);
+    return $company_serial_id;
 }
 
 /**

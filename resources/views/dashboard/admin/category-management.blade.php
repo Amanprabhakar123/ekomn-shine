@@ -9,20 +9,20 @@
                 </div>
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-                <!-- <div class="filter">
+                <div class="filter">
                     <div class="ek_group m-0">
                          <label class="eklabel w_50_f">Sort by:</label>
                         <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
-                                <option value="0">Select</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                                <option value="3">Out of Stock</option>
-                                <option value="4">Draft</option>
+                                <option value="">Select</option>
+                                <option value="0">Parent Category</option>
+                                <option value="1">Sub Category</option>
+                                <option value="2">Child Category</option>
+                                <option value="3">Keyword</option>
                             </select>
                         </div>
                     </div>
-                </div> -->
+                </div>
             </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable whitespace">
@@ -31,6 +31,7 @@
                             <th class="">Name
                                 
                             </th>
+                            <th>Relation</th>
                             <th class="">Slug
                                 
                             </th>
@@ -95,6 +96,11 @@
             }
         });
 
+        const sortByStatus = document.getElementById("sort_by_status");
+            sortByStatus.addEventListener("change", () => {
+                fetchData();
+            });
+
         // Event listener for clicking outside the search input field
         searchQuery.addEventListener("blur", (e) => {
             fetchData();
@@ -106,6 +112,10 @@
 
             if (searchQuery) {
             apiUrl += `&query=${searchQuery.value}`;
+
+            if (sortByStatus) {
+                    apiUrl += `&sort_by_status=${sortByStatus.value}`;
+                }
             }
 
 
@@ -216,6 +226,9 @@
             return `
                 <tr>
                     <td>${item.name}</td>
+                    <td>
+                    <div class="productTitle_t">${item.parent}</div>
+                    </td>
                     <td>${item.slug}</td>
                     <td>${item.depth}</td>
                     <td>

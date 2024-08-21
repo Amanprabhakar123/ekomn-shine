@@ -115,6 +115,8 @@ class IndexProducts extends Command
                             'keyword_suggest' => ['type' => 'completion'],
                             'title' => ['type' => 'text'],
                             'title_suggest' => ['type' => 'completion'],
+                            'sku' => ['type' => 'text'],
+                            'sku_suggest' => ['type' => 'completion'],
                         ],
                     ],
                 ],
@@ -177,6 +179,10 @@ class IndexProducts extends Command
                             'title' => $title,
                             'title_suggest' => [
                                 'input' => $title
+                            ],
+                            'sku'   => $variation->sku,
+                            'sku_suggest' => [
+                                'input' => $variation->sku
                             ],
                         ];
                         $parameter = [
