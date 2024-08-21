@@ -634,11 +634,17 @@ class WebController extends Controller
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
                 });
-                    $keyword = str_replace('-', ' ', $keyword);
-                    ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
-                    ->map(function ($item) use (&$product_ids) {
+                // SKU search
+                ProductVariation::where('sku', 'like', '%' . $keyword . '%')->get()
+                ->map(function ($item) use (&$product_ids) {
                     $product_ids[] = $item->id;
                 });
+                $keyword = str_replace('-', ' ', $keyword);
+                ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
+                ->map(function ($item) use (&$product_ids) {
+                $product_ids[] = $item->id;
+                });
+               
             }else{
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
@@ -649,6 +655,11 @@ class WebController extends Controller
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
+                });
+                // SKU search
+                ProductVariation::where('sku', 'like', '%' . $keyword . '%')->get()
+                ->map(function ($item) use (&$product_ids) {
+                    $product_ids[] = $item->id;
                 });
             }
             
