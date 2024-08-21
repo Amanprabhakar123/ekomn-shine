@@ -9,8 +9,12 @@ use App\Models\ReturnOrder;
 use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\ReturnComment;
-use League\Fractal\Resource\Collection;
+use App\Events\ExceptionEvent;
+use App\Models\CourierDetails;
+use App\Models\ReturnShipment;
+use App\Models\SupplierPayment;
 use App\Http\Controllers\Controller;
+use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ReturnListTransformer;
 
@@ -25,7 +29,7 @@ class ReturnOrderController extends Controller
         $this->fractal = $fractal;
     }
 
-    
+
     /**
      * Create a reutrn order view page 
      * 
@@ -53,7 +57,8 @@ class ReturnOrderController extends Controller
      * @param Request $request
      * @return view
      */
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         if (! auth()->user()->hasPermissionTo(User::PERMISSION_CREATE_RETURN_ORDER)) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
@@ -87,7 +92,7 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
-        if($order->isRTO()){
+        if ($order->isRTO()) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -95,42 +100,41 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
-        if($order->isDispatched() && $request->reason == 1){
+        if ($order->isDispatched() && $request->reason == 1) {
             return $this->createReturnRequest($request, $order);
-        }else if( $order->isDelivered()){
+        } else if ($order->isDelivered()) {
             $shipments = $order->shipments()->first();
-            if($shipments){
+            if ($shipments) {
                 $delivery_date = $shipments->delivery_date;
-            }else{
+            } else {
                 $delivery_date = '';
             }
-            if(isset($delivery_date) && !empty($delivery_date)){
+            if (isset($delivery_date) && !empty($delivery_date)) {
                 // add two days to delivery date
-               $delivery_date = Carbon::parse($delivery_date)->addDays(2);
-               if($delivery_date->toDateTimeString() >= now()->toDateTimeString()){
+                $delivery_date = Carbon::parse($delivery_date)->addDays(2);
+                if ($delivery_date->toDateTimeString() >= now()->toDateTimeString()) {
                     return $this->createReturnRequest($request, $order);
-               }else{
+                } else {
                     return response()->json(['data' => [
                         'statusCode' => __('statusCode.statusCode422'),
                         'status' => __('statusCode.status422'),
                         'message' => __('auth.returnAllowed'),
                     ]], __('statusCode.statusCode200'));
-               }
-            }else{
+                }
+            } else {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
                     'message' => __('auth.orderNotDelivered'),
                 ]], __('statusCode.statusCode200'));
             }
-        }else{
+        } else {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
                 'message' => __('auth.returnAllowed'),
             ]], __('statusCode.statusCode200'));
         }
-
     }
 
     /**
@@ -139,49 +143,58 @@ class ReturnOrderController extends Controller
      * @param Request $request
      * @return view
      */
-    protected function createReturnRequest($request, $order){
+    protected function createReturnRequest($request, $order)
+    {
         try {
             $ext_img_array = ['png', 'jpeg', 'jpg', 'webp'];
             $ext_video_array = ['mp4'];
-           // Upload Images first
-           $media = [];
-           foreach ($request->media as $key => $file) {
-               $filename = $file->getClientOriginalName();
-               $extension = $file->getClientOriginalExtension();
-                if (in_array($extension, $ext_img_array) ){
+            // Upload Images first
+            $media = [];
+            foreach ($request->media as $key => $file) {
+                $filename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                if (in_array($extension, $ext_img_array)) {
                     $media_type = 'image';
-                    $media[$media_type][] = storage('return_order', file_get_contents($file), [$request->order_number], 'return_order_' . $filename, 'public');
-                }else if(in_array($extension, $ext_video_array)){
+                    $path = storage('return_order', file_get_contents($file), [$request->order_number], 'return_order_' . $filename, 'public');
+                    $path = str_replace('public', 'storage', $path);
+                    $media[$media_type][] = $path;
+                } else if (in_array($extension, $ext_video_array)) {
                     $media_type = 'video';
-                    $media[$media_type][] = storage('return_order', file_get_contents($file), [$request->order_number], 'return_order_' . $filename, 'public');
+                    $path = storage('return_order', file_get_contents($file), [$request->order_number], 'return_order_' . $filename, 'public');
+                    $path = str_replace('public', 'storage', $path);
+                    $media[$media_type][] = $path;
                 }
-           }
-           $returnOrder = new ReturnOrder();
-           if($request->reason == 5){
-               $reason = $request->other_reason;
-           }else{
+            }
+            $returnOrder = new ReturnOrder();
+            if ($request->reason == 5) {
+                $reason = $request->other_reason;
+            } else {
                 $reason = $returnOrder->reason($request->reason);
-           }
-           $createReturn = ReturnOrder::create([
+            }
+            $createReturn = ReturnOrder::create([
                 'order_id' => $order->id,
                 'return_number' => $request->return_number,
                 'return_date' => now(),
                 'status' => ReturnOrder::STATUS_OPEN,
                 'file_path' => json_encode($media),
                 'reason' => $reason
-           ]);
-           ReturnComment::create([
+            ]);
+            ReturnComment::create([
                 'return_id' => $createReturn->id,
                 'role_type' => User::ROLE_BUYER,
                 'comment' => $request->comment
-           ]);
-           $order->status = Order::STATUS_RTO;
-           $order->save();
-              return response()->json(['data' => [
+            ]);
+            $order->status = Order::STATUS_RTO;
+            $order->save();
+
+            // Supplier Payment Status
+            SupplierPayment::where('order_id', $order->id)
+                ->update(['payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD]);
+            return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
                 'message' => __('auth.returnOrder'),
-              ]], __('statusCode.statusCode200'));
+            ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
@@ -189,9 +202,8 @@ class ReturnOrderController extends Controller
                 'message' => $e->getMessage(),
             ]], __('statusCode.statusCode200'));
         }
-
     }
-    
+
     /**
      * Edit a return order view page 
      * 
@@ -209,39 +221,199 @@ class ReturnOrderController extends Controller
      * @param Request $request
      * @return view
      */
-    public function getReturnOrderList(Request $request){
-try {
+    public function getReturnOrderList(Request $request)
+    {
+        try {
+            $perPage = $request->input('perPage', 10);
+            $returnOrder = ReturnOrder::with('order.orderItemsCharges')->orderBy('id', 'desc');
 
-        $perPage = $request->input('perPage', 10);
-        $returnOrder = ReturnOrder::with('order.orderItemsCharges')->orderBy('id', 'desc');
-        
-        $returnOrder = $returnOrder->paginate($perPage);
-        $resource = new Collection($returnOrder, new ReturnListTransformer());
-        $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($returnOrder));
-        $data = $this->fractal->createData($resource)->toArray();
-        // dd($data);
-        return response()->json($data);
-    }
-    catch (\Exception $e) {
-        return response()->json(['data' => [
-            'statusCode' => __('statusCode.statusCode422'),
-            'status' => __('statusCode.status422'),
-            'message' => $e->getMessage(),
-        ]], __('statusCode.statusCode200'));
-        // dd($e->getMessage());
-    }
+            $returnOrder = $returnOrder->paginate($perPage);
+            $resource = new Collection($returnOrder, new ReturnListTransformer());
+            $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($returnOrder));
+            $data = $this->fractal->createData($resource)->toArray();
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
+        }
     }
 
 
-    
     /**
      * Edit a return order view page 
      * 
      * @param Request $request
      * @return view
      */
-    public function editReturnOrder(Request $request)
+    public function editReturnOrder(Request $request, $return_id)
     {
-        return view('dashboard.common.edit-return-order');
+        if (!auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
+            abort(403);
+        }
+        $returnOrder = ReturnOrder::where('id', salt_decrypt($return_id))->with('order.orderItemsCharges')->first();
+        if (!$returnOrder) {
+            abort(404);
+        }
+        if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+            if ($returnOrder->status == ReturnOrder::STATUS_OPEN) {
+                $returnOrder->status = ReturnOrder::STATUS_IN_PROGRESS;
+                $returnOrder->save();
+            }
+        }
+        $courierList = CourierDetails::orderBy('id', 'desc')->get();
+        $courier_detatils = $returnOrder->returnShipments()->first();
+        // dd($courier_detatils);
+        $attachment = json_decode($returnOrder->file_path, true);
+
+        return view('dashboard.common.edit-return-order', get_defined_vars());
+    }
+
+    /**
+     * Update a return order view page 
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function addReturnOrderComment(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'comment' => 'required|string',
+                'return_order_id' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+            $returnOrder = ReturnOrder::where('id', salt_decrypt($request->return_order_id))->first();
+            if (!$returnOrder) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.returnOrderNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+            // get login user role spatie
+            $role = auth()->user()->roles->first()->name;
+            ReturnComment::create([
+                'return_id' => $returnOrder->id,
+                'role_type' => $role,
+                'comment' => $request->comment
+            ]);
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.commentAdded'),
+            ]], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+
+    /**
+     * Update a return order view page 
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function updateReturnOrder(Request $request)
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status403'),
+                'message' => __('auth.unauthorizedAction'),
+            ]], __('statusCode.statusCode200'));
+        }
+
+        $validator = Validator::make($request->all(), [
+            'return_order_id' => 'required|string',
+            'status' => 'required|string',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $validator->errors()->first(),
+            ]], __('statusCode.statusCode200'));
+        }
+        if ($request->courier_id) {
+            $validator = Validator::make($request->all(), [
+                'courier_id' => 'required|string',
+                'tracking_number' => 'required|string',
+                'shippingDate' => 'required|string',
+                'deliveryDate' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+        }
+        $returnOrder = ReturnOrder::where('id', salt_decrypt($request->return_order_id))->first();
+        if (!$returnOrder) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.returnOrderNotFound'),
+            ]], __('statusCode.statusCode200'));
+        }
+        if ($request->courier_id) {
+            $file = $request->UploadLabel;
+            $filename = $file->getClientOriginalName();
+            $path = storage('return_shipment', file_get_contents($file), [$returnOrder->id], 'return_order_label' . $filename, 'public');
+            $path = str_replace('public', 'storage', $path);
+            ReturnShipment::create([
+                'order_id' => $returnOrder->order_id,
+                'return_id' => $returnOrder->id,
+                'courier_id' => $request->courier_id,
+                'awb_number' => $request->tracking_number,
+                'provider_name' => $request->courier_name,
+                'shipment_date' => $request->shippingDate,
+                'expected_delivery_date' => $request->deliveryDate,
+                'status' => ReturnShipment::STATUS_CREATED,
+                'file_path' => $path
+            ]);
+        }
+
+        $returnOrder->status = $request->status;
+        $returnOrder->save();
+
+        if ($request->comment) {
+            // get login user role spatie
+            $role = auth()->user()->roles->first()->name;
+            ReturnComment::create([
+                'return_id' => $returnOrder->id,
+                'role_type' => $role,
+                'comment' => $request->comment
+            ]);
+        }
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'message' => __('auth.returnOrderUpdated'),
+        ]], __('statusCode.statusCode200'));
     }
 }

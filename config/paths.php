@@ -36,4 +36,10 @@ return [
         'visibility'        => 'public',
         'assets_visibility' => 'public'
     ],
+
+    'return_shipment' =>  [
+        'path'              => 'public/app/return-shipment/%s',
+        'visibility'        => 'public',
+        'assets_visibility' => 'public'
+    ],
 ];

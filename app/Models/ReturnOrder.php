@@ -61,7 +61,7 @@ class ReturnOrder extends Model
         self::STATUS_IN_PROGRESS => 'In Progress',
         self::STATUS_ACCEPTED => 'Accepted',
         self::STATUS_APPROVED => 'Approved',
-        self::STATUS_REJECTED => 'Rejected',
+        self::STATUS_REJECTED => 'Decline',
     ];
 
     const RETURN_RESON = [
@@ -266,15 +266,5 @@ class ReturnOrder extends Model
     public function isRejected(): bool
     {
         return $this->status == self::STATUS_REJECTED;
-    }
-
-    /**
-     * Get the file path for the ReturnOrder
-     *
-     * @return string
-     */
-    public function getFilePath(){
-        $file_path = json_decode($this->file_path);
-        return $file_path;
     }
 }

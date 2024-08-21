@@ -4,7 +4,6 @@ namespace App\Transformers;
 use App\Models\ReturnOrder;
 use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
-use PhpParser\Node\Stmt\Return_;
 
 class ReturnListTransformer extends TransformerAbstract
 {
@@ -32,13 +31,15 @@ class ReturnListTransformer extends TransformerAbstract
                 "order_number" => $returnOrder->order->order_number,
                 'order_type' => $returnOrder->order->getOrderType(),
                 "return_number" => $returnOrder->return_number,
-                "return_date" => $returnOrder->return_date,
+                "return_date" => $returnOrder->return_date->toDateString(),
                 'qnty' => $quantity,
                 'reason' => $returnOrder->reason,
                 'total_amount'=> $returnOrder->order->total_amount,
                 'status' => $returnOrder->status,
                 'dispute' => $returnOrder->dispute,
-                // 'link' => route('return.order.details', salt_encrypt($returnOrder->id)),
+                'link' => route('product.details', $slug),
+                'view_return' => route('edit.return.order', salt_encrypt($returnOrder->id)),
+                'view_order' => route('view.order', salt_encrypt($returnOrder->order_id)),
             ];
         //    dd($returnOrder->order);
             return $data;

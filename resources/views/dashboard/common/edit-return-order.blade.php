@@ -8,131 +8,157 @@
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
                     <div class="text-end">
-                        <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
-                        <span class="fs-15">2024-08-16 - (2 days ago)</span>
+                        <h4 class="subheading">Last Update Activity - {{$returnOrder->status}}</h4>
+                        <span class="fs-15">{{$returnOrder->updated_at->toDateString()}} - ({{$returnOrder->updated_at->diffForHumans()}})</span>
                     </div>
                 </div>
                 <section class="">
                     <div class="row">
-                        <div class="col-sm-12 col-md-3">
-                           
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
                                 <label class="bold">
                                     Return Request:
                                 </label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
-                                    <div id="full_nameErr" class="invalid-feedback"></div>
+                                    <input type="text" class="form-control" value="{{$returnOrder->return_number}}" id="order_number" disabled />
+                                    <div id="order_numberErr" class="invalid-feedback"></div>
                                 </div>
-                            
+
+                            </div>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
                                 <label class="bold">
                                     <span>Order No:<span class="req_star">*</span></span>
                                 </label>
                                 <div class="ek_f_input">
-                                    <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
-                                    <div id="full_nameErr" class="invalid-feedback"></div>
+                                    <input type="text" class="form-control" value="{{$returnOrder->order->order_number}}" id="order_number" disabled />
+                                    <div id="order_numberErr" class="invalid-feedback"></div>
                                 </div>
-                            
+
+                            </div>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
                                 <label class="bold">Courier Name:<span class="r_color">*</span></label>
                                 <div class="ek_f_input">
-                                    <select class="form-select" id="reason">
-                                        <option value="0" selected> Select Reason </option>
-                                        <option value="1">
-                                            Product Not Delivered </option>
-                                        <option value="2"> Defective Product </option>
-                                        <option value="3"> Incorrect Quantity Delivered </option>
-                                        <option value="4"> Wrong product Delivered </option>
-                                        <option value="5"> Other </option>
-
+                                    @isset($courier_detatils)
+                                    <select class="form-select" id="courier_id" disabled>
+                                        <option value="">Select Courier</option>
+                                        @if($courierList->isNotEmpty())
+                                        @foreach($courierList as $courier)
+                                        <option value="{{$courier->id}}" @if($courier_detatils->courier_id == $courier->id) selected @endif>{{$courier->courier_name}}</option>
+                                        @endforeach
+                                        @endif
                                     </select>
+                                    @else
+                                    <select class="form-select" id="courier_id">
+                                        <option value="">Select Courier</option>
+                                        @if($courierList->isNotEmpty())
+                                        @foreach($courierList as $courier)
+                                        <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                    @endif
                                     <div id="reasonErr" class="invalid-feedback"></div>
                                 </div>
-                            
+
+                            </div>
                         </div>
-                        <div class="col-sm-12 col-md-3">
-                            
-                                <label class="bold">
-                                    <span>Tracking Number:<span class="req_star">*</span></span>
-                                </label>
-                                <div class="ek_f_input">
-                                    <input type="text" class="form-control" value="EK1050IND" id="full_name" disabled />
-                                    <div id="full_nameErr" class="invalid-feedback"></div>
-                                </div>
-                            
+                        <div class="col-sm-4 col-md-2">
+                            <div class="mt10">
+                                <label class="bold">Traking No</label>
+                                @isset($courier_detatils)
+                                <input type="text" class="form-control" placeholder="Enter Traking No"
+                                    value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                @else
+                                <input type="text" class="form-control" placeholder="Enter Traking No"
+                                    value="" id="trackingNo" name="trackingNo">
+                                @endif
+                            </div>
+                            <p id="error_tracking"></p>
                         </div>
+                        @isset($courier_detatils)
+                        <div class="col-sm-4 col-md-2" id="show_courier">
+                            <div class="mt10">
+                                <label class="bold">Other Courier Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                    id="courierName" name="courierName" value="{{$courier_detatils->provider_name}}" disabled>
+                            </div>
+                            <p id="error_courier_text"></p>
+                        </div>
+                        @else
+                        <div class="col-sm-4 col-md-2" id="show_courier">
+                            <div class="mt10">
+                                <label class="bold">Other Courier Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                    id="courierName" name="courierName">
+                            </div>
+                            <p id="error_courier_text"></p>
+                        </div>
+                        @endif
+                        <div class="col-sm-4 col-md-2">
+                        <div class="mt10">
+                            <label class="bold">Shipping Date</label>
+                            @isset($courier_detatils)
+                            <input type="date" class="form-control" id="shippingDate"
+                            name="shippingDate" value="{{$courier_detatils->shipment_date->toDateString()}}" disabled>
+                            @else
+                            <input type="date" class="form-control" id="shippingDate"
+                                name="shippingDate">
+                            @endif
+
+                        </div>
+                        <p id="error_shipping_date"></p>
+
+                    </div>
+                    <div class="col-sm-4 col-md-2">
+                        <div class="mt10">
+                            <label class="bold">Delivery Date</label>
+                            @isset($courier_detatils)
+                            <input type="date" class="form-control"  value="{{$courier_detatils->expected_delivery_date->toDateString()}}" id="deliveryDate" value=""
+                                name="deliveryDate" disabled>
+                            @else
+                            <input type="date" class="form-control" id="deliveryDate"
+                            name="deliveryDate">
+                            @endif
+                        </div>
+                        <p id="error_delhivery_date"></p>
+
+                    </div>
                     </div>
                     <div class="row mt-5">
-                        
+
                     </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-4">
                             <div class="ek_group">
-                                <label class="eklabel req">Order:<span class="r_color">*</span></label>
+                                <label class="eklabel req">Cancellation Reason:<span class="r_color">*</span></label>
                                 <div class="ek_f_input">
-                                    <select class="form-select" id="reason">
-                                        <option value="0" selected> Select Reason </option>
-                                        <option value="1">
-                                            Product Not Delivered </option>
-                                        <option value="2"> Defective Product </option>
-                                        <option value="3"> Incorrect Quantity Delivered </option>
-                                        <option value="4"> Wrong product Delivered </option>
-                                        <option value="5"> Other </option>
-
+                                    <select class="form-select" id="reason" disabled>
+                                        <option value="{{$returnOrder->reason}}" selected> {{$returnOrder->reason}} </option>
                                     </select>
                                     <div id="reasonErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4" id="other" style="display: none;">
-                            <input type="text" class="form-control" value="" placeholder="Write your reason......" id="otherReason" />
-                            <div id="otherReasonErr" class="invalid-feedback"></div>
-                        </div>
                     </div>
                 </section>
                 <div class="multi-row">Attachement:<span class="req_star">*</span>
-                    <div class="image-upload-box" id="box1-2" onclick="triggerUpload('box1-2')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box1-2')" />
-                        <img id="img-box1-2" src="#" alt="Image 2" style="display: none;" />
-                        <div class="delete-icon" id="delete-box1-2" onclick="deleteImage(event, 'box1-2')">&#10006;</div>
-                        <div class="placeholdertext">
-                            <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
-                            <h6>Attachement 1</h6>
-                        </div>
+                @if(!empty($attachment))
+                    @if(!empty($attachment['image']))
+                    @foreach($attachment['image'] as $key => $attach)
+                    <div class="image-upload-box" id="box-{{$loop->index+1}}" >
+                        <img id="img-box-{{$loop->index+1}}" src="{{asset($attach)}}" alt="Image" />
                     </div>
-                    <div class="image-upload-box" id="box1-3" onclick="triggerUpload('box1-3')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box1-3')" />
-                        <img id="img-box1-3" src="#" alt="Image 3" style="display: none;" />
-                        <div class="delete-icon" id="delete-box1-3" onclick="deleteImage(event, 'box1-3')">&#10006;</div>
-                        <div class="placeholdertext">
-                            <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
-                            <h6>Attachement 2</h6>
-                        </div>
-                    </div>
-                    <div class="image-upload-box" id="box1-4" onclick="triggerUpload('box1-4')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box1-4')" />
-                        <img id="img-box1-4" src="#" alt="Image 4" style="display: none;" />
-                        <div class="delete-icon" id="delete-box1-4" onclick="deleteImage(event, 'box1-4')">&#10006;</div>
-                        <div class="placeholdertext">
-                            <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
-                            <h6>Attachement 3</h6>
-                        </div>
-                    </div>
-
-
-                    <div class="image-upload-box" id="box1-9" onclick="triggerUpload('box1-9')">
-                        <input type="file" accept="image/*" onchange="previewImage(event, 'box1-9')" />
-                        <img id="img-box1-9" src="#" alt="Image" style="display: none;" />
-                        <div class="delete-icon" id="delete-box1-9" onclick="deleteImage(event, 'box1-9')">&#10006;</div>
-                        <div class="placeholdertext">
-                            <img src="{{asset('assets/images/icon/placeholder-img-1.png')}}" />
-                            <h6>Attachement 4</h6>
-                        </div>
-                    </div>
+                    @endforeach
+                    @endif
+                    @if(!empty($attachment['video']))
+                    @foreach($attachment['video'] as $key => $attach)
                     <div class="video-container">
                         <div class="video-placeholder">
                             <div style="margin: 4px 0px 2px 0px;">
@@ -143,8 +169,8 @@
                             </div>
                             <h6>Upload Video</h6>
                         </div>
-                        <video class="video-element">
-                            <source src="" class="video-source">
+                        <video class="video-element" style="display:block;">
+                        <source src="{{asset($attach)}}" class="video-source">
                         </video>
                         <div class="play-icon">
                             <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
@@ -155,6 +181,10 @@
                         <div class="delete-icon">&#10006;</div>
                         <input type="file" class="file-input" accept="video/*">
                     </div>
+                    @endforeach
+                    @endif
+                @endif
+                    
                 </div>
                 <div class="row mt-5">
                     <div class="col-sm-12 col-md-8">
@@ -165,38 +195,44 @@
                             </label>
                             <div class="ek_f_input">
                                 <div id="commnetBox" style="padding:10px">
+                                    @if($returnOrder->returnComments->isNotEmpty())
+                                    @foreach($returnOrder->returnComments as $key => $comment)
+                                    @if($comment->role_type == ROLE_BUYER)
                                     <div class="cardhead d-flex justify-content-between align-items-center">
                                         <h3 class="cardtitle">Buyer</h3>
                                         <div class="text-end">
-                                            <span class="fs-12">2024-08-16 - (2 days ago)</span>
+                                            <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
                                         </div>
                                     </div>
                                     <div style="padding-left:10px; text-align:justify;" id="cmntContr">
-                                        s simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                        It has survived not only five centuries, but also the leap into electronic typesetting,
-                                        remaining essentially unchanged.
-                                        It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-                                        and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                        {{$comment->comment}}
                                     </div>
+                                    @elseif($comment->role_type == ROLE_SUPPLIER)
                                     <hr>
                                     <div class="cardhead d-flex justify-content-between align-items-center">
-                                        <span class="fs-12">2024-08-16 - (2 days ago)</span>
+                                        <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
                                         <div class="text-end">
                                             <h4 class="cardtitle">Supplier</h4>
 
                                         </div>
                                     </div>
-                                    <div style="padding-left:10px; text-align:justify;">
-                                        s simply dummy text of the printing and typesetting industry.
-                                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-                                        when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                        It has survived not only five centuries, but also the leap into electronic typesetting,
-                                        remaining essentially unchanged.
-                                        It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-                                        and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                                    <div style="padding-left:10px; text-align:justify;" id="cmntContr">
+                                        {{$comment->comment}}
                                     </div>
+                                    @elseif($comment->role_type == ROLE_ADMIN)
+                                    <hr>
+                                    <div class="cardhead d-flex justify-content-between align-items-center">
+                                        <h3 class="cardtitle">Admin</h3>
+                                        <div class="text-end">
+                                            <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding-left:10px; text-align:justify;" id="cmntContr">
+                                        {{$comment->comment}}
+                                    </div>
+                                    @endif
+                                    @endforeach
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -204,21 +240,72 @@
                 </div>
 
                 <div class="row mt-5">
-                    <div class=" col-md-5">
+                    <div class="col-md-5">
                         <div class="ek_group">
-                            <label class="eklabel req">
-                                <span>Selcet :<span class="req_star">*</span></span>
-                            </label>
-                            <button class="btn btn-success ">Accept</button>
-                            <button class="btn btn-danger ms-2">Decline</button>
-                            <button class="btn btn-primary ms-2">Approve</button>
-                            
+                            <h5 class="ps-6">Amount to be refund</h5><input type="text" class="border ms-5 ps-2" value="{{number_format($returnOrder->order->total_amount,2)}}">
                         </div>
                         <div class="ek_group">
-                            <h5 class="ps-5">Amount to refund</h5><input type="text" class="border ms-5 ps-2" value="3443">
+                            <label class="eklabel req ">
+                                <span>Select an Option:<span class="req_star">*</span></span>
+                            </label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="accept" {{$returnOrder->status == 'Accepted' ? 'checked' : ''}} value="3">
+                                <label class="form-check-label" for="accept">
+                                    Accept
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="decline" {{$returnOrder->status == 'Decline' ? 'checked ' : ''}} value="5">
+                                <label class="form-check-label" for="decline">
+                                    Decline
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->status == 'Approved' ? 'checked' : ''}} value="4">
+                                <label class="form-check-label" for="approve">
+                                    Approve
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="ek_group">
+                        <div class="d-flex">
+
+                        <div class="upload-original-invoice">
+                            <label>
+                                <span>
+                                    Please book a return shipment and update below details<span class="req_star">*</span></span>
+                            </label>
+                            <input type="file" id="UploadInvoice" class="upload_invoice" accept=".pdf,jpeg,jpg" style="display: none;">
+                            <div class="d-flex gap-2 align-items-center">
+                                <div id="UploadInvoiceErr" class="text-danger"></div>
+                                <label for="UploadInvoice" class="file-label invice m-0">
+                                    <span class="file-label-text">Upload Original Invoice</span>
+                                </label>
+                            </div>
+                        </div>
+                        </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+
+                    <?php
+                    $shipping_cost = 0;
+                    $gst = 0;
+                    $other_charges = 0;
+                    $total_order_cost = 0;
+                    $product = 0;
+                    ?>
+                    @if($returnOrder->order->orderItemsCharges->isNotEmpty())
+                    @foreach($returnOrder->order->orderItemsCharges as $orderItem)
+                    @php
+                    $product += $orderItem->total_price_exc_gst;
+                    $shipping_cost += $orderItem->shipping_charges;
+                    $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+                    $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                    @endphp
+                    @endforeach
+                    @endif
+                    <div class="col-md-3">
                         <table class="table table-bordered">
                             <thead>
                                 <!-- <tr>
@@ -228,59 +315,39 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Product</td>
-                                    <td>4449</td>
-                                   
-                                  
-                                    
-                                   
+                                    <td>Product Charges</td>
+                                    <td>{{number_format($product,2)}}</td>
                                 </tr>
                                 <tr>
-                                <td>Shipping</td>
-                                <td>784</td>
+                                    <td>Shipping Charges</td>
+                                    <td>{{number_format($shipping_cost,2)}}</td>
                                 </tr>
                                 <tr>
-                                <td>Others</td>
-                                <td>0</td>
+                                    <td>Other Charges</td>
+                                    <td>{{number_format($other_charges,2)}}</td>
                                 </tr>
                                 <tr>
-                                <td>GST</td>
-                                <td>0</td>
+                                    <td>GST Charges</td>
+                                    <td>{{number_format($gst,2)}}</td>
                                 </tr>
                                 <tr>
-                                <td>Order Amount</td>
-                                <td>5233</td>
+                                    <td>Total Order Amount</td>
+                                    <td>{{number_format($returnOrder->order->total_amount,2)}}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <!-- <div class="row mt-3">
                     <div class="col-md-6">
-                <div class="d-flex">
-                
-                  <div class="upload-original-invoice">
-                    <label class="eklabe">
-                      <span>	
-                      Please book a return shipment and update below details<span class="req_star">*</span></span>
-                    </label>
-                    <input type="file" id="UploadInvoice" class="upload_invoice" accept=".pdf" style="display: none;">
-                    <div class="d-flex gap-2 align-items-center">
-                      <div class="UploadInvoiceName fs-14 opacity-75" id=""></div>
-                      <div id="UploadInvoiceErr" class="text-danger"></div>
-                      <label for="UploadInvoice" class="file-label invice m-0">
-                        <span class="file-label-text">Upload Original Invoice</span>
-                      </label>
+                        
                     </div>
-                  </div>
-                </div>
-                </div>
-                </div>
+                </div> -->
                 <div class="row mt-5">
                     <div class="col-sm-12 col-md-8">
                         <div class="ek_group">
                             <label class="eklabel req">
-                                <span>Comment:<span class="req_star">*</span></span>
+                                <span>Comment:</span>
                             </label>
                             <div class="wrapperComment">
                                 <div class="commentBoxfloat">
@@ -288,27 +355,24 @@
                                         <fieldset>
                                             <div class="form_grp">
                                                 <label id="comment">comment</label>
-                                                <textarea id="userCmnt" placeholder="Write your comment here. You can Edit and Delete options. Just Hover in Your comment, you see the both buttons"></textarea>
+                                                <textarea id="userCmnt" placeholder="Write your comment here."></textarea>
                                             </div>
                                             <div class="form_grp">
-                                                <button type="button" id="submit">Submit</button>
+                                                <button type="button" id="comment_submit">Submit</button>
                                             </div>
                                         </fieldset>
                                     </form>
                                 </div>
-
-                                <!-- <div id="cmntContr"></div> -->
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-
                 <div class="saveform_footer text-right single-button">
-                    <button id="btnSubmit" class="btn btnekomn_dark">Dispute</button>
+                     @if (auth()->user()->hasRole(ROLE_BUYER))
+                    <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
+                    @endif
                     <button id="btnSubmit" style="margin-left:10px;" class="btn btnekomn">Submit</button>
-                    <button class="btn btn-danger" style="margin-left:10px;">Cancel</button>
+                    <a class="btn btn-danger" href="{{route('list.return.order')}}" style="margin-left:10px;">Cancel</a>
                 </div>
 
             </div>
@@ -319,142 +383,208 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function triggerUpload(boxId) {
-        document.querySelector(`#${boxId} input[type="file"]`).click();
-    }
-
-    function previewImage(event, boxId) {
-        event.stopPropagation();
-        const reader = new FileReader();
-        reader.onload = function() {
-            const img = document.getElementById(`img-${boxId}`);
-            img.src = reader.result;
-            img.style.display = "block";
-            document.getElementById(`delete-${boxId}`).style.display = "block";
-            document.querySelector(`#${boxId} .placeholdertext`).style.display = "none";
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function deleteImage(event, boxId) {
-        event.stopPropagation();
-        const img = document.getElementById(`img-${boxId}`);
-        img.src = "";
-        img.style.display = "none";
-        document.getElementById(`delete-${boxId}`).style.display = "none";
-        document.querySelector(`#${boxId} input[type="file"]`).value = "";
-        document.querySelector(`#${boxId} .placeholdertext`).style.display = "flex";
-    }
-
-    $('#reason').change(function() {
-        if ($(this).val() == 5) {
-            $('#other').show();
+    $(document).ready(function() {
+        @isset($shipment)
+        @if($shipment->courier_id == 1)
+        $('#show_courier').show();
+        @else
+        $('#show_courier').hide();
+        @endif
+        @else
+        $('#show_courier').hide();
+        @endif
+    });
+    
+    $('#courier_id').change(function() {
+        var courier_id = $('#courier_id').val();
+        if (courier_id == '1') {
+            $('#show_courier').show();
         } else {
-            $('#other').hide();
-            // $('#otherReason').val('');
+            $('#show_courier').hide();
         }
-
     });
 
     $('#btnSubmit').click(function() {
         var isValid = true;
-        if ($('#reason').val() == 0) {
-            $('#reason').addClass('is-invalid');
-            $('#reasonErr').html('Please select reason');
+       // selection
+        if ($('input[name="selection"]:checked').length === 0) {
             isValid = false;
-        } else {
-            $('#reason').removeClass('is-invalid');
-            $('#reasonErr').html('');
-        }
-        if ($('#otherReason').val() == '') {
-            $('#otherReason').addClass('is-invalid');
-            $('#otherReasonErr').html('Please enter other reason');
-            isValid = false;
-        } else if ($('#otherReason').val().length > 100) {
-            $('#otherReason').addClass('is-invalid');
-            $('#otherReasonErr').html('Please enter maximum 100 characters');
-            isValid = false;
-        } else {
-            $('#otherReason').removeClass('is-invalid');
-            $('#otherReasonErr').html('');
-        }
-        if ($('#comment').val() == '') {
-            $('#comment').addClass('is-invalid');
-            $('#commentErr').html('Please enter comment');
-            isValid = false;
-        } else {
-            $('#comment').removeClass('is-invalid');
-            $('#commentErr').html('');
-        }
-        let fileUpload = document.querySelectorAll('.image-upload-box input[type="file"]');
-        let filledCount = 0;
-
-        fileUpload.forEach(function(file) {
-            if (file.files.length > 0) {
-                filledCount++;
-                file.parentElement.classList.remove('is-invalid');
-            } else {
-                file.parentElement.classList.add('is-invalid');
-            }
-        });
-
-        if (filledCount < 3) {
             Swal.fire({
-                title: 'Opps!',
-                icon: "error",
-                text: 'Please upload at least 3 images.',
-                didOpen: () => {
-                    const title = Swal.getTitle();
-                    title.style.fontSize = '25px';
-                    // Apply inline CSS to the content
-                    const content = Swal.getHtmlContainer();
-                    // Apply inline CSS to the confirm button
-                    const confirmButton = Swal.getConfirmButton();
-                    confirmButton.style.backgroundColor = '#feca40';
-                    confirmButton.style.color = 'white';
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select an option',
+            });
+        }
+
+        if($('#courier_id').val() != ''){
+
+            if ($('#trackingNo').val() == '') {
+                $('#error_tracking').text('Please enter tracking number');
+                $("#error_tracking").css('color', '#dc3545');
+                isValid = false;
+            } else {
+                $('#error_tracking').text('');
+            }
+
+            if ($('#courier_id').val() == '1') {
+                if ($('#courierName').val() == '') {
+                    $('#error_courier_text').text('Please enter courier name');
+                    $("#error_courier_text").css('color', '#dc3545');
+                    isValid = false;
+                } else {
+                    $('#error_courier_text').text('');
                 }
-            })
-            isValid = false;
-            // alert('Please upload at least 3 images.');
+            } else {
+                $('#error_courier_text').text('');
+            }
+
+            if ($('#shippingDate').val() == '') {
+                $('#error_shipping_date').text('Please enter shipping date');
+                $("#error_shipping_date").css('color', '#dc3545');
+                isValid = false;
+            } else {
+                $('#error_shipping_date').text('');
+            }
+
+            if ($('#deliveryDate').val() == '') {
+                $('#error_delhivery_date').text('Please enter delivery date');
+                $("#error_delhivery_date").css('color', '#dc3545');
+                isValid = false;
+            } else {
+                $('#error_delhivery_date').text('');
+            }
+
+            @if(!isset($courier_detatils))
+            const fileInput = $('#UploadInvoice')[0];
+            const file = fileInput.files[0];
+            // Check if a file is selected
+            if (!file) {
+                $('#UploadInvoiceErr').text('Please upload an courier label file.');
+                isvalid = false;
+            }
+            fileInput.addEventListener('change', function() {
+                const file = fileInput.files[0];
+                // Check if a file is selected
+                if (file) {
+                $('#UploadInvoiceErr').text('');
+                isvalid = true;
+                }
+            });
+            @endif
+
+        }
+
+        if (isValid) {
+            var formData = new FormData();
+            @if(!isset($courier_detatils))
+            formData.append('UploadLabel', $('#UploadInvoice')[0].files[0]);
+            formData.append('courier_id', $('#courier_id').val());
+            formData.append('tracking_number', $('#trackingNo').val());
+            formData.append('courier_name', $('#courierName').val());
+            formData.append('shippingDate', $('#shippingDate').val());
+            formData.append('deliveryDate', $('#deliveryDate').val());
+            @endif
+            formData.append('comment', $('#userCmnt').val());
+            formData.append('return_order_id', '{{salt_encrypt($returnOrder->id)}}');
+            formData.append('status', $('input[name="selection"]:checked').val());
+            ApiRequest('update-return-order', 'POST', formData).then(response => {
+                        if (response.data.statusCode == 200) {
+                            Swal.fire({
+                                title: 'Success',
+                                text: response.data.message,
+                                icon: 'success',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                didOpen: () => {
+                                    const title = Swal.getTitle();
+                                    title.style.fontSize = '25px';
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            });
+                        }else{
+                            Swal.fire({
+                                title: 'Error',
+                                text: response.data.message,
+                                icon: 'error',
+                                confirmButtonColor: '#3085d6',
+                                confirmButtonText: 'OK',
+                                didOpen: () => {
+                                    const title = Swal.getTitle();
+                                    title.style.fontSize = '25px';
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.reload();
+                                }
+                            });
+                        }
+
+                    }).catch(error => {
+                        console.error(error);
+
+                    });
         }
     });
 
     $(function() {
         var inDexValue;
-
-        $('button').click(function() {
+        $('#comment_submit').click(function() {
             if ($('#userCmnt').val().length == '') {
-                alert('Please Enter Your Comment');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter comment',
+                });
                 return true;
             }
             var userCmnt = $('#userCmnt').val();
-            if ($('#submit').hasClass('editNow')) {
+            // if ($('#submit').hasClass('editNow')) {
+            //     $('#cmntContr>div.viewCmnt').eq(inDexValue).children('p').html(userCmnt);
 
-                $('#cmntContr>div.viewCmnt').eq(inDexValue).children('p').html(userCmnt);
+            // } else {
 
-            } else {
+                $('#cmntContr').append("<div class='viewCmnt'><p>" + userCmnt + "</p></div>");
+                // $('#cmntContr').append("<div class='viewCmnt'><p>" + userCmnt + "</p><span class='edit'></span><span class='delete'></span></div>");
+            // }
 
-                $('#cmntContr').append("<div class='viewCmnt'><p>" + userCmnt + "</p><span class='edit'></span><span class='delete'></span></div>");
-            }
+            ApiRequest('add-return-comment', 'POST', {
+                return_order_id: '{{salt_encrypt($returnOrder->id)}}',
+                comment: userCmnt
+            }, function(response) {
+            });
             $('#userCmnt').val('');
-            $(this).removeClass('editNow');
+            // $(this).removeClass('editNow');
         });
 
-        // Delete 
-        $('#cmntContr').on('click', '.delete', function() {
-            confirm("Delete Coformation");
-            $(this).parent().remove();
-        });
-        // Edit
-        $('#cmntContr').on('click', '.edit', function() {
+        // // Delete 
+        // $('#cmntContr').on('click', '.delete', function() {
+        //     confirm("Delete Coformation");
+        //     $(this).parent().remove();
+        // });
+        // // Edit
+        // $('#cmntContr').on('click', '.edit', function() {
+        //     var toEdit = $(this).prev('p').html();
+        //     //alert(toEdit);
+        //     $('#userCmnt').val(toEdit);
+        //     $('button').addClass('editNow');
+        //     inDexValue = $(this).parent('div.viewCmnt').index();
 
-            var toEdit = $(this).prev('p').html();
-            //alert(toEdit);
-            $('#userCmnt').val(toEdit);
-            $('button').addClass('editNow');
-            inDexValue = $(this).parent('div.viewCmnt').index();
-
-        });
+        // });
     });
 </script>
 @endsection

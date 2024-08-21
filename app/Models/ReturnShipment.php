@@ -216,7 +216,7 @@ class ReturnShipment extends Model
             case self::STATUS_CREATED:
                 return 'Created';
             case self::STATUS_SHIPPED_DISPATCHE:
-                return 'Shipped';
+                return 'In Transit';
             case self::STATUS_DELIVERED:
                 return 'Delivered';
             case self::STATUS_CANCELLED:

@@ -53,7 +53,7 @@
                 <ul class="sidenav-second-level collapse" id="Orders" data-bs-parent="#dashboard_ekomn">
                     @if (auth()->user()->hasRole(ROLE_BUYER))
                         <li>
-                            <a class="nav-link" href="{{ route('create.order') }}">Create Orders</a>
+                            <a class="nav-link" href="{{ route('create.order') }}">Add New Orders</a>
                         </li>
                     @endif
                     <li>
@@ -64,18 +64,6 @@
                             <a class="nav-link" href="{{ route('order.tracking') }}">Order Tracking</a>
                         </li>
                     @endif
-                    <li>
-                        <a class="nav-link" href="#">Platform/Website Orders</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Wallet/Invoices</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Payments/Invoices</a>
-                    </li>
-                    <li>
-                        <a class="nav-link" href="#">Returns</a>
-                    </li>
                 </ul>
             </li>
 
@@ -84,23 +72,19 @@
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Return"
                     data-bs-parent="#dashboard_ekomn" id="components">
                     <i class="fas fa-undo menuIcon"></i>
-                    <span class="nav-link-text">Return</span>
+                    <span class="nav-link-text">Returns</span>
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
                 <ul class="sidenav-second-level collapse" id="Return" data-bs-parent="#dashboard_ekomn">
-                    @if (auth()->user()->hasPermissionTo(PERMISSION_CREATE_RETURN_ORDER))
-                    <li>
-                        <a class="nav-link" href="{{route('create.return.order')}}">Create Retrun Order</a>
-                    </li>
-                    @endif
+
                     @if (auth()->user()->hasPermissionTo(PERMISSION_LIST_RETURN_ORDER))
                     <li>
-                        <a class="nav-link" href="{{route('list.return.order')}}">List Return Order</a>
+                        <a class="nav-link" href="{{route('list.return.order')}}">My Returns</a>
                     </li>
                     @endif
-                    @if (auth()->user()->hasPermissionTo(PERMISSION_EDIT_RETURN_ORDER))
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_CREATE_RETURN_ORDER))
                     <li>
-                        <a class="nav-link" href="{{route('edit.return.order')}}">Edit Return Order</a>
+                        <a class="nav-link" href="{{route('create.return.order')}}">Add New Return</a>
                     </li>
                     @endif
                 </ul>
@@ -155,7 +139,7 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{route('edit.profile')}}">
                     <i class="fas fa-user menuIcon"></i>
                     <span class="nav-link-text">Profile</span>
                 </a>

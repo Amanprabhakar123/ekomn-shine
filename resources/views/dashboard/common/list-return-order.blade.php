@@ -6,10 +6,10 @@
     <div class="ek_content">
             <div class="card ekcard pa shadow-sm">
                 <div class="cardhead">
-                    <h3 class="cardtitle">Category Management</h3>
+                    <h3 class="cardtitle">My Return Orders</h3>
                 </div>
             <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
+                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Order no and return no.">
                 <div class="filter">
                     <div class="ek_group m-0">
                          <label class="eklabel w_50_f">Sort by:</label>
@@ -30,9 +30,9 @@
                     <thead>
                         <tr>
                             <!-- <th>Sr. No.</th> -->
+                            <th>Return Req #</th>
                             <th>Ekomn Order</th>
                             <th>Order Type</th>
-                            <th>Return Req #</th>
                             <th>Product Title</th>
                             <th>Qty</th>
                             <th>Return date</th>
@@ -222,15 +222,12 @@
         function generateTableRow(item) {
             return `
                 <tr>
-                    <td>
-                    <div class="productTitle_t">
-                    <a href="">${item.order_number}</a></div>
-                    </td>
+                    <td>  <a href="${item.view_return}" target="_blank">${item.return_number}</a></td>
+                   <td>  <a href="${item.view_order}" target="_blank">${item.order_number}</a></td>
                     <td>${item.order_type}</td>
-                    <td>${item.return_number}</td>
                     
                      <td>
-                        <div class="productTitle_t">${item.title}</div>    
+                        <div class="productTitle_t"><a href="${item.link}" target="_blank">${item.title}<a/></div>    
                     </td>
                      <td>${item.qnty}</td>
                       <td>${item.return_date}</td>

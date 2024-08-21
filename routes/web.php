@@ -97,7 +97,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('edit-category/{id}', [CategoryManagmentController::class, 'editCategoryView'])->name('admin.categories.edit');
     Route::get('create-return-order', [ReturnOrderController::class, 'createReturnOrder'])->name('create.return.order');
     Route::get('list-return-order', [ReturnOrderController::class, 'listReturnOrder'])->name('list.return.order');
-    Route::get('edit-return-order', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
+    Route::get('edit-return-order/{id}', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -162,6 +162,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
         Route::post('store-return-order', [ReturnOrderController::class, 'store'])->name('store.return.order');
         Route::get('return-order-list', [ReturnOrderController::class, 'getReturnOrderList'])->name('return.order.list');
+        Route::post('add-return-comment', [ReturnOrderController::class, 'addReturnOrderComment'])->name('add.return.order');
+        Route::post('update-return-order', [ReturnOrderController::class, 'updateReturnOrder'])->name('update.return.order');
     });
 });
 
