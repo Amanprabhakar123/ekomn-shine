@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
-use App\Models\SupplierRegistrationTemp;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Models\SupplierRegistrationTemp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -23,10 +24,24 @@ class SupplierRegistraionController extends Controller
             if ($request->step_1) {
                 $this->validateStep1($request);
 
+               $c_detail =  CompanyDetail::where('gst_no', $request->input('gst'))->select('id', 'user_id', 'gst_no')->get();
+               $is_supplier = false;
+                if($c_detail->isNotEmpty()){
+                    foreach($c_detail as $c){
+                        $role = $c->user->getRoleNames()->first();  
+                        if($role == ROLE_SUPPLIER){
+                            $is_supplier = true;
+                        }
+                    }
+                }
+                if($is_supplier){
+                    $message = ValidationException::withMessages(['gst_no' => 'GST Number already exists'.'-'.'gst']);
+                    throw $message;
+                }
                 $supplier = SupplierRegistrationTemp::updateOrCreate(
                     $this->getStep1Data($request)
                 );
-
+            
                 return $this->successResponse($supplier->id);
             } elseif ($request->step_2) {
                 $this->validateStep2($request);
@@ -61,17 +76,6 @@ class SupplierRegistraionController extends Controller
 
             return $this->errorResponse(__('auth.invalidInputData'));
         } catch (\Exception $e) {
-
-            // Log the exception details and trigger an ExceptionEvent
-            // Prepare exception details
-            $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-
-            // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
 
             return $this->errorResponse($e->getMessage());
         }

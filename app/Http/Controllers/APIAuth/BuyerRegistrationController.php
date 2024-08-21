@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
-use App\Models\BuyerRegistrationTemp;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Models\BuyerRegistrationTemp;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -22,6 +23,38 @@ class BuyerRegistrationController extends Controller
             // printR($request->all());
             if ($request->step_1) {
                 $this->validateStep1($request);
+                $is_buyer = false;
+
+                if(!is_null($request->input('gst'))){
+                    $gstNo =  CompanyDetail::where('gst_no', $request->input('gst'))->select('id', 'user_id', 'gst_no')->get();
+                    if($gstNo->isNotEmpty()){
+                        foreach($gstNo as $c){
+                            $role = $c->user->getRoleNames()->first();  
+                            if($role == ROLE_BUYER){
+                                $is_buyer = true;
+                            }
+                        }
+                    }
+                    if($is_buyer){
+                        $message = ValidationException::withMessages(['gst_no' => 'GST Number already exists'.'-'.'gst']);
+                        throw $message;
+                    }
+                }
+                if(!is_null($request->input('pan'))){
+                $panNo =  CompanyDetail::where('pan_no', $request->input('pan'))->select('id', 'user_id', 'pan_no')->get();
+                    if($panNo->isNotEmpty()){
+                        foreach($panNo as $c){
+                            $role = $c->user->getRoleNames()->first();  
+                            if($role == ROLE_BUYER){
+                                $is_buyer = true;
+                            }
+                        }
+                        if($is_buyer){
+                            $message = ValidationException::withMessages(['pan_no' => 'PAN Number already exists'.'-'.'pan']);
+                            throw $message;
+                        }
+                    }
+                }
 
                 $buyer = BuyerRegistrationTemp::updateOrCreate(
                     $this->getStep1Data($request)
@@ -41,16 +74,6 @@ class BuyerRegistrationController extends Controller
 
             return $this->errorResponse(__('auth.invalidInputData'));
         } catch (\Exception $e) {
-            // Log the exception details and trigger an ExceptionEvent
-            // Prepare exception details
-            $exceptionDetails = [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ];
-
-            // Trigger the event
-            event(new ExceptionEvent($exceptionDetails));
 
             return $this->errorResponse($e->getMessage());
         }
