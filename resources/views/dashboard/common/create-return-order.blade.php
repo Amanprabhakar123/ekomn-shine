@@ -373,7 +373,10 @@
                             confirmButton.style.backgroundColor = '#feca40';
                             confirmButton.style.color = 'white';
                         }
-                    })
+                    }).then(function() {
+                        window.location.href = "{{route('create.return.order')}}";
+                    });
+
                 } else {
                     Swal.fire({
                         title: 'Opps!',
@@ -390,6 +393,9 @@
                             confirmButton.style.color = 'white';
                         }
                     })
+                    .then(function() {
+                        window.location.href = "{{route('create.return.order')}}";
+                    });
                 }
             });
         }

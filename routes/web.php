@@ -161,6 +161,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
         Route::post('store-return-order', [ReturnOrderController::class, 'store'])->name('store.return.order');
+        Route::get('return-order-list', [ReturnOrderController::class, 'getReturnOrderList'])->name('return.order.list');
     });
 });
 

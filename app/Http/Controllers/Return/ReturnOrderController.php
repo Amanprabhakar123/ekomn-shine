@@ -6,13 +6,26 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\ReturnOrder;
+use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\ReturnComment;
+use League\Fractal\Resource\Collection;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Transformers\ReturnListTransformer;
 
 class ReturnOrderController extends Controller
 {
+
+    protected $fractal;
+    protected $CategoryManagementTransform;
+
+    public function __construct(Manager $fractal)
+    {
+        $this->fractal = $fractal;
+    }
+
+    
     /**
      * Create a reutrn order view page 
      * 
@@ -74,6 +87,14 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
+        if($order->isRTO()){
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.alreadyReturnOrder'),
+            ]], __('statusCode.statusCode200'));
+        }
+
         if($order->isDispatched() && $request->reason == 1){
             return $this->createReturnRequest($request, $order);
         }else if( $order->isDelivered()){
@@ -102,6 +123,12 @@ class ReturnOrderController extends Controller
                     'message' => __('auth.orderNotDelivered'),
                 ]], __('statusCode.statusCode200'));
             }
+        }else{
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.returnAllowed'),
+            ]], __('statusCode.statusCode200'));
         }
 
     }
@@ -175,6 +202,37 @@ class ReturnOrderController extends Controller
     {
         return view('dashboard.common.list-return-order');
     }
+
+    /**
+     * get return order list
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function getReturnOrderList(Request $request){
+try {
+
+        $perPage = $request->input('perPage', 10);
+        $returnOrder = ReturnOrder::with('order.orderItemsCharges')->orderBy('id', 'desc');
+        
+        $returnOrder = $returnOrder->paginate($perPage);
+        $resource = new Collection($returnOrder, new ReturnListTransformer());
+        $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($returnOrder));
+        $data = $this->fractal->createData($resource)->toArray();
+        // dd($data);
+        return response()->json($data);
+    }
+    catch (\Exception $e) {
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode422'),
+            'status' => __('statusCode.status422'),
+            'message' => $e->getMessage(),
+        ]], __('statusCode.statusCode200'));
+        // dd($e->getMessage());
+    }
+    }
+
+
     
     /**
      * Edit a return order view page 
