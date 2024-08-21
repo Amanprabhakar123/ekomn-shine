@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Return;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\ReturnOrder;
 use Illuminate\Http\Request;
+use App\Models\ReturnComment;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class ReturnOrderController extends Controller
@@ -105,6 +106,12 @@ class ReturnOrderController extends Controller
 
     }
 
+    /**
+     * Create a return order view page 
+     * 
+     * @param Request $request
+     * @return view
+     */
     protected function createReturnRequest($request, $order){
         try {
             $ext_img_array = ['png', 'jpeg', 'jpg', 'webp'];
@@ -135,6 +142,11 @@ class ReturnOrderController extends Controller
                 'status' => ReturnOrder::STATUS_OPEN,
                 'file_path' => json_encode($media),
                 'reason' => $reason
+           ]);
+           ReturnComment::create([
+                'return_id' => $createReturn->id,
+                'role_type' => User::ROLE_BUYER,
+                'comment' => $request->comment
            ]);
            $order->status = Order::STATUS_RTO;
            $order->save();
