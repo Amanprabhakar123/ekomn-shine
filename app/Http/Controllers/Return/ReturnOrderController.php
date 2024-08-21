@@ -73,37 +73,36 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
-        // if($order->isDispatched() && $request->reason == 1){
-        //     //
-        // }else if( $order->isDelivered()){
-        //     $shipments = $order->shipments()->first();
-        //     if($shipments){
-        //         $delivery_date = $shipments->delivery_date;
-        //     }else{
-        //         $delivery_date = '';
-        //     }
-        //     if(isset($delivery_date) && !empty($delivery_date)){
-        //         // add two days to delivery date
-        //        $delivery_date = Carbon::parse($delivery_date)->addDays(2);
-        //        if($delivery_date->toDateTimeString() >= now()->toDateTimeString()){
-        //            dd($delivery_date->toDateTimeString() >= now()->toDateTimeString());
-        //        }else{
-        //             return response()->json(['data' => [
-        //                 'statusCode' => __('statusCode.statusCode422'),
-        //                 'status' => __('statusCode.status422'),
-        //                 'message' => __('auth.returnAllowed'),
-        //             ]], __('statusCode.statusCode200'));
-        //        }
-        //     }else{
-        //         return response()->json(['data' => [
-        //             'statusCode' => __('statusCode.statusCode422'),
-        //             'status' => __('statusCode.status422'),
-        //             'message' => __('auth.orderNotDelivered'),
-        //         ]], __('statusCode.statusCode200'));
-        //     }
-        // }
+        if($order->isDispatched() && $request->reason == 1){
+            return $this->createReturnRequest($request, $order);
+        }else if( $order->isDelivered()){
+            $shipments = $order->shipments()->first();
+            if($shipments){
+                $delivery_date = $shipments->delivery_date;
+            }else{
+                $delivery_date = '';
+            }
+            if(isset($delivery_date) && !empty($delivery_date)){
+                // add two days to delivery date
+               $delivery_date = Carbon::parse($delivery_date)->addDays(2);
+               if($delivery_date->toDateTimeString() >= now()->toDateTimeString()){
+                    return $this->createReturnRequest($request, $order);
+               }else{
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.returnAllowed'),
+                    ]], __('statusCode.statusCode200'));
+               }
+            }else{
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.orderNotDelivered'),
+                ]], __('statusCode.statusCode200'));
+            }
+        }
 
-       return $this->createReturnRequest($request, $order);
     }
 
     protected function createReturnRequest($request, $order){
