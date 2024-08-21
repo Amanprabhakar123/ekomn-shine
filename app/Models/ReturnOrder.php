@@ -64,6 +64,14 @@ class ReturnOrder extends Model
         self::STATUS_REJECTED => 'Rejected',
     ];
 
+    const RETURN_RESON = [
+        '1' => 'Product Not Delivered',
+        '2' => 'Defective Product',
+        '3' => 'Incorrect Quantity Delivered',
+        '4' => 'Wrong product Delivered',
+        '5' => 'Others',
+    ];
+
      /**
      * Get the options for logging changes to the model.
      */
@@ -140,6 +148,17 @@ class ReturnOrder extends Model
     public function getStatusAttribute($value)
     {
         return self::STATUS_ARRAY[$value];
+    }
+
+    /**
+     * Get the reason attribute
+     *
+     * @param  string  $value
+     * @return string
+     */  
+    public function reason($value)
+    {
+        return self::RETURN_RESON[$value];
     }
 
 

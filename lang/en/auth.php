@@ -128,5 +128,7 @@ return [
     'bannerFailed' => 'Failed to receive banner.',
     'categoryStatus' => 'Category Status Updated Successfully.',
     'categoryUpdated' => 'Category Updated Successfully.',
-
+    'returnAllowed' => 'Return is allowed only after two days of delivery date.',
+    'orderNotDelivered' => 'Order is not delivered yet.',
+    'returnOrder' => 'Return Order Created Successfully.',
 ];

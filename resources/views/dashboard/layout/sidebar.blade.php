@@ -82,7 +82,7 @@
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Return"
                     data-bs-parent="#dashboard_ekomn" id="components">
-                    <i class="fas fa-shopping-cart menuIcon"></i>
+                    <i class="fas fa-undo menuIcon"></i>
                     <span class="nav-link-text">Return</span>
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>
@@ -157,7 +157,7 @@
                 <li class="nav-item">
                     <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#misSetting"
                         data-bs-parent="#dashboard_ekomn" id="components">
-                        <i class="fas fa-boxes menuIcon"></i>
+                        <i class="fas fa-cogs menuIcon"></i>
                         <span class="nav-link-text">MIS Setting</span>
                         <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                     </a>
@@ -191,7 +191,7 @@
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#AdminControl"
                     data-bs-parent="#dashboard_ekomn" id="components">
-                    <i class="fas fa-boxes menuIcon"></i>
+                    <i class="fas fa-wrench menuIcon"></i>
                     <span class="nav-link-text">Admin Control Panel</span>
                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                 </a>

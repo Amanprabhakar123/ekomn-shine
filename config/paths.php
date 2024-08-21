@@ -30,4 +30,10 @@ return [
         'visibility'        => 'public',
         'assets_visibility' => 'public'
     ],
+
+    'return_order' =>  [
+        'path'              => 'public/app/return-order/%s',
+        'visibility'        => 'public',
+        'assets_visibility' => 'public'
+    ],
 ];

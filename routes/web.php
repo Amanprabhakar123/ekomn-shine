@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\WebController;
-use App\Http\Controllers\Return\ReturnOrder;
+use App\Http\Controllers\Return\ReturnOrderController;
 use App\Http\Controllers\Web\SearchController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
@@ -95,10 +95,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
     Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
     Route::get('edit-category/{id}', [CategoryManagmentController::class, 'editCategoryView'])->name('admin.categories.edit');
-    Route::get('create-return-order', [ReturnOrder::class, 'createReturnOrder'])->name('create.return.order');
-    Route::get('list-return-order', [ReturnOrder::class, 'listReturnOrder'])->name('list.return.order');
-    Route::get('edit-return-order', [ReturnOrder::class, 'editReturnOrder'])->name('edit.return.order');
-
+    Route::get('create-return-order', [ReturnOrderController::class, 'createReturnOrder'])->name('create.return.order');
+    Route::get('list-return-order', [ReturnOrderController::class, 'listReturnOrder'])->name('list.return.order');
+    Route::get('edit-return-order', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -161,6 +160,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
         Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
+        Route::post('store-return-order', [ReturnOrderController::class, 'store'])->name('store.return.order');
     });
 });
 
