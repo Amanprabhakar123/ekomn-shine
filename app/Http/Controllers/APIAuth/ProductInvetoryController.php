@@ -15,8 +15,10 @@ use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ProductMatrics;
 use Illuminate\Support\Facades\File;
 use App\Models\ProductVariationMedia;
+use App\Models\UserActivity;
 use App\Services\ElasticsearchService;
 use Illuminate\Support\Facades\Storage;
 use League\Fractal\Resource\Collection;
@@ -1704,6 +1706,10 @@ class ProductInvetoryController extends Controller
                     $variation->stock = 0;
                 }
                 $variation->save();
+                if(($request->input('status') == ProductVariation::STATUS_ACTIVE) || ($request->input('status') == ProductVariation::STATUS_INACTIVE)){
+                    ProductMatrics::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
+                    UserActivity::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
+                }
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),

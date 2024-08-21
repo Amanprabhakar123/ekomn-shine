@@ -25,6 +25,7 @@ class RecommendationService
                 // Fetch recommendations based on user activity
                 $productIds = UserActivity::where('user_id', $userId)
                     ->select('product_id', DB::raw('count(*) as activity_count'))
+                    ->where('active', UserActivity::IS_ACTIVE_TRUE)
                     ->groupBy('product_id')
                     ->orderBy('activity_count', 'desc');
                     if(!is_null($limit)){
@@ -34,6 +35,7 @@ class RecommendationService
             } else {
                 // Fetch popular products for guest users
                 $productIds = ProductMatrics::select('product_id')
+                    ->where('active', ProductMatrics::IS_ACTIVE_TRUE)
                     ->orderBy('view_count', 'desc')
                     ->orderBy('click_count', 'desc')
                     ->orderBy('add_to_inventory_count', 'desc')

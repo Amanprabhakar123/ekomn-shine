@@ -19,6 +19,7 @@ class UserActivity extends Model
     protected $fillable = [
         'user_id',
         'product_id',
+        'active',
         'activity_type',
     ];
 
@@ -34,6 +35,9 @@ class UserActivity extends Model
     const ACTIVITY_TYPE_CLICK = 5; // not used
     const ACTIVITY_TYPE_PURCHASE = 6;
     const ACTIVITY_TYPE_DOWNLOAD = 7;
+
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 2;
 
     // Define the relationship with the user Buyer
     public function user()
