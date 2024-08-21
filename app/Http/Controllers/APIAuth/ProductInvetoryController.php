@@ -1706,6 +1706,7 @@ class ProductInvetoryController extends Controller
                     $variation->stock = 0;
                 }
                 $variation->save();
+                // Update the status of the product variation
                 if(($request->input('status') == ProductVariation::STATUS_ACTIVE) || ($request->input('status') == ProductVariation::STATUS_INACTIVE)){
                     ProductMatrics::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
                     UserActivity::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
@@ -1725,7 +1726,11 @@ class ProductInvetoryController extends Controller
                     $variation->stock = 0;
                 }
                 $variation->save();
-
+                // Update the status of the product variation
+                if(($request->input('status') == ProductVariation::STATUS_ACTIVE) || ($request->input('status') == ProductVariation::STATUS_INACTIVE)){
+                    ProductMatrics::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
+                    UserActivity::where('product_id', $variation_id)->update(['active' => $request->input('status')]);
+                }
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
