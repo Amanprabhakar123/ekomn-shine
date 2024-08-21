@@ -11,6 +11,7 @@ class ProductMatrics extends Model
 
     protected $fillable = [
         'product_id',
+        'active',
         'view_count',
         'search_count',
         'click_count',
@@ -18,6 +19,7 @@ class ProductMatrics extends Model
         'add_to_inventory_count',
         'purchase_count',
         'download_count',
+        
     ];
     const ACTIVITY_TYPE_VIEW = UserActivity::ACTIVITY_TYPE_VIEW;
     const ACTIVITY_TYPE_BUY_NOW_OR_ADD_TO_CART = UserActivity::ACTIVITY_TYPE_BUY_NOW_OR_ADD_TO_CART;
@@ -26,6 +28,9 @@ class ProductMatrics extends Model
     const ACTIVITY_TYPE_CLICK = UserActivity::ACTIVITY_TYPE_CLICK; 
     const ACTIVITY_TYPE_PURCHASE = UserActivity::ACTIVITY_TYPE_PURCHASE;
     const ACTIVITY_TYPE_DOWNLOAD = UserActivity::ACTIVITY_TYPE_DOWNLOAD;
+
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 2;
 
     // Define the relationship with the product
     public function product()
