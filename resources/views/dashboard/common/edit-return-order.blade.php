@@ -245,7 +245,7 @@
                             <h5 class="ps-6">Amount to be refund</h5><input type="text" class="border ms-5 ps-2" value="{{number_format($returnOrder->order->total_amount,2)}}">
                         </div>
                         <div class="ek_group">
-                            <label class="eklabel req ">
+                            <label class="eklabel req " style="width: 30%;">
                                 <span>Select an Option:<span class="req_star">*</span></span>
                             </label>
                             <div class="form-check">
@@ -377,9 +377,10 @@
 
             </div>
         </div>
+        @include('dashboard.layout.copyright')
     </div>
     @endsection
-</div>
+
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

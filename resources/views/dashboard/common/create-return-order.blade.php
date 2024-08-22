@@ -7,10 +7,10 @@
             <div class="card ekcard pa shadow-sm">
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
-                    <div class="text-end">
+                    <!-- <div class="text-end">
                         <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
                         <span class="fs-15">2024-08-16 - (2 days ago)</span>
-                    </div>
+                    </div> -->
                 </div>
                 <section class="">
                     <div class="row">
@@ -154,9 +154,9 @@
 
             </div>
         </div>
+        @include('dashboard.layout.copyright')
     </div>
     @endsection
-</div>
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

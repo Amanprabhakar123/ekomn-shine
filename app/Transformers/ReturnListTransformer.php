@@ -41,7 +41,7 @@ class ReturnListTransformer extends TransformerAbstract
                 'view_return' => route('edit.return.order', salt_encrypt($returnOrder->id)),
                 'view_order' => route('view.order', salt_encrypt($returnOrder->order_id)),
             ];
-        //    dd($returnOrder->order);
+            
             return $data;
         } catch (\Exception $e) {
             Log::error('Error in CategoryManagementTransform: ' . $e->getMessage());
