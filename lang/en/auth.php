@@ -135,4 +135,5 @@ return [
     'returnOrderNotFound' => 'Return Order Not Found.',     
     'commentAdded' => 'Comment Added Successfully.',
     'returnOrderUpdated' => 'Return Order Updated Successfully.',
+    'disputeRaised' => 'Dispute Raised Successfully.',
 ];

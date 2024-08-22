@@ -179,6 +179,7 @@ class ReturnOrderController extends Controller
                 'return_number' => $request->return_number,
                 'return_date' => now(),
                 'status' => ReturnOrder::STATUS_OPEN,
+                'amount' => $order->total_amount,
                 'file_path' => json_encode($media),
                 'reason' => $reason
             ]);
@@ -300,7 +301,6 @@ class ReturnOrderController extends Controller
         $courierList = CourierDetails::orderBy('id', 'desc')->get();
         $courier_detatils = $returnOrder->returnShipments()->first();
         $attachment = json_decode($returnOrder->file_path, true);
-
         return view('dashboard.common.edit-return-order', get_defined_vars());
     }
 
@@ -409,7 +409,11 @@ class ReturnOrderController extends Controller
             $filename = $file->getClientOriginalName();
             $path = storage('return_shipment', file_get_contents($file), [$returnOrder->id], 'return_order_label' . $filename, 'public');
             $path = str_replace('public', 'storage', $path);
-            ReturnShipment::create([
+            ReturnShipment::updatOrCreate(
+                [
+                'order_id' => $returnOrder->order_id,
+                'return_id' => $returnOrder->id
+                ],[
                 'order_id' => $returnOrder->order_id,
                 'return_id' => $returnOrder->id,
                 'courier_id' => $request->courier_id,
@@ -423,6 +427,7 @@ class ReturnOrderController extends Controller
         }
 
         $returnOrder->status = $request->status;
+        $returnOrder->amount = $request->amount;
         $returnOrder->save();
 
         if ($request->comment) {
@@ -439,5 +444,64 @@ class ReturnOrderController extends Controller
             'status' => __('statusCode.status200'),
             'message' => __('auth.returnOrderUpdated'),
         ]], __('statusCode.statusCode200'));
+    }
+
+    /**
+     * Update a return order view page 
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function raiseDispute(Request $request){
+        try{
+            if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
+                abort(403);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'return_order_id' => 'required|string',
+                'comment' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            $returnOrder = ReturnOrder::where('id', salt_decrypt($request->return_order_id))->first();
+            if (!$returnOrder) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.returnOrderNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            $returnOrder->dispute = ReturnOrder::DISPUTE_YES;
+            $returnOrder->save();
+
+            if($request->comment){
+                ReturnComment::create([
+                    'return_id' => $returnOrder->id,
+                    'role_type' => User::ROLE_BUYER,
+                    'comment' => $request->comment
+                ]);
+            }
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.disputeRaised'),
+            ]], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
+        }
     }
 }

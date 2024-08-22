@@ -141,17 +141,6 @@ class ReturnOrder extends Model
     }
 
     /**
-     * Get the status attribute
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getStatusAttribute($value)
-    {
-        return self::STATUS_ARRAY[$value];
-    }
-
-    /**
      * Get the reason attribute
      *
      * @param  string  $value
@@ -181,21 +170,10 @@ class ReturnOrder extends Model
             case self::STATUS_APPROVED:
                 return 'Approved';
             case self::STATUS_REJECTED:
-                return 'Rejected';
+                return 'Decline';
             default:
                 return 'Unknown';
         }
-    }
-
-    /**
-     * Get the dispute attribute
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getDisputeAttribute($value)
-    {
-        return $value == self::DISPUTE_YES ? 'Yes' : 'No';
     }
 
     /**

@@ -164,6 +164,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('return-order-list', [ReturnOrderController::class, 'getReturnOrderList'])->name('return.order.list');
         Route::post('add-return-comment', [ReturnOrderController::class, 'addReturnOrderComment'])->name('add.return.order');
         Route::post('update-return-order', [ReturnOrderController::class, 'updateReturnOrder'])->name('update.return.order');
+        Route::post('raise-dispute', [ReturnOrderController::class, 'raiseDispute'])->name('raise.dispute');
     });
 });
 

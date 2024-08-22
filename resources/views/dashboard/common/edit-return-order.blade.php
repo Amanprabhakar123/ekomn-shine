@@ -8,7 +8,7 @@
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
                     <div class="text-end">
-                        <h4 class="subheading">Last Update Activity - {{$returnOrder->status}}</h4>
+                        <h4 class="subheading">Last Update Activity - {{$returnOrder->getStatus()}}</h4>
                         <span class="fs-15">{{$returnOrder->updated_at->toDateString()}} - ({{$returnOrder->updated_at->diffForHumans()}})</span>
                     </div>
                 </div>
@@ -249,26 +249,26 @@
                         <label class="eklabel req"  style="width: 32%;">
                                 <span>Amount to be refund</span>
                             </label>
-                            <input type="text" class="border ms-5 ps-2" disabled value="{{number_format($returnOrder->order->total_amount,2)}}">
+                            <input type="text" class="border ms-5 ps-2" disabled value="{{number_format($returnOrder->amount,2)}}">
                         </div>
                         <div class="ek_group">
                             <label class="eklabel req " style="width: 30%;">
                                 <span>Select an Option:<span class="req_star">*</span></span>
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="accept" disabled {{$returnOrder->status == 'Accepted' ? 'checked' : ''}} value="3">
+                                <input class="form-check-input" type="radio" name="selection" id="accept" disabled {{$returnOrder->isAccepted() ? 'checked' : ''}} value="3">
                                 <label class="form-check-label" for="accept">
                                     Accept
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="decline" disabled {{$returnOrder->status == 'Decline' ? 'checked ' : ''}} value="5">
+                                <input class="form-check-input" type="radio" name="selection" id="decline" disabled {{$returnOrder->isRejected() ? 'checked ' : ''}} value="5">
                                 <label class="form-check-label" for="decline">
                                     Decline
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="approve" disabled  {{$returnOrder->status == 'Approved' ? 'checked' : ''}} value="4">
+                                <input class="form-check-input" type="radio" name="selection" id="approve" disabled  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4">
                                 <label class="form-check-label" for="approve">
                                     Approve
                                 </label>
@@ -374,15 +374,14 @@
                     </div>
                 </div>
                 <div class="saveform_footer text-right single-button">
-                     @if (auth()->user()->hasRole(ROLE_BUYER))
-                     @if($returnOrder->status == 'Decline')
-                    <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
-                    @else
+                     @if($returnOrder->isRejected())
+                     @if($returnOrder->isDisputed())
                     <button id="btnDispute" class="btn btnekomn_dark" disabled>Dispute</button>
+                    @else
+                    <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
                     @endif
                     @else
-                    <button id="btnSubmit" style="margin-left:10px;" class="btn btnekomn">Submit</button>
-                    <a class="btn btn-danger" href="{{route('list.return.order')}}" style="margin-left:10px;">Cancel</a>
+                    <button id="btnDispute" class="btn btnekomn_dark" disabled>Dispute</button>
                     @endif
                 </div>
 
@@ -392,7 +391,7 @@
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
                     <div class="text-end">
-                        <h4 class="subheading">Last Update Activity - {{$returnOrder->status}}</h4>
+                        <h4 class="subheading">Last Update Activity - {{$returnOrder->getStatus()}}</h4>
                         <span class="fs-15">{{$returnOrder->updated_at->toDateString()}} - ({{$returnOrder->updated_at->diffForHumans()}})</span>
                     </div>
                 </div>
@@ -633,26 +632,26 @@
                         <label class="eklabel req"  style="width: 32%;">
                                 <span>Amount to be refund</span>
                             </label>
-                            <input type="text" class="border ms-5 ps-2" value="{{number_format($returnOrder->order->total_amount,2)}}">
+                            <input type="text" class="border ms-5 ps-2" id="amount" value="{{number_format($returnOrder->amount,2)}}">
                         </div>
                         <div class="ek_group">
                             <label class="eklabel req " style="width: 30%;">
                                 <span>Select an Option:<span class="req_star">*</span></span>
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="accept" {{$returnOrder->status == 'Accepted' ? 'checked' : ''}} value="3">
+                                <input class="form-check-input" type="radio" name="selection" id="accept" {{$returnOrder->isAccepted() ? 'checked' : ''}} value="3">
                                 <label class="form-check-label" for="accept">
                                     Accept
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="decline" {{$returnOrder->status == 'Decline' ? 'checked ' : ''}} value="5">
+                                <input class="form-check-input" type="radio" name="selection" id="decline" {{$returnOrder->isRejected() ? 'checked ' : ''}} value="5">
                                 <label class="form-check-label" for="decline">
                                     Decline
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->status == 'Approved' ? 'checked' : ''}} value="4">
+                                <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4">
                                 <label class="form-check-label" for="approve">
                                     Approve
                                 </label>
@@ -760,9 +759,6 @@
                     </div>
                 </div>
                 <div class="saveform_footer text-right single-button">
-                     @if (auth()->user()->hasRole(ROLE_BUYER))
-                    <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
-                    @endif
                     <button id="btnSubmit" style="margin-left:10px;" class="btn btnekomn">Submit</button>
                     <a class="btn btn-danger" href="{{route('list.return.order')}}" style="margin-left:10px;">Cancel</a>
                 </div>
@@ -877,6 +873,7 @@
             formData.append('shippingDate', $('#shippingDate').val());
             formData.append('deliveryDate', $('#deliveryDate').val());
             @endif
+            formData.append('amount', $('#amount').val());
             formData.append('comment', $('#userCmnt').val());
             formData.append('return_order_id', '{{salt_encrypt($returnOrder->id)}}');
             formData.append('status', $('input[name="selection"]:checked').val());
@@ -919,10 +916,6 @@
                                     const confirmButton = Swal.getConfirmButton();
                                     confirmButton.style.backgroundColor = '#feca40';
                                     confirmButton.style.color = 'white';
-                                }
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.reload();
                                 }
                             });
                         }
@@ -988,5 +981,57 @@
         a.click();
         document.body.removeChild(a);
     }   
+
+    @if (auth()->user()->hasRole(ROLE_BUYER))
+    $('#btnDispute').click(function() {
+        var userCmnt = $('#userCmnt').val();
+        ApiRequest('raise-dispute', 'POST', {
+            return_order_id: '{{salt_encrypt($returnOrder->id)}}',
+            comment: userCmnt
+        }).then(response => {
+            if (response.data.statusCode == 200) {
+                Swal.fire({
+                    title: 'Success',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.reload();
+                    }
+                });
+            }else{
+                Swal.fire({
+                    title: 'Error',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    didOpen: () => {
+                        const title = Swal.getTitle();
+                        title.style.fontSize = '25px';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = '#feca40';
+                        confirmButton.style.color = 'white';
+                    }
+                });
+            }
+        });
+    });
+    @endif
 </script>
 @endsection
