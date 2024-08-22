@@ -116,16 +116,6 @@ class ReturnShipment extends Model
     }
 
     /**
-     * Get the file path for the ReturnShipment
-     *
-     * @return string
-     */
-    public function getFilePathAttribute($value)
-    {
-        return $value ? asset('storage/' . $value) : null;
-    }
-
-    /**
      * Get the status for the ReturnShipment
      *
      * @return string

@@ -59,6 +59,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     // define permission for return order
     const PERMISSION_CREATE_RETURN_ORDER = 'create_return_order';
     const PERMISSION_LIST_RETURN_ORDER = 'list_return_order';
+    const PERMISSION_VIEW_RETURN_ORDER = 'view_return_order';
     const PERMISSION_EDIT_RETURN_ORDER = 'edit_return_order';
  
 

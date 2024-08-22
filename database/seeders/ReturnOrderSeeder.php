@@ -16,21 +16,25 @@ class ReturnOrderSeeder extends Seeder
     {
         Permission::create(['name' => PERMISSION_CREATE_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_LIST_RETURN_ORDER]);
-        Permission::create(['name' => PERMISSION_EDITE_RETURN_ORDER]);
+        Permission::create(['name' => PERMISSION_VIEW_RETURN_ORDER]);
+        Permission::create(['name' => PERMISSION_EDIT_RETURN_ORDER]);
       
         // assign permission to admin role
         $role = Role::findByName(ROLE_BUYER);
         $role->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
+        $role->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
         $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
 
         $role = Role::findByName(ROLE_SUPPLIER);
         $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_EDITE_RETURN_ORDER);
+        $role->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
+        $role->givePermissionTo(PERMISSION_EDIT_RETURN_ORDER);
 
         $role = Role::findByName(ROLE_ADMIN);
         $role->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
         $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_EDITE_RETURN_ORDER);
+        $role->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
+        $role->givePermissionTo(PERMISSION_EDIT_RETURN_ORDER);
         
         
     }

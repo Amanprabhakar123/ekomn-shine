@@ -3,8 +3,392 @@
 @section('content')
 <div class="ek_dashboard">
     <div class="ek_content">
-        <div class="ek_content">
+        @if(auth()->user()->hasRole(ROLE_BUYER))
             <div class="card ekcard pa shadow-sm">
+                <div class="cardhead d-flex justify-content-between align-items-center">
+                    <h3 class="cardtitle">Return Order</h3>
+                    <div class="text-end">
+                        <h4 class="subheading">Last Update Activity - {{$returnOrder->status}}</h4>
+                        <span class="fs-15">{{$returnOrder->updated_at->toDateString()}} - ({{$returnOrder->updated_at->diffForHumans()}})</span>
+                    </div>
+                </div>
+                <section class="">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
+                                <label class="bold">
+                                    Return Request:
+                                </label>
+                                <div class="ek_f_input">
+                                    <input type="text" class="form-control" value="{{$returnOrder->return_number}}" id="order_number" disabled />
+                                    <div id="order_numberErr" class="invalid-feedback"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
+                                <label class="bold">
+                                    <span>Order No:<span class="req_star">*</span></span>
+                                </label>
+                                <div class="ek_f_input">
+                                    <input type="text" class="form-control" value="{{$returnOrder->order->order_number}}" id="order_number" disabled />
+                                    <div id="order_numberErr" class="invalid-feedback"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-2">
+                            <div class="mt10">
+
+                                <label class="bold">Courier Name:<span class="r_color">*</span></label>
+                                <div class="ek_f_input">
+                                    @isset($courier_detatils)
+                                    <select class="form-select" id="courier_id" disabled>
+                                        <option value="">Select Courier</option>
+                                        @if($courierList->isNotEmpty())
+                                        @foreach($courierList as $courier)
+                                        <option value="{{$courier->id}}" @if($courier_detatils->courier_id == $courier->id) selected @endif>{{$courier->courier_name}}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                    @else
+                                    <select class="form-select" id="courier_id" disabled>
+                                        <option value="">Select Courier</option>
+                                        @if($courierList->isNotEmpty())
+                                        @foreach($courierList as $courier)
+                                        <option value="{{$courier->id}}">{{$courier->courier_name}}</option>
+                                        @endforeach
+                                        @endif
+                                    </select>
+                                    @endif
+                                    <div id="reasonErr" class="invalid-feedback"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-2">
+                            <div class="mt10">
+                                <label class="bold">Traking No</label>
+                                @isset($courier_detatils)
+                                <input type="text" class="form-control" placeholder="Enter Traking No"
+                                    value="{{$courier_detatils->awb_number}}" id="trackingNo" name="trackingNo" disabled>
+                                @else
+                                <input type="text" class="form-control" placeholder="Enter Traking No"
+                                    value="" id="trackingNo" name="trackingNo" disabled>
+                                @endif
+                            </div>
+                            <p id="error_tracking"></p>
+                        </div>
+                        @isset($courier_detatils)
+                        <div class="col-sm-4 col-md-2" id="show_courier">
+                            <div class="mt10">
+                                <label class="bold">Other Courier Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                    id="courierName" name="courierName" value="{{$courier_detatils->provider_name}}" disabled>
+                            </div>
+                            <p id="error_courier_text"></p>
+                        </div>
+                        @else
+                        <div class="col-sm-4 col-md-2" id="show_courier">
+                            <div class="mt10">
+                                <label class="bold">Other Courier Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Courier Name"
+                                    id="courierName" name="courierName" disabled>
+                            </div>
+                            <p id="error_courier_text"></p>
+                        </div>
+                        @endif
+                        <div class="col-sm-4 col-md-2">
+                        <div class="mt10">
+                            <label class="bold">Shipping Date</label>
+                            @isset($courier_detatils)
+                            <input type="date" class="form-control" id="shippingDate"
+                            name="shippingDate" value="{{$courier_detatils->shipment_date->toDateString()}}" disabled>
+                            @else
+                            <input type="date" class="form-control" id="shippingDate" disabled
+                                name="shippingDate">
+                            @endif
+
+                        </div>
+                        <p id="error_shipping_date"></p>
+
+                    </div>
+                    <div class="col-sm-4 col-md-2">
+                        <div class="mt10">
+                            <label class="bold">Delivery Date</label>
+                            @isset($courier_detatils)
+                            <input type="date" class="form-control"  value="{{$courier_detatils->expected_delivery_date->toDateString()}}" id="deliveryDate" value=""
+                                name="deliveryDate" disabled>
+                            @else
+                            <input type="date" class="form-control" id="deliveryDate" disabled
+                            name="deliveryDate">
+                            @endif
+                        </div>
+                        <p id="error_delhivery_date"></p>
+
+                    </div>
+                    </div>
+                    <div class="row mt-5">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="ek_group">
+                                <label class="eklabel req" style="width: 32%;">Cancellation Reason:<span class="r_color">*</span></label>
+                                <div class="ek_f_input">
+                                    <select class="form-select" id="reason" disabled>
+                                        <option value="{{$returnOrder->reason}}" selected> {{$returnOrder->reason}} </option>
+                                    </select>
+                                    <div id="reasonErr" class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="multi-row">Attachement:<span class="req_star">*</span>
+                @if(!empty($attachment))
+                    @if(!empty($attachment['image']))
+                    @foreach($attachment['image'] as $key => $attach)
+                    <div class="image-upload-box" id="box-{{$loop->index+1}}" >
+                        <img id="img-box-{{$loop->index+1}}" src="{{asset($attach)}}" alt="Image" onclick="dowloadFile(`{{asset($attach)}}`)" />
+                    </div>
+                    @endforeach
+                    @endif
+                    @if(!empty($attachment['video']))
+                    @foreach($attachment['video'] as $key => $attach)
+                    <div class="video-container" onclick="dowloadFile(`{{asset($attach)}}`)">
+                        <div class="video-placeholder">
+                            <div style="margin: 4px 0px 2px 0px;">
+                                <svg viewBox="0 0 64 64" width="38" height="38" fill="#FAFAFA">
+                                    <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.15)" />
+                                    <polygon points="25,16 25,48 48,32" />
+                                </svg>
+                            </div>
+                        </div>
+                        <video class="video-element" style="display:block;">
+                        <source src="{{asset($attach)}}" class="video-source" >
+                        </video>
+                        <div class="play-icon">
+                            <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
+                                <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.5)" />
+                                <polygon points="25,16 25,48 48,32" />
+                            </svg>
+                        </div>
+                    </div>
+                    @endforeach
+                    @endif
+                @endif
+                    
+                </div>
+                <div class="row mt-5">
+                    <div class="col-sm-12 col-md-8">
+                        <div class="ek_group">
+
+                            <label class="eklabel req">
+                                Comments
+                            </label>
+                            <div class="ek_f_input">
+                                <div id="commnetBox" style="padding:10px">
+                                    @if($returnOrder->returnComments->isNotEmpty())
+                                    @foreach($returnOrder->returnComments as $key => $comment)
+                                    @if($comment->role_type == ROLE_BUYER)
+                                    @if($key > 0)
+                                    <hr>
+                                    @endif
+                                    <div class="cardhead d-flex justify-content-between align-items-center">
+                                        <h3 class="cardtitle">Buyer</h3>
+                                        <div class="text-end">
+                                            <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding-left:10px; text-align:justify;" id="cmntContr">
+                                        {{$comment->comment}}
+                                    </div>
+                                    @elseif($comment->role_type == ROLE_SUPPLIER)
+                                    @if($key > 0)
+                                    <hr>
+                                    @endif
+                                    <div class="cardhead d-flex justify-content-between align-items-center">
+                                        <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
+                                        <div class="text-end">
+                                            <h4 class="cardtitle">Supplier</h4>
+
+                                        </div>
+                                    </div>
+                                    <div style="padding-left:10px; text-align:justify;" id="cmntContr">
+                                        {{$comment->comment}}
+                                    </div>
+                                    @elseif($comment->role_type == ROLE_ADMIN)
+                                    @if($key > 0)
+                                    <hr>
+                                    @endif
+                                    <div class="cardhead d-flex justify-content-between align-items-center">
+                                        <h3 class="cardtitle">Admin</h3>
+                                        <div class="text-end">
+                                            <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding-left:10px; text-align:justify;" id="cmntContr">
+                                        {{$comment->comment}}
+                                    </div>
+                                    @endif
+                                    @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-md-5">
+                        <div class="ek_group">
+                        <label class="eklabel req"  style="width: 32%;">
+                                <span>Amount to be refund</span>
+                            </label>
+                            <input type="text" class="border ms-5 ps-2" disabled value="{{number_format($returnOrder->order->total_amount,2)}}">
+                        </div>
+                        <div class="ek_group">
+                            <label class="eklabel req " style="width: 30%;">
+                                <span>Select an Option:<span class="req_star">*</span></span>
+                            </label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="accept" disabled {{$returnOrder->status == 'Accepted' ? 'checked' : ''}} value="3">
+                                <label class="form-check-label" for="accept">
+                                    Accept
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="decline" disabled {{$returnOrder->status == 'Decline' ? 'checked ' : ''}} value="5">
+                                <label class="form-check-label" for="decline">
+                                    Decline
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="selection" id="approve" disabled  {{$returnOrder->status == 'Approved' ? 'checked' : ''}} value="4">
+                                <label class="form-check-label" for="approve">
+                                    Approve
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="ek_group">
+                        <div class="d-flex">
+
+                        <div class="upload-original-invoice">
+                            <label>
+                                <span>
+                                    Download Shipping Label<span class="req_star">*</span>
+                                    @isset($courier_detatils)
+                                    <button class="file-label-text btn btnekomn_dark ms-2" onclick="dowloadFile(`{{asset($courier_detatils->file_path)}}`)">Download</button>
+                                    @else
+                                    <button class="file-label-text btn btnekomn_dark ms-2" disabled>Download</button>
+                                    @endif
+                                </span>
+                            </label>
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <?php
+                    $shipping_cost = 0;
+                    $gst = 0;
+                    $other_charges = 0;
+                    $total_order_cost = 0;
+                    $product = 0;
+                    ?>
+                    @if($returnOrder->order->orderItemsCharges->isNotEmpty())
+                    @foreach($returnOrder->order->orderItemsCharges as $orderItem)
+                    @php
+                    $product += $orderItem->total_price_exc_gst;
+                    $shipping_cost += $orderItem->shipping_charges;
+                    $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+                    $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                    @endphp
+                    @endforeach
+                    @endif
+                    <div class="col-md-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <!-- <tr>
+                                    <th>Order No</th>
+                                    <th>Order Date</th>
+                                </tr> -->
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Product Charges</td>
+                                    <td>{{number_format($product,2)}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Shipping Charges</td>
+                                    <td>{{number_format($shipping_cost,2)}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Other Charges</td>
+                                    <td>{{number_format($other_charges,2)}}</td>
+                                </tr>
+                                <tr>
+                                    <td>GST Charges</td>
+                                    <td>{{number_format($gst,2)}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Order Amount</td>
+                                    <td>{{number_format($returnOrder->order->total_amount,2)}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- <div class="row mt-3">
+                    <div class="col-md-6">
+                        
+                    </div>
+                </div> -->
+                <div class="row mt-5">
+                    <div class="col-sm-12 col-md-8">
+                        <div class="ek_group">
+                            <label class="eklabel req">
+                                <span>Comment:</span>
+                            </label>
+                            <div class="wrapperComment">
+                                <div class="commentBoxfloat">
+                                    <form id="cmnt">
+                                        <fieldset>
+                                            <div class="form_grp">
+                                                <label id="comment">comment</label>
+                                                <textarea id="userCmnt" placeholder="Write your comment here."></textarea>
+                                            </div>
+                                            <div class="form_grp">
+                                                <button type="button" id="comment_submit">Submit</button>
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="saveform_footer text-right single-button">
+                     @if (auth()->user()->hasRole(ROLE_BUYER))
+                     @if($returnOrder->status == 'Decline')
+                    <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
+                    @else
+                    <button id="btnDispute" class="btn btnekomn_dark" disabled>Dispute</button>
+                    @endif
+                    @else
+                    <button id="btnSubmit" style="margin-left:10px;" class="btn btnekomn">Submit</button>
+                    <a class="btn btn-danger" href="{{route('list.return.order')}}" style="margin-left:10px;">Cancel</a>
+                    @endif
+                </div>
+
+            </div>
+        @else
+        <div class="card ekcard pa shadow-sm">
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
                     <div class="text-end">
@@ -135,9 +519,9 @@
 
                     </div>
                     <div class="row">
-                        <div class="col-sm-12 col-md-4">
+                        <div class="col-sm-12 col-md-6">
                             <div class="ek_group">
-                                <label class="eklabel req">Cancellation Reason:<span class="r_color">*</span></label>
+                                <label class="eklabel req" style="width: 32%;">Cancellation Reason:<span class="r_color">*</span></label>
                                 <div class="ek_f_input">
                                     <select class="form-select" id="reason" disabled>
                                         <option value="{{$returnOrder->reason}}" selected> {{$returnOrder->reason}} </option>
@@ -153,13 +537,13 @@
                     @if(!empty($attachment['image']))
                     @foreach($attachment['image'] as $key => $attach)
                     <div class="image-upload-box" id="box-{{$loop->index+1}}" >
-                        <img id="img-box-{{$loop->index+1}}" src="{{asset($attach)}}" alt="Image" />
+                        <img id="img-box-{{$loop->index+1}}" src="{{asset($attach)}}" alt="Image" onclick="dowloadFile(`{{asset($attach)}}`)" />
                     </div>
                     @endforeach
                     @endif
                     @if(!empty($attachment['video']))
                     @foreach($attachment['video'] as $key => $attach)
-                    <div class="video-container">
+                    <div class="video-container" onclick="dowloadFile(`{{asset($attach)}}`)">
                         <div class="video-placeholder">
                             <div style="margin: 4px 0px 2px 0px;">
                                 <svg viewBox="0 0 64 64" width="38" height="38" fill="#FAFAFA">
@@ -167,10 +551,9 @@
                                     <polygon points="25,16 25,48 48,32" />
                                 </svg>
                             </div>
-                            <h6>Upload Video</h6>
                         </div>
                         <video class="video-element" style="display:block;">
-                        <source src="{{asset($attach)}}" class="video-source">
+                        <source src="{{asset($attach)}}" class="video-source" >
                         </video>
                         <div class="play-icon">
                             <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
@@ -178,8 +561,6 @@
                                 <polygon points="25,16 25,48 48,32" />
                             </svg>
                         </div>
-                        <div class="delete-icon">&#10006;</div>
-                        <input type="file" class="file-input" accept="video/*">
                     </div>
                     @endforeach
                     @endif
@@ -198,6 +579,9 @@
                                     @if($returnOrder->returnComments->isNotEmpty())
                                     @foreach($returnOrder->returnComments as $key => $comment)
                                     @if($comment->role_type == ROLE_BUYER)
+                                    @if($key > 0)
+                                    <hr>
+                                    @endif
                                     <div class="cardhead d-flex justify-content-between align-items-center">
                                         <h3 class="cardtitle">Buyer</h3>
                                         <div class="text-end">
@@ -208,7 +592,9 @@
                                         {{$comment->comment}}
                                     </div>
                                     @elseif($comment->role_type == ROLE_SUPPLIER)
+                                    @if($key > 0)
                                     <hr>
+                                    @endif
                                     <div class="cardhead d-flex justify-content-between align-items-center">
                                         <span class="fs-12">{{$comment->created_at->toDateString()}} - ({{$comment->created_at->diffForHumans()}})</span>
                                         <div class="text-end">
@@ -220,7 +606,9 @@
                                         {{$comment->comment}}
                                     </div>
                                     @elseif($comment->role_type == ROLE_ADMIN)
+                                    @if($key > 0)
                                     <hr>
+                                    @endif
                                     <div class="cardhead d-flex justify-content-between align-items-center">
                                         <h3 class="cardtitle">Admin</h3>
                                         <div class="text-end">
@@ -242,7 +630,10 @@
                 <div class="row mt-5">
                     <div class="col-md-5">
                         <div class="ek_group">
-                            <h5 class="ps-6">Amount to be refund</h5><input type="text" class="border ms-5 ps-2" value="{{number_format($returnOrder->order->total_amount,2)}}">
+                        <label class="eklabel req"  style="width: 32%;">
+                                <span>Amount to be refund</span>
+                            </label>
+                            <input type="text" class="border ms-5 ps-2" value="{{number_format($returnOrder->order->total_amount,2)}}">
                         </div>
                         <div class="ek_group">
                             <label class="eklabel req " style="width: 30%;">
@@ -274,13 +665,14 @@
                         <div class="upload-original-invoice">
                             <label>
                                 <span>
-                                    Please book a return shipment and update below details<span class="req_star">*</span></span>
+                                    Please book a return shipment and upload the shipping label<span class="req_star">*</span>
+                                </span>
                             </label>
                             <input type="file" id="UploadInvoice" class="upload_invoice" accept=".pdf,jpeg,jpg" style="display: none;">
                             <div class="d-flex gap-2 align-items-center">
                                 <div id="UploadInvoiceErr" class="text-danger"></div>
                                 <label for="UploadInvoice" class="file-label invice m-0">
-                                    <span class="file-label-text">Upload Original Invoice</span>
+                                    <span class="file-label-text">Upload Shipping Label</span>
                                 </label>
                             </div>
                         </div>
@@ -376,7 +768,7 @@
                 </div>
 
             </div>
-        </div>
+        @endif
         @include('dashboard.layout.copyright')
     </div>
     @endsection
@@ -587,5 +979,14 @@
 
         // });
     });
+
+    function dowloadFile(url) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = url.split('/').pop();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }   
 </script>
 @endsection

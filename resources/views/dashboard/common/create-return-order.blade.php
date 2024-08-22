@@ -392,10 +392,10 @@
                             confirmButton.style.backgroundColor = '#feca40';
                             confirmButton.style.color = 'white';
                         }
-                    })
-                    .then(function() {
-                        window.location.href = "{{route('create.return.order')}}";
                     });
+                    // .then(function() {
+                    //     window.location.href = "{{route('create.return.order')}}";
+                    // });
                 }
             });
         }

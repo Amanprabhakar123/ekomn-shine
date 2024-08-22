@@ -45,6 +45,9 @@ class ReturnOrderController extends Controller
      */
     public function createReturnOrder(Request $request)
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CREATE_RETURN_ORDER)) {
+            abort(403);
+        }
         $returnOrder = new ReturnOrder();
         $return_request = $returnOrder->generateReturnNumber();
         $reasons = ReturnOrder::RETURN_RESON;
@@ -284,9 +287,6 @@ class ReturnOrderController extends Controller
      */
     public function editReturnOrder(Request $request, $return_id)
     {
-        if (!auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
-            abort(403);
-        }
         $returnOrder = ReturnOrder::where('id', salt_decrypt($return_id))->with('order.orderItemsCharges')->first();
         if (!$returnOrder) {
             abort(404);
@@ -299,7 +299,6 @@ class ReturnOrderController extends Controller
         }
         $courierList = CourierDetails::orderBy('id', 'desc')->get();
         $courier_detatils = $returnOrder->returnShipments()->first();
-        // dd($courier_detatils);
         $attachment = json_decode($returnOrder->file_path, true);
 
         return view('dashboard.common.edit-return-order', get_defined_vars());

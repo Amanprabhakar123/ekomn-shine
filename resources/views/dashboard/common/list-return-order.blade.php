@@ -7,7 +7,9 @@
             <div class="card ekcard pa shadow-sm">
                 <div class="cardhead">
                     <h3 class="cardtitle">My Return Orders</h3>
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_CREATE_RETURN_ORDER))
                         <a href="{{route('create.return.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Add New Return</a>
+                    @endif
                 </div>  
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Order no and return no.">
