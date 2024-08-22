@@ -225,9 +225,35 @@ class ReturnOrderController extends Controller
     {
         try {
             $perPage = $request->input('perPage', 10);
-            $returnOrder = ReturnOrder::with('order.orderItemsCharges')->orderBy('id', 'desc');
+            $search = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
+            $sort_by_status = $request->input('sort_by_status', null);
+            // Allowed sort fields to prevent SQL injection
+            $allowedSorts = ['quantity', 'return_date', 'dispute'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
-            $returnOrder = $returnOrder->paginate($perPage);
+            $returnOrder = ReturnOrder::with('order.orderItemsCharges');
+            if ($search) {
+                $returnOrder = $returnOrder->where('return_number', 'like', '%' . $search . '%')
+                    ->orWhereHas('order', function ($query) use ($search) {
+                        $query->where('order_number', 'like', '%' . $search . '%');
+                    })
+                    ->orderBy('id', 'desc');
+            }
+
+            if ($sort_by_status) {
+                $returnOrder = $returnOrder->where('status', $sort_by_status)->orderBy('id', 'desc');
+            }
+
+            if ($sort == 'quantity') {
+                $returnOrder->join('orders', 'orders.id', '=', 'return_orders.order_id');
+                $returnOrder->join('order_item_and_charges', 'orders.id', '=', 'order_item_and_charges.order_id');
+                $returnOrder->select('return_orders.*', \DB::raw('SUM(order_item_and_charges.quantity) as quantity'));
+                $returnOrder->groupBy('return_orders.order_id');
+            }
+            $returnOrder = $returnOrder->orderBy($sort, $sortOrder)->paginate($perPage);
             $resource = new Collection($returnOrder, new ReturnListTransformer());
             $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($returnOrder));
             $data = $this->fractal->createData($resource)->toArray();
@@ -239,7 +265,6 @@ class ReturnOrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
             return response()->json(['data' => [
@@ -321,7 +346,7 @@ class ReturnOrderController extends Controller
                 'message' => __('auth.commentAdded'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-            
+
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),

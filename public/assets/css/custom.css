@@ -146,6 +146,7 @@
 }
 
 
+/* retrun edit page css */
 .commnetBox{
   width: 50%;
   margin-top: 10px;
@@ -201,7 +202,7 @@ textarea{
   border:1px solid #eee;
   resize:none;
 }
-button{
+#comment_submit{
   padding:5px 20px;
   background-color:#ffb20c;
   color:#fff;
@@ -240,6 +241,21 @@ button{
   right:5px;
   background:url(https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/cross-24-16.png) no-repeat center #0e7ec7;
   z-index:2;
+}
+
+/* end retrun edit page css */
+
+/* shorting class for table */
+th.h_sorting.active i{
+  color: var(--dark-text-color)!important;
+}
+th.h_sorting.active.asc i.fa-caret-down{
+  visibility: hidden;
+  
+}
+th.h_sorting.active.desc i.fa-caret-up{
+  visibility: hidden;
+  
 }
 
 

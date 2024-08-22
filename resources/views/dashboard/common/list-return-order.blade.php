@@ -7,39 +7,63 @@
             <div class="card ekcard pa shadow-sm">
                 <div class="cardhead">
                     <h3 class="cardtitle">My Return Orders</h3>
-                </div>
+                        <a href="{{route('create.return.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Add New Return</a>
+                </div>  
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Order no and return no.">
                 <div class="filter">
                     <div class="ek_group m-0">
-                         <label class="eklabel w_50_f">Sort by:</label>
+                         <label class="eklabel eklabel_60 m-0">Sort by:</label>
                         <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="">Select</option>
-                                <option value="0">Parent Category</option>
-                                <option value="1">Sub Category</option>
-                                <option value="2">Child Category</option>
-                                <option value="3">Keyword</option>
+                                <option value="1">Open</option>
+                                <option value="2">In Progress</option>
+                                <option value="3">Accepted</option>
+                                <option value="4">Approved</option>
+                                <option value="5">Decline</option>
+
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="table-responsive tres_border">
-                <table class="normalTable whitespace">
+            <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
                             <!-- <th>Sr. No.</th> -->
-                            <th>Return Req #</th>
+                            <th>Return Number</th>
                             <th>Ekomn Order</th>
                             <th>Order Type</th>
                             <th>Product Title</th>
-                            <th>Qty</th>
-                            <th>Return date</th>
+                            <th class="h_sorting" data-sort-field="quantity">Qty
+                                <span class="sort_pos">
+                                    <small class="sort_t">
+                                        <i class="fas fa-caret-up"></i>
+                                        <i class="fas fa-caret-down"></i>
+                                    </small>
+                                </span>
+                            </th>
+                            <th class="h_sorting" data-sort-field="return_date">Return date
+                                <span class="sort_pos">
+                                    <small class="sort_t">
+                                        <i class="fas fa-caret-up"></i>
+                                        <i class="fas fa-caret-down"></i>
+                                    </small>
+                                </span>
+                            </th>
                             <th>Return reason</th>
                             <th>Order amount</th>
                             <th>Return status</th>
-                            <th>Dispute</th>
+                            <th class="h_sorting" data-sort-field="dispute">Dispute
+                                <span class="sort_pos">
+                                    <small class="sort_t">
+                                        <i class="fas fa-caret-up"></i>
+                                        <i class="fas fa-caret-down"></i>
+                                    </small>
+                                </span>
+                            </th>
                             <!-- <th>Action</th> -->
                         </tr>
                         </thead>
@@ -102,9 +126,32 @@
             fetchData();
         });
 
+        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+            let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+            const h_sorting = document.querySelectorAll(".h_sorting");
+            h_sorting.forEach(element => {
+                element.addEventListener("click", () => {
+                    const sortFieldElement = element;
+                    sortField = sortFieldElement.getAttribute("data-sort-field");
+                    sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+                    fetchData();
+                    h_sorting.forEach(el => {
+                        el.classList.remove("active");
+                        el.classList.remove("asc");
+                        el.classList.remove("desc");
+                    });
+                    element.classList.add("active");
+                    element.classList.add(sortOrder);
+                });
+            });
+
         function fetchData() {
             // Make an API request to fetch inventory data
             let apiUrl = `return-order-list?per_page=${rows}&page=${currentPage}`;
+
+            if (sortField && sortOrder) {
+                    apiUrl += `&sort=${sortField}&order=${sortOrder}`;
+                }
 
             if (searchQuery) {
             apiUrl += `&query=${searchQuery.value}`;
