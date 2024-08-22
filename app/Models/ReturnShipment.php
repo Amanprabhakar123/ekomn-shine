@@ -76,6 +76,7 @@ class ReturnShipment extends Model
     const STATUS_CANCELLED = ShipmentAwb::STATUS_CANCELLED;
     const STATUS_RETURNED = ShipmentAwb::STATUS_RETURNED;
     const STATUS_REFUNDED = ShipmentAwb::STATUS_REFUNDED;
+    const STATUS_IN_TRANSIT = 7;
 
     /**
      * The attributes that should be cast to native types.
@@ -176,6 +177,16 @@ class ReturnShipment extends Model
     }
 
     /**
+     * Get the status for the ReturnShipment
+     *
+     * @return string
+     */
+    public function isTransist()
+    {
+        return $this->status === self::STATUS_IN_TRANSIT;
+    }
+
+    /**
      * Get the courier type for the ReturnShipment
      *
      * @return string
@@ -206,7 +217,7 @@ class ReturnShipment extends Model
             case self::STATUS_CREATED:
                 return 'Created';
             case self::STATUS_SHIPPED_DISPATCHE:
-                return 'In Transit';
+                return 'Dispatch';
             case self::STATUS_DELIVERED:
                 return 'Delivered';
             case self::STATUS_CANCELLED:
@@ -215,6 +226,8 @@ class ReturnShipment extends Model
                 return 'Returned';
             case self::STATUS_REFUNDED:
                 return 'Refunded';
+            case self::STATUS_IN_TRANSIT:
+                return 'In Transit';
             default:
                 return null;
         }

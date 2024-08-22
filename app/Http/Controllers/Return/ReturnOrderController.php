@@ -17,6 +17,8 @@ use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Transformers\ReturnListTransformer;
+use App\Transformers\ReturnOrderTrackingTransformer;
+
 
 class ReturnOrderController extends Controller
 {
@@ -452,7 +454,8 @@ class ReturnOrderController extends Controller
      * @param Request $request
      * @return view
      */
-    public function raiseDispute(Request $request){
+    public function raiseDispute(Request $request)
+    {
         try{
             if (!auth()->user()->hasRole(User::ROLE_BUYER)) {
                 abort(403);
@@ -497,6 +500,66 @@ class ReturnOrderController extends Controller
                 'message' => __('auth.disputeRaised'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+    
+        }
+    }
+
+
+    /**
+     * Create return order tracking view page
+    */
+    public function returnOrderTracking(){
+        return view('dashboard.common.return-order-tracking');
+    }
+
+    /**
+     * Get return order tracking list
+     * 
+     * @param Request $request
+     * @return view
+     */
+    public function getReturnOrderTracking(Request $request)
+    {
+        try {
+            $perPage = $request->input('perPage', 10);
+            $search = $request->input('query', null);
+            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
+            $sort_by_status = $request->input('sort_by_status', null);
+            // Allowed sort fields to prevent SQL injection
+            $allowedSorts = ['quantity', 'return_date', 'dispute'];
+            $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
+            $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
+
+            $returnOrder = ReturnShipment::with('return', 'order', 'order.orderItemsCharges');
+            if ($search) {
+                $returnOrder = $returnOrder->whereHas('return', function ($query) use ($search) {
+                    $query->where('return_number', 'like', '%' . $search . '%')
+                        ->orWhereHas('order', function ($query) use ($search) {
+                            $query->where('order_number', 'like', '%' . $search . '%');
+                        });
+                    
+                })->orderBy('id', 'desc');
+            }
+
+            if ($sort_by_status) {
+                $returnOrder = $returnOrder->where('status', $sort_by_status)->orderBy('id', 'desc');
+            }
+
+            $returnOrder = $returnOrder->paginate($perPage);
+            $resource = new Collection($returnOrder, new ReturnOrderTrackingTransformer());
+            $resource->setPaginator(new \League\Fractal\Pagination\IlluminatePaginatorAdapter($returnOrder));
+            $data = $this->fractal->createData($resource)->toArray();
+            return response()->json($data);
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -504,4 +567,48 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
     }
+
+/*
+    * Update status of shipment table
+    *
+    * @param Request $request
+    * @return view
+    */
+    public function updateShipmentStatus(Request $request)
+    {
+        try{
+            $returnShipment = ReturnShipment::find(salt_decrypt($request->shipment_id));
+            if (!$returnShipment) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.returnShipmentNotFound'),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            $returnShipment->status = $request->status;
+            $returnShipment->save();
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.returnOrderTracking'),
+            ]], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
+        }
+    }
+    
 }

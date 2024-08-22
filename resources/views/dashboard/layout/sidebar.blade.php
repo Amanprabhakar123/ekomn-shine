@@ -87,6 +87,11 @@
                         <a class="nav-link" href="{{route('create.return.order')}}">Add New Return</a>
                     </li>
                     @endif
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_ORDER_TRACKING))
+                    <li>
+                        <a class="nav-link" href="{{route('return.order.tracking')}}">Return Order Tracking</a>
+                    </li>
+                    @endif
                 </ul>
             </li>
             @endif

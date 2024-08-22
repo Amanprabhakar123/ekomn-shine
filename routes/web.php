@@ -98,6 +98,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('create-return-order', [ReturnOrderController::class, 'createReturnOrder'])->name('create.return.order');
     Route::get('list-return-order', [ReturnOrderController::class, 'listReturnOrder'])->name('list.return.order');
     Route::get('edit-return-order/{id}', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
+    Route::get('return-order-tracking', [ReturnOrderController::class, 'returnOrderTracking'])->name('return.order.tracking');
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -165,6 +166,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('add-return-comment', [ReturnOrderController::class, 'addReturnOrderComment'])->name('add.return.order');
         Route::post('update-return-order', [ReturnOrderController::class, 'updateReturnOrder'])->name('update.return.order');
         Route::post('raise-dispute', [ReturnOrderController::class, 'raiseDispute'])->name('raise.dispute');
+        Route::get('return-order-tracking-list', [ReturnOrderController::class, 'getReturnOrderTracking'])->name('return.order.tracking.list');
+        Route::post('update-shipment-status', [ReturnOrderController::class, 'updateShipmentStatus'])->name('update.shipment.status');
     });
 });
 
