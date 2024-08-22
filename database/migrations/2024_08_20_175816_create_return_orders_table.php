@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id')->nullable()->comment('Order ID from Orders table');
             $table->string('return_number')->unique()->comment('A unique number or identifier for the return order, useful for tracking and reference');
             $table->timestamp('return_date')->default(now())->comment('The date when the return order was issued');
+            $table->decimal('amount', 8)->nullable()->comment('The amount to be refunded to the customer');
             $table->tinyInteger('status')->default(1)->comment('1-> Open, 2: InProgress, 3: Accept, 4: Approved, 5: Rejected');
             $table->tinyInteger('dispute')->default(0)->comment('0: No, 1: Yes');
             $table->text('file_path')->nullable()->comment('The path to the uploaded return invoice file or images');

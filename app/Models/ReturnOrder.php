@@ -23,6 +23,7 @@ class ReturnOrder extends Model
         'order_id',
         'return_number',
         'return_date',
+        'amount',
         'status',
         'dispute',
         'file_path',
