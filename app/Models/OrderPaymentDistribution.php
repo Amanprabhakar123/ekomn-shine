@@ -86,6 +86,10 @@ class OrderPaymentDistribution extends Model
     // Default Adjustment amount 
     const DEFAULT_ADJUSTMENT_AMOUNT = 0;
 
+    // Refund Type
+    const REFUND_TYPE_CANCEL = 1;
+    const REFUND_TYPE_RETURN = 2;
+
     /**
      * Get the options for logging changes to the model.
      */

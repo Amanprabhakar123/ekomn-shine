@@ -52,6 +52,12 @@ class ReturnOrder extends Model
 
     const DISPUTE_NO = 0;
     const DISPUTE_YES = 1;
+    const DISPUTE_RESOLVED = 2;
+
+    const DISPUTE_ARRAY = [
+        self::DISPUTE_RESOLVED,
+        self::DISPUTE_YES,
+    ];
 
     protected $hidden = [
         'deleted_at',
@@ -184,7 +190,16 @@ class ReturnOrder extends Model
      */
     public function getDispute(): string
     {
-        return $this->dispute == self::DISPUTE_YES ? 'Yes' : 'No';
+        switch ($this->dispute) {
+            case self::DISPUTE_NO:
+                return 'No';
+            case self::DISPUTE_YES:
+                return 'Yes';
+            case self::DISPUTE_RESOLVED:
+                return 'Resolved';
+            default:
+                return 'Unknown';
+        }
     }
 
     /**
@@ -195,6 +210,16 @@ class ReturnOrder extends Model
     public function isDisputed(): bool
     {
         return $this->dispute == self::DISPUTE_YES;
+    }
+
+    /**
+     * Check if the return order is resolved
+     *
+     * @return bool
+     */
+    public function isDisputeResolved(): bool
+    {
+        return $this->dispute == self::DISPUTE_RESOLVED;
     }
 
     /**
