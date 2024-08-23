@@ -45,7 +45,7 @@ Supplier Profile
                                 <div class="ek_group">
                                     <label class="eklabel">Email address:</label>
                                     <div class="ek_f_input">
-                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="email" value="{{ auth()->user()->companyDetails->email}}" />
+                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="email" value="{{ auth()->user()->companyDetails->email}}"  disabled/>
                                         <div id="emailErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
