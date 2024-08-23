@@ -224,12 +224,12 @@
                       <div class="feature">
                         <div class="SelectFeatures">
                           <div class="defaulPlan">
-                            <span>Monthly</span>
+                            <span class="monthly-label">Monthly</span>
                             <div class="form-check form-switch switch-lg m-0">
                               <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
                               <label class="form-check-label" for="flexSwitchCheckDefault"></label>
                             </div>
-                            <span>Yearly</span>
+                            <span class="yearly-label">Yearly</span>
                           </div>
                           <div class="SelectFeature">
                             <label for="">Select Features</label>
@@ -243,40 +243,45 @@
                         <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt('1')}}" />
                         <label class="plan_details" for="free">
                           <h2 style="font-size: 15px;">Free Trial - 14 days</h2>
-                          <div class="price">INR 00.00</div>
+                          <div class="price" data-monthly="INR 00.00" data-yearly="INR 00.00">INR 00.00</div>
                           <button class="btn subscribebtn btnekomn">Start Free Trial</button>
                         </label>
                       </div>
                       <div class="feature-value">
-                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Essential" autocomplete="off" value="{{salt_encrypt('2')}}"/>
+                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Essential" autocomplete="off" value="{{salt_encrypt('2')}}"
+                        data-monthly-value="{{salt_encrypt('2')}}" data-yearly-value="{{salt_encrypt('3')}}"/>
                         <label class="plan_details " for="Essential">
                           <h2>Essential</h2>
-                          <div class="price">INR 1999.00</div>
+                          <div class="price" data-monthly="INR 1999.00" data-yearly="INR 22309.00">INR 1999.00</div>
                           <button class="btn subscribebtn btnekomn">Subscribe</button>
                         </label>
                       </div>
                       <div class="feature-value">
-                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Booster" autocomplete="off"  value="{{salt_encrypt('4')}}"/>
-                        <label class="plan_details bestplan" for="Booster">
+                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Booster" autocomplete="off"  value="{{salt_encrypt('4')}}"
+                        data-monthly-value="{{salt_encrypt('4')}}" data-yearly-value="{{salt_encrypt('5')}}"/>
+                        <label class="plan_details bestplan active" for="Booster">
                           <span class="bestplanText">Most Popular</span>
                           <h2>Booster</h2>
-                          <div class="price">INR 2999.00</div>
+                          <div class="price" data-monthly="INR 2999.00" data-yearly="INR 33469.00">INR 2999.00</div>
                           <button class="btn subscribebtn btnekomn">Subscribe</button>
                         </label>
                       </div>
                       <div class="feature-value">
-                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Trade" autocomplete="off" value="{{salt_encrypt('6')}}"/>
+                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Trade" autocomplete="off" value="{{salt_encrypt('6')}}"
+                        data-monthly-value="{{salt_encrypt('6')}}" data-yearly-value="{{salt_encrypt('7')}}"/>
                         <label class="plan_details" for="Trade">
                           <h2>Trade Hub</h2>
-                          <div class="price">INR 7999.00</div>
+                          <div class="price" data-monthly="INR 7999.00" data-yearly="INR 	
+89269.00">INR 7999.00</div>
                           <button class="btn subscribebtn btnekomn">Subscribe</button>
                         </label>
                       </div>
                       <div class="feature-value">
-                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Enterprise" autocomplete="off" value="{{salt_encrypt('8')}}"/>
+                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Enterprise" autocomplete="off" value="{{salt_encrypt('8')}}"
+                        data-monthly-value="{{salt_encrypt('8')}}" data-yearly-value="{{salt_encrypt('9')}}"/>
                         <label class="plan_details" for="Enterprise">
                           <h2>Enterprise</h2>
-                          <div class="price">INR 11999.00</div>
+                          <div class="price" data-monthly="INR 11999.00" data-yearly="INR 133909.00">INR 11999.00</div>
                           <button class="btn subscribebtn btnekomn">Subscribe</button>
                         </label>
                       </div>
@@ -515,6 +520,56 @@
   <!-- <script src="{{asset('assets/js/buyer.register.js')}}"></script> -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
+    document.querySelectorAll('.status-dropdown').forEach(function(selectElement) {
+  const label = selectElement.getAttribute('data-label');
+
+  selectElement.addEventListener('change', function() {
+    const selectedText = this.options[this.selectedIndex].text;
+    this.options[0].text = `${label} ${selectedText}`;
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const switchInput = document.getElementById('flexSwitchCheckDefault');
+  const monthlyLabel = document.querySelector('.monthly-label');
+  const yearlyLabel = document.querySelector('.yearly-label');
+  const prices = document.querySelectorAll('.price');
+  const planInputs = document.querySelectorAll('.selectplanbtn');
+
+  const toggleSwitch = (isYearly) => {
+    switchInput.checked = isYearly;
+    updatePrices(isYearly);
+    updateValues(isYearly);
+  };
+
+  const updatePrices = (isYearly) => {
+    prices.forEach(price => {
+      const monthlyPrice = price.getAttribute('data-monthly');
+      const yearlyPrice = price.getAttribute('data-yearly');
+      price.textContent = isYearly ? yearlyPrice : monthlyPrice;
+    });
+  };
+
+  const updateValues = (isYearly) => {
+    planInputs.forEach(plan => {
+      const monthlyValue = plan.getAttribute('data-monthly-value');
+      const yearlyValue = plan.getAttribute('data-yearly-value');
+      plan.value = isYearly ? yearlyValue : monthlyValue;
+    });
+  };
+
+  monthlyLabel.addEventListener('click', () => toggleSwitch(false));
+  yearlyLabel.addEventListener('click', () => toggleSwitch(true));
+  switchInput.addEventListener('change', () => {
+    const isYearly = switchInput.checked;
+    updatePrices(isYearly);
+    updateValues(isYearly);
+  });
+
+  // Initialize prices and values based on the initial toggle state
+  updatePrices(switchInput.checked);
+  updateValues(switchInput.checked);
+});
 
 $(document).ready(function () {
   // Function to clear error messages for all fields
@@ -835,55 +890,125 @@ $(document).ready(function () {
             $('#exampleModal').on('hidden.bs.modal', function () {
               $('#exampleModal').attr('aria-hidden', 'true');
             });
+            $(document).on('change', 'input[name="options-base"]', function() {
+              if(this.checked) {
+                $('.plan_details').removeClass('active');
+                $(this).closest('.feature-value').find('.plan_details').addClass('active');
+              }
+            });
+          // Handle button click event inside the label
+          $(document).on('click', '.subscribebtn', function(e) {
+            e.preventDefault();
+            var radioInput = $(this).closest('.plan_details').prev('input[name="options-base"]');
+            if(!radioInput.prop('checked')) {
+              radioInput.prop('checked', true).trigger('change');
+            }
+            const planValue = radioInput.val();
+            handlePayment(planValue);
+          });
+        function handlePayment(planValue) {
+          const subscriptionPlan = {
+            plan: planValue,
+            hiddenField: $('#hiddenField').val(),
+          };
+        ApiRequest('create-payment', 'POST', subscriptionPlan)
+        .then(response => {
+            // console.log("API Response:", response);
+            if (response.data.statusCode == 200) {
+                if (response.data.is_trial_plan) {
+                    window.location.href = "{{route('thankyou')}}";
+                } else {
+                    var options = {
+                        "key": "{{env('RAZORPAY_KEY')}}",
+                        "amount": response.data.order.amount,
+                        "currency": response.data.order.currency,
+                        "name": "{{env('APP_NAME')}}",
+                        "description": "Ecomn Buyer Subscription Transaction",
+                        "image": "{{asset('assets/images/Logo.svg')}}",
+                        "order_id": response.data.order.id,
+                        "callback_url": "{{route('payment.success')}}",
+                        "prefill": {
+                            "name": $('#first_name').val() + ' ' + $('#last_name').val(),
+                            "email": $("#email").val(),
+                            "contact": $('#mobile').val()
+                        },
+                        "notes": {
+                            "address": "Gurugram, Haryana India"
+                        },
+                        "theme": {
+                            "color": "#FECA40"
+                        }
+                    };
 
-            $('input[name="options-base"]').change(function() {
-                  if (this.checked) {
-                    console.log(this.value);
-                      const subscriptionPlan = {
-                        plan: this.value,
-                        hiddenField: $('#hiddenField').val(),
-                      };
+                    var rzp1 = new Razorpay(options);
 
-                      ApiRequest('create-payment', 'POST', subscriptionPlan)
-                      .then(response => {
-                        if (response.data.statusCode == 200) {
-                          if(response.data.is_trial_plan){
-                            window.location.href = "{{route('thankyou')}}";
-                          }
-                        else{
-                              var options = {
-                                "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
-                                "amount": response.data.order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-                                "currency": response.data.order.currency,
-                                "name": "{{env('APP_NAME')}}", //your business name
-                                "description": "Ecomn Buyer Subscription Transaction",
-                                "image": "{{asset('assets/images/Logo.svg')}}",
-                                "order_id": response.data.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                                "callback_url": "{{route('payment.success')}}",
-                                "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-                                    "name": $('#first_name').val()+' '+$('#last_name').val(), //your customer's name
-                                    "email": $("#email").val(),
-                                    "contact":  $('#mobile').val() //Provide the customer's phone number for better conversion rates 
-                                },
-                                "notes": {
-                                    "address": "Gurugram, Haryana India"
-                                },
-                                "theme": {
-                                    "color": "#FECA40"
-                                }
-                            };
-                            var rzp1 = new Razorpay(options);
-                            rzp1.open();
-                            }
-                          }
-                      })
-                      .catch(error => {
-                        console.error('Error:', error);
-                      });
-                  }
-              });
+                    rzp1.on('payment.failed', function (response) {
+                        console.error("Payment Failed:", response.error);
+                    });
 
-            $(document).ready(function() {
+                    rzp1.open();
+                }
+            } else {
+                console.error("API Response Error:", response.data);
+            }
+        })
+        .catch(error => {
+            console.error("API Request Error:", error);
+        });
+    }
+
+
+            // $('input[name="options-base"]').change(function() {
+            //       if (this.checked) {
+            //         console.log(this.value);
+            //           const subscriptionPlan = {
+            //             plan: this.value,
+            //             hiddenField: $('#hiddenField').val(),
+            //           };
+
+            //           ApiRequest('create-payment', 'POST', subscriptionPlan)
+            //           .then(response => {
+            //             if (response.data.statusCode == 200) {
+            //               if(response.data.is_trial_plan){
+            //                 window.location.href = "{{route('thankyou')}}";
+            //               }
+            //             else{
+            //                   var options = {
+            //                     "key": "{{env('RAZORPAY_KEY')}}", // Enter the Key ID generated from the Dashboard
+            //                     "amount": response.data.order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            //                     "currency": response.data.order.currency,
+            //                     "name": "{{env('APP_NAME')}}", //your business name
+            //                     "description": "Ecomn Buyer Subscription Transaction",
+            //                     "image": "{{asset('assets/images/Logo.svg')}}",
+            //                     "order_id": response.data.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            //                     "callback_url": "{{route('payment.success')}}",
+            //                     "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+            //                         "name": $('#first_name').val()+' '+$('#last_name').val(), //your customer's name
+            //                         "email": $("#email").val(),
+            //                         "contact":  $('#mobile').val() //Provide the customer's phone number for better conversion rates 
+            //                     },
+            //                     "notes": {
+            //                         "address": "Gurugram, Haryana India"
+            //                     },
+            //                     "theme": {
+            //                         "color": "#FECA40"
+            //                     }
+            //                 };
+            //                 var rzp1 = new Razorpay(options);
+            //                 rzp1.open();
+            //                 }
+            //               }
+            //           })
+            //           .catch(error => {
+            //             console.error('Error:', error);
+            //           });
+            //       }
+            //   });
+
+            
+            
+            
+              $(document).ready(function() {
               if ($('.sup_formSubmit').length) {
                 $('.sup_formSubmit').on('click', function(event) {
                   event.preventDefault();
