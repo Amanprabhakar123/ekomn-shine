@@ -5,6 +5,7 @@
             <div class="ekom_card prod_detail_section">
                 <div class="container-fluid">
                     <div class="row">
+                        {{--
                         <div class="col-sm-12 col-md-5">
                             <div class="prod_image_box">
                                 <div class="img-card">
@@ -55,12 +56,98 @@
                                                             @endif
                                                         @endif
                                                     @else
-                                                        <video class="smImg prod-video" poster="{{ $main_image }}"
-                                                            data-src="{{ url('storage/' . $media->file_path) }}" controls
-                                                            controlsList="nodownload">
-                                                            <source src="{{ url('storage/' . $media->file_path) }}"
-                                                                type="video/mp4">
+                                                    <div class="smImg smImgVideo">
+                                                        <video controlslist="nodownload">
+                                                        <source src="{{ url('storage/' . $media->file_path) }}" data-src="{{ url('storage/' . $media->file_path) }}" type="video/mp4">
                                                         </video>
+                                                        <div class="play-icon">
+                                                        <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
+                                                            <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.8)" />
+                                                            <polygon points="25,16 25,48 48,32" />
+                                                        </svg>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+
+                                        </div>
+                                    </div>
+                                    <button class="carousel-button next"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        --}}
+                        <div class="col-sm-12 col-md-5">
+                            <div class="prod_image_box">
+                                    @php
+                                        $main_image = '';
+                                    @endphp
+                                    @if (!empty($productVariations->media))
+                                        @foreach ($productVariations->media as $media)
+                                            @if ($media->is_master == IS_MASTER_TRUE)
+                                                @php
+                                                    if(isset($media->thumbnail_path)){
+                                                    $main_image = url($media->file_path);
+                                                    }else{
+                                                    $main_image = url('storage/'.$media->file_path);
+                                                    }
+
+                                                @endphp
+                                                <div class="img-card" id="main-img">
+                                                <!-- The media (image or video) will be dynamically inserted here -->
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                
+                                <div class="carousel-container">
+                                    <button class="carousel-button prev"><i class="fas fa-chevron-left"></i></button>
+                                    <div class="carousel-wrapper">
+                                        <div class="small-card">
+                                            @if (!empty($productVariations->media))
+                                                @foreach ($productVariations->media as $media)
+                                                    @if ($media->media_type == MEDIA_TYPE_IMAGE)
+                                                        @if ($media->is_master == IS_MASTER_TRUE)
+                                                            @isset($media->thumbnail_path)
+                                                            <div class="smImg active">
+                                                            <img src="{{ url($media->thumbnail_path) }}" alt="Main-Image"
+                                                                
+                                                                data-src="{{ url($media->file_path) }}">
+                                                            </div>
+                                                            @else
+                                                            <div class="smImg active">
+                                                            <img src="{{ url('storage/'.$media->file_path) }}" alt="Main-Image"
+                                                                
+                                                                data-src="{{ url('storage/'.$media->file_path) }}">
+                                                            </div>
+                                                            @endif
+                                                        @else
+                                                            @isset($media->thumbnail_path)
+                                                            <div class="smImg">
+                                                            <img src="{{ url($media->thumbnail_path) }}" alt="Other-Image"
+                                                                 data-src="{{ url($media->file_path) }}">
+                                                            </div>
+                                                            @else
+                                                            <div class="smImg active">
+                                                            <img src="{{ url('storage/'.$media->file_path) }}" alt="Main-Image"
+                                                                
+                                                                data-src="{{ url('storage/'.$media->file_path) }}">
+                                                            </div>
+                                                            @endif
+                                                        @endif
+                                                    @else
+                                                        <div class="smImg smImgVideo">
+                                                            <video controlslist="nodownload">
+                                                            <source src="{{ url('storage/' . $media->file_path) }}" data-src="{{ url('storage/' . $media->file_path) }}" type="video/mp4">
+                                                            </video>
+                                                            <div class="play-icon">
+                                                            <svg viewBox="0 0 64 64" width="44" height="44" fill="white">
+                                                                <circle cx="32" cy="32" r="32" fill="rgba(0,0,0,0.8)" />
+                                                                <polygon points="25,16 25,48 48,32" />
+                                                            </svg>
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                 @endforeach
                                             @endif

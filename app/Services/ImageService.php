@@ -46,7 +46,7 @@ class ImageService
      * @param int $thumbHeight
      * @return void
      */
-    public function createEcommerceThumbnail($sourcePath, $thumbnailPath, $thumbWidth = 200, $thumbHeight = 200)
+    public function createEcommerceThumbnail($sourcePath, $thumbnailPath, $thumbWidth = 450, $thumbHeight = 450)
     {
         $source = Source::fromFile($sourcePath);
         $thumbnailWebPPath = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.webp', $thumbnailPath);

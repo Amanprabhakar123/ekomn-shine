@@ -9,19 +9,17 @@
           </p>
         </div>
       </div>
-      <div class="col col-md-2">
+      <div class="col col-md-3">
         <div>
           <h4 class="footer-heading">About Us</h4>
           <ul class="eKomUsefulLink">
-            <li><a href="">Company Info</a></li>
-            <li><a href="">Shipping Policy</a></li>
-            <li><a href="">Return</a></li>
-            <li><a href="">Refund Policy</a></li>
-            <li><a href="">Company Info</a></li>
+            <li><a href="{{route('aboutus')}}">Company Info</a></li>
+            <li><a href="{{route('shipping.policy')}}">Shipping Policy</a></li>
+            <li><a href="{{route('return.policy')}}">Return & Refund Policy</a></li>
           </ul>
         </div>
       </div>
-      <div class="col col-md-2">
+      <!-- <div class="col col-md-2">
         <div>
           <h4 class="footer-heading">Useful Links</h4>
           <ul class="eKomUsefulLink">
@@ -29,20 +27,20 @@
             <li><a href="">Blogs</a></li>
           </ul>
         </div>
-      </div>
-      <div class="col-sm-4 col-md-2">
+      </div> -->
+      <div class="col-sm-4 col-md-3">
         <div>
           <h4 class="footer-heading">Support</h4>
           <ul class="eKomUsefulLink">
-            <li><a href="">Get in Touch</a></li>
-            <li><a href="">Help Center</a></li>
+            <li><a href="{{route('contactus')}}">Contact Us</a></li>
+            <!-- <li><a href="">Help Center</a></li> -->
           </ul>
         </div>
       </div>
       <div class="col-sm-12 col-md-12">
         <div class="copyright_section">
           <div class="copyrightText">
-            &copy; 2024 ekomn.com, All Rights Reserved. <a href="" target="_blank">Terms of Use</a> and <a href="" target="_blank">Privacy Policy</a>
+            &copy; 2024 ekomn.com, All Rights Reserved. <a href="{{route('terms.and.conditions')}}" target="_blank">Terms of Use</a> and <a href="{{route('privacy.policy')}}" target="_blank">Privacy Policy</a>
           </div>
           <div class="socialLinks">
             <a href=""><i class="fab fa-youtube"></i></a>

@@ -1,10 +1,10 @@
 <header>
     <div class="top_header">
         <ul class="b_h_list">
-            <li><a href="{{ route('supplier.login') }}" class="active">Become a Supplier</a></li>
-            <li><a href="">Subscriptions</a></li>
-            <li><a href="">Integrations</a></li>
-            <li><a href="">eKomn Blog</a></li>
+            <li><a href="{{ route('become.supplier') }}" class="active">Become a Supplier</a></li>
+            <li><a href="{{route('subscription')}}">Subscriptions</a></li>
+            <li><a href="{{route('integration')}}">Integrations</a></li>
+            <!-- <li><a href="">eKomn Blog</a></li> -->
         </ul>
     </div>
     <div class="main_header" id="main_header">
@@ -49,7 +49,7 @@
                             @endif
                         </div>
                         <div class="img-box">
-                            <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="some user image" width="32px"
+                            <img src="{{asset('assets/images/icon/user-2.png')}}" alt="some user image" width="32px"
                                 height="32px" />
                         </div>
                     </div>

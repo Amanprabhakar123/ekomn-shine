@@ -22,12 +22,12 @@
                             <li>Avail technology enabled affordable eCommerce services</li>
                         </ul>
                         <div class="introbtnbox">
-                            <button class="btn btnekomn btnround px-5">Join Our Webinar</button>
+                            <a href="https://meet.zoho.in/6VotnvByF2" target="_blank" class="btn btnekomn btnround px-5">Join Our Webinar</a>
                         </div>
                         <p class="mb25">
                             eKomn provides all tools and resources for a successful Online business.
                         </p>
-                        <div>To know more,<a href="" class="a_color mx-1 text_u">contact us</a>today!!</div>
+                        <div>To know more,<a href="{{route('contactus')}}" class="a_color mx-1 text_u">contact us</a>today!!</div>
                     </div>
                 </div>
             </div>
@@ -124,8 +124,8 @@
                             <img src="{{ asset('assets/images/icon/advantageText.svg') }}" alt="">
                             <p class="fs-20 mt30">We literally give wings to your eCommerce enterprise!
                                 More than 10K products across leading categories.</p>
-                            <div class="d-flex justify-content-center mt40 pt-4 mbspace">
-                                <button class="btn btnekomn_dark  py-2 px-4 btnround">Register Now</button>
+                            <div class="d-flex mt40 pt-4 mbspace">
+                                <a href="{{route('become.supplier')}}" class="btn btnekomn_dark  py-2 w_300_f btnround">Register Now</a>
                             </div>
                         </div>
                     </div>
@@ -183,8 +183,8 @@
                             <img src="{{ asset('assets/images/icon/commit.svg') }}" alt="">
                             <p class="fs-20 mt30">Committed to create and support over 1 mm thriving
                                 online enterprises in India by 2027.</p>
-                            <div class="d-flex justify-content-center mt40 pt-4 mbspace">
-                                <button class="btn btnekomn py-2 px-4 btnround">Let's Join hands. Risk Free!!</button>
+                            <div class="d-flex mt40 pt-4 mbspace">
+                                <a href="{{route('become.supplier')}}" class="btn btnekomn py-2 w_300_f btnround">Let's Join hands. Risk Free!!</a>
                             </div>
                         </div>
                     </div>
@@ -244,18 +244,16 @@
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
                                 <div class="clientWords">
                                     <div class="clientimg">
-                                        <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="" />
+                                        <img src="{{asset('assets/images/web/Ananya-Gupta.png')}}" alt="" />
                                     </div>
                                     <div class="authorName">
-                                        <h4>Junaid Khan</h4>
-                                        <span>Founder and CEO</span>
+                                        <h4>Ananya Gupta</h4>
+                                        <span>Founder & CEO Of eMarket India</span>
                                     </div>
                                     <div class="authorContent">
                                         <span class="quote-left fas fa-quote-left me-2"></span>
                                         <span class="authorContentPara">
-                                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum possimus velit
-                                            similique, iusto libero ut necessitatibus quo porro dolorum explicabo est
-                                            maiores
+                                        The product sourcing services provided by eKomn have been a game-changer for our business. The platform's comprehensive listings and easy-to-use interface made it incredibly simple to find high-quality products in a short time. The added value of online consulting and other tools, helped us in our operational efficiency leading to a 30% increase in our product offerings. Highly recommended!
                                         </span>
                                         <span class="quote-left fas fa-quote-right ms-2"></span>
                                     </div>
@@ -267,18 +265,79 @@
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
                                 <div class="clientWords">
                                     <div class="clientimg">
-                                        <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="" />
+                                        <img src="{{asset('assets/images/web/Ritu-Singh.png')}}" alt="" />
                                     </div>
                                     <div class="authorName">
-                                        <h4>Mohd Imtyaj</h4>
-                                        <span>Founder and CEO</span>
+                                        <h4>Ritu Singh</h4>
+                                        <span>Operations Manager of Trends1</span>
                                     </div>
                                     <div class="authorContent">
                                         <span class="quote-left fas fa-quote-left me-2"></span>
                                         <span class="authorContentPara">
-                                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum possimus velit
-                                            similique, iusto libero ut necessitatibus quo porro dolorum explicabo est
-                                            maiores
+                                        Thanks to eKomn, we've been able to efficiently source products that align perfectly with our brand’s vision and categories. The platform’s various tools to support online sellers are innovatively designed. Our inventory is auto updated and we are noticing the difference in our revenue!
+                                        </span>
+                                        <span class="quote-left fas fa-quote-right ms-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonalBlock">
+                                <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
+                                <div class="clientWords">
+                                    <div class="clientimg">
+                                        <img src="{{asset('assets/images/web/Aditya-Roy.png')}}" alt="" />
+                                    </div>
+                                    <div class="authorName">
+                                        <h4>Aditya Roy</h4>
+                                        <span>Managing Director of GlobalST</span>
+                                    </div>
+                                    <div class="authorContent">
+                                        <span class="quote-left fas fa-quote-left me-2"></span>
+                                        <span class="authorContentPara">
+                                        The comprehensive product sourcing services offered byeKomn have streamlined our supply chain challenges. We've been able to source regular available products at competitive pricing, which has enhanced our profitability. The platform’s additional services like review management, is truly pioneering.
+                                        </span>
+                                        <span class="quote-left fas fa-quote-right ms-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonalBlock">
+                                <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
+                                <div class="clientWords">
+                                    <div class="clientimg">
+                                        <img src="{{asset('assets/images/web/Neha-Verma.png')}}" alt="" />
+                                    </div>
+                                    <div class="authorName">
+                                        <h4>Neha Verma</h4>
+                                        <span>Director of Online Sales Of Bazaar1 Pvt ltd</span>
+                                    </div>
+                                    <div class="authorContent">
+                                        <span class="quote-left fas fa-quote-left me-2"></span>
+                                        <span class="authorContentPara">
+                                        The level of value driven features provided by eKomn platform is exceptional. Their product sourcing options are extensive, and we’ve found some of our best-performing products through eKomn. You can select and launch a new product at a super fast speed and at very low initial cost. The online consulting services and other business tools are super valuable. Highly recommended for all online sellers!!
+                                        </span>
+                                        <span class="quote-left fas fa-quote-right ms-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="testimonalBlock">
+                                <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
+                                <div class="clientWords">
+                                    <div class="clientimg">
+                                        <img src="{{asset('assets/images/web/Amit-Joshi.png')}}" alt="" />
+                                    </div>
+                                    <div class="authorName">
+                                        <h4>Amit Joshi</h4>
+                                        <span>Head of Operations of SnapUp Solutions</span>
+                                    </div>
+                                    <div class="authorContent">
+                                        <span class="quote-left fas fa-quote-left me-2"></span>
+                                        <span class="authorContentPara">
+                                        We are super quick to experiment and launch new products thanks to eKomn platform.  The platform’s intuitive design and extensive product database have made it easy to find exactly what we need. Now, we never run short of our in demand products thanks to eKomns innovative tools. A must have for all online sellers in India.
                                         </span>
                                         <span class="quote-left fas fa-quote-right ms-2"></span>
                                     </div>
