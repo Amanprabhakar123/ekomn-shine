@@ -21,6 +21,8 @@
                             <option value="4">Dispatched</option>
                             <option value="5">In Transit</option>
                             <option value="6">Delivered</option>
+                            <option value="8">RTO</option>
+
                         </select>
                     </div>
                 </div>
