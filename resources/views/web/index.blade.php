@@ -125,7 +125,7 @@
                             <p class="fs-20 mt30">We literally give wings to your eCommerce enterprise!
                                 More than 10K products across leading categories.</p>
                             <div class="d-flex mt40 pt-4 mbspace">
-                                <a href="{{route('become.supplier')}}" class="btn btnekomn_dark  py-2 w_300_f btnround">Register Now</a>
+                                <a href="{{route('buyer.register')}}" class="btn btnekomn_dark  py-2 w_300_f btnround">Register Now</a>
                             </div>
                         </div>
                     </div>
@@ -184,7 +184,7 @@
                             <p class="fs-20 mt30">Committed to create and support over 1 mm thriving
                                 online enterprises in India by 2027.</p>
                             <div class="d-flex mt40 pt-4 mbspace">
-                                <a href="{{route('become.supplier')}}" class="btn btnekomn py-2 w_300_f btnround">Let's Join hands. Risk Free!!</a>
+                                <a href="{{route('buyer.login')}}" class="btn btnekomn py-2 w_300_f btnround">Let's Join hands. Risk Free!!</a>
                             </div>
                         </div>
                     </div>

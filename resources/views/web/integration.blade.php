@@ -7,7 +7,7 @@
           <div class="col text-center">
             <h1 class="sec_h1">Connect Your Amazon Store<br>and put your business growth on auto mode</h1>
             <p class="subtitle">Leverage eKomn platform to source and Launch new products on your Amazon store in quick time</p>
-            <button class="btnekomn btn my-1">Connect my Store Now</button>
+            <a href="{{route('buyer.login')}}" class="btnekomn btn my-1">Connect my Store Now</a>
             <img src="{{asset('assets/images/icon/connection_1.svg')}}" alt="" class="heroimage">
           </div>
         </div>
@@ -27,7 +27,7 @@
             <p class="subtitle">
               eKomn houses thousands of verified wholesale product suppliers based in India. This gives you access to thousands of winning products to dropship on Amazon and do Bulk buy covering a wide range of categories, with fast shipping and real-time tracking. We want you to focus on your business growth and let us manage your Product Sourcing and Logistics. You sell, and we will take care of the rest!
             </p>
-            <button class="btnekomn btn">Connect my Store Now</button>
+            <a href="{{route('buyer.login')}}" class="btnekomn btn">Connect my Store Now</a>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
               our product database, finding trending and profitable items to sell through
               Amazon dropshipping has never been that straightforward!
             </p>
-            <button class="btnekomn btn">Connect my Store Now</button>
+            <a href="{{route('buyer.login')}}"class="btnekomn btn">Connect my Store Now</a>
           </div>
         </div>
       </div>

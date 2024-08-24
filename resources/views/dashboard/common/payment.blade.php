@@ -9,11 +9,15 @@
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Order Payments</h3>
-                <div>Total Amount : <strong>120000</strong></div>
+                <!-- <div>Total Amount : <strong>120000</strong></div> -->
             </div>
             <div class="tableTop mt10">
-               
-                <!-- <div class="ek_group m-0">
+                @if (auth()->user()->hasRole(ROLE_ADMIN))
+                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
+                @else
+                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
+                @endif
+                <div class="ek_group m-0">
                     <label class="eklabel eklabel_80 m-0">Order Status:</label>
                     <div class="ek_f_input">
                         <select id="sort_by_order_status" class="form-select w_150_f">
@@ -37,8 +41,8 @@
                             <option value="4">Due</option>
                         </select>
                     </div>
-                </div> -->
-
+                </div>
+{{--
         <ul class="ekfilterList">
           <li>
           @if (auth()->user()->hasRole(ROLE_ADMIN))
@@ -73,9 +77,10 @@
             </div>       
           </li>
           <li>
-            <input type="text" name="daterange" class="form-control" value="1/01/2018 - 01/15/2018" />
+            <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
           </li>
         </ul>
+        --}}
                 <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
                                     class="fas fa-file-csv me-2"></i>Export
                                 CSV</button>
@@ -160,25 +165,25 @@
         const prevPage = document.getElementById("prevPage");
         const nextPage = document.getElementById("nextPage");
         const dataContainer = document.getElementById("dataContainer");
-        let sort_by_order_status = 0;
-        let sortByStatus = 0;
+        // let sort_by_order_status = 0;
+        // let sortByStatus = 0;
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
         
-        function selectValue(element, value) {
-            var dropdown = element.closest('.dropdown');
-            dropdown.querySelector('.dropdownValue').textContent = value;
-            let sort_by_order_status = value;
-            fetchData();
-        }
+        // function selectValue(element, value) {
+        //     var dropdown = element.closest('.dropdown');
+        //     dropdown.querySelector('.dropdownValue').textContent = value;
+        //     let sort_by_order_status = value;
+        //     fetchData();
+        // }
 
-        function selectSortByValue(element, value) {
-            var dropdown = element.closest('.dropdown');
-            dropdown.querySelector('.dropdownValue').textContent = value;
-            let sortByStatus = value;
-            fetchData();
-        }
+        // function selectSortByValue(element, value) {
+        //     var dropdown = element.closest('.dropdown');
+        //     dropdown.querySelector('.dropdownValue').textContent = value;
+        //     let sortByStatus = value;
+        //     fetchData();
+        // }
 
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
@@ -193,15 +198,15 @@
             fetchData();
         });
 
-        // const sortByStatus = document.getElementById("sort_by_status");
-        // sortByStatus.addEventListener("change", () => {
-        //     fetchData();
-        // });
+        const sortByStatus = document.getElementById("sort_by_status");
+        sortByStatus.addEventListener("change", () => {
+            fetchData();
+        });
 
-        // const sort_by_order_status = document.getElementById("sort_by_order_status");
-        // sort_by_order_status.addEventListener("change", () => {
-        //     fetchData();
-        // });
+        const sort_by_order_status = document.getElementById("sort_by_order_status");
+        sort_by_order_status.addEventListener("change", () => {
+            fetchData();
+        });
      
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")

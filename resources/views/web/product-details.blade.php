@@ -165,6 +165,7 @@
                                     <h3 class="m-0 fs-16 opacity-75">{{ $productVariations->company->display_name }}</h3>
                                     <span class="_productID">Product SKU : {{ $productVariations->sku }}</span>
                                 </div>
+                                @if (auth()->check())
                                 <h4 class="fs-26 bold my-3"><sup class="suptop"><i
                                             class="fas fa-rupee-sign fs-14 me-1"></i></sup>{{ number_format($productVariations->price_before_tax, 2) }}
                                     <del class="opacity-50 fs-16 ms-2">
@@ -178,6 +179,9 @@
                                     <small class="ms-2 fs-16 text-success">%{{ number_format(round($discount)) }}
                                         Off</small>
                                 </h4>
+                                @else
+                                <h4 class="fs-26 bold my-3"> <a href="{{route('buyer.login')}}" class="link-dark"> Login to see price </a></h4>
+                                @endif
                                 <div class="form-group">
                                     <label class="bold mb3 fs-16">Color:</label>
                                     <select class="changeStatus_t form-select h_30" id="colorChange">

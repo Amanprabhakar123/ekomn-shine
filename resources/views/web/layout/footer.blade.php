@@ -5,7 +5,7 @@
         <div class="eKomonsummary">
           <a href="#"><img src="{{asset('assets/images/Logo.svg')}}" class="footerlogo" alt="Logo" height="50" /></a>
           <p class="m-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus pariatur cupiditate, voluptatibus praesentium ducimus eius! Nostrum, facere, laudantium vero ab officia animi sapiente voluptatum architecto esse corrupti numquam consequatur quibusdam?
+          eKomn is engaged into B2B ecommerce product sourcing and ecommerce related services to micro and small enterprises through our innovative Technology platform. With our technology led innovative features and services, we aim to empower all existing and new entrepreneurs in online ecommerce space to manage their ecommerce/online business efficiently and grow profitably. Our mission is to democratize product sourcing and online ecommerce services ushering in greater employment and wealth generation. 
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@
           <div class="copyrightText">
             &copy; 2024 ekomn.com, All Rights Reserved. <a href="{{route('terms.and.conditions')}}" target="_blank">Terms of Use</a> and <a href="{{route('privacy.policy')}}" target="_blank">Privacy Policy</a>
           </div>
-          <div class="socialLinks">
+          {{--<div class="socialLinks">
             <a href=""><i class="fab fa-youtube"></i></a>
             <a href=""><i class="fab fa-linkedin-in"></i></a>
             <a href=""><i class="fab fa-pinterest-p"></i></a>
@@ -50,6 +50,7 @@
             <a href=""><i class="fab fa-facebook-f"></i></a>
             <a href=""><i class="fab fa-twitter"></i></a>
           </div>
+          --}}
         </div>
       </div>
     </div>
