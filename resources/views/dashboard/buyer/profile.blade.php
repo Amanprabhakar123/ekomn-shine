@@ -61,7 +61,7 @@ Buyer Profile
                                     <div class="ek_f_input">
                                         <div class="row">
                                             <div class="col">
-                                                <input type="text" class="form-control" placeholder="PAN number" id="pan_no" name="pan_no" value="{{auth()->user()->companyDetails->pan_no}}" />
+                                                <input type="text" class="form-control" placeholder="PAN number" id="pan_no" name="pan_no" value="{{auth()->user()->companyDetails->pan_no}}" {{auth()->user()->companyDetails->pan_verified ? 'disabled' : ''}}/>
                                                 <div id="pan_noErr" class="invalid-feedback"></div>
                                             </div>
                                             <div class="col">
@@ -88,7 +88,7 @@ Buyer Profile
                                     <div class="ek_f_input">
                                         <div class="row">
                                             <div class="col">
-                                                <input type="text" class="form-control" placeholder="GST number" id="gst_no" name="gst_no" value="{{auth()->user()->companyDetails->gst_no}}" />
+                                                <input type="text" class="form-control" placeholder="GST number" id="gst_no" name="gst_no" value="{{auth()->user()->companyDetails->gst_no}}" {{auth()->user()->companyDetails->gst_verified ? 'disabled' : ''}} />
                                                 <div id="gst_noErr" class="invalid-feedback"></div>
                                             </div>
                                             <div class="col">

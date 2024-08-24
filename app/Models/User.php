@@ -55,8 +55,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_TOP_PRODUCT = 'top_product';
     const PERMISSION_BANNER = 'banner';
     const PERMISSION_MIS_SETTING_INVENTORY = 'mis_setting_inventory';
+    const PERMISSION_USER_LIST = 'user_list';
  
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
     /**
      * The attributes that are mass assignable.
      *
@@ -66,6 +69,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
+        'isactive',
         'picture',
         'google_id',
     ];
@@ -92,6 +97,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'password',
             'picture',
             'google_id',
+            'isactive',
+            'email_verified_at',
         ])
         ->logOnlyDirty()
         ->useLogName('User Log')

@@ -76,6 +76,14 @@ class CompanyService
 
             $company->update($companyDetails);
 
+            $first_name = isset($validatedData['first_name']) ? $validatedData['first_name'] : null;
+            $last_name = isset($validatedData['last_name']) ? $validatedData['last_name'] : null;
+            if($first_name || $last_name){
+               User::where('id', $company->user_id)->update([
+                    'name' => $validatedData['first_name'] . ' ' . $validatedData['last_name']
+                ]);
+            }
+
             $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
             $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
             $this->handleCompanyCanHandleOnUpdate($companyId, $validatedData["can_handle"] ?? null);
@@ -129,6 +137,14 @@ class CompanyService
             $companyDetails = $this->buildCompanyDetailsArray($validatedData, $companyId, $paths, $data, $company);
             // dd($companyDetails);
             $company->update($companyDetails);
+
+            $first_name = isset($validatedData['first_name']) ? $validatedData['first_name'] : null;
+            $last_name = isset($validatedData['last_name']) ? $validatedData['last_name'] : null;
+            if($first_name || $last_name){
+               User::where('id', $company->user_id)->update([
+                    'name' => $validatedData['first_name'] . ' ' . $validatedData['last_name']
+                ]);
+            }
 
             $this->handleCompanyProductCatgoriesOnUpdate($companyId, $validatedData["product_categories"] ?? null);
             $this->handleCompanyBusinessTypeOnUpdate($companyId, $validatedData["business_type"] ?? null);
