@@ -129,14 +129,14 @@ Buyer Profile
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label class="line_h">city</label>
+                                            <label class="line_h">City</label>
                                             <input type="text" class="form-control" placeholder="Enter city" id="d_city" name="d_city" value="{{ isset($delivery_address) ? $delivery_address->city : '' }}" />
                                             <div id="d_cityErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label>Pin code<span class="r_color">*</span></label>
+                                            <label>Pincode<span class="r_color">*</span></label>
                                             <input type="text" class="form-control" placeholder="Pin code" id="d_pincode" name="d_pincode" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}">
                                             <div id="d_pincodeErr" class="invalid-feedback"></div>
                                         </div>
@@ -167,14 +167,14 @@ Buyer Profile
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label class="line_h">city</label>
+                                            <label class="line_h">City</label>
                                             <input type="text" class="form-control" placeholder="Enter city" id="b_city" name="b_city" value="{{ isset($billing_address) ? $billing_address->city : '' }}" />
                                             <div id="b_cityErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label>Pin code<span class="r_color">*</span></label>
+                                            <label>Pincode<span class="r_color">*</span></label>
                                             <input type="text" class="form-control" placeholder="Pin code" id="b_pincode" name="b_pincode" value="{{ isset($billing_address) ? $billing_address->pincode : '' }}">
                                             <div id="b_pincodeErr" class="invalid-feedback"></div>
                                         </div>
