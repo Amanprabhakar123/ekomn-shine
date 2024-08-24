@@ -105,7 +105,7 @@
             <div class="item">
               <div class="testimonalBlock">
                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                <div class="clientWords">
+                <div class="clientWords"  title=" Partnering with eKomn has opened up new avenues for our business. Their platform has connected us with a wide range of reliable buyers, helping us grow our customer base significantly. The product listing service is seamless, and their support team has always been there to assist whenever needed. We're thrilled with the results!">
                   <div class="clientimg">
                     <img src="{{asset('assets/images/web/Rajesh-Kumar.png')}}" alt="" />
                   </div>
@@ -126,7 +126,7 @@
             <div class="item">
               <div class="testimonalBlock">
                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                <div class="clientWords">
+                <div class="clientWords" title="Thanks to eKomn, our products are now reaching a broader audience pan India. The platform's user-friendly interface and extensive buyer network have significantly boosted our sales. Their product returns management service has also been a game-changer, reducing our operational headaches.">
                   <div class="clientimg">
                     <img src="{{asset('assets/images/web/Arun-Sharma.png')}}" alt="" />
                   </div>
@@ -147,7 +147,7 @@
             <div class="item">
               <div class="testimonalBlock">
                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                <div class="clientWords">
+                <div class="clientWords" title="We’ve been highly impressed with the results from using eKomn. Their product marketing services have significantly increased our visibility among potential buyers, and their review management system has helped maintain our strong reputation. It’s been a win-win partnership for us.">
                   <div class="clientimg">
                     <img src="{{asset('assets/images/web/Manoj-Desai.png')}}" alt="" />
                   </div>
@@ -168,7 +168,7 @@
             <div class="item">
               <div class="testimonalBlock">
                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                <div class="clientWords">
+                <div class="clientWords" title="Working with eKomn has been a fantastic experience. The platform’s extensive network of buyers has led to a noticeable increase in our sales. Their online consulting services have also provided us with valuable advice on how to better position our products on the platform. We’re excited to continue this partnership!">
                   <div class="clientimg">
                     <img src="{{asset('assets/images/web/Anjali-Gupta.png')}}" alt="" />
                   </div>
@@ -189,7 +189,7 @@
             <div class="item">
               <div class="testimonalBlock">
                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                <div class="clientWords">
+                <div class="clientWords" title="Since joining eKomn, we’ve seen a significant uptick in orders. The product listing process is straightforward, and the platform's reach among India buyers is impressive. Their payment cycle is shortest which is crucial in our industry and payment statements are super simple to review and understand. Pure delight!!">
                   <div class="clientimg">
                     <img src="{{asset('assets/images/web/Vikram-Singh.png')}}" alt="" />
                   </div>
@@ -223,20 +223,24 @@
           </div>
           <div class="col-lg-6 col-sm-12">
             <div class="faq-item active">
-              <div class="faq-question">I am not a technical person, Can I integrate my Amazon India store on my own?</div>
-              <div class="faq-answer">Yes. We have taken care of all technical aspects. Any user with basic understanding of computers can set up the Amazon integration with the help of our step-by-step instructions.</div>
+              <div class="faq-question">Are there any charges for selling on eKomn platform?</div>
+              <div class="faq-answer">There are no charges at all to list and sell products on eKomn. As a supplier, you must make sure you dispatch good quality products on time.</div>
             </div>
             <div class="faq-item">
-              <div class="faq-question">Is it necessary for me to connect my Amazon Store with my eKomn panel?</div>
-              <div class="faq-answer">It is your choice. The integration will help you eliminate manual efforts to manage your daily orders and stock inventory that can be very effort intensive. A user can alway deactivate integration as per their needs.</div>
+              <div class="faq-question">Are there any eligibility criterias to become a supplier on eKomn?</div>
+              <div class="faq-answer">Yes, you must be a registered business entity with GSTN from any state in India. Apart from GSTN, you must be an active supplier in any product category.</div>
             </div>
             <div class="faq-item">
-              <div class="faq-question">Are there any Integration charges that a user must pay?</div>
-              <div class="faq-answer">The access to Integration feature is plan based. Please check our Subscription plans.</div>
+              <div class="faq-question">Are there any restricted category of goods that can not be sold in eKomn platform?</div>
+              <div class="faq-answer">Except for Food & Grocery and Industrial goods, a supplier can be registered in any other consumer product category</div>
             </div>
             <div class="faq-item">
-              <div class="faq-question">Can I also set pricing options for selected products through my eKomn panel to my Amazon store?</div>
-              <div class="faq-answer">The product pricing is subject to platform specific guidelines. Moreover, eKomn will provide you with wholesale product rates and users are free to mark selling rates or MRP rates for selected products.</div>
+              <div class="faq-question">How much business i can expect through eKomn platform?</div>
+              <div class="faq-answer">It would be unfair to put any limits here. We are committed to engage and support over 1 mn buyers enterprises in India by 2027. A large part of this business will go to our Suppliers with a consistent and good track record.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">How much time does it take to get registered on eKomn</div>
+              <div class="faq-answer">Not much. Most of our Suppliers are on-boarded within 24 hours. Few mandatory documents (GST/PAN, Bank details, Shipping address) and a good quality product catalog is all you need to initiate your registration.</div>
             </div>
           </div>
         </div>

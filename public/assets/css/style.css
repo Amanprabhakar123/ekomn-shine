@@ -240,15 +240,15 @@ body {
   width: 100px!important; padding-top: 4px!important;height: 36px;
 }
 .btnekomn-border,.btnekomn-border:hover,.btnekomn-border:focus,.btnekomn-border:visited {
-  min-width: 90px;
+  /* min-width: 90px; */
   /* width: 160px; */
-  height: 38px;
+  /* height: 38px;
   border: 1px solid var(--primary-background);
   box-sizing: border-box;
   color: var(--primary-background);
   background-color: transparent;
   padding-top: 0px!important;
-  padding-bottom: 0px!important;
+  padding-bottom: 0px!important; */
   /* box-shadow: 0 2px 5px 0 rgba(213,217,217,.5); */
 }
 .btnekomn-border.btn-login{width: 100%;}
@@ -731,9 +731,9 @@ body {
   font-size: 18px;
   justify-content: center;
   font-weight: bold;
-  margin-top: 6px;
+  margin-top: 7px;
 }
-.sec__h{padding: 15px 15px 30px 15px;}
+.sec__h{padding: 15px 15px 50px 15px;}
 .fullbodyclose{
   position: relative;
 }
@@ -796,57 +796,65 @@ body {
 .plan_details{
   border: 1px solid #ddd;
   display: block;
-  padding: 20px 15px;
-  border-radius: 8px;
+  padding: 16px 15px 20px 15px;
+  border-radius: 12px;
   cursor: pointer;
   box-sizing: border-box;
-  height: 164px;
-  background-color: #fff;
 }
 .plan_details h2{
-  font-size: 23px;
+  font-size: 21px;
   font-weight: bold;
   margin: 0px;
-  line-height: 28px;
+  line-height: 23px;
 }
-.plan_details .price{
+.plan_details .price_p{
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
-  padding: 16px 0px;
-  opacity: 0.75;
+  font-weight: bold;
+  flex-direction: column;
 }
-.subscribebtn{
-  height: 34px;
-  padding: 0px 15px;
-  margin: 7px 0px;
-  border-radius: 5px;
-  color: #343D3A!important;
+.price_p .offeramount{
+  color: #7A7C84;
+  margin-top: 9px;
+  font-size: 15px;
+  font-weight: normal;
+}
+.btnekomn.subscribebtn{
+  height: 36px;
+  padding: 0px 1px;
+  margin-top: 3px;
+  border-radius: 10px;
+  color: var(--secondary-background)!important;
+  width: 136px;
 }
 .plan_details.active {
-  border-color: #343D3A;
+  border-color: var(--secondary-background);
   color: #fff;
-  background-color: #343D3A;
-  border-color: #343D3A;
+  background-color: var(--secondary-background);
+  border-color: var(--secondary-background);
   color: #fff;
 }
 .plan_details.bestplan{
-  height: 212px;
+  height: 222px;
   position: relative;
   top: -48px;
-  padding-top: 54px;
-  
+  padding-top: 63px;
 }
 .plan_details.bestplan.active{
-  background-color: #343D3A;
-  border-color: #343D3A;
+  background-color: var(--secondary-background);
+  border-color: var(--secondary-background);
   color: #fff;
 }
 .plan_details.bestplan.active .bestplanText{
   background-color: var(--primary-background);
-  color: #343D3A;
+  color: var(--secondary-background);
 }
 .plan_details.active h2{color: #fff!important;}
 .bestplanText{
-  background-color: #343D3A;
+  background-color: var(--secondary-background);
   color: var(--primary-background);
   display: flex;
   position: absolute;
@@ -868,9 +876,9 @@ body {
 .SelectFeatures{
   height: 164px;
   position: relative;
-  padding: 20px 34px 0px 4px;
+  padding: 8px 34px 0px 4px;
 }
-.SelectFeatures::after{
+/* .SelectFeatures::after{
   content: '';
   height: 100%;
   width: 1px;
@@ -878,7 +886,7 @@ body {
   position: absolute;
   right: 8px;
   top: 0;
-}
+} */
 .SelectFeature{
   margin-top: 30px;
 }
@@ -3790,7 +3798,7 @@ img._pdimg {
 .secondaryNav{
   width: 280px;
   height: calc(100vh - 64px);
-  background-color: #fff;
+  background-color: #fafafa;
   position: fixed;
   top: 60px;
   left: 0px;
