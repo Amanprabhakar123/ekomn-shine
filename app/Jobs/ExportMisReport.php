@@ -333,7 +333,7 @@ class ExportMisReport implements ShouldQueue
                     ->chunk(100, function ($companyPlans) use (&$csvData) {
                         foreach ($companyPlans as $com) {
                                 if(!empty($com->companyDetails)){
-                                $full_name = isset($com->companyDetail->first_name) ? $com->companyDetail->first_name.' '.$com->companyDetail->last_name : '';
+                                $full_name = isset($com->companyDetails->first_name) ? $com->companyDetails->first_name.' '.$com->companyDetails->last_name : '';
                                 $subscription_start_date = isset($com->companyDetails->subscription[0]['subscription_start_date']) ? $com->companyDetails->subscription[0]['subscription_start_date'] : '';
                                 $subscription_end_date = isset($com->companyDetails->subscription[0]['subscription_end_date']) ? $com->companyDetails->subscription[0]['subscription_end_date'] : '';
                                 $csvData[] = [

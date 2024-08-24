@@ -131,6 +131,45 @@ class DashboardController extends Controller
     }
 
     /**
+     * Update the pan and gst verifeid or not.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updatePanGstVerified(Request $request)
+    {
+        
+        try {
+            // dd($request->all());
+            $companyDetail = CompanyDetail::find(salt_decrypt($request->id));
+            // dd($companyDetail);
+            if ($request->has('pan_verified')) {
+                $companyDetail->pan_verified = $request->pan_verified;
+            }
+            if ($request->has('gst_verified')) {
+                $companyDetail->gst_verified = $request->gst_verified;
+            }
+           
+         
+            $companyDetail->save();
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.userUpdated'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $e->getMessage(),
+                ],
+            ], __('statusCode.statusCode422'));
+        }
+    }
+
+    /**
      * Update the user's profile.
      *
      * @return \Illuminate\Http\JsonResponse

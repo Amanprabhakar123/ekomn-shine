@@ -223,6 +223,7 @@
                         <th class="text-center">Qty</th>
                         <th class="text-right">Price/piece</th>
                         <th class="text-right">GST%</th>
+                        <th class="text-right">GST Amount</th>
                         <th class="text-right">Total Price</th>
                       </tr>
                     </thead>
@@ -434,6 +435,7 @@
                           <th class="text-center">Qty</th>
                           <th class="text-right">Price/piece</th>
                           <th class="text-right">GST%</th>
+                          <th class="text-right">GST Amount</th>
                           <th class="text-right">Total Price</th>
                         </tr>
                       </thead>
@@ -655,6 +657,7 @@
                         <th class="text-center">Qty</th>
                         <th class="text-right">Price/piece</th>
                         <th class="text-right">GST%</th>
+                        <th class="text-right">GST Amount</th>
                         <th class="text-right">Total Price</th>
                       </tr>
                     </thead>
@@ -1338,6 +1341,7 @@
                 if (hiddenInput.value == 1) {
                     var getQntyId = document.querySelectorAll('.stockQnty');
                     var uniqueIds = new Set();
+
                   if(isQuantityChanged){
                       getQntyId.forEach(function (element) {
                           var id = element.id;
@@ -1356,6 +1360,8 @@
                           }
                       });
                       isQuantityChanged = false;
+                  }else{
+                    fetchDropshipOrderSku();
                   }
                 }else {
                   fetchDropshipOrderSku();
@@ -1593,6 +1599,12 @@
         var otherCost = 0;
         let order_type = $('#order_type').val();
         let pincode = '';
+        let shipping_gst_percent = 0;
+        let shipping_gst = 0;
+        let shipping_charges = 0;
+        let otherCostGst = 0;
+        let otherCostWithoutGst = 0;
+        let otherCostGstPercent = 0;
         if(order_type == 1){
           pincode = $('#pin_code').val();
         }if(order_type == 2){
@@ -1619,6 +1631,12 @@
                         overAllCost = parseFloat(product.overAllCost) || 0;
                         shippingCost += parseFloat(product.shippingCost) || 0;
                         otherCost += parseFloat(product.otherCost) || 0;
+                        shipping_gst_percent = parseFloat(product.shipping_gst_percent) || 0;
+                        shipping_charges += parseFloat(product.shipping_charges) || 0;
+                        shipping_gst = (shippingCost - shipping_charges);
+                        otherCostGst += product.otherCostGst;
+                        otherCostWithoutGst = product.otherCostWithoutGst;
+                        otherCostGstPercent = product.otherCostGstPercent;
                         $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>'+overAllCost.toFixed(2)+' Pay');
                         const $dropshipInvoiceRow = $('<tr></tr>').html(`
                     <td>
@@ -1632,6 +1650,7 @@
                     <td class="text-center"><input type="text" class="stock_t" onfocusout="updateQuantity('${product.id}', this)" value="${product.quantity}" /></td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.price_per_piece}</td>
                     <td class="text-right">${product.gst_percentage} %</td>
+                    <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.gstAmount.toFixed(2)}</td>
                     <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${product.priceWithGst.toFixed(2)}</td>
                     <input type="hidden" id="${product.id}" class="stockQnty" value="">
                 `);
@@ -1639,17 +1658,18 @@
                     });
 
                     const additionalRows = `
+                                          <tr>
+                                         <td colspan="9" style="padding:10px 0px!important"></td>
+                                         </tr>
                                          <tr>
-                                            <td colspan="7" class="text-right">GST</td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${gstAmout.toFixed(2)}</td>
+                                            <td colspan="5" class="text-left">Shipping Cost</td>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${shipping_charges.toFixed(2)}</td>
+                                            <td class="text-right">${shipping_gst_percent}%</td>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${shipping_gst.toFixed(2)}</td>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${shippingCost.toFixed(2)}</td>
                                         </tr>
                                         <tr>
-                                            <td colspan="7" class="text-right">Shipping Cost</td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${shippingCost.toFixed(2)}</td>
-                                        </tr>
-                                       
-                                        <tr>
-                                            <td colspan="7" class="text-right">Other Charges
+                                            <td colspan="5" class="text-left">Other Charges
                                                 <div class="dropdown info_inline">
                                                     <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                     <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
@@ -1657,12 +1677,18 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-right w_200_f"><i class="fas fa-rupee-sign fs-12 me-1"></i>${otherCost.toFixed(2)}</td>
-                                        </tr>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${otherCostWithoutGst.toFixed(2)}</td>
+                                            <td class="text-right">${otherCostGstPercent}%</td>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${otherCostGst.toFixed(2)}</td>
+                                            <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>${otherCost.toFixed(2)}</td>
+                                        </tr> 
+                                      
                                         <tr>
-                                            <td colspan="7" class="text-right bold">Total Order Cost</td>
-                                            <td class="text-right w_200_f bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${overAllCost.toFixed(2)}</td>
-                                        </tr>`;
+                                            <td colspan="8" class="text-left bold">Total Order Cost</td>
+                                            <td class="text-right bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>${overAllCost.toFixed(2)}</td>
+                                        </tr>
+                                       
+                                        `;
 
                     $dropshipInvoice.append(additionalRows); // Add additional rows at the end
 

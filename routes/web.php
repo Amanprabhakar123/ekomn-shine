@@ -172,6 +172,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
         Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
         Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
+        Route::post('update-pan-gst-verified', [DashboardController::class, 'updatePanGstVerified'])->name('update.pan.gst.verified');
     });
 });
 

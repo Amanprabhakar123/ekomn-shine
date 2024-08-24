@@ -24,6 +24,7 @@ use Database\Seeders\AddCourierPermisssion;
 use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\PaymentPermissionSeeder;
+use Database\Seeders\UserListPermissionSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 class DatabaseSeeder extends Seeder

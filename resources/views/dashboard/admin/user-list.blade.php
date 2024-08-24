@@ -16,7 +16,7 @@
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
                                 <option value="{{ROLE_BUYER}}">Buyer</option>
-                                <option value="{{ROLE_SUPPLIER}}">Supllier</option>
+                                <option value="{{ROLE_SUPPLIER}}">Supplier</option>
                             </select>
                         </div>
                     </div>
