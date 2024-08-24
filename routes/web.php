@@ -171,6 +171,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
         Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
         Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
+        Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
     });
 });
 

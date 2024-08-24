@@ -12,7 +12,7 @@
                 @include('auth.layout.logo')
             </td>
             <td align="right" style="padding: 20px;">
-                <span style="font-size: 12px; color: #999;">Notification<br>March 18, 2024</span>
+                <span style="font-size: 12px; color: #999;">Notification<br><?php echo date('F j, Y'); ?></span>
             </td>
         </tr>
         <tr>
