@@ -46,7 +46,10 @@
                     <h2>Essential</h2>
                     <div class="price_p">
                       <div class="price" data-monthly="INR 1999.00" data-yearly="INR 22309.00">INR 1999.00</div>
-                      <div class="offeramount">fffff</div>
+                      <div class="offeramount">
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
+                        <small class="ms-1 bold text-success">%47 Off</small>
+                      </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
@@ -59,6 +62,10 @@
                     <h2>Booster</h2>
                     <div class="price_p">
                       <div class="price" data-monthly="INR 2999.00" data-yearly="INR 33469.00">INR 2999.00</div>
+                      <div class="offeramount">
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
+                        <small class="ms-1 bold text-success">%47 Off</small>
+                      </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
@@ -70,6 +77,10 @@
                     <h2>Trade Hub</h2>
                     <div class="price_p">
                       <div class="price" data-monthly="INR 7999.00" data-yearly="INR 89269.00">INR 7999.00</div>
+                      <div class="offeramount">
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
+                        <small class="ms-1 bold text-success">%47 Off</small>
+                      </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
@@ -81,6 +92,10 @@
                     <h2>Enterprise</h2>
                     <div class="price_p">
                       <div class="price" data-monthly="INR 11999.00" data-yearly="INR 133909.00">INR 11999.00</div>
+                      <div class="offeramount">
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
+                        <small class="ms-1 bold text-success">%47 Off</small>
+                      </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
@@ -224,88 +239,97 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
-              <h3 class="AmazonSeller">Amazon Seller Central Services</h3>
-              <div class="feature-row">
-                <div class="feature">Product Listing Support</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value">20</div>
-                <div class="feature-value">50</div>
-                <div class="feature-value">200</div>
-                <div class="feature-value">Unlimited</div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Listing Enhancements in a month</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value">2</div>
-                <div class="feature-value">5</div>
-                <div class="feature-value">20</div>
-                <div class="feature-value">25</div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">A+ Listings in a month</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value">2</div>
-                <div class="feature-value">5</div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Premiuim Store Development</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value">1</div>
-                <div class="feature-value">1</div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Customer Review Management</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Product Return Management</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">FBA Shipments</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Brand Registerations & Approvals</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Expert Consulting</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value">1 Session</div>
-                <div class="feature-value">3 Session</div>
-                <div class="feature-value">3 Session</div>
-              </div>
-              <div class="feature-row">
-                <div class="feature">Complete Account Management</div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+            </div>
+            <div class="amazonbox">
+              <h3 class="AmazonSeller" data-bs-toggle="collapse" data-bs-target="#AmazonSeller" aria-expanded="false" aria-controls="AmazonSeller">Amazon Seller Central Services <span class="viewmore">View in Detail</span></h3>
+              <div class="collapse" id="AmazonSeller">
+                <div class="features-list">
+                  <div class="feature-row">
+                    <div class="feature">Product Listing Support</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value">20</div>
+                    <div class="feature-value">50</div>
+                    <div class="feature-value">200</div>
+                    <div class="feature-value">Unlimited</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Listing Enhancements in a month</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value">2</div>
+                    <div class="feature-value">5</div>
+                    <div class="feature-value">20</div>
+                    <div class="feature-value">25</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">A+ Listings in a month</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value">2</div>
+                    <div class="feature-value">5</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Premiuim Store Development</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value">1</div>
+                    <div class="feature-value">1</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Customer Review Management</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Product Return Management</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">FBA Shipments</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Brand Registerations & Approvals</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Expert Consulting</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value">1 Session</div>
+                    <div class="feature-value">3 Session</div>
+                    <div class="feature-value">3 Session</div>
+                  </div>
+                  <div class="feature-row">
+                    <div class="feature">Complete Account Management</div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                    <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                  </div>
+                </div>
               </div>
             </div>
+            <p class="subcribeNote">
+              Registered Users - To avail similar services for other leading online Platforms, please reach out to our Support Desk
+            </p>
           </div>
         </div>
       </div>
@@ -329,22 +353,16 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   const updatePrices = (isYearly) => {
     prices.forEach((price, index) => {
-      const offeramount = offeramounts[index];
       const monthlyPrice = price.getAttribute('data-monthly');
       const yearlyPrice = price.getAttribute('data-yearly');
-      price.textContent = isYearly ? yearlyPrice : monthlyPrice;
-      offeramount.style.display = isYearly ? 'block' : 'none';
+      const selectedPrice = isYearly ? yearlyPrice : monthlyPrice;
+      price.innerHTML = `<i class="fas fa-rupee-sign fs-14 posup"></i> ${selectedPrice.replace('INR', '').trim()}`;
+      const offeramount = offeramounts[index];
+      if (offeramount) {
+        offeramount.style.display = isYearly ? 'block' : 'none';
+      }
     });
   };
-  // const updatePrices = (isYearly) => {
-  //   prices.forEach(price => {
-  //     offeramount.style.display = 'none';
-  //     const monthlyPrice = price.getAttribute('data-monthly');
-  //     const yearlyPrice = price.getAttribute('data-yearly');
-  //     price.textContent = isYearly ? yearlyPrice : monthlyPrice;
-  //   });
-  // };
-
   const updateValues = (isYearly) => {
     planInputs.forEach(plan => {
       const monthlyValue = plan.getAttribute('data-monthly-value');
@@ -352,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
       plan.value = isYearly ? yearlyValue : monthlyValue;
     });
   };
-
   monthlyLabel.addEventListener('click', () => toggleSwitch(false));
   yearlyLabel.addEventListener('click', () => toggleSwitch(true));
   switchInput.addEventListener('change', () => {
@@ -360,8 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updatePrices(isYearly);
     updateValues(isYearly);
   });
-
-  // Initialize prices and values based on the initial toggle state
   updatePrices(switchInput.checked);
   updateValues(switchInput.checked);
 });
