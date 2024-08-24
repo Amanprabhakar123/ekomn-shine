@@ -11,6 +11,7 @@
                         <div class="pro_box_r">
                             <div class="profilesection">
                                 <h3 class="line_h">Business Details<span class="line"></span></h3>
+                                <input type="hidden" id="company_id" name="company_id" value="{{salt_encrypt($companyDetails->id)}}">
                                 <div class="ek_group">
                                     <label class="eklabel req">Business name:</label>
                                     <div class="ek_f_input">
@@ -65,19 +66,25 @@
                                             <div class="col">
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <label for="" class="uploadlabel">
-                                                        <i class="fas fa-cloud-download-alt"></i>
-                                                        <span id="panfilename" class="fileName" onclick="dowloadFile(`{{$companyDetails->pan_no_file_path}}`)"> Download</span>
+                                                        @if($companyDetails->pan_no_file_path)
+                                                        <span id="panfilename" class="text-success" onclick="dowloadFile(`{{$companyDetails->pan_no_file_path}}`)"><i class="fas fa-cloud-download-alt"></i> Download</span>
+                                                        @else
+                                                        <span id="" class="" disabled><i class="fas fa-cloud-download-alt"></i> Download</span>
+                                                        @endif
                                                     </label>
                                                     <input type="file" id="pan_file" name="pan_file" style="display: none;" />
                                                     <div id="pan_fileErr" class="invalid-feedback"></div>
                                                     <input type="hidden" name="pan_verified" value="{{$companyDetails->pan_verified ?? 0}}" id="pan_verified">
-                                                    @if($companyDetails->pan_verified)
-                                                    <span class="btn-link text-success t_d_none px-0 text-nowrap"><i class="fas fa-certificate fs-11"></i> verified</span>
-                                                    @else
-                                                    <input type="radio" name="approval_status" value="decline" id="decline">
-                                                    <label for="decline">Decline</label>
-                                                    <input type="radio" name="approval_status" value="approve" id="approve">
-                                                    <label for="approve">Approve</label>
+                                                    @if($companyDetails->pan_verified == 0)
+                                                        <input type="radio" name="pan_verified" value="0" id="decline" checked>
+                                                        <label for="decline">Not Verify</label>
+                                                        <input type="radio" name="pan_verified" value="1" id="approve">
+                                                        <label for="approve">Verify</label>
+                                                    @elseif($companyDetails->pan_verified == 1)
+                                                        <input type="radio" name="pan_verified" value="0" id="decline">
+                                                        <label for="decline">Not Verify</label>
+                                                        <input type="radio" name="pan_verified" value="1" id="approve" checked>
+                                                        <label for="approve">Verify</label>
                                                     @endif
                                                 </div>
                                             </div>
@@ -94,20 +101,27 @@
                                             </div>
                                             <div class="col">
                                                 <div class="d-flex align-items-center justify-content-between">
-                                                    <label for="gst_file" class="uploadlabel">
-                                                        <i class="fas fa-cloud-download-alt"></i>
-                                                        <span id="gstfilename" class="fileName {{ $companyDetails->gst_no_file_path ? '' : '' }}">{{$companyDetails->gst_no_file_path ? 'Downnload ': 'No file uploaded' }}</span>
+                                                    <label for="" class="uploadlabel">
+                                                        @if($companyDetails->gst_no_file_path)
+                                                        <span id="gstfilename" class="text-success"  onclick="dowloadFile(`{{$companyDetails->gst_no_file_path}}`)"><i class="fas fa-cloud-download-alt"></i>Download</span>
+                                                        @else
+                                                        <span id="" class="" disabled><i class="fas fa-cloud-download-alt"></i> Download</span>
+                                                        @endif
                                                     </label>
                                                     <input type="file" id="gst_file" name="gst_no_file_path" style="display: none;" />
                                                     <div id="gst_fileErr" class="invalid-feedback"></div>
                                                     <input type="hidden" name="gst_verified" value="{{$companyDetails->gst_verified ?? 0}}" id="gst_verified" disabled>
-                                                    @if($companyDetails->gst_verified)
-                                                    <span class="btn-link text-success t_d_none px-0 text-nowrap"><i class="fas fa-certificate fs-11"></i> verified</span>
-                                                    @else
-                                                    <input type="radio" name="approval_status" value="decline" id="decline">
-                                                    <label for="decline">Decline</label>
-                                                    <input type="radio" name="approval_status" value="approve" id="approve">
-                                                    <label for="approve">Approve</label>
+                                                    @if($companyDetails->gst_verified == 0)
+                                                        <input type="radio" name="approval_status" value="0" id="" checked>
+                                                        <label for="decline">Not Verify</label>
+                                                        <input type="radio" name="approval_status" value="1" id="">
+                                                        <label for="approve">Verify</label>
+                                                    @elseif($companyDetails->gst_verified == 1)
+                                                     <input type="radio" name="approval_status" value="0" id="">
+                                                        <label for="approve">Not Verify</label>
+                                                        <input type="radio" name="approval_status" value="1" id="" checked>
+                                                        <label for="decline">Verify</label>
+                                                       
                                                     @endif
                                                 </div>
                                             </div>
@@ -355,7 +369,132 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+    $(document).ready(function() {
+
+         // Get all radio buttons with the name "gst_no"
+         var gstRadioButtons = document.querySelectorAll('input[name="approval_status"]');
+         var panRadioButtons = document.querySelectorAll('input[name="pan_verified"]');
+        var formData = new FormData();
+        formData.append('id', $('#company_id').val());
+            // Add an event listener to each radio button
+            gstRadioButtons.forEach(function(radio) {
+                radio.addEventListener('change', function(e) {
+                    formData.append('gst_verified', e.target.value);
+                    Swal.fire({
+                        title: "Do you want to update courier tracking status?",
+                        showCancelButton: true,
+                        confirmButtonText: "Save",
+                        denyButtonText: `Don't save`,
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                        }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            ApiRequest('update-pan-gst-verified', 'POST', formData)
+                            .then(response => {
+                                if(response.data.statusCode == 200) {
+                                    Swal.fire({
+                                    title: "Good job!",
+                                    text: response.data.message,
+                                    icon: "success",
+                                    didOpen: () => {
+                                    // Apply inline CSS to the title
+                                    const title = Swal.getTitle();
+                                    title.style.color = 'red';
+                                    title.style.fontSize = '20px';
+
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                    }
+                                })
+                                .then(() => {
+                                    location.reload();
+                                });
+                                
+                                }
+                            })
+                           
+                        }
+                    });
+                    })
+                });
+           
+
+            // Similarly, for the PAN radio buttons
+           
+
+            panRadioButtons.forEach(function(radio) {
+                radio.addEventListener('change', function(e) {
+                    formData.append('pan_verified', e.target.value);
+                    Swal.fire({
+                        title: "Do you want to update courier tracking status?",
+                        showCancelButton: true,
+                        confirmButtonText: "Save",
+                        denyButtonText: `Don't save`,
+                        didOpen: () => {
+                            const title = Swal.getTitle();
+                            title.style.fontSize = '25px';
+                            // Apply inline CSS to the content
+                            const content = Swal.getHtmlContainer();
+                            // Apply inline CSS to the confirm button
+                            const confirmButton = Swal.getConfirmButton();
+                            confirmButton.style.backgroundColor = '#feca40';
+                            confirmButton.style.color = 'white';
+                        }
+                        }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+                            ApiRequest('update-pan-gst-verified', 'POST', formData)
+                            .then(response => {
+                                if(response.data.statusCode == 200) {
+                                    Swal.fire({
+                                    title: "Good job!",
+                                    text: response.data.message,
+                                    icon: "success",
+                                    didOpen: () => {
+                                    // Apply inline CSS to the title
+                                    const title = Swal.getTitle();
+                                    title.style.color = 'red';
+                                    title.style.fontSize = '20px';
+
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                    }
+                                })
+                                .then(() => {
+                                    location.reload();
+                                });
+                                
+                                }
+                            })
+                           
+                        }
+                    });
+                });
+            });
+    
+        });
 
 function dowloadFile(url) {
     if (url) {
@@ -369,6 +508,29 @@ function dowloadFile(url) {
         console.error("Invalid file URL");
     }
     }
+
+    
+        // Get all radio buttons with the name "gst_no"
+            // var gstRadioButtons = document.querySelectorAll('input[name="gst_no"]');
+
+            // // Add an event listener to each radio button
+            // gstRadioButtons.forEach(function(radio) {
+            //     radio.addEventListener('change', function(e) {
+            //         alert('GST selected: ' + e.target.value);
+            //     });
+            // });
+
+// Similarly, for the PAN radio buttons
+// var panRadioButtons = document.querySelectorAll('input[name="pan_no"]');
+
+// panRadioButtons.forEach(function(radio) {
+//     radio.addEventListener('change', function(e) {
+//         alert('PAN selected: ' + e.target.value);
+//     });
+// });
+
+
+       
 
     function handleFileSelect(inputElement, imageElement, defaultHtml) {
         const inputFile = document.querySelector(inputElement);
