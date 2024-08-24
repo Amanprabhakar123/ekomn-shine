@@ -45,7 +45,7 @@ Buyer Profile
                                 <div class="ek_group">
                                     <label class="eklabel">Email address:</label>
                                     <div class="ek_f_input">
-                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="email" value="{{ auth()->user()->companyDetails->email}}" />
+                                        <input type="text" class="form-control" placeholder="Email address" id="email" name="email" value="{{ auth()->user()->companyDetails->email}}" disabled/>
                                         <div id="emailErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
@@ -61,7 +61,7 @@ Buyer Profile
                                     <div class="ek_f_input">
                                         <div class="row">
                                             <div class="col">
-                                                <input type="text" class="form-control" placeholder="PAN number" id="pan_no" name="pan_no" value="{{auth()->user()->companyDetails->pan_no}}" />
+                                                <input type="text" class="form-control" placeholder="PAN number" id="pan_no" name="pan_no" value="{{auth()->user()->companyDetails->pan_no}}" {{auth()->user()->companyDetails->pan_verified ? 'disabled' : ''}}/>
                                                 <div id="pan_noErr" class="invalid-feedback"></div>
                                             </div>
                                             <div class="col">
@@ -88,7 +88,7 @@ Buyer Profile
                                     <div class="ek_f_input">
                                         <div class="row">
                                             <div class="col">
-                                                <input type="text" class="form-control" placeholder="GST number" id="gst_no" name="gst_no" value="{{auth()->user()->companyDetails->gst_no}}" />
+                                                <input type="text" class="form-control" placeholder="GST number" id="gst_no" name="gst_no" value="{{auth()->user()->companyDetails->gst_no}}" {{auth()->user()->companyDetails->gst_verified ? 'disabled' : ''}} />
                                                 <div id="gst_noErr" class="invalid-feedback"></div>
                                             </div>
                                             <div class="col">
@@ -129,14 +129,14 @@ Buyer Profile
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label class="line_h">city</label>
+                                            <label class="line_h">City</label>
                                             <input type="text" class="form-control" placeholder="Enter city" id="d_city" name="d_city" value="{{ isset($delivery_address) ? $delivery_address->city : '' }}" />
                                             <div id="d_cityErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label>Pin code<span class="r_color">*</span></label>
+                                            <label>Pincode<span class="r_color">*</span></label>
                                             <input type="text" class="form-control" placeholder="Pin code" id="d_pincode" name="d_pincode" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}">
                                             <div id="d_pincodeErr" class="invalid-feedback"></div>
                                         </div>
@@ -167,14 +167,14 @@ Buyer Profile
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label class="line_h">city</label>
+                                            <label class="line_h">City</label>
                                             <input type="text" class="form-control" placeholder="Enter city" id="b_city" name="b_city" value="{{ isset($billing_address) ? $billing_address->city : '' }}" />
                                             <div id="b_cityErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <div class="form-group">
-                                            <label>Pin code<span class="r_color">*</span></label>
+                                            <label>Pincode<span class="r_color">*</span></label>
                                             <input type="text" class="form-control" placeholder="Pin code" id="b_pincode" name="b_pincode" value="{{ isset($billing_address) ? $billing_address->pincode : '' }}">
                                             <div id="b_pincodeErr" class="invalid-feedback"></div>
                                         </div>

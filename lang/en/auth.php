@@ -128,5 +128,7 @@ return [
     'bannerFailed' => 'Failed to receive banner.',
     'categoryStatus' => 'Category Status Updated Successfully.',
     'categoryUpdated' => 'Category Updated Successfully.',
-
+    'userUpdated' => 'User Status Updated Successfully.',
+    'suspend' => 'Your account has been suspended.',
+    'contactUsSuccess' => 'Thank you for contacting us. We will connect with you shortly.',
 ];

@@ -104,6 +104,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
     Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
     Route::get('edit-category/{id}', [CategoryManagmentController::class, 'editCategoryView'])->name('admin.categories.edit');
+    Route::get('user-list', [DashboardController::class, 'userList'])->name('user.list');
+    Route::get('view-page/{id}', [DashboardController::class, 'viewPage'])->name('view.page');
 
 });
 
@@ -167,6 +169,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
         Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
+        Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
+        Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
+        Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
     });
 });
 

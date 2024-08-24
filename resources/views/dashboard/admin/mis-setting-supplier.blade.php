@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-login btnekomn"
-                            onclick="exportMisReport('supplier_login_history')">Supplier Login History
+                            onclick="exportMisReport('supplier_login_history')">Supplier/Buyer Login History
                             - Export</button>
 
                     </div>

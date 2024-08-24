@@ -5,10 +5,10 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\User;
-use App\Models\EkomnDetails;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\CourierList;
+use Database\Seeders\EkomnDetails;
 use Database\Seeders\AddTDSCharges;
 use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
@@ -51,6 +51,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AddTDSCharges::class);
         $this->call(MisAdminPermission::class);
         $this->call(EkomnDetails::class);
+        $this->call(UserListPermissionSeeder::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);

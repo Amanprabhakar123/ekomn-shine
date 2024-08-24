@@ -115,6 +115,18 @@ class AuthController extends Controller
                     'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode400'));
             }
+            $active = User::where('email', $request->email)->where('isactive',  User::STATUS_ACTIVE)->first();
+            if (!$active) {
+                if (config('app.front_end_tech') == false) {
+                    return redirect()->back()->withInput()->withErrors(['email' => __('auth.suspend')]);
+                }
+
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode401'),
+                    'status' => __('statusCode.status401'),
+                    'message' => __('auth.suspend'),
+                ]], __('statusCode.statusCode401'));
+            }
             if (! $token = JWTAuth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 if (config('app.front_end_tech') == false) {
                     return redirect()->back()->withInput()->withErrors(['password' => __('auth.failed')]);

@@ -240,7 +240,8 @@
                         </div>
                       </div>
                       <div class="feature-value">
-                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt('1')}}" />
+                        <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt('1')}}"
+                        data-monthly-value="{{salt_encrypt('1')}}" data-yearly-value="{{salt_encrypt('1')}}" />
                         <label class="plan_details" for="free">
                           <h2 style="font-size: 15px;">Free Trial - 14 days</h2>
                           <div class="price" data-monthly="INR 00.00" data-yearly="INR 00.00">INR 00.00</div>
@@ -271,8 +272,7 @@
                         data-monthly-value="{{salt_encrypt('6')}}" data-yearly-value="{{salt_encrypt('7')}}"/>
                         <label class="plan_details" for="Trade">
                           <h2>Trade Hub</h2>
-                          <div class="price" data-monthly="INR 7999.00" data-yearly="INR 	
-89269.00">INR 7999.00</div>
+                          <div class="price" data-monthly="INR 7999.00" data-yearly="INR 89269.00">INR 7999.00</div>
                           <button class="btn subscribebtn btnekomn">Subscribe</button>
                         </label>
                       </div>
