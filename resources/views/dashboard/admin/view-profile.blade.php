@@ -74,16 +74,15 @@
                                                     </label>
                                                     <input type="file" id="pan_file" name="pan_file" style="display: none;" />
                                                     <div id="pan_fileErr" class="invalid-feedback"></div>
-                                                    <input type="hidden" name="pan_verified" value="{{$companyDetails->pan_verified ?? 0}}" id="pan_verified">
                                                     @if($companyDetails->pan_verified == 0)
-                                                        <input type="radio" name="pan_verified" value="0" id="decline" checked>
+                                                        <input type="radio" name="pan_verified" value="0" id="" checked>
                                                         <label for="decline">Not Verify</label>
-                                                        <input type="radio" name="pan_verified" value="1" id="approve">
+                                                        <input type="radio" name="pan_verified" value="1" id="">
                                                         <label for="approve">Verify</label>
                                                     @elseif($companyDetails->pan_verified == 1)
-                                                        <input type="radio" name="pan_verified" value="0" id="decline">
+                                                        <input type="radio" name="pan_verified" value="0" id="">
                                                         <label for="decline">Not Verify</label>
-                                                        <input type="radio" name="pan_verified" value="1" id="approve" checked>
+                                                        <input type="radio" name="pan_verified" value="1" id="" checked>
                                                         <label for="approve">Verify</label>
                                                     @endif
                                                 </div>
