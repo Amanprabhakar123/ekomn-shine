@@ -242,7 +242,7 @@
                         <div class="item">
                             <div class="testimonalBlock">
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                                <div class="clientWords">
+                                <div class="clientWords" title="The product sourcing services provided by eKomn have been a game-changer for our business. The platform's comprehensive listings and easy-to-use interface made it incredibly simple to find high-quality products in a short time. The added value of online consulting and other tools, helped us in our operational efficiency leading to a 30% increase in our product offerings. Highly recommended!">
                                     <div class="clientimg">
                                         <img src="{{asset('assets/images/web/Ananya-Gupta.png')}}" alt="" />
                                     </div>
@@ -263,7 +263,7 @@
                         <div class="item">
                             <div class="testimonalBlock">
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                                <div class="clientWords">
+                                <div class="clientWords" title="Thanks to eKomn, we've been able to efficiently source products that align perfectly with our brand’s vision and categories. The platform’s various tools to support online sellers are innovatively designed. Our inventory is auto updated and we are noticing the difference in our revenue!">
                                     <div class="clientimg">
                                         <img src="{{asset('assets/images/web/Ritu-Singh.png')}}" alt="" />
                                     </div>
@@ -284,7 +284,7 @@
                         <div class="item">
                             <div class="testimonalBlock">
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                                <div class="clientWords">
+                                <div class="clientWords" title="The comprehensive product sourcing services offered byeKomn have streamlined our supply chain challenges. We've been able to source regular available products at competitive pricing, which has enhanced our profitability. The platform’s additional services like review management, is truly pioneering.">
                                     <div class="clientimg">
                                         <img src="{{asset('assets/images/web/Aditya-Roy.png')}}" alt="" />
                                     </div>
@@ -305,7 +305,7 @@
                         <div class="item">
                             <div class="testimonalBlock">
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                                <div class="clientWords">
+                                <div class="clientWords" title="The level of value driven features provided by eKomn platform is exceptional. Their product sourcing options are extensive, and we’ve found some of our best-performing products through eKomn. You can select and launch a new product at a super fast speed and at very low initial cost. The online consulting services and other business tools are super valuable. Highly recommended for all online sellers!!">
                                     <div class="clientimg">
                                         <img src="{{asset('assets/images/web/Neha-Verma.png')}}" alt="" />
                                     </div>
@@ -326,7 +326,7 @@
                         <div class="item">
                             <div class="testimonalBlock">
                                 <h3 class="unitext">𝓞𝓾𝓻 𝓒𝓵𝓲𝓮𝓷𝓽 𝓢𝓪𝔂𝓼</h3>
-                                <div class="clientWords">
+                                <div class="clientWords" title=" We are super quick to experiment and launch new products thanks to eKomn platform.  The platform’s intuitive design and extensive product database have made it easy to find exactly what we need. Now, we never run short of our in demand products thanks to eKomns innovative tools. A must have for all online sellers in India.">
                                     <div class="clientimg">
                                         <img src="{{asset('assets/images/web/Amit-Joshi.png')}}" alt="" />
                                     </div>

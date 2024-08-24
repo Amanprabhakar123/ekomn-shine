@@ -2002,7 +2002,7 @@ th.text-right {
   padding: 7px 13px !important;
   font-size: 14px;
 }
-.payInvoiceTable tbody tr td:last-child{width: 200px;}
+/* .payInvoiceTable tbody tr td:last-child{width: 200px;} */
 .stock_t.w_90 {
   width: 90px !important;
 }

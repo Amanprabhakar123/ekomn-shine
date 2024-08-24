@@ -32,7 +32,7 @@
                   <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt('1')}}"
                   data-monthly-value="{{salt_encrypt('1')}}" data-yearly-value="{{salt_encrypt('1')}}" />
                   <label class="plan_details" for="free">
-                    <h2 style="font-size: 15px;">Free Trial - 14 days</h2>
+                    <h2 style="font-size: 15px;">Free Trial-14 days</h2>
                     <div class="price_p">
                       <div class="price" data-monthly="INR 00.00" data-yearly="INR 00.00">INR 00.00</div>
                     </div>
@@ -47,8 +47,8 @@
                     <div class="price_p">
                       <div class="price" data-monthly="INR 1999.00" data-yearly="INR 22309.00">INR 1999.00</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
-                        <small class="ms-1 bold text-success">%47 Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>23988.00</del>
+                        <small class="ms-1 bold text-success">7% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
@@ -63,8 +63,8 @@
                     <div class="price_p">
                       <div class="price" data-monthly="INR 2999.00" data-yearly="INR 33469.00">INR 2999.00</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
-                        <small class="ms-1 bold text-success">%47 Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>35988.00</del>
+                        <small class="ms-1 bold text-success">7% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
@@ -78,8 +78,8 @@
                     <div class="price_p">
                       <div class="price" data-monthly="INR 7999.00" data-yearly="INR 89269.00">INR 7999.00</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
-                        <small class="ms-1 bold text-success">%47 Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>95988.00</del>
+                        <small class="ms-1 bold text-success">7% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
@@ -93,8 +93,8 @@
                     <div class="price_p">
                       <div class="price" data-monthly="INR 11999.00" data-yearly="INR 133909.00">INR 11999.00</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>55.00</del>
-                        <small class="ms-1 bold text-success">%47 Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>143988.00</del>
+                        <small class="ms-1 bold text-success">7% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>

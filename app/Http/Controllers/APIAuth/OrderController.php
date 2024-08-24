@@ -170,7 +170,7 @@ class OrderController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'sku' => 'required|string|max:15',
+                'sku' => 'required|string|max:25',
             ]);
 
             if ($validator->fails()) {
