@@ -162,7 +162,7 @@
       </div> 
       <div class="staticContent" id="termsSection10">
         <h3 class="staticContent_h">SECTION 10 - PERSONAL INFORMATION</h3>
-        <p>Your submission of personal information through the store is governed by our Privacy Policy. Click <a href="" class="a_color">Here</a> to view our Privacy Policy.</p>
+        <p>Your submission of personal information through the store is governed by our Privacy Policy. Click <a href="{{route('privacy.policy')}}" class="a_color">Here</a> to view our Privacy Policy.</p>
       </div>
       <div class="staticContent" id="termsSection11">
         <h3 class="staticContent_h">SECTION 11 - ERRORS, INACCURACIES AND OMISSIONS</h3>
