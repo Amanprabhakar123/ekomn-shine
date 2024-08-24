@@ -82,7 +82,7 @@ class CompanyPlanPayment extends Model
      */
     public function companyDetails()
     {
-        return $this->belongsTo(CompanyDetail::class, 'company_id');
+        return $this->belongsTo(CompanyDetail::class, 'company_id', 'id');
     }
 
     /**
