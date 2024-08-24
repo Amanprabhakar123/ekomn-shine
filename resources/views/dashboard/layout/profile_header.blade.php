@@ -17,7 +17,7 @@
                     @endif
                 </div>
                 <div class="img-box">
-                    <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="some user image" />
+                    <img src="{{asset('assets/images/icon/user-2.png')}}" alt="some user image" />
                 </div>
             </div>
             <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">

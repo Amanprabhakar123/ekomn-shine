@@ -1,11 +1,15 @@
 @extends('dashboard.layout.app')
-
+@section('styles')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+@endsection
 @section('content')
+
 <div class="ek_dashboard">
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Order Payments</h3>
+                <!-- <div>Total Amount : <strong>120000</strong></div> -->
             </div>
             <div class="tableTop mt10">
                 @if (auth()->user()->hasRole(ROLE_ADMIN))
@@ -36,6 +40,45 @@
                         </select>
                     </div>
                 </div>
+{{--
+        <ul class="ekfilterList">
+          <li>
+          @if (auth()->user()->hasRole(ROLE_ADMIN))
+                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
+                @else
+                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
+                @endif
+          </li>
+          <li>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue"></strong>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '4')">Dispatched</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '5')">In Transit</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '6')">Delivered</a></li>
+              </ul>
+            </div>       
+          </li>
+          <li>
+            <div class="dropdown">
+              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue"></strong>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '1')">Hold</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '2')">Accrued</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '3')">Paid</a></li>
+                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '4')">Due</a></li>
+              </ul>
+            </div>       
+          </li>
+          <li>
+            <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
+          </li>
+        </ul>
+        --}}
                 <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
                                     class="fas fa-file-csv me-2"></i>Export
                                 CSV</button>
@@ -100,6 +143,18 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script>
+    $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      autoApply: true,
+      opens: 'left'
+    }, function(start, end, label) {
+      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    });
+  });
+  </script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
@@ -108,9 +163,25 @@
         const prevPage = document.getElementById("prevPage");
         const nextPage = document.getElementById("nextPage");
         const dataContainer = document.getElementById("dataContainer");
+        // let sort_by_order_status = 0;
+        // let sortByStatus = 0;
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
+        
+        // function selectValue(element, value) {
+        //     var dropdown = element.closest('.dropdown');
+        //     dropdown.querySelector('.dropdownValue').textContent = value;
+        //     let sort_by_order_status = value;
+        //     fetchData();
+        // }
+
+        // function selectSortByValue(element, value) {
+        //     var dropdown = element.closest('.dropdown');
+        //     dropdown.querySelector('.dropdownValue').textContent = value;
+        //     let sortByStatus = value;
+        //     fetchData();
+        // }
 
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
@@ -134,6 +205,7 @@
         sort_by_order_status.addEventListener("change", () => {
             fetchData();
         });
+     
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
         let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")

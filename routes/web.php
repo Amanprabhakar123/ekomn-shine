@@ -61,6 +61,16 @@ Route::get('product-details/{slug}', [WebController::class, 'productDetails'])->
 Route::get('sub-category', [WebController::class, 'subCategory'])->name('sub.category');
 Route::get('/product/{type}', [WebController::class, 'productsType'])->name('product.type');
 Route::get('/search', [SearchController::class, 'displayProductSearch'])->name('product.search');
+Route::get('about-us', [WebController::class, 'aboutUs'])->name('aboutus');
+Route::get('contact-us', [WebController::class, 'contactUs'])->name('contactus');
+Route::get('privacy-policy', [WebController::class, 'privacyPolicy'])->name('privacy.policy');
+Route::get('terms-and-conditions', [WebController::class, 'termsAndConditions'])->name('terms.and.conditions');
+Route::get('return-and-refund-policy', [WebController::class, 'returnPolicy'])->name('return.policy');
+Route::get('shipping-policy', [WebController::class, 'shippingPolicy'])->name('shipping.policy');
+Route::get('become-a-supplier', [WebController::class, 'becomeSupplier'])->name('become.supplier');
+Route::get('subscription', [WebController::class, 'subscription'])->name('subscription');
+Route::get('integration', [WebController::class, 'integration'])->name('integration');
+
 
 // Define routes for Google authentication
 Route::group(['prefix' => 'auth/google', 'as' => 'auth.google.'], function () {
