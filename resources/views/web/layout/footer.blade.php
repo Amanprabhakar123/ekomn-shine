@@ -42,7 +42,7 @@
           <div class="copyrightText">
             &copy; 2024 ekomn.com, All Rights Reserved. <a href="{{route('terms.and.conditions')}}" target="_blank">Terms of Use</a> and <a href="{{route('privacy.policy')}}" target="_blank">Privacy Policy</a>
           </div>
-          <div class="socialLinks">
+          {{--<div class="socialLinks">
             <a href=""><i class="fab fa-youtube"></i></a>
             <a href=""><i class="fab fa-linkedin-in"></i></a>
             <a href=""><i class="fab fa-pinterest-p"></i></a>
@@ -50,6 +50,7 @@
             <a href=""><i class="fab fa-facebook-f"></i></a>
             <a href=""><i class="fab fa-twitter"></i></a>
           </div>
+          --}}
         </div>
       </div>
     </div>
