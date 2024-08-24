@@ -760,4 +760,59 @@ class WebController extends Controller
             return response()->json(['error' => $e->getLine() . ' ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function aboutUs()
+    {
+        return view('web.about-us');
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function contactUs()
+    {
+        return view('web.contact-us');
+    }
+
+    public function privacyPolicy()
+    {
+        return view('web.privacy-policy');
+    }
+
+    public function termsAndConditions()
+    {
+        return view('web.terms-and-conditions');
+    }
+
+    public function returnPolicy()
+    {
+        return view('web.return-policy');
+    }
+
+    public function shippingPolicy()
+    {
+        return view('web.shipping-policy');
+    }
+
+    public function becomeSupplier()
+    {
+        return view('web.become-supplier');
+    }
+
+    public function subscription()
+    {
+        return view('web.subscription');
+    }
+
+    public function integration()
+    {
+        return view('web.integration');
+    }
 }

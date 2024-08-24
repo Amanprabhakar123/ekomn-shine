@@ -5,23 +5,21 @@
         <div class="eKomonsummary">
           <a href="#"><img src="{{asset('assets/images/Logo.svg')}}" class="footerlogo" alt="Logo" height="50" /></a>
           <p class="m-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus pariatur cupiditate, voluptatibus praesentium ducimus eius! Nostrum, facere, laudantium vero ab officia animi sapiente voluptatum architecto esse corrupti numquam consequatur quibusdam?
+          eKomn is engaged into B2B ecommerce product sourcing and ecommerce related services to micro and small enterprises through our innovative Technology platform. With our technology led innovative features and services, we aim to empower all existing and new entrepreneurs in online ecommerce space to manage their ecommerce/online business efficiently and grow profitably. Our mission is to democratize product sourcing and online ecommerce services ushering in greater employment and wealth generation. 
           </p>
         </div>
       </div>
-      <div class="col col-md-2">
+      <div class="col col-md-3">
         <div>
           <h4 class="footer-heading">About Us</h4>
           <ul class="eKomUsefulLink">
-            <li><a href="">Company Info</a></li>
-            <li><a href="">Shipping Policy</a></li>
-            <li><a href="">Return</a></li>
-            <li><a href="">Refund Policy</a></li>
-            <li><a href="">Company Info</a></li>
+            <li><a href="{{route('aboutus')}}">Company Info</a></li>
+            <li><a href="{{route('shipping.policy')}}">Shipping Policy</a></li>
+            <li><a href="{{route('return.policy')}}">Return & Refund Policy</a></li>
           </ul>
         </div>
       </div>
-      <div class="col col-md-2">
+      <!-- <div class="col col-md-2">
         <div>
           <h4 class="footer-heading">Useful Links</h4>
           <ul class="eKomUsefulLink">
@@ -29,22 +27,22 @@
             <li><a href="">Blogs</a></li>
           </ul>
         </div>
-      </div>
-      <div class="col-sm-4 col-md-2">
+      </div> -->
+      <div class="col-sm-4 col-md-3">
         <div>
           <h4 class="footer-heading">Support</h4>
           <ul class="eKomUsefulLink">
-            <li><a href="">Get in Touch</a></li>
-            <li><a href="">Help Center</a></li>
+            <li><a href="{{route('contactus')}}">Contact Us</a></li>
+            <!-- <li><a href="">Help Center</a></li> -->
           </ul>
         </div>
       </div>
       <div class="col-sm-12 col-md-12">
         <div class="copyright_section">
           <div class="copyrightText">
-            &copy; 2024 ekomn.com, All Rights Reserved. <a href="" target="_blank">Terms of Use</a> and <a href="" target="_blank">Privacy Policy</a>
+            &copy; 2024 ekomn.com, All Rights Reserved. <a href="{{route('terms.and.conditions')}}" target="_blank">Terms of Use</a> and <a href="{{route('privacy.policy')}}" target="_blank">Privacy Policy</a>
           </div>
-          <div class="socialLinks">
+          {{--<div class="socialLinks">
             <a href=""><i class="fab fa-youtube"></i></a>
             <a href=""><i class="fab fa-linkedin-in"></i></a>
             <a href=""><i class="fab fa-pinterest-p"></i></a>
@@ -52,6 +50,7 @@
             <a href=""><i class="fab fa-facebook-f"></i></a>
             <a href=""><i class="fab fa-twitter"></i></a>
           </div>
+          --}}
         </div>
       </div>
     </div>
