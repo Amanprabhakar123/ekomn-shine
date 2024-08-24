@@ -5,7 +5,7 @@
         <div class="eKomonsummary">
           <a href="#"><img src="{{asset('assets/images/Logo.svg')}}" class="footerlogo" alt="Logo" height="50" /></a>
           <p class="m-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus pariatur cupiditate, voluptatibus praesentium ducimus eius! Nostrum, facere, laudantium vero ab officia animi sapiente voluptatum architecto esse corrupti numquam consequatur quibusdam?
+          eKomn is engaged into B2B ecommerce product sourcing and ecommerce related services to micro and small enterprises through our innovative Technology platform. With our technology led innovative features and services, we aim to empower all existing and new entrepreneurs in online ecommerce space to manage their ecommerce/online business efficiently and grow profitably. Our mission is to democratize product sourcing and online ecommerce services ushering in greater employment and wealth generation. 
           </p>
         </div>
       </div>
