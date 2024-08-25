@@ -765,7 +765,7 @@ class OrderService
             $orderInvoice->save();
 
             // create order transaction
-            OrderTransaction::create([
+            $transaction = OrderTransaction::create([
                 'order_id' => $order_id,
                 'order_payment_id' => $orderPayment->id,
                 'transaction_date' => Carbon::now()->toDateTimeString(),
@@ -775,6 +775,8 @@ class OrderService
                 'razorpay_transaction_id' => $refund_id,
                 'status' => OrderTransaction::STATUS_SUCCESS,
             ]);
+            $orderPayment->transaction_id = $transaction->id;
+            $orderPayment->save();
         } catch (\Exception $e) {
             throw $e;
         }
@@ -853,7 +855,7 @@ class OrderService
             $orderInvoice->save();
 
             // create order transaction
-            OrderTransaction::create([
+            $transaction = OrderTransaction::create([
                 'order_id' => $order_id,
                 'order_payment_id' => $orderPayment->id,
                 'transaction_date' => Carbon::now()->toDateTimeString(),
@@ -863,6 +865,8 @@ class OrderService
                 'razorpay_transaction_id' => $refund_id,
                 'status' => OrderTransaction::STATUS_PENDING,
             ]);
+            $orderPayment->transaction_id = $transaction->id;
+            $orderPayment->save();
         } catch (\Exception $e) {
             throw $e;
         }
@@ -899,7 +903,7 @@ class OrderService
      * @param string $invoice_number
      * @return void
      */
-    protected function intiateRefund($paymentId, $reason = null, $amount = 0, $invoice_number)
+    public function intiateRefund($paymentId, $reason = null, $amount = 0, $invoice_number)
     {
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
 

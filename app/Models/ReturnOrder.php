@@ -56,7 +56,7 @@ class ReturnOrder extends Model
 
     const DISPUTE_ARRAY = [
         self::DISPUTE_RESOLVED,
-        self::DISPUTE_YES,
+        self::DISPUTE_NO,
     ];
 
     protected $hidden = [

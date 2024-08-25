@@ -15,7 +15,18 @@
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Order no and return no.">
                 <div class="filter">
                     <div class="ek_group m-0">
-                         <label class="eklabel eklabel_60 m-0">Sort by:</label>
+                         <label class="eklabel eklabel_90 m-0">Sort by Dispute:</label>
+                        <div class="ek_f_input w_150_f">
+                            <select class="form-select" id="sort_by_dispute">
+                                <option value="">Select</option>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                                <option value="2">Resolved</option>
+
+                            </select>
+                        </div>
+                        <label class="eklabel eklabel_90 ms-2">Sort by Status:</label>
+
                         <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="">Select</option>
@@ -123,6 +134,10 @@
                 fetchData();
             });
 
+        const sortByDispute = document.getElementById("sort_by_dispute");
+            sortByDispute.addEventListener("change", () => {
+                fetchData();
+            });
         // Event listener for clicking outside the search input field
         searchQuery.addEventListener("blur", (e) => {
             fetchData();
@@ -162,6 +177,9 @@
                     apiUrl += `&sort_by_status=${sortByStatus.value}`;
                 }
             }
+            if (sortByDispute) {
+                    apiUrl += `&sort_by_dispute=${sortByDispute.value}`;
+                }
 
 
             ApiRequest(apiUrl, 'GET')

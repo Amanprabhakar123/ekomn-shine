@@ -376,7 +376,7 @@
                 </div>
                 <div class="saveform_footer text-right single-button">
                      @if($returnOrder->isRejected() || $returnOrder->isApproved())
-                     @if($returnOrder->isDisputed())
+                     @if($returnOrder->isDisputed() || $returnOrder->isDisputeResolved())
                     <button id="btnDispute" class="btn btnekomn_dark" disabled>Dispute</button>
                     @else
                     <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>

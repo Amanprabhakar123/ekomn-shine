@@ -235,6 +235,7 @@ class ReturnOrderController extends Controller
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
             $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
             $sort_by_status = $request->input('sort_by_status', null);
+            $sort_by_dispute = $request->input('sort_by_dispute', null);
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['quantity', 'return_date', 'dispute'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
@@ -251,6 +252,10 @@ class ReturnOrderController extends Controller
 
             if ($sort_by_status) {
                 $returnOrder = $returnOrder->where('status', $sort_by_status)->orderBy('id', 'desc');
+            }
+
+            if (!is_null($sort_by_dispute)) {
+                $returnOrder = $returnOrder->where('dispute', $sort_by_dispute)->orderBy('id', 'desc');
             }
 
             if ($sort == 'quantity') {
@@ -406,6 +411,19 @@ class ReturnOrderController extends Controller
                 'message' => __('auth.returnOrderNotFound'),
             ]], __('statusCode.statusCode200'));
         }
+        // check dispute raised
+        if ($returnOrder->isDisputed()) {
+            $validator = Validator::make($request->all(), [
+                'comment' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.commentRequired'),
+                ]], __('statusCode.statusCode200'));
+            } 
+        }
         if ($request->courier_id) {
             $file = $request->UploadLabel;
             $filename = $file->getClientOriginalName();
@@ -430,6 +448,9 @@ class ReturnOrderController extends Controller
 
         $returnOrder->status = $request->status;
         $returnOrder->amount = $request->amount;
+        if ($returnOrder->isDisputed()) {
+            $returnOrder->dispute = ReturnOrder::DISPUTE_RESOLVED;
+        }
         $returnOrder->save();
 
         if ($request->comment) {
