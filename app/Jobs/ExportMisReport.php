@@ -275,14 +275,17 @@ class ExportMisReport implements ShouldQueue
                 UserLoginHistory::with(['user', 'companyDetail'])
                     ->chunk(100, function ($userLogin) use (&$csvData) {
                         foreach ($userLogin as $user) {
-
-                            $csvData[] = [
-                                $user->companyDetail->getFullName(),
-                                $user->user->email,
-                                $user->companyDetail->company_serial_id,
-                                $user->last_login,
-
-                            ];
+                            $role = $user->user->getRoleNames()->first(); 
+                            if($role && ($role == ROLE_SUPPLIER) || ($role == ROLE_BUYER)){
+                                $full_name = isset($user->companyDetail->first_name) ? $user->companyDetail->first_name.' '.$user->companyDetail->last_name : '';
+                                $company_serial_id = isset($user->companyDetail->company_serial_id) ? $user->companyDetail->company_serial_id : '';
+                                $csvData[] = [
+                                    $full_name,
+                                    $user->user->email,
+                                    $company_serial_id,
+                                    $user->last_login,
+                                ];
+                            }
                         }
                     });
             } elseif ($this->type === 'total_supplier') {
@@ -329,18 +332,22 @@ class ExportMisReport implements ShouldQueue
                 CompanyPlanPayment::with(['companyDetails', 'plan'])
                     ->chunk(100, function ($companyPlans) use (&$csvData) {
                         foreach ($companyPlans as $com) {
-
-                            $csvData[] = [
-                                $com->companyDetails->getFullName(),
-                                $com->email,
-                                $com->mobile,
-                                $com->plan->getPlanType(),
-                                $com->amount,
-                                $com->plan->name,
-                                $com->transaction_id,
-                                $com->companyDetails->subscription[0]['subscription_start_date'],
-                                $com->companyDetails->subscription[0]['subscription_end_date'],
-                            ];
+                                if(!empty($com->companyDetails)){
+                                $full_name = isset($com->companyDetails->first_name) ? $com->companyDetails->first_name.' '.$com->companyDetails->last_name : '';
+                                $subscription_start_date = isset($com->companyDetails->subscription[0]['subscription_start_date']) ? $com->companyDetails->subscription[0]['subscription_start_date'] : '';
+                                $subscription_end_date = isset($com->companyDetails->subscription[0]['subscription_end_date']) ? $com->companyDetails->subscription[0]['subscription_end_date'] : '';
+                                $csvData[] = [
+                                    $full_name,
+                                    $com->email,
+                                    $com->mobile,
+                                    $com->plan->getPlanType(),
+                                    $com->amount,
+                                    $com->plan->name,
+                                    $com->transaction_id,
+                                    $subscription_start_date,
+                                    $subscription_end_date,
+                                ];
+                            }
                         }
                     });
             }

@@ -109,6 +109,9 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('list-return-order', [ReturnOrderController::class, 'listReturnOrder'])->name('list.return.order');
     Route::get('edit-return-order/{id}', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
     Route::get('return-order-tracking', [ReturnOrderController::class, 'returnOrderTracking'])->name('return.order.tracking');
+    Route::get('user-list', [DashboardController::class, 'userList'])->name('user.list');
+    Route::get('view-page/{id}', [DashboardController::class, 'viewPage'])->name('view.page');
+
 });
 
 // If we need blade file data and update directory in blade that time we will use this route
@@ -171,6 +174,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
         Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
+<<<<<<< HEAD
         Route::post('store-return-order', [ReturnOrderController::class, 'store'])->name('store.return.order');
         Route::get('return-order-list', [ReturnOrderController::class, 'getReturnOrderList'])->name('return.order.list');
         Route::post('add-return-comment', [ReturnOrderController::class, 'addReturnOrderComment'])->name('add.return.order');
@@ -178,6 +182,12 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('raise-dispute', [ReturnOrderController::class, 'raiseDispute'])->name('raise.dispute');
         Route::get('return-order-tracking-list', [ReturnOrderController::class, 'getReturnOrderTracking'])->name('return.order.tracking.list');
         Route::post('update-shipment-status', [ReturnOrderController::class, 'updateShipmentStatus'])->name('update.shipment.status');
+=======
+        Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
+        Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
+        Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
+        Route::post('update-pan-gst-verified', [DashboardController::class, 'updatePanGstVerified'])->name('update.pan.gst.verified');
+>>>>>>> f4f1869796ee5d9f48384eceee7f8e0b5709563d
     });
 });
 

@@ -5,11 +5,11 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\User;
-use App\Models\EkomnDetails;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\CourierList;
 use Database\Seeders\ReturnOrderSeeder;
+use Database\Seeders\EkomnDetails;
 use Database\Seeders\AddTDSCharges;
 use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
@@ -25,6 +25,7 @@ use Database\Seeders\AddCourierPermisssion;
 use Database\Seeders\CompanySupplierSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\PaymentPermissionSeeder;
+use Database\Seeders\UserListPermissionSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -53,6 +54,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MisAdminPermission::class);
         $this->call(EkomnDetails::class);
         $this->call(ReturnOrderSeeder::class);
+        $this->call(UserListPermissionSeeder::class);
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);

@@ -35,6 +35,7 @@ const PERMISSION_TOP_CATEGORY = User::PERMISSION_TOP_CATEGORY;
 const PERMISSION_TOP_PRODUCT = User::PERMISSION_TOP_PRODUCT;
 const PERMISSION_BANNER = User::PERMISSION_BANNER;
 const PERMISSION_MIS_SETTING_INVENTORY = User::PERMISSION_MIS_SETTING_INVENTORY;
+const PERMISSION_USER_LIST = User::PERMISSION_USER_LIST;
 
 // return order permission
 const PERMISSION_CREATE_RETURN_ORDER = User::PERMISSION_CREATE_RETURN_ORDER;
@@ -142,7 +143,8 @@ if (! function_exists('printR')) {
 if (! function_exists('generateUniqueCompanyUsername')) {
     function generateUniqueCompanyUsername($companyName = null)
     {
-        if (! $companyName) {
+        
+        if ($companyName) {
             // Extract the initials
             $username = '';
             $words = explode(' ', $companyName);

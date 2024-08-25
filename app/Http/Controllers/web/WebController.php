@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use Carbon\Carbon;
+use App\Models\ContactUs;
 use Razorpay\Api\Product;
 use App\Models\TopProduct;
+use App\Mail\ContactUsMail;
 use App\Models\TopCategory;
 use League\Fractal\Manager;
 use App\Models\UserActivity;
@@ -14,13 +16,16 @@ use App\Models\ProductKeyword;
 use App\Models\ProductMatrics;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use OpenApi\Annotations\Contact;
 use App\Services\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Models\ProductVariationMedia;
 use App\Services\UserActivityService;
 use App\Services\RecommendationService;
 use League\Fractal\Resource\Collection;
+use Illuminate\Support\Facades\Validator;
 use App\Transformers\ProductsCategoryWiseTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -65,9 +70,9 @@ class WebController extends Controller
     public function productDetails($slug)
     {
         $productVariations = ProductVariation::where('slug', $slug)
-        ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
-        ->with('media', 'company', 'product')->with('product.features')->first();
-        if(!$productVariations){
+            ->whereIn('status', [ProductVariation::STATUS_ACTIVE, ProductVariation::STATUS_OUT_OF_STOCK])
+            ->with('media', 'company', 'product')->with('product.features')->first();
+        if (!$productVariations) {
             abort(404);
         }
         $colors = ProductVariation::colorVariation($productVariations->product_id);
@@ -193,17 +198,17 @@ class WebController extends Controller
             }
 
             if ($sortByStatus > 0) {
-                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                if ($sortByStatus == SORTING_STOCK_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('stock', 'desc');
-                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_STOCK_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('stock', 'asc');
-                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                } elseif ($sortByStatus == SORTING_PRICE_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
-                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_PRICE_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
-                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                } elseif ($sortByStatus == SORTING_REGULAR_AVAILABLE) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
-                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                } elseif ($sortByStatus == SORTING_TILL_STOCK_LAST) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
                 }
             }
@@ -348,10 +353,10 @@ class WebController extends Controller
             $just_for_you = $products->map(function ($product) {
                 $media = $product->media->where('is_master', ProductVariationMedia::IS_MASTER_TRUE)->first();
                 if ($media == null) {
-                    if(empty($media->file_path)){
+                    if (empty($media->file_path)) {
                         $thumbnail = 'https://via.placeholder.com/640x480.png/0044ff?text=at';
-                    }else{
-                        $thumbnail = 'storage/'.$media->file_path;
+                    } else {
+                        $thumbnail = 'storage/' . $media->file_path;
                     }
                 } else {
                     $thumbnail = url($media->thumbnail_path);
@@ -397,7 +402,8 @@ class WebController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function justForYouViewMore(Request $request){
+    public function justForYouViewMore(Request $request)
+    {
         try {
             $recommendationService = new RecommendationService;
             $userId = auth()->check() ? auth()->id() : null;
@@ -440,7 +446,7 @@ class WebController extends Controller
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
         }
-     }
+    }
 
     /**
      * Display a listing of the resource.
@@ -485,21 +491,21 @@ class WebController extends Controller
             $product_ids = TopProduct::where('type', $productType)->pluck('product_id');
 
             // Query for product variations based on status and product IDs
-            if($productType == TopProduct::TYPE_NEW_ARRIVAL){
+            if ($productType == TopProduct::TYPE_NEW_ARRIVAL) {
                 $product_ids = ProductVariation::where('created_at', '>=', Carbon::now()->subDays(30))->pluck('id');
             }
 
             // Query for product variations based on status and product IDs
-            if($productType == TopProduct::TYPE_REGULAR_AVAILABLE){
+            if ($productType == TopProduct::TYPE_REGULAR_AVAILABLE) {
                 $product_ids = ProductVariation::where('availability_status', ProductVariation::REGULAR_AVAILABLE)->pluck('id');
             }
-            
-            if($productType == TopProduct::TYPE_IN_DEMAND){
+
+            if ($productType == TopProduct::TYPE_IN_DEMAND) {
                 $product_ids = ProductMatrics::orderBy('purchase_count', 'desc')
-                ->orderBy('buy_now_or_add_to_cart_count', 'desc')
-                ->orderBy('add_to_inventory_count', 'desc')
-                ->orderBy('view_count', 'desc')
-                ->pluck('product_id');
+                    ->orderBy('buy_now_or_add_to_cart_count', 'desc')
+                    ->orderBy('add_to_inventory_count', 'desc')
+                    ->orderBy('view_count', 'desc')
+                    ->pluck('product_id');
             }
             // Query for product variations based on status and product IDs
             if ($type !== '') {
@@ -549,17 +555,17 @@ class WebController extends Controller
             }
 
             if ($sortByStatus > 0) {
-                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                if ($sortByStatus == SORTING_STOCK_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('stock', 'desc');
-                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_STOCK_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('stock', 'asc');
-                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                } elseif ($sortByStatus == SORTING_PRICE_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
-                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_PRICE_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
-                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                } elseif ($sortByStatus == SORTING_REGULAR_AVAILABLE) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
-                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                } elseif ($sortByStatus == SORTING_TILL_STOCK_LAST) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
                 }
             }
@@ -627,42 +633,41 @@ class WebController extends Controller
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'desc';
 
             $product_ids = [];
-            if($request->has('query_type') && $request->query_type == 'keyword'){
+            if ($request->has('query_type') && $request->query_type == 'keyword') {
                 $keyword = str_replace(' ', '-', $keyword);
                 // Determine product type based on the given type parameter
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
-                });
+                    });
                 // SKU search
                 ProductVariation::where('sku', 'like', '%' . $keyword . '%')->get()
-                ->map(function ($item) use (&$product_ids) {
-                    $product_ids[] = $item->id;
-                });
+                    ->map(function ($item) use (&$product_ids) {
+                        $product_ids[] = $item->id;
+                    });
                 $keyword = str_replace('-', ' ', $keyword);
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
-                ->map(function ($item) use (&$product_ids) {
-                $product_ids[] = $item->id;
-                });
-               
-            }else{
+                    ->map(function ($item) use (&$product_ids) {
+                        $product_ids[] = $item->id;
+                    });
+            } else {
                 ProductVariation::where('title', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
-                });
+                    });
                 $keyword = str_replace(' ', '-', $keyword);
                 // Determine product type based on the given type parameter
                 ProductKeyword::where('keyword', 'like', '%' . $keyword . '%')->get()
                     ->map(function ($item) use (&$product_ids) {
                         $product_ids[] = $item->id;
-                });
+                    });
                 // SKU search
                 ProductVariation::where('sku', 'like', '%' . $keyword . '%')->get()
-                ->map(function ($item) use (&$product_ids) {
-                    $product_ids[] = $item->id;
-                });
+                    ->map(function ($item) use (&$product_ids) {
+                        $product_ids[] = $item->id;
+                    });
             }
-            
+
             // Query for product variations based on status and product IDs
             if ($keyword !== '') {
                 $productVariations = ProductVariation::whereIn('status', [
@@ -710,21 +715,21 @@ class WebController extends Controller
             }
 
             if ($sortByStatus > 0) {
-                if($sortByStatus == SORTING_STOCK_HIGH_TO_LOW){
+                if ($sortByStatus == SORTING_STOCK_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('stock', 'desc');
-                }elseif($sortByStatus == SORTING_STOCK_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_STOCK_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('stock', 'asc');
-                }elseif($sortByStatus == SORTING_PRICE_HIGH_TO_LOW){
+                } elseif ($sortByStatus == SORTING_PRICE_HIGH_TO_LOW) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'desc');
-                }elseif($sortByStatus == SORTING_PRICE_LOW_TO_HIGH){
+                } elseif ($sortByStatus == SORTING_PRICE_LOW_TO_HIGH) {
                     $productVariations = $productVariations->orderBy('price_before_tax', 'asc');
-                }elseif($sortByStatus == SORTING_REGULAR_AVAILABLE){
+                } elseif ($sortByStatus == SORTING_REGULAR_AVAILABLE) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::REGULAR_AVAILABLE);
-                }elseif($sortByStatus == SORTING_TILL_STOCK_LAST){
+                } elseif ($sortByStatus == SORTING_TILL_STOCK_LAST) {
                     $productVariations = $productVariations->where('availability_status', ProductVariation::TILL_STOCK_LAST);
                 }
             }
-            
+
             // Apply sorting and pagination
             $productVariations = $productVariations->orderBy($sort, $sortOrder)
                 ->paginate($perPage);
@@ -814,5 +819,78 @@ class WebController extends Controller
     public function integration()
     {
         return view('web.integration');
+    }
+
+    /**
+     * Contact us post request
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+
+    /**
+     * Contact us post request
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function contactUsPost(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:255',
+                'subject' => 'required|string|max:255',
+                'message' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode200'));
+            }
+
+            // Create a new contact us record
+            ContactUs::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'subject' => $request->subject,
+                'message' => $request->message,
+            ]);
+
+            // Send an email by mail
+            Mail::to($request->email)
+            ->send(new ContactUsMail($request->all()));
+
+
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.contactUsSuccess'),
+                ],
+            ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Handle and log exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.invalidInputData'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
     }
 }

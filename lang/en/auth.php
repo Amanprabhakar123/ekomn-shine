@@ -137,4 +137,7 @@ return [
     'returnOrderUpdated' => 'Return Order Updated Successfully.',
     'disputeRaised' => 'Dispute Raised Successfully.',
     'returnOrderTracking' => 'Return Order Tracking Status Updated Successfully.',
+    'userUpdated' => 'User Status Updated Successfully.',
+    'suspend' => 'Your account has been suspended.',
+    'contactUsSuccess' => 'Thank you for contacting us. We will connect with you shortly.',
 ];

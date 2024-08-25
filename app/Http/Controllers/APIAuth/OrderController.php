@@ -170,7 +170,7 @@ class OrderController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'sku' => 'required|string|max:15',
+                'sku' => 'required|string|max:35',
             ]);
 
             if ($validator->fails()) {
@@ -195,7 +195,7 @@ class OrderController extends Controller
             $user = auth()->user();
 
             $productVariationSku = ProductVariation::where(['sku' => $sku, 'status' => ProductVariation::STATUS_ACTIVE])->first();
-
+            
             if (empty($productVariationSku)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
@@ -1010,6 +1010,7 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
+            dd($exceptionDetails);
             event(new ExceptionEvent($exceptionDetails));
               // Return error response for failed invoice download
               return response()->json([

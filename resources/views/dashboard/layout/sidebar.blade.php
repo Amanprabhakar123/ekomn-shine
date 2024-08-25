@@ -224,6 +224,13 @@
                             </a>
                         </li>
                     @endif
+                    @if (auth()->user()->hasPermissionTo(PERMISSION_USER_LIST))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('user.list') }}">
+                                <span class="nav-link-text">User List</span>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </li>
 

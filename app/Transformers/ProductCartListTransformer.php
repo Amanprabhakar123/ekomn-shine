@@ -89,11 +89,11 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost =  (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             } elseif ($this->request['order_type'] == Order::ORDER_TYPE_BULK) {
                 // Shipping Charges GST
@@ -124,11 +124,11 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             } elseif ($this->request['order_type'] == Order::ORDER_TYPE_RESELL) {
                 // Shipping Charges GST
@@ -159,16 +159,17 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             }
             // over all cost
             $this->overAllCost += (float) $this->totalCost + $this->processingCost;
-
+            $otherCostGstPercent = (isset($packing_charges[0]['gst_bracket']) ? (int) $packing_charges[0]['gst_bracket'] : 18) + (isset($labour_charges[0]['gst_bracket']) ? (int) $labour_charges[0]['gst_bracket'] : 18) + (isset($referal_charges[0]['gst_bracket']) ? (int) $referal_charges[0]['gst_bracket'] : 18) + (isset($process_charges->gst_bracket) ? (int) $process_charges->gst_bracket : 18);
+            
             // Return the transformed data
             $data = [
                 'id' => salt_encrypt($cartList->id),
@@ -185,7 +186,7 @@ class ProductCartListTransformer extends TransformerAbstract
                 'priceWithGst' => $priceWithGst, // total_price_inc_gst
                 'shippingCost' => (float) $this->shippingCost + $this->shippingCostGst,
                 'shipping_gst_percent' => isset($shipping->gst_bracket) ? (int) $shipping->gst_bracket: 18, // shipping_gst_percent
-                'shipping_charges' => (float) $this->shippingCost + $this->shippingCostGst,
+                'shipping_charges' => (float) $this->shippingCost,
                 'packing_gst_percent' => isset($packing_charges[0]['gst_bracket']) ? (int) $packing_charges[0]['gst_bracket'] : 18, // packaging_gst_percent
                 'packing_charges' => (float) $this->packingCharges + $this->packingChargesGst,
                 'labour_gst_percent' => isset($labour_charges[0]['gst_bracket']) ? (int) $labour_charges[0]['gst_bracket'] : 18, // labour_gst_percent
@@ -195,7 +196,10 @@ class ProductCartListTransformer extends TransformerAbstract
                 'payment_gateway_charges' => $this->processingCost,
                 'payment_gateway_gst_percent' => isset($process_charges->gst_bracket)  ? (int) $process_charges->gst_bracket : 18,
                 'payment_gateway_percentage' => $process_charges_per,
+                'otherCostWithoutGst' => $this->packingCharges +  $this->labourCharges +  $this->referalChargesPerCharges + $process_charges_per,
+                'otherCostGst' => (float) ($this->packingChargesGst + $this->labourChargesGst + $this->referalChargesPerGst + ($this->processingCost-  $process_charges_per)),
                 'otherCost' =>  $this->packingCharges + $this->packingChargesGst + $this->labourCharges + $this->labourChargesGst + $this->referalChargesPerCharges + $this->referalChargesPerGst + $this->processingCost,
+                'otherCostGstPercent' => $otherCostGstPercent/4,
                 'totalCost' => (float) $this->totalCost, // excluding processing cost  // including shipping and other charges
                 'processingCost' => (float) $this->processingCost, // including GST
                 'overAllCost' => (float) $this->overAllCost,

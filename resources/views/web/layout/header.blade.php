@@ -26,12 +26,12 @@
         </div>
         @if (Auth::check())
             <div class="userAction">
-                <div class="dropdown notificationDropdown">
+                {{--<div class="dropdown notificationDropdown">
                     <a href="" class="eknotification">
                         <span class="counter">5</span>
                         <i class="far fa-bell"></i>
                     </a>
-                </div>
+                </div>--}}
 
                 <div class="dropdown userDropdown">
                     <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">

@@ -31,7 +31,7 @@ class Plan extends Model
     public function getPlanType()
     {
         if ($this->is_trial_plan == 1) {
-            return 'Trail';
+            return 'Trial';
         } else {
             return 'Paid';
         }

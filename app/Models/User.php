@@ -61,8 +61,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_LIST_RETURN_ORDER = 'list_return_order';
     const PERMISSION_VIEW_RETURN_ORDER = 'view_return_order';
     const PERMISSION_EDIT_RETURN_ORDER = 'edit_return_order';
+    const PERMISSION_USER_LIST = 'user_list';
  
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 2;
     /**
      * The attributes that are mass assignable.
      *
@@ -72,6 +75,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
+        'isactive',
         'picture',
         'google_id',
     ];
@@ -98,6 +103,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'password',
             'picture',
             'google_id',
+            'isactive',
+            'email_verified_at',
         ])
         ->logOnlyDirty()
         ->useLogName('User Log')
