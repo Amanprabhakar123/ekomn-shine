@@ -80,7 +80,9 @@
           <tbody>
         @php 
         $shipping_charges = 0;
-        $shippin_gst = 0;
+        $shipping_gst_percent = 0;
+        $shiping_gst_amount = 0;
+        $shipping_cost = 0;
         $other_charges = 0;
         $labour_gst = 0;
         $gstTotalAmount = 0;
@@ -114,9 +116,11 @@
         @endphp
           @foreach($order_items as $orderItem)
             @php
-            $shipping_charges += $orderItem->shipping_charges;
-            $shippin_gst = $orderItem->	shipping_gst_percent;
             $produc_gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
+            $shipping_charges += $orderItem->shipping_charges;
+            $shipping_gst_percent = $orderItem->shipping_gst_percent;
+            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
+            $shipping_cost = $shipping_charges + $shiping_gst_amount;
             @endphp
             <tr>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;width: 250px;">
@@ -141,19 +145,19 @@
                 Shipping
               </td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;">{{$shippingChargesHsn}}</td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{number_format(($shipping_charges/(1+($shippin_gst/100))),2)}} </td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">  {{$shipping_charges}}</td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: center;"></td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{ $discount }}</td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;">{{$shippin_gst}}</td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">{{number_format(($shipping_charges- ($shipping_charges/(1+($shippin_gst/100)))),2)}} </td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{number_format($shipping_charges,2)}}</td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"> {{number_format($shipping_gst_percent, 2)}}</td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">  {{number_format($shiping_gst_amount, 2)}}</td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{$shipping_cost}}</td>
             </tr>
             <tr>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;width: 250px;">
                 Packing & Other charges <br>(HSN: {{$packingChargesHsn}})
               </td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;"></td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">{{number_format($other_charges, 2)}}</td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{number_format($other_charges, 2)}}</td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: center;"></td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{ $discount }}</td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;">{{number_format($labour_gst,2)}}</td>
@@ -170,7 +174,7 @@
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: center;"></td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"></td>
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"></td>
-              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">{{number_format(($total_gst_amount+$produc_gst+(($shipping_charges- ($shipping_charges/(1+($shippin_gst/100)))))), 2)}}</td>
+              <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">{{number_format(($total_gst_amount+$produc_gst+$shiping_gst_amount), 2)}}</td>
               <th style="font-size: 14px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{ $total_amount }}</th>
             </tr>
             <tr>
