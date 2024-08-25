@@ -383,7 +383,7 @@
                 radio.addEventListener('change', function(e) {
                     formData.append('gst_verified', e.target.value);
                     Swal.fire({
-                        title: "Do you want to update courier tracking status?",
+                        title: "Do you want to update gst status?",
                         showCancelButton: true,
                         confirmButtonText: "Save",
                         denyButtonText: `Don't save`,
@@ -442,7 +442,7 @@
                 radio.addEventListener('change', function(e) {
                     formData.append('pan_verified', e.target.value);
                     Swal.fire({
-                        title: "Do you want to update courier tracking status?",
+                        title: "Do you want to update pan status?",
                         showCancelButton: true,
                         confirmButtonText: "Save",
                         denyButtonText: `Don't save`,
