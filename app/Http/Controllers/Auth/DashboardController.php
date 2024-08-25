@@ -137,19 +137,14 @@ class DashboardController extends Controller
      */
     public function updatePanGstVerified(Request $request)
     {
-        
         try {
-            // dd($request->all());
             $companyDetail = CompanyDetail::find(salt_decrypt($request->id));
-            // dd($companyDetail);
             if ($request->has('pan_verified')) {
                 $companyDetail->pan_verified = $request->pan_verified;
             }
             if ($request->has('gst_verified')) {
                 $companyDetail->gst_verified = $request->gst_verified;
             }
-           
-         
             $companyDetail->save();
             return response()->json([
                 'data' => [
