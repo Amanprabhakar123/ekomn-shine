@@ -163,27 +163,39 @@
                                         <thead>
                                             <tr>
                                                 <th>Product Title</th>
-                                                <th class="text-center">Stock</th>
                                                 <th>SKU</th>
+                                                <th class="text-center">HSN</th>
                                                 <th class="text-center">Qty</th>
                                                 <th class="text-right">Price/piece</th>
                                                 <th class="text-right">GST%</th>
+                                                <th class="text-right">GST Amount</th>
                                                 <th class="text-right">Total Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $shipping_cost = 0;
+                                            $shipping_charges = 0;
+                                            $shipping_gst_percent = 0;
                                             $gst = 0;
                                             $other_charges = 0;
                                             $total_order_cost = 0;
+                                            $shipping_cost = 0;
+                                            $shiping_gst_amount = 0;
+                                            $other_charges_gst = 0;
+                                            $other_charges_gst_amount = 0;
                                             ?>
                                             @if($orderUpdate->orderItemsCharges->isNotEmpty())
                                             @foreach($orderUpdate->orderItemsCharges as $orderItem)
                                             @php
-                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $shipping_charges += $orderItem->shipping_charges;
+                                            $shipping_gst_percent = $orderItem->shipping_gst_percent;
+                                            
+                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
+                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
+                                            $other_charges_gst_amount = $other_charges / (1+($other_charges_gst/100));
                                             @endphp
                                             <tr>
                                                 <td>
@@ -191,12 +203,13 @@
                                                         {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">{{$orderItem->product->stock}}</td>
                                                 <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right">{{$orderItem->gst_percentage}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
 
@@ -204,32 +217,33 @@
                                             @endforeach
                                             @endif
                                             <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
+                                                <td colspan="9" style="padding:10px 0px!important"></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Shipping Cost</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
+                                                <td colspan="4" class="text-left">Shipping Cost</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right">{{$shipping_gst_percent}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Other Charges
+                                                <td colspan="4" class="text-left">Other Charges
                                                     <div class="dropdown info_inline">
-                                                        <i class="fas fa-info-circle opacity-50 pointer"
-                                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                        <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                         <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                                            Package Cost, Labour Charges & Payment Processing Fee
+                                                            Package Cost, Labour Charges, Platform Fee & Payment Processing Fee
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
-                                            </tr>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($other_charges_gst_amount, 2)}}</td>
+                                                <td class="text-right">{{number_format($other_charges_gst, 2)}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format(($other_charges - $other_charges_gst_amount) ,2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
+                                            </tr> 
+                                      
                                             <tr>
-                                                <td colspan="6" class="text-right bold">Total Order Cost</td>
-                                                <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
+                                                <td colspan="7" class="text-left bold">Total Order Cost</td>
+                                                <td class="text-right bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -487,27 +501,39 @@
                                         <thead>
                                             <tr>
                                                 <th>Product Title</th>
-                                                <th class="text-center">Stock</th>
                                                 <th>SKU</th>
+                                                <th class="text-center">HSN</th>
                                                 <th class="text-center">Qty</th>
                                                 <th class="text-right">Price/piece</th>
                                                 <th class="text-right">GST%</th>
+                                                <th class="text-right">GST Amount</th>
                                                 <th class="text-right">Total Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $shipping_cost = 0;
+                                            $shipping_charges = 0;
+                                            $shipping_gst_percent = 0;
                                             $gst = 0;
                                             $other_charges = 0;
                                             $total_order_cost = 0;
+                                            $shipping_cost = 0;
+                                            $shiping_gst_amount = 0;
+                                            $other_charges_gst = 0;
+                                            $other_charges_gst_amount = 0;
                                             ?>
                                             @if($orderUpdate->orderItemsCharges->isNotEmpty())
                                             @foreach($orderUpdate->orderItemsCharges as $orderItem)
                                             @php
-                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $shipping_charges += $orderItem->shipping_charges;
+                                            $shipping_gst_percent = $orderItem->shipping_gst_percent;
+                                            
+                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
+                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
+                                            $other_charges_gst_amount = $other_charges / (1+($other_charges_gst/100));
                                             @endphp
                                             <tr>
                                                 <td>
@@ -515,12 +541,13 @@
                                                         {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">{{$orderItem->product->stock}}</td>
                                                 <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right">{{$orderItem->gst_percentage}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
 
@@ -528,32 +555,33 @@
                                             @endforeach
                                             @endif
                                             <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
+                                                <td colspan="9" style="padding:10px 0px!important"></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Shipping Cost</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
+                                                <td colspan="4" class="text-left">Shipping Cost</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right">{{$shipping_gst_percent}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Other Charges
+                                                <td colspan="4" class="text-left">Other Charges
                                                     <div class="dropdown info_inline">
-                                                        <i class="fas fa-info-circle opacity-50 pointer"
-                                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                        <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                         <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                                            Package Cost, Labour Charges & Payment Processing Fee
+                                                            Package Cost, Labour Charges, Platform Fee & Payment Processing Fee
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
-                                            </tr>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($other_charges_gst_amount, 2)}}</td>
+                                                <td class="text-right">{{number_format($other_charges_gst, 2)}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format(($other_charges - $other_charges_gst_amount) ,2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
+                                            </tr> 
+                                      
                                             <tr>
-                                                <td colspan="6" class="text-right bold">Total Order Cost</td>
-                                                <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
+                                                <td colspan="7" class="text-left bold">Total Order Cost</td>
+                                                <td class="text-right bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -815,27 +843,39 @@
                                         <thead>
                                             <tr>
                                                 <th>Product Title</th>
-                                                <th class="text-center">Stock</th>
                                                 <th>SKU</th>
+                                                <th class="text-center">HSN</th>
                                                 <th class="text-center">Qty</th>
                                                 <th class="text-right">Price/piece</th>
                                                 <th class="text-right">GST%</th>
+                                                <th class="text-right">GST Amount</th>
                                                 <th class="text-right">Total Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $shipping_cost = 0;
+                                            $shipping_charges = 0;
+                                            $shipping_gst_percent = 0;
                                             $gst = 0;
                                             $other_charges = 0;
                                             $total_order_cost = 0;
+                                            $shipping_cost = 0;
+                                            $shiping_gst_amount = 0;
+                                            $other_charges_gst = 0;
+                                            $other_charges_gst_amount = 0;
                                             ?>
                                             @if($orderUpdate->orderItemsCharges->isNotEmpty())
                                             @foreach($orderUpdate->orderItemsCharges as $orderItem)
                                             @php
-                                            $shipping_cost += $orderItem->shipping_charges;
+                                            $shipping_charges += $orderItem->shipping_charges;
+                                            $shipping_gst_percent = $orderItem->shipping_gst_percent;
+                                            
+                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
+                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
+                                            $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
+                                            $other_charges_gst_amount = $other_charges / (1+($other_charges_gst/100));
                                             @endphp
                                             <tr>
                                                 <td>
@@ -843,12 +883,13 @@
                                                         {{$orderItem->product->title}}
                                                     </div>
                                                 </td>
-                                                <td class="text-center">{{$orderItem->product->stock}}</td>
                                                 <td>{{$orderItem->product->sku}}</td>
+                                                <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
                                                 </td>
-                                                <td class="text-right">{{$orderItem->gst_percentage}}%</td>
+                                                <td class="text-right">{{$orderItem->gst_percentage}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst}}
                                                 </td>
 
@@ -856,32 +897,33 @@
                                             @endforeach
                                             @endif
                                             <tr>
-                                                <td colspan="6" class="text-right">GST</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$gst}}</td>
+                                                <td colspan="9" style="padding:10px 0px!important"></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Shipping Cost</td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
+                                                <td colspan="4" class="text-left">Shipping Cost</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right">{{$shipping_gst_percent}} %</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
                                             </tr>
                                             <tr>
-                                                <td colspan="6" class="text-right">Other Charges
+                                                <td colspan="4" class="text-left">Other Charges
                                                     <div class="dropdown info_inline">
-                                                        <i class="fas fa-info-circle opacity-50 pointer"
-                                                            data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                        <i class="fas fa-info-circle opacity-50 pointer" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                         <div class="dropdown-menu fs-13 px-2 py-1 text-muted">
-                                                            Package Cost, Labour Charges & Payment Processing Fee
+                                                            Package Cost, Labour Charges, Platform Fee & Payment Processing Fee
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-right w_200_f"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
-                                            </tr>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($other_charges_gst_amount, 2)}}</td>
+                                                <td class="text-right">{{number_format($other_charges_gst, 2)}}%</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format(($other_charges - $other_charges_gst_amount) ,2)}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$other_charges}}</td>
+                                            </tr> 
+                                      
                                             <tr>
-                                                <td colspan="6" class="text-right bold">Total Order Cost</td>
-                                                <td class="text-right w_200_f bold"><i
-                                                        class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
+                                                <td colspan="7" class="text-left bold">Total Order Cost</td>
+                                                <td class="text-right bold"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderUpdate->total_amount}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -89,11 +89,11 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  (float) number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost =  (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost += (float) number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             } elseif ($this->request['order_type'] == Order::ORDER_TYPE_BULK) {
                 // Shipping Charges GST
@@ -124,11 +124,11 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             } elseif ($this->request['order_type'] == Order::ORDER_TYPE_RESELL) {
                 // Shipping Charges GST
@@ -159,16 +159,17 @@ class ProductCartListTransformer extends TransformerAbstract
                 if ($process_charges) {
                     $process_charges_per = (float) number_format(($this->totalCost * (int) $process_charges->value) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * $process_charges->gst_bracket) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 } else {
                     $process_charges_per = (float) number_format(($this->totalCost * 2) / 100, 2);
                     $process_charges_amount = (float) number_format(($process_charges_per * 18) / 100, 2);
-                    $this->processingCost +=  number_format(($process_charges_per + $process_charges_amount), 2);
+                    $this->processingCost = (float) number_format(($process_charges_per + $process_charges_amount), 2);
                 }
             }
             // over all cost
             $this->overAllCost += (float) $this->totalCost + $this->processingCost;
             $otherCostGstPercent = (isset($packing_charges[0]['gst_bracket']) ? (int) $packing_charges[0]['gst_bracket'] : 18) + (isset($labour_charges[0]['gst_bracket']) ? (int) $labour_charges[0]['gst_bracket'] : 18) + (isset($referal_charges[0]['gst_bracket']) ? (int) $referal_charges[0]['gst_bracket'] : 18) + (isset($process_charges->gst_bracket) ? (int) $process_charges->gst_bracket : 18);
+            
             // Return the transformed data
             $data = [
                 'id' => salt_encrypt($cartList->id),

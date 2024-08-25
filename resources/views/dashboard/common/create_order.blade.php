@@ -1605,6 +1605,7 @@
         let otherCostGst = 0;
         let otherCostWithoutGst = 0;
         let otherCostGstPercent = 0;
+        let overAllCost = 0;
         if(order_type == 1){
           pincode = $('#pin_code').val();
         }if(order_type == 2){
@@ -1628,14 +1629,14 @@
                     products.forEach(product => {
                         var amount = product.gstAmount.toFixed(2) || 0;
                         gstAmout += parseFloat(amount);
-                        overAllCost = parseFloat(product.overAllCost) || 0;
+                        overAllCost += parseFloat(product.totalCost) + parseFloat(product.processingCost) || 0;
                         shippingCost += parseFloat(product.shippingCost) || 0;
                         otherCost += parseFloat(product.otherCost) || 0;
                         shipping_gst_percent = parseFloat(product.shipping_gst_percent) || 0;
                         shipping_charges += parseFloat(product.shipping_charges) || 0;
                         shipping_gst = (shippingCost - shipping_charges);
                         otherCostGst += product.otherCostGst;
-                        otherCostWithoutGst = product.otherCostWithoutGst;
+                        otherCostWithoutGst += product.otherCostWithoutGst;
                         otherCostGstPercent = product.otherCostGstPercent;
                         $('.payment_button').html('<i class="fas fa-rupee-sign me-1"></i>'+overAllCost.toFixed(2)+' Pay');
                         const $dropshipInvoiceRow = $('<tr></tr>').html(`

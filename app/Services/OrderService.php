@@ -467,16 +467,22 @@ class OrderService
             $orderInvoice->save();
 
             // create order transaction
-            OrderTransaction::create([
-                'order_id' => $orderPayment->order_id,
-                'order_payment_id' => $orderPayment->id,
-                'transaction_date' => Carbon::now()->toDateTimeString(),
-                'transaction_type' => OrderTransaction::TRANSACTION_TYPE_PAYMENT,
-                'transaction_amount' => $orderPayment->amount,
-                'transaction_currency' => OrderTransaction::CURRENCY_INR,
-                'razorpay_transaction_id' => $orderPayment->razorpay_payment_id,
-                'status' => OrderTransaction::STATUS_FAILED,
-            ]);
+            OrderTransaction::updateOrCreate(
+                [
+                    'order_id' => $orderPayment->order_id,
+                    'order_payment_id' => $orderPayment->id,
+                    ],
+                [
+                    'order_id' => $orderPayment->order_id,
+                    'order_payment_id' => $orderPayment->id,
+                    'transaction_date' => Carbon::now()->toDateTimeString(),
+                    'transaction_type' => OrderTransaction::TRANSACTION_TYPE_PAYMENT,
+                    'transaction_amount' => $orderPayment->amount,
+                    'transaction_currency' => OrderTransaction::CURRENCY_INR,
+                    'razorpay_transaction_id' => $orderPayment->razorpay_payment_id,
+                    'status' => OrderTransaction::STATUS_FAILED,
+                ]
+            );
             throw $e;
         }
     }
