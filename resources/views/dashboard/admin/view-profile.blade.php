@@ -8,8 +8,10 @@
                 @csrf
                 <div class="row">
                     <div class="col-sm-12 col-md-7">
+                        <h5>Company Id: {{ $companyDetails->company_serial_id }}</h5>
+                        <!-- <hr> -->
                         <div class="pro_box_r">
-                            <div class="profilesection">
+                            <div class="profilesection mt-3">
                                 <h3 class="line_h">Business Details<span class="line"></span></h3>
                                 <input type="hidden" id="company_id" name="company_id" value="{{salt_encrypt($companyDetails->id)}}">
                                 <div class="ek_group">

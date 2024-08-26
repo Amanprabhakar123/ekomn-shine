@@ -493,7 +493,7 @@ class DashboardController extends Controller
     public function getUserList(Request $request)
     {
         try {
-            $perPage = $request->get('perPage', 10);
+            $perPage = $request->get('per_page', 10);
             $searchTerm = $request->input('query', null);
             $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
 
@@ -502,6 +502,7 @@ class DashboardController extends Controller
                     ->orWhere('email', 'like', '%' . $searchTerm . '%')
                     ->orWhereHas('companyDetails', function ($query) use ($searchTerm) {
                         $query->where('business_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('company_serial_id', 'like', '%' . $searchTerm . '%') // Search by company serial id
                             ->orWhere('mobile_no', 'like', '%' . $searchTerm . '%');
                     });
             });
