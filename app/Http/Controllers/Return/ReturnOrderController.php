@@ -590,7 +590,7 @@ class ReturnOrderController extends Controller
         try {
             $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
-            $sort = $request->input('sort', 'id'); // Default sort by 'title'
+            $sort = $request->input('sort', 'return_date'); // Default sort by 'title'
             $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
             $sort_by_status = $request->input('sort_by_status', null);
             // Allowed sort fields to prevent SQL injection
