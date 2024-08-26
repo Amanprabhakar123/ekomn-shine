@@ -183,7 +183,7 @@ class ReturnOrderController extends Controller
                 'return_number' => $request->return_number,
                 'return_date' => now(),
                 'status' => ReturnOrder::STATUS_OPEN,
-                'amount' => $order->total_amount,
+                'amount' => (float) $order->total_amount,
                 'file_path' => json_encode($media),
                 'reason' => $reason
             ]);
