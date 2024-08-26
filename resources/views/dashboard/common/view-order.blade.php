@@ -1019,26 +1019,26 @@ $(document).ready(function() {
                 var orderID = $('#orderID').val();
                 if (trackingNo == '') {
                     $("#error_tracking").html('This Field is Required');
-                    $("#error_tracking").css('color', 'red');
+                    $("#error_tracking").css('color', '#dc3545');
                 }else{
                     $("#error_tracking").html('');
                 }
                 if (shippingDate == '') {
                     $("#error_shipping_date").html('This Field is Required');
-                    $("#error_shipping_date").css('color', 'red');
+                    $("#error_shipping_date").css('color', '#dc3545');
                 }else{
                     $("#error_shipping_date").html('');
                 }
                 if (deliveryDate == '') {
                     $("#error_delhivery_date").html('This Field is Required');
-                    $("#error_delhivery_date").css('color', 'red');
+                    $("#error_delhivery_date").css('color', '#dc3545');
                 }else{
                     $("#error_delhivery_date").html('');
                 }
                 if (courier_id == '1') {
                     if (courierName == '') {
                         $("#error_courier_text").html('This Field is Required');
-                        $("#error_courier_text").css('color', 'red');
+                        $("#error_courier_text").css('color', '#dc3545');
                     }else{
                         $("#error_courier_text").html('');
                     }

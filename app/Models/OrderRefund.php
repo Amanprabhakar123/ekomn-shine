@@ -25,6 +25,7 @@ class OrderRefund extends Model
         'order_id',
         'transaction_id',
         'order_payment_id',
+        'refund_type',
         'buyer_id',
         'amount',
         'currency',
@@ -77,6 +78,13 @@ class OrderRefund extends Model
     const INITIATED_BY_ADMIN = 1;
     const INITIATED_BY_SYSTEM = 2;
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
+    const REFUND_TYPE_CANCEL = 1;
+    const REFUND_TYPE_RETURN = 2;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -109,6 +117,7 @@ class OrderRefund extends Model
             'order_id',
             'transaction_id',
             'order_payment_id',
+            'refund_type',
             'buyer_id',
             'amount',
             'currency',

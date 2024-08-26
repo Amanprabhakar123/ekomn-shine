@@ -1,31 +1,32 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\WebController;
+use App\Http\Controllers\Return\ReturnOrderController;
+use App\Http\Controllers\Web\SearchController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\APIAuth\AuthController;
-use App\Http\Controllers\APIAuth\BulkUploadController;
-use App\Http\Controllers\APIAuth\BuyerInventoryController;
-use App\Http\Controllers\APIAuth\BuyerRegistrationController;
+use App\Http\Controllers\APIAuth\OrderController;
+use App\Http\Controllers\APIAuth\ResetController;
+use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\Import\ImportController;
+use App\Http\Controllers\APIAuth\ForgotController;
+use App\Http\Controllers\Auth\DashboardController;
+use App\Http\Controllers\APIAuth\PaymentController;
 use App\Http\Controllers\APIAuth\CategoryController;
 use App\Http\Controllers\APIAuth\FeedBackController;
-use App\Http\Controllers\APIAuth\ForgotController;
-use App\Http\Controllers\APIAuth\OrderController;
-use App\Http\Controllers\APIAuth\OrderPaymentController;
-use App\Http\Controllers\APIAuth\PaymentController;
-use App\Http\Controllers\APIAuth\ProductInvetoryController;
 use App\Http\Controllers\APIAuth\RegisterController;
-use App\Http\Controllers\APIAuth\ResetController;
-use App\Http\Controllers\APIAuth\SupplierRegistraionController;
-use App\Http\Controllers\APIAuth\VerificationController;
-use App\Http\Controllers\Auth\AuthViewController;
+use App\Http\Controllers\APIAuth\BulkUploadController;
 use App\Http\Controllers\Auth\CourierDetailsController;
-use App\Http\Controllers\Auth\DashboardController;
-use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Import\ImportController;
-use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
+use App\Http\Controllers\APIAuth\OrderPaymentController;
+use App\Http\Controllers\APIAuth\VerificationController;
 use App\Http\Controllers\MsiSettingAdmin\HomeController;
+use App\Http\Controllers\APIAuth\BuyerInventoryController;
+use App\Http\Controllers\APIAuth\ProductInvetoryController;
+use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
-use App\Http\Controllers\Web\SearchController;
-use App\Http\Controllers\Web\WebController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\APIAuth\SupplierRegistraionController;
+use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +105,10 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('category-management', [CategoryManagmentController::class, 'misSettingInventory'])->name('category.management');
     Route::get('add-category', [CategoryManagmentController::class, 'addCategoryView'])->name('add.category');
     Route::get('edit-category/{id}', [CategoryManagmentController::class, 'editCategoryView'])->name('admin.categories.edit');
+    Route::get('create-return-order', [ReturnOrderController::class, 'createReturnOrder'])->name('create.return.order');
+    Route::get('list-return-order', [ReturnOrderController::class, 'listReturnOrder'])->name('list.return.order');
+    Route::get('edit-return-order/{id}', [ReturnOrderController::class, 'editReturnOrder'])->name('edit.return.order');
+    Route::get('return-order-tracking', [ReturnOrderController::class, 'returnOrderTracking'])->name('return.order.tracking');
     Route::get('user-list', [DashboardController::class, 'userList'])->name('user.list');
     Route::get('view-page/{id}', [DashboardController::class, 'viewPage'])->name('view.page');
 
@@ -169,6 +174,13 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-category-status', [CategoryManagmentController::class, 'updateCategoryStatus'])->name('update.category.status');
         Route::post('add-categories', [CategoryManagmentController::class, 'addCategory'])->name('add.categories');
         Route::post('update-category', [CategoryManagmentController::class, 'updateCategory'])->name('update.category');
+        Route::post('store-return-order', [ReturnOrderController::class, 'store'])->name('store.return.order');
+        Route::get('return-order-list', [ReturnOrderController::class, 'getReturnOrderList'])->name('return.order.list');
+        Route::post('add-return-comment', [ReturnOrderController::class, 'addReturnOrderComment'])->name('add.return.order');
+        Route::post('update-return-order', [ReturnOrderController::class, 'updateReturnOrder'])->name('update.return.order');
+        Route::post('raise-dispute', [ReturnOrderController::class, 'raiseDispute'])->name('raise.dispute');
+        Route::get('return-order-tracking-list', [ReturnOrderController::class, 'getReturnOrderTracking'])->name('return.order.tracking.list');
+        Route::post('update-shipment-status', [ReturnOrderController::class, 'updateShipmentStatus'])->name('update.shipment.status');
         Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
         Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
         Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');

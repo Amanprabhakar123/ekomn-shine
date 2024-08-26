@@ -25,6 +25,7 @@ class OrderPaymentDistribution extends Model
         'amount',
         'status',
         'is_refunded',
+        'refund_type',
         'refund_status',
         'refunded_amount',
         'refund_initiated_at',
@@ -85,6 +86,10 @@ class OrderPaymentDistribution extends Model
     // Default Adjustment amount 
     const DEFAULT_ADJUSTMENT_AMOUNT = 0;
 
+    // Refund Type
+    const REFUND_TYPE_CANCEL = 1;
+    const REFUND_TYPE_RETURN = 2;
+
     /**
      * Get the options for logging changes to the model.
      */
@@ -95,6 +100,7 @@ class OrderPaymentDistribution extends Model
             'order_id',
             'order_payment_id',
             'supplier_id',
+            'refund_type',
             'amount',
             'status',
             'is_refunded',

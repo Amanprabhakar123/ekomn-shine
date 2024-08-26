@@ -99,7 +99,7 @@ class OrderPaymentController extends Controller
                 $payment_gateway_charges += $orderItemsCharges->payment_gateway_charges;
             });
             $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
-                $refund_amount += $refund->refund_amount;
+                $refund_amount += $refund->amount;
             });
             $payment = SupplierPayment::where('order_id', $id)->first();
             if (! $payment) {
