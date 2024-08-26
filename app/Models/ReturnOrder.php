@@ -222,6 +222,11 @@ class ReturnOrder extends Model
         return $this->dispute == self::DISPUTE_RESOLVED;
     }
 
+    function isDisputeNo(): bool
+    {
+        return $this->dispute == self::DISPUTE_NO;
+    }
+
     /**
      * Check if the return order is open
      *

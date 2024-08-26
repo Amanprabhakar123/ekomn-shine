@@ -374,7 +374,7 @@
                             confirmButton.style.color = 'white';
                         }
                     }).then(function() {
-                        window.location.href = "{{route('create.return.order')}}";
+                        window.location.href = "{{route('list.return.order')}}";
                     });
 
                 } else {

@@ -46,7 +46,8 @@ class ProcessReturnOrderPayment extends Command
         ->with('order')
         ->whereNull('order_refunds.order_id')  // Ensures the record does not exist in order_refunds
         ->where('return_orders.status', ReturnOrder::STATUS_APPROVED)
-        ->where('return_orders.updated_at', '<', now()->subDays(2))
+        // ->where('return_orders.updated_at', '<', now()->subDays(2))
+        ->where('return_orders.updated_at', '<', now()->addMinutes(20))
         ->whereIn('return_orders.dispute', ReturnOrder::DISPUTE_ARRAY)
         ->chunk(100, function ($returnOrders) use ($orderService) {
             foreach ($returnOrders as $returnOrder) {

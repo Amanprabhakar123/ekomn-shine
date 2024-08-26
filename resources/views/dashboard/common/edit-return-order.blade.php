@@ -640,20 +640,20 @@
                                 <span>Select an Option:<span class="req_star">*</span></span>
                             </label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="accept" {{$returnOrder->isAccepted() ? 'checked' : ''}} value="3" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
+                                <input class="form-check-input" type="radio" name="selection" id="accept" {{$returnOrder->isAccepted() ? 'checked' : ''}} value="3" {{($returnOrder->isApproved() || $returnOrder ->isRejected()) ? 'disabled' : ''}}>
                                 <label class="form-check-label" for="accept">
                                     {{$returnOrder->isAccepted() ? $returnOrder->getStatus() : 'Accept'}}
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="decline" {{$returnOrder->isRejected() ? 'checked ' : ''}} value="5" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
+                                <input class="form-check-input" type="radio" name="selection" id="decline" {{$returnOrder->isRejected() ? 'checked ' : ''}} value="5" {{($returnOrder->isApproved() || $returnOrder ->isRejected()) ? 'disabled' : ''}}>
                                 <label class="form-check-label" for="decline">
                                     
                                     {{$returnOrder->isRejected() ? $returnOrder->getStatus() : 'Decline'}}
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
+                                <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4" {{($returnOrder->isApproved() || $returnOrder ->isRejected()) ? 'disabled' : ''}}>
                                 <label class="form-check-label" for="approve">
                                 {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Approve'}}
                                 </label>

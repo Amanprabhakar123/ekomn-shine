@@ -49,13 +49,14 @@ class ProcessSupplierPaymentStatement extends Command
                 }
             }
             // Get all the orders which are Dispatched, Intransit, Delivered, RTO
-           
             $a = Order::leftJoin('supplier_payments', 'orders.id', '=', 'supplier_payments.order_id')
+            ->with('returnOrder')
             ->select('orders.*', 'supplier_payments.payment_status')
             ->whereIn('status', Order::STATUS_ORDER_TRACKING)   
             ->where(function($query) {
                 $query->whereNull('supplier_payments.payment_status')->OrwhereIn('supplier_payments.payment_status', SupplierPayment::PaymentStatement);
             })
+            // ->orderBy('orders.id', 'desc')
             ->chunk(100, function ($orders) use($supplier_payment, $tds_percent, $tcs_percent) {
                 foreach ($orders as $order) {
                     $shipments = $order->shipments()->first();
@@ -82,31 +83,61 @@ class ProcessSupplierPaymentStatement extends Command
                         $payment_gateway_charges += $orderItemsCharges->payment_gateway_charges;
                     });
                     $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
-                        $refund_amount += $refund->refund_amount;
+                        $refund_amount += $refund->amount;
                     });
-                    $payment = SupplierPayment::where('order_id', $order->id)->first();
-                    if($payment){
-                        $payment->tds = $tds_amount;
-                        $payment->tcs = $tcs_amount;
-                        $payment->disburse_amount = $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + $payment->adjustment_amount);
-                        $payment->payment_status = $payment_status;
-                        $payment->statement_date = $payment_week;
-                        $payment->save();
-                    } else {
-                        $orderDistribution = OrderPaymentDistribution::where('order_id', $order->id)->first();
-                        // Create new supplier payment
-                        $supplier_payment->create([
-                            'distribution_id' => $orderDistribution->id,
-                            'supplier_id' => $order->supplier_id,
-                            'order_id' => $order->id,
-                            'tds' => $tds_amount,
-                            'tcs' => $tcs_amount,
-                            'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
-                            'disburse_amount' => $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
-                            'payment_status' => $payment_status,
-                            'statement_date' => $payment_week,
-                            'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
-                        ]);
+
+                    if(!empty($order->returnOrder)){
+                        if($order->isRTO() && $order->returnOrder->isApproved() && ($order->returnOrder->isDisputeResolved() || $order->returnOrder->isDisputeNo())){
+                            $payment = SupplierPayment::where('order_id', $order->id)->first();
+                            if($payment){
+                                $payment->tds = $tds_amount;
+                                $payment->tcs = $tcs_amount;
+                                $payment->disburse_amount = $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + $payment->adjustment_amount);
+                                $payment->payment_status = $payment_status;
+                                $payment->statement_date = $payment_week;
+                                $payment->save();
+                            } else {
+                                $orderDistribution = OrderPaymentDistribution::where('order_id', $order->id)->first();
+                                // Create new supplier payment
+                                $supplier_payment->create([
+                                    'distribution_id' => $orderDistribution->id,
+                                    'supplier_id' => $order->supplier_id,
+                                    'order_id' => $order->id,
+                                    'tds' => $tds_amount,
+                                    'tcs' => $tcs_amount,
+                                    'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
+                                    'disburse_amount' => $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                                    'payment_status' => $payment_status,
+                                    'statement_date' => $payment_week,
+                                    'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
+                                ]);
+                            }
+                        }
+                    }elseif($order->isDelivered()){
+                        $payment = SupplierPayment::where('order_id', $order->id)->first();
+                        if($payment){
+                            $payment->tds = $tds_amount;
+                            $payment->tcs = $tcs_amount;
+                            $payment->disburse_amount = $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + $payment->adjustment_amount);
+                            $payment->payment_status = $payment_status;
+                            $payment->statement_date = $payment_week;
+                            $payment->save();
+                        } else {
+                            $orderDistribution = OrderPaymentDistribution::where('order_id', $order->id)->first();
+                            // Create new supplier payment
+                            $supplier_payment->create([
+                                'distribution_id' => $orderDistribution->id,
+                                'supplier_id' => $order->supplier_id,
+                                'order_id' => $order->id,
+                                'tds' => $tds_amount,
+                                'tcs' => $tcs_amount,
+                                'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
+                                'disburse_amount' => $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                                'payment_status' => $payment_status,
+                                'statement_date' => $payment_week,
+                                'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
+                            ]);
+                        }
                     }
                 }
             });

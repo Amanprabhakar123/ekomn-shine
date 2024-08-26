@@ -64,7 +64,7 @@ class OrderPaymentTransformer extends TransformerAbstract
                 ($shipping_charges_gst_amount + $packing_charges_gst_amount + $labour_charges_gst_amount + $processing_charges_gst_amount + $payment_gateway_charges_gst_amount);
             }
             $order->orderRefunds()->where('status',OrderRefund::STATUS_COMPLETED)->select('amount')->get()->each(function($refund) use (&$refund_amount){
-                $refund_amount += $refund->refund_amount;
+                $refund_amount += $refund->amount;
             });
             $order->supplierPayments()->get()->each(function($payment) use (&$adjustment_amount, &$payment_status, &$tds_amount, &$tcs_amount, &$disburse_amount, &$invoice_generated, &$statement_date){
                 $adjustment_amount += $payment->adjustment_amount;
