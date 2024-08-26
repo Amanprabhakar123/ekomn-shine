@@ -271,7 +271,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4" disabled>
                                 <label class="form-check-label" for="approve">
-                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Accept'}}
+                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Approve'}}
                                 </label>
                             </div>
                         </div>
@@ -655,7 +655,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
                                 <label class="form-check-label" for="approve">
-                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Accept'}}
+                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Approve'}}
                                 </label>
                             </div>
                         </div>
@@ -1034,7 +1034,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="selection" id="approve"  {{$returnOrder->isApproved() ? 'checked' : ''}} value="4">
                                 <label class="form-check-label" for="approve">
-                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Accept'}}
+                                {{$returnOrder->isApproved() ? $returnOrder->getStatus() : 'Approve'}}
                                 </label>
                             </div>
                         </div>

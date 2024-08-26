@@ -10,9 +10,11 @@ use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\ReturnComment;
 use App\Events\ExceptionEvent;
+use App\Events\ReturnDeclinedApprovedEvent;
 use App\Models\CourierDetails;
 use App\Models\ReturnShipment;
 use App\Models\SupplierPayment;
+use App\Events\ReturnRaisedEvent;
 use App\Http\Controllers\Controller;
 use League\Fractal\Resource\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -196,12 +198,24 @@ class ReturnOrderController extends Controller
             // Supplier Payment Status
             SupplierPayment::where('order_id', $order->id)
                 ->update(['payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD]);
+                $detail = [
+                    'return_number' => $createReturn->return_number,
+                    'name' => $order->supplier->name,
+                ];
+                event(new ReturnRaisedEvent($order->supplier, $detail));
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode200'),
                 'status' => __('statusCode.status200'),
                 'message' => __('auth.returnOrder'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -369,31 +383,18 @@ class ReturnOrderController extends Controller
      */
     public function updateReturnOrder(Request $request)
     {
-        if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
-            return response()->json(['data' => [
-                'statusCode' => __('statusCode.statusCode422'),
-                'status' => __('statusCode.status403'),
-                'message' => __('auth.unauthorizedAction'),
-            ]], __('statusCode.statusCode200'));
-        }
-
-        $validator = Validator::make($request->all(), [
-            'return_order_id' => 'required|string',
-            'status' => 'required|string',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['data' => [
-                'statusCode' => __('statusCode.statusCode422'),
-                'status' => __('statusCode.status422'),
-                'message' => $validator->errors()->first(),
-            ]], __('statusCode.statusCode200'));
-        }
-        if ($request->courier_id) {
+        try{
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+    
             $validator = Validator::make($request->all(), [
-                'courier_id' => 'required|string',
-                'tracking_number' => 'required|string',
-                'shippingDate' => 'required|string',
-                'deliveryDate' => 'required|string',
+                'return_order_id' => 'required|string',
+                'status' => 'required|string',
             ]);
             if ($validator->fails()) {
                 return response()->json(['data' => [
@@ -402,71 +403,105 @@ class ReturnOrderController extends Controller
                     'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
-        }
-        $returnOrder = ReturnOrder::where('id', salt_decrypt($request->return_order_id))->first();
-        if (!$returnOrder) {
-            return response()->json(['data' => [
-                'statusCode' => __('statusCode.statusCode422'),
-                'status' => __('statusCode.status422'),
-                'message' => __('auth.returnOrderNotFound'),
-            ]], __('statusCode.statusCode200'));
-        }
-        // check dispute raised
-        if ($returnOrder->isDisputed()) {
-            $validator = Validator::make($request->all(), [
-                'comment' => 'required|string',
-            ]);
-            if ($validator->fails()) {
+            if ($request->courier_id) {
+                $validator = Validator::make($request->all(), [
+                    'courier_id' => 'required|string',
+                    'tracking_number' => 'required|string',
+                    'shippingDate' => 'required|string',
+                    'deliveryDate' => 'required|string',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $validator->errors()->first(),
+                    ]], __('statusCode.statusCode200'));
+                }
+            }
+            $returnOrder = ReturnOrder::where('id', salt_decrypt($request->return_order_id))->first();
+            if (!$returnOrder) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
-                    'message' => __('auth.commentRequired'),
+                    'message' => __('auth.returnOrderNotFound'),
                 ]], __('statusCode.statusCode200'));
-            } 
+            }
+            // check dispute raised
+            if ($returnOrder->isDisputed()) {
+                $validator = Validator::make($request->all(), [
+                    'comment' => 'required|string',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.commentRequired'),
+                    ]], __('statusCode.statusCode200'));
+                } 
+            }
+            if ($request->courier_id) {
+                $file = $request->UploadLabel;
+                $filename = $file->getClientOriginalName();
+                $path = storage('return_shipment', file_get_contents($file), [$returnOrder->id], 'return_order_label' . $filename, 'public');
+                $path = str_replace('public', 'storage', $path);
+                ReturnShipment::updatOrCreate(
+                    [
+                    'order_id' => $returnOrder->order_id,
+                    'return_id' => $returnOrder->id
+                    ],[
+                    'order_id' => $returnOrder->order_id,
+                    'return_id' => $returnOrder->id,
+                    'courier_id' => $request->courier_id,
+                    'awb_number' => $request->tracking_number,
+                    'provider_name' => $request->courier_name,
+                    'shipment_date' => $request->shippingDate,
+                    'expected_delivery_date' => $request->deliveryDate,
+                    'status' => ReturnShipment::STATUS_CREATED,
+                    'file_path' => $path
+                ]);
+            }
+    
+            $returnOrder->status = $request->status;
+            $returnOrder->amount = $request->amount;
+            if ($returnOrder->isDisputed()) {
+                $returnOrder->dispute = ReturnOrder::DISPUTE_RESOLVED;
+            }
+            $returnOrder->save();
+    
+            if ($request->comment) {
+                // get login user role spatie
+                $role = auth()->user()->roles->first()->name;
+                ReturnComment::create([
+                    'return_id' => $returnOrder->id,
+                    'role_type' => $role,
+                    'comment' => $request->comment
+                ]);
+            }
+            $details = [
+                'return_number' => $returnOrder->return_number,
+                'name' => $returnOrder->order->buyer->name,
+                'status' => $request->status,
+            ];
+            event(new ReturnDeclinedApprovedEvent($returnOrder->order->buyer, $details));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.returnOrderUpdated'),
+            ]], __('statusCode.statusCode200'));
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
         }
-        if ($request->courier_id) {
-            $file = $request->UploadLabel;
-            $filename = $file->getClientOriginalName();
-            $path = storage('return_shipment', file_get_contents($file), [$returnOrder->id], 'return_order_label' . $filename, 'public');
-            $path = str_replace('public', 'storage', $path);
-            ReturnShipment::updatOrCreate(
-                [
-                'order_id' => $returnOrder->order_id,
-                'return_id' => $returnOrder->id
-                ],[
-                'order_id' => $returnOrder->order_id,
-                'return_id' => $returnOrder->id,
-                'courier_id' => $request->courier_id,
-                'awb_number' => $request->tracking_number,
-                'provider_name' => $request->courier_name,
-                'shipment_date' => $request->shippingDate,
-                'expected_delivery_date' => $request->deliveryDate,
-                'status' => ReturnShipment::STATUS_CREATED,
-                'file_path' => $path
-            ]);
-        }
-
-        $returnOrder->status = $request->status;
-        $returnOrder->amount = $request->amount;
-        if ($returnOrder->isDisputed()) {
-            $returnOrder->dispute = ReturnOrder::DISPUTE_RESOLVED;
-        }
-        $returnOrder->save();
-
-        if ($request->comment) {
-            // get login user role spatie
-            $role = auth()->user()->roles->first()->name;
-            ReturnComment::create([
-                'return_id' => $returnOrder->id,
-                'role_type' => $role,
-                'comment' => $request->comment
-            ]);
-        }
-        return response()->json(['data' => [
-            'statusCode' => __('statusCode.statusCode200'),
-            'status' => __('statusCode.status200'),
-            'message' => __('auth.returnOrderUpdated'),
-        ]], __('statusCode.statusCode200'));
     }
 
     /**
@@ -521,7 +556,18 @@ class ReturnOrderController extends Controller
                 'message' => __('auth.disputeRaised'),
             ]], __('statusCode.statusCode200'));
         } catch (\Exception $e) {
-    
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode200'));
         }
     }
 

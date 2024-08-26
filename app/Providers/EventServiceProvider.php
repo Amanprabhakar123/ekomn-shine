@@ -3,12 +3,16 @@
 namespace App\Providers;
 
 use App\Events\ExceptionEvent;
+use PhpParser\Node\Stmt\Return_;
+use App\Events\ReturnRaisedEvent;
 use App\Events\OrderCanceledEvent;
 use App\Events\NewOrderCreatedEvent;
 use App\Listeners\ExceptionListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use App\Events\OrderStatusChangedEvent;
+use App\Events\ReturnDeclinedApprovedEvent;
+use App\Listeners\ReturnRaisedListener;
 use App\Events\SupplierPaymentDisburseEvent;
 use App\Listeners\NotifyBuyerNewOrderListener;
 use App\Listeners\NotifySupplierNewOrderListener;
@@ -16,6 +20,7 @@ use App\Listeners\NotifyChangeOrderStatusListener;
 use App\Listeners\SupplierPaymentDisburseListener;
 use App\Listeners\NotifyBuyerOrderCanceledListener;
 use App\Listeners\NotifySupplierOrderCanceledListener;
+use App\Listeners\ReturnDeclinedApprovedListener;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -47,6 +52,14 @@ class EventServiceProvider extends ServiceProvider
 
         SupplierPaymentDisburseEvent::class => [
             SupplierPaymentDisburseListener::class,
+        ],
+
+        ReturnRaisedEvent::class => [
+            ReturnRaisedListener::class,
+        ],
+
+        ReturnDeclinedApprovedEvent::class => [
+            ReturnDeclinedApprovedListener::class,
         ],
     ];
 
