@@ -95,7 +95,7 @@ class ReturnOrderController extends Controller
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
-                'message' => __('return_order.orderNotFound'),
+                'message' => __('auth.orderNotFound'),
             ]], __('statusCode.statusCode200'));
         }
 
@@ -244,7 +244,7 @@ class ReturnOrderController extends Controller
     public function getReturnOrderList(Request $request)
     {
         try {
-            $perPage = $request->input('perPage', 10);
+            $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
             $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
@@ -444,7 +444,7 @@ class ReturnOrderController extends Controller
                 $filename = $file->getClientOriginalName();
                 $path = storage('return_shipment', file_get_contents($file), [$returnOrder->id], 'return_order_label' . $filename, 'public');
                 $path = str_replace('public', 'storage', $path);
-                ReturnShipment::updatOrCreate(
+                ReturnShipment::updateOrCreate(
                     [
                     'order_id' => $returnOrder->order_id,
                     'return_id' => $returnOrder->id
@@ -588,7 +588,7 @@ class ReturnOrderController extends Controller
     public function getReturnOrderTracking(Request $request)
     {
         try {
-            $perPage = $request->input('perPage', 10);
+            $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
             $sortOrder = $request->input('order', 'desc'); // Default sort direction 'asc'
