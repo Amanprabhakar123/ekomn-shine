@@ -329,7 +329,7 @@
      */
     function updateStatus(itemId,  newStatus) {
         Swal.fire({
-            title: "Do you want to update courier tracking status?",
+            title: "Do you want to update status?",
             showCancelButton: true,
             confirmButtonText: "Save",
             denyButtonText: `Don't save`,
