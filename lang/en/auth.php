@@ -128,7 +128,7 @@ return [
     'bannerFailed' => 'Failed to receive banner.',
     'categoryStatus' => 'Category Status Updated Successfully.',
     'categoryUpdated' => 'Category Updated Successfully.',
-    'returnAllowed' => 'Return is allowed only after two days of delivery date.',
+    'returnAllowed' => 'Return is allowed only within 48 hours from Delivery date.',
     'orderNotDelivered' => 'Order is not delivered yet.',
     'returnOrder' => 'Return Order Created Successfully.',
     'alreadyReturnOrder' => 'You have already raised a return order.',

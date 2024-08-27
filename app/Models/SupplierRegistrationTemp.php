@@ -123,6 +123,21 @@ class SupplierRegistrationTemp extends Model
             ]
         );
 
+        CompanyAddressDetail::updateOrCreate(
+            ['company_id' => $company->id, 'address_type' => CompanyAddressDetail::TYPE_BILLING_ADDRESS],
+            [
+                'company_id' => $company->id,
+                'address_line1' => $data['address'],
+                'city' => $data['city'],
+                'state' => $data['state'],
+                'pincode' => $data['pin_code'],
+                'country' => 'India',
+                'address_type' => CompanyAddressDetail::TYPE_BILLING_ADDRESS,
+                'is_primary' => 0
+            ]
+        );
+        
+
         CompanyOperation::updateOrCreate(
             ['company_id' => $company->id],
             [

@@ -155,6 +155,14 @@
               <div class="faq-question">How can I contact customer support?</div>
               <div class="faq-answer">You can contact our customer support team through email, phone, or the contact form on our website. We aim to respond to all inquiries within 24 hours.</div>
             </div>
+            <div class="faq-item">
+              <div class="faq-question">What is your return policy?</div>
+              <div class="faq-answer">A return has to be reported back within 48 hours from delivery with all necessary details. Please refer to our <a href="{{route('return.policy')}}">Return & Refund Policy</a> page</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-question">Do you offer international shipping?</div>
+              <div class="faq-answer">At the moment we do not support International shipping however, our international buyers can still use our platform. Please submit your interest through contact us form and we shall get back earliest.</div>
+            </div>
           </div>
         </div>
       </div>
