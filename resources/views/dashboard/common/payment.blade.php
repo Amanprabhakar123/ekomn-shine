@@ -9,81 +9,61 @@
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Order Payments</h3>
-                <!-- <div>Total Amount : <strong>120000</strong></div> -->
+                <div>Total Balance : <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_balance_due}}</strong></div>
+                <div>Payment Due: <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_payment_due}}</strong></div>
             </div>
             <div class="tableTop mt10">
+            <ul class="ekfilterList">
+                <li>
                 @if (auth()->user()->hasRole(ROLE_ADMIN))
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
-                @else
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
-                @endif
-                <div class="ek_group m-0">
-                    <label class="eklabel eklabel_80 m-0">Order Status:</label>
-                    <div class="ek_f_input">
-                        <select id="sort_by_order_status" class="form-select w_150_f">
-                            <option value="0" selected>Select</option>
-                            <option value="4">Dispatched</option>
-                            <option value="5">In Transit</option>
-                            <option value="6">Delivered</option>
-                            <option value="8">RTO</option>
+                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
+                        @else
+                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
+                        @endif
+                </li>
+                    <li>
+                        <div class="d-flex">
+                        <input type="text" name="date" class="form-control">
 
-                        </select>
-                    </div>
-                </div>
-                <div class="ek_group m-0">
-                    <label class="eklabel eklabel_80 m-0">Payment Status:</label>
-                    <div class="ek_f_input">
-                        <select id="sort_by_status" class="form-select w_150_f">
-                            <option value="0" selected>Select</option>
-                            <option value="1">Hold</option>
-                            <option value="2">Accrued</option>
-                            <option value="3">Paid</option>
-                            <option value="4">Due</option>
-                        </select>
-                    </div>
-                </div>
-{{--
-        <ul class="ekfilterList">
-          <li>
-          @if (auth()->user()->hasRole(ROLE_ADMIN))
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
-                @else
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
-                @endif
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue"></strong>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '4')">Dispatched</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '5')">In Transit</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '6')">Delivered</a></li>
-              </ul>
-            </div>       
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue"></strong>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '1')">Hold</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '2')">Accrued</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '3')">Paid</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '4')">Due</a></li>
-              </ul>
-            </div>       
-          </li>
-          <li>
-            <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
-          </li>
-        </ul>
-        --}}
-                <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
-                                    class="fas fa-file-csv me-2"></i>Export
-                                CSV</button>
+                        <div><strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</strong></div>
+
+                        </div>
+                    </li>
+                    <li>
+                    <div class="dropdown" id="orderStatusDropdown">
+                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="5">In Transit</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+                                </ul>
+                            </div>      
+                    </li>
+                    <li>
+                    <div class="dropdown" id="paymentStatusDropdown">
+                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue">All</strong>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="1">Hold</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="2">Accrued</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="3">Paid</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="4">Due</a></li>
+                                </ul>
+                            </div>      
+                    </li>
+                    <li>
+                        <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
+                    </li>
+                    <li>
+                        <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                    </li>
+                </ul>
+        
             </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
@@ -148,43 +128,52 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
-    $(function() {
-    $('input[name="daterange"]').daterangepicker({
-      autoApply: true,
-      opens: 'left'
-    }, function(start, end, label) {
-      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-    });
-  });
-  </script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+
+
+   document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
         const pagination = document.getElementById("pagination");
         const prevPage = document.getElementById("prevPage");
         const nextPage = document.getElementById("nextPage");
         const dataContainer = document.getElementById("dataContainer");
-        // let sort_by_order_status = 0;
-        // let sortByStatus = 0;
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
-        
-        // function selectValue(element, value) {
-        //     var dropdown = element.closest('.dropdown');
-        //     dropdown.querySelector('.dropdownValue').textContent = value;
-        //     let sort_by_order_status = value;
-        //     fetchData();
-        // }
+        let order_date = order_last_date = '';
 
-        // function selectSortByValue(element, value) {
-        //     var dropdown = element.closest('.dropdown');
-        //     dropdown.querySelector('.dropdownValue').textContent = value;
-        //     let sortByStatus = value;
-        //     fetchData();
-        // }
+        $(function() {
+            const today = moment().format('YYYY-MM-DD');
+            const thirtyDaysAgo = moment().subtract(30, 'days').format('YYYY-MM-DD');
+            $('input[name="daterange"]').daterangepicker({
+                autoApply: true,
+                opens: 'left',
+                startDate: thirtyDaysAgo,
+                endDate: today,
+                locale: {
+                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                }
+            }, function(start, end, label) {
+                // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                order_date = start.format('YYYY-MM-DD');
+                order_last_date = end.format('YYYY-MM-DD');
+                fetchData();
+            });
 
+            //
+            $('input[name="date"]').daterangepicker({
+                singleDatePicker: true,    // Enables single date picker
+                autoApply: true,
+                opens: 'left',
+                startDate: today,
+                locale: {
+                    format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+                }
+            },
+            function(selectedDate) {
+                console.log("A new date was selected: " + selectedDate.format('YYYY-MM-DD'));
+            });
+        });
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
         searchQuery.addEventListener("keydown", (e) => {
@@ -198,15 +187,28 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
-
-        const sort_by_order_status = document.getElementById("sort_by_order_status");
-        sort_by_order_status.addEventListener("change", () => {
-            fetchData();
-        });
+        let selectedValues = {
+            sort_by_order_status: "0",
+            sortByStatus: "0"
+            };
+            function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const value = this.getAttribute('data-value');
+                        const text = this.textContent;
+                        dropdownValue.textContent = text;
+                        selectedValues[key] = value;
+                        fetchData();
+                    });
+                });
+            }
+            const orderStatusDropdown = document.getElementById('orderStatusDropdown');
+            const paymentStatusDropdown = document.getElementById('paymentStatusDropdown');
+            handleDropdownSelection(orderStatusDropdown, 'sort_by_order_status');
+            handleDropdownSelection(paymentStatusDropdown, 'sortByStatus');
      
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
@@ -240,12 +242,16 @@
                 apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-                apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+                apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
-            if (sort_by_order_status) {
-                apiUrl += `&sort_by_order_status=${sort_by_order_status.value}`;
+            if (selectedValues.sort_by_order_status) {
+                apiUrl += `&sort_by_order_status=${selectedValues.sort_by_order_status}`;
+            }
+
+            if(order_date && order_last_date) {
+                apiUrl += `&order_date=${order_date}&order_last_date=${order_last_date}`;
             }
 
 

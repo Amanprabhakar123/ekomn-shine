@@ -35,31 +35,37 @@ class AdminController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * This function is used to add the sub-admin.
+     * @return void
      */
-
     public function addAdmin()
     {
         $permissionsArray = User::SUB_ADMIN_PERMISSION_LIST;
-
-        // dd($permissionsArray);
         $permissions = [];
 
         foreach ($permissionsArray as $key =>  $item) {
-            $permissions[$item['name']] = str_replace('_', ' ', ucfirst($item['name']));
+            $permissions[$item] = str_replace('_', ' ', ucfirst($item));
         }
 
-        // dd($permissions);
         return view('dashboard.admin.create_admin', compact('permissions'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * This function is used to store the sub-admin.
+     * @param Request $request
+     * @return void
      */
-
     public function subAdminStore(Request $request)
     {
         try {
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADMIN_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
                 'email' => 'required|string|email|unique:users',
@@ -112,11 +118,21 @@ class AdminController extends Controller
     }
 
     /**
-     * Display the admin list.
+     * This function is used to get the list of all sub-admins.
+     * @param Request $request
+     * @return void
      */
     public function adminList(Request $request){
        
         try {
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADMIN_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $perPage = $request->get('per_page', 10);
 
             $searchTerm = $request->input('query', null);
@@ -153,15 +169,27 @@ class AdminController extends Controller
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
             ];
-
-            dd($exceptionDetails, $e->getMessage());
             event(new ExceptionEvent($exceptionDetails));
         }
     }
 
+    /**
+     * This function is used to update the user status.
+     *
+     * @param Request $request
+     * @return void
+     */
     public function updateUserActive(Request $request)
     {
         try {
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADMIN_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $user = User::find(salt_decrypt($request->id));
             $user->isactive = $request->status;
             $user->save();

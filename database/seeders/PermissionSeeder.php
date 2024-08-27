@@ -51,15 +51,18 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => PERMISSION_TOP_PRODUCT]);
         Permission::create(['name' => PERMISSION_BANNER]);
         Permission::create(['name' => PERMISSION_MIS_SETTING_INVENTORY]);
+        Permission::create(['name' => PERMISSION_CATEGORY_MANAGEMENT]);
         Permission::create(['name' => PERMISSION_CREATE_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_LIST_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_VIEW_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_EDIT_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_USER_LIST]);
+        Permission::create(['name' => PERMISSION_ADMIN_LIST]);
 
 
         // assign permissions Buyer
         $role_buyer = Role::findByName(ROLE_BUYER);
+        $role_buyer->givePermissionTo(PERMISSION_LIST_PRODUCT);
         $role_buyer->givePermissionTo(PERMISSION_ADD_CONNCETION);
         $role_buyer->givePermissionTo(PERMISSION_EDIT_CONNCETION);
         $role_buyer->givePermissionTo(PERMISSION_ADD_NEW_ORDER);

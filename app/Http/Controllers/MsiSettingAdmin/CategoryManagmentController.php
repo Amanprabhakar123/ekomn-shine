@@ -42,7 +42,7 @@ class CategoryManagmentController extends Controller
      */
     public function misCategories(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -107,7 +107,7 @@ class CategoryManagmentController extends Controller
      */
     public function addCategoryView()
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -127,7 +127,7 @@ class CategoryManagmentController extends Controller
      */
     public function updateCategoryStatus(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -177,7 +177,7 @@ class CategoryManagmentController extends Controller
      */
     public function addCategory(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -372,7 +372,7 @@ class CategoryManagmentController extends Controller
      */
 
     public function editCategoryView(Request $request, $id){
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -397,7 +397,7 @@ class CategoryManagmentController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateCategory(Request $request){
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if(auth()->user()->hasRole(User::PERMISSION_CATEGORY_MANAGEMENT)){
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),

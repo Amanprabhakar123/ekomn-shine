@@ -54,6 +54,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_PAYMENT_LIST = 'my_payment';
     const PERMISSION_PAYMENT_EDIT = 'edit_and_update_payment'; 
     const PERMISSION_PAYMENT_EXPORT = 'export_payment';
+    const PERMISSION_CATEGORY_MANAGEMENT = 'category_management';
     const PERMISSION_TOP_CATEGORY = 'top_category_crud';
     const PERMISSION_TOP_PRODUCT = 'top_product_crud';
     const PERMISSION_BANNER = 'banner_crud';
@@ -65,6 +66,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_VIEW_RETURN_ORDER = 'view_return_order';
     const PERMISSION_EDIT_RETURN_ORDER = 'edit_and_update_return_order';
     const PERMISSION_USER_LIST = 'user_list';
+    const PERMISSION_ADMIN_LIST = 'admin_list';
 
     // define permission for sub admin
     const SUB_ADMIN_PERMISSION_LIST = [
@@ -74,22 +76,24 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         self::PERMISSION_LIST_ORDER,
         self::PERMISSION_EDIT_ORDER,
         self::PERMISSION_CANCEL_ORDER,
-        self::PERMISSION_ADD_COURIER,
-        self::PERMISSION_LIST_COURIER,
-        self::PERMISSION_EDIT_COURIER,
         self::PERMISSION_ORDER_TRACKING,
         self::PERMISSION_PAYMENT_LIST,
         self::PERMISSION_PAYMENT_EDIT,
         self::PERMISSION_PAYMENT_EXPORT,
-        self::PERMISSION_TOP_CATEGORY,
-        self::PERMISSION_TOP_PRODUCT,
-        self::PERMISSION_BANNER,
-        self::PERMISSION_MIS_SETTING_INVENTORY,
         self::PERMISSION_CREATE_RETURN_ORDER,
         self::PERMISSION_LIST_RETURN_ORDER,
         self::PERMISSION_VIEW_RETURN_ORDER,
         self::PERMISSION_EDIT_RETURN_ORDER,
+        self::PERMISSION_MIS_SETTING_INVENTORY,
+        self::PERMISSION_CATEGORY_MANAGEMENT,
+        self::PERMISSION_TOP_CATEGORY,
+        self::PERMISSION_TOP_PRODUCT,
+        self::PERMISSION_BANNER,
+        self::PERMISSION_ADD_COURIER,
+        self::PERMISSION_LIST_COURIER,
+        self::PERMISSION_EDIT_COURIER,
         self::PERMISSION_USER_LIST,
+        self::PERMISSION_ADMIN_LIST,
     ];
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;

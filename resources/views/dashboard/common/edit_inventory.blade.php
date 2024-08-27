@@ -1854,6 +1854,12 @@ let stockAndSizeCounter = 1;
     const containers = document.getElementById("main-container");
     const newContainer = document.createElement("div");
     newContainer.className = "imagecontainer";
+    const deleteMainContainerButton = document.createElement("span");
+    deleteMainContainerButton.className = "deleteMain";
+    deleteMainContainerButton.innerHTML =  '<i class="far fa-trash-alt" title="Delete Variant"></i>';
+    deleteMainContainerButton.onclick = function () {
+      deleteMainContainer(this);
+    };
     newContainer.id = `imagecontainerVariation-${containerCount}`;
 
     // Add the first image upload box
@@ -1950,6 +1956,7 @@ let stockAndSizeCounter = 1;
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    newContainer.appendChild(deleteMainContainerButton);
     stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
@@ -2017,6 +2024,10 @@ let stockAndSizeCounter = 1;
     newContainer.appendChild(multiRowContainer);
     containers.appendChild(newContainer);
 
+  }
+  function deleteMainContainer(button) {
+    const mainContainer = button.parentNode;
+    mainContainer.parentNode.removeChild(mainContainer);
   }
   // End code Image Upload and video upload Step 4
 

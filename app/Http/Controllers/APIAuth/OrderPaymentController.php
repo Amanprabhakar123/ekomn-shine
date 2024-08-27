@@ -170,7 +170,7 @@ class OrderPaymentController extends Controller
             $order_date = $request->input('order_date', now()->subDays(30)->format('Y-m-d'));
             $order_last_date = $request->input('order_last_date', now()->format('Y-m-d'));
             $statement_date = $request->input('statement_date', null);
-
+            
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['order_number', 'quantity', 'order_date', 'order_type', 'order_channel_type', 'payment_status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
