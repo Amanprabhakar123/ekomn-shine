@@ -259,6 +259,19 @@ th.h_sorting.active.desc i.fa-caret-up{
 }
 
 
+/* Custom tooltip styling */
+ .tooltip-inner {
+  max-width: 100%; /* Allows the tooltip to expand based on content */
+  width: 100%; /* Auto width based on content */
+  background-color: #333; /* Custom background color */
+  color: #fff; /* Custom text color */
+  padding: 10px; /* Custom padding */
+  border-radius: 5px; /* Custom border-radius */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+
+
 
 
 

@@ -328,7 +328,8 @@
               </div>
             </div>
             <p class="subcribeNote">
-              Registered Users - To avail similar services for other leading online Platforms, please reach out to our Support Desk
+              Registered Users - To avail similar services for other leading online Platforms, please reach out to our Support Desk <br>
+              All prices are in INR and excluding of GST
             </p>
           </div>
         </div>

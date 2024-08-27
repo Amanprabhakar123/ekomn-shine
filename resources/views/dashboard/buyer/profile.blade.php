@@ -145,7 +145,7 @@ Buyer Profile
 
                                 <div class="form-group">
                                     <label>Location link</label>
-                                    <input type="text" class="form-control" placeholder="Enter shippinig location link" id="location_link" name="location_link" value="{{ isset($delivery_address) ? $delivery_address->location_link : '' }}" />
+                                    <input type="text" class="form-control" placeholder="Enter shippinig location link" id="location_link" name="location_link" value="{{ isset($delivery_address) ? $delivery_address->location_link : '' }}"  data-toggle="tooltip" data-placement="top" title=" Please copy and paste your home or whatsapp location link here"/>
                                     <div id="location_linkErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -355,6 +355,10 @@ Buyer Profile
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
+        // tooltip function script here 
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
         // Function to clear error messages for all fields
         function clearErrorMessages() {
             const fields = [
@@ -441,13 +445,14 @@ Buyer Profile
                     name: $('#business_performance_name').val(),
                     mobile_no: $('#business_performance_mobile').val()
                 },
+              
                 ProductSourcingAlert: {
-                    name: $('#order_delivery_enquiry_name').val(),
-                    mobile_no: $('#order_delivery_enquiry_mobile').val()
-                },
-                BulkOrderContact: {
                     name: $('#product_listings_name').val(),
                     mobile_no: $('#product_listings_mobile').val()
+                },
+                BulkOrderContact: {
+                    name: $('#order_delivery_enquiry_name').val(),
+                    mobile_no: $('#order_delivery_enquiry_mobile').val()
                 }
             };
 

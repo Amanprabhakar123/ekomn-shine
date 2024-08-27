@@ -277,6 +277,16 @@ class PaymentController extends Controller
                 'is_primary' => true,
             ]);
 
+            $company_detail->address()->create([
+                'company_id' => $company_detail->id,
+                'address_line1' => $user->address,
+                'state' => $user->state,
+                'city' => $user->city,
+                'pincode' => $user->pin_code,
+                'address_type' => CompanyAddressDetail::TYPE_BILLING_ADDRESS,
+                'is_primary' => false,
+            ]);
+
             // Register Business Operation Details
             $company_detail->operation()->create([
                 'company_id' => $company_detail->id,

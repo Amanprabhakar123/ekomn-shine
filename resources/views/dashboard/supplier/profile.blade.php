@@ -144,7 +144,7 @@ Supplier Profile
                                 </div>
                                 <div class="form-group">
                                     <label>Location link</label>
-                                    <input type="text" class="form-control" placeholder="Enter shippinig location link" id="location_link" name="location_link" value="{{ isset($shipping_address) ? $shipping_address->location_link : '' }}" />
+                                    <input type="text" class="form-control" placeholder="Enter shippinig location link" id="location_link" name="location_link" value="{{ isset($shipping_address) ? $shipping_address->location_link : '' }}" data-toggle="tooltip" data-placement="top" title=" Please copy and paste your Store/Warehouse whatsapp location link here"/>
                                     <div id="location_linkErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -219,11 +219,11 @@ Supplier Profile
                                     <label class="">Business Performance & Critical events:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" id="business_performance_name" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductListings->name : ''}}" />
+                                            <input type="text" class="form-control" id="business_performance_name" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->name : ''}}" />
                                             <div id="business_performance_nameErr" class="invalid-feedback"></div>
                                         </div>
                                         <div class="col">
-                                            <input type="text" class="form-control" id="business_performance_mobile" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductListings->mobile_no : ''}}" />
+                                            <input type="text" class="form-control" id="business_performance_mobile" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->mobile_no : ''}}" />
                                             <div id="business_performance_mobileErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
@@ -232,11 +232,11 @@ Supplier Profile
                                     <label class="">Product Listings:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="text" class="form-control" id="product_listings_name" placeholder="Full name" value="{{!empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->name : ''}}" />
+                                            <input type="text" class="form-control" id="product_listings_name" placeholder="Full name" value="{{!empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductListings->name : ''}}" />
                                             <div id="product_listings_nameErr" class="invalid-feedback"></div>
                                         </div>
                                         <div class="col">
-                                            <input type="text" class="form-control" id="product_listings_mobile" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->mobile_no : ''}}" />
+                                            <input type="text" class="form-control" id="product_listings_mobile" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductListings->mobile_no : ''}}" />
                                             <div id="product_listings_mobileErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
@@ -353,6 +353,10 @@ Supplier Profile
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
+          // tooltip function script here 
+          $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
         // Function to clear error messages for all fields
         function clearErrorMessages() {
             const fields = [
@@ -427,14 +431,15 @@ Supplier Profile
                     name: $('#business_performance_name').val(),
                     mobile_no: $('#business_performance_mobile').val()
                 },
-                OrderDeliveryEnquiry: {
-                    name: $('#order_delivery_enquiry_name').val(),
-                    mobile_no: $('#order_delivery_enquiry_mobile').val()
-                },
                 ProductListings: {
                     name: $('#product_listings_name').val(),
                     mobile_no: $('#product_listings_mobile').val()
+                },
+                OrderDeliveryEnquiry: {
+                    name: $('#order_delivery_enquiry_name').val(),
+                    mobile_no: $('#order_delivery_enquiry_mobile').val()
                 }
+               
             };
 
             // Business name validation regex

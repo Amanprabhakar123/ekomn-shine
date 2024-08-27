@@ -138,7 +138,7 @@
                         <label class="ack_q_w" for="product_qty">How many products you have in your catalog that you wish to sell?</label>
                         <!-- this is hidden field step 1 -->
                         <input type="hidden" class="form-control" id="step_3" name="step_3" value="step_3" />
-                        <input class="qt_inp form-control" type="number" name="product_qty" id="product_qty" placeholder="Qty." aria-label="Product Quantity" />
+                        <input class="qt_inp form-control stock_t" type="number" name="product_qty" id="product_qty" placeholder="Qty." aria-label="Product Quantity" />
                       </div>
                     </li>
                     <li>
