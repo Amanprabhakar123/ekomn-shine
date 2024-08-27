@@ -8,13 +8,14 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Database\Seeders\PlanSeeder;
 use Database\Seeders\CourierList;
-use Database\Seeders\ReturnOrderSeeder;
 use Database\Seeders\EkomnDetails;
 use Database\Seeders\AddTDSCharges;
 use Database\Seeders\PincodeSeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\CanHandleSeeder;
+use Database\Seeders\PermissionSeeder;
 use Database\Seeders\OrdersTableSeeder;
+use Database\Seeders\ReturnOrderSeeder;
 use Database\Seeders\BusinessTypeSeeder;
 use Database\Seeders\ChargesTableSeeder;
 use Database\Seeders\CompanyBuyerSeeder;
@@ -35,7 +36,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(RolesAndPermissionsSeeder::class);
+        // $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AuthUserLoginSeeder::class);
         $this->call(ProductCategorySeeder::class);
         $this->call(CanHandleSeeder::class);
@@ -48,13 +49,18 @@ class DatabaseSeeder extends Seeder
         $this->call(ImportWorldSqlSeeder::class);
         $this->call(PincodeSeeder::class);
         $this->call(CourierList::class);
-        $this->call(AddCourierPermisssion::class);
-        $this->call(PaymentPermissionSeeder::class);
+        // $this->call(AddCourierPermisssion::class);
+        // $this->call(PaymentPermissionSeeder::class);
         $this->call(AddTDSCharges::class);
-        $this->call(MisAdminPermission::class);
+        // $this->call(MisAdminPermission::class);
         $this->call(EkomnDetails::class);
-        $this->call(ReturnOrderSeeder::class);
-        $this->call(UserListPermissionSeeder::class);
+        // $this->call(ReturnOrderSeeder::class);
+        // $this->call(UserListPermissionSeeder::class);
+        $this->call(PermissionSeeder::class);
+
+
+
+
         // $this->call(OrdersTableSeeder::class);
         
         // $this->call(ProductSeeder::class);

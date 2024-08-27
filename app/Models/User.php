@@ -31,42 +31,69 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable,  HasRoles, SoftDeletes, LogsActivity;
 
+    // define roles
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
     const ROLE_ADMIN = 'super-admin';
     const ROLE_SUB_ADMIN = 'admin';
-    const PERMISSION_ADD_PRODUCT = 'add_product_details';
-    const PERMISSION_LIST_PRODUCT = 'list_product_details';
-    const PERMISSION_EDIT_PRODUCT_DETAILS = 'edit_product_details';
+
+    // define permissions
+    const PERMISSION_ADD_PRODUCT = 'add_new_inventory';
+    const PERMISSION_LIST_PRODUCT = 'my_inventory';
+    const PERMISSION_EDIT_PRODUCT_DETAILS = 'edit_and_update_inventory';
     const PERMISSION_ADD_CONNCETION = 'add_connection';
     const PERMISSION_EDIT_CONNCETION = 'edit_connection';
     const PERMISSION_ADD_NEW_ORDER = 'add_new_order';
-    const PERMISSION_LIST_ORDER = 'list_order';
-    const PERMISSION_EDIT_ORDER = 'edit_order';
+    const PERMISSION_LIST_ORDER = 'my_order';
+    const PERMISSION_EDIT_ORDER = 'edit_and_update_order';
     const PERMISSION_CANCEL_ORDER = 'cancel_order';
-    const PERMISSION_ADD_NEW_RETURN = 'add_new_return';
     const PERMISSION_ADD_COURIER = 'add_new_courier';
-    const PERMISSION_LIST_COURIER = 'list_courier';
-    const PERMISSION_EDIT_COURIER = 'edit_courier';
-    const PERMISSION_ORDER_TRACKING = 'order_tracking';
-    const PERMISSION_PAYMENT_LIST = 'payment_list';
-    const PERMISSION_PAYMENT_EDIT = 'payment_edit'; 
-    const PERMISSION_PAYMENT_EXPORT = 'payment_export';
-    const PERMISSION_TOP_CATEGORY = 'top_category';
-    const PERMISSION_TOP_PRODUCT = 'top_product';
-    const PERMISSION_BANNER = 'banner';
-    const PERMISSION_MIS_SETTING_INVENTORY = 'mis_setting_inventory';
+    const PERMISSION_LIST_COURIER = 'my_courier';
+    const PERMISSION_EDIT_COURIER = 'edit_and_update_courier';
+    const PERMISSION_ORDER_TRACKING = 'order_and_return_tracking';
+    const PERMISSION_PAYMENT_LIST = 'my_payment';
+    const PERMISSION_PAYMENT_EDIT = 'edit_and_update_payment'; 
+    const PERMISSION_PAYMENT_EXPORT = 'export_payment';
+    const PERMISSION_TOP_CATEGORY = 'top_category_crud';
+    const PERMISSION_TOP_PRODUCT = 'top_product_crud';
+    const PERMISSION_BANNER = 'banner_crud';
+    const PERMISSION_MIS_SETTING_INVENTORY = 'all_mis_setting';
 
     // define permission for return order
-    const PERMISSION_CREATE_RETURN_ORDER = 'create_return_order';
+    const PERMISSION_CREATE_RETURN_ORDER = 'add_new_return_order';
     const PERMISSION_LIST_RETURN_ORDER = 'list_return_order';
     const PERMISSION_VIEW_RETURN_ORDER = 'view_return_order';
-    const PERMISSION_EDIT_RETURN_ORDER = 'edit_return_order';
+    const PERMISSION_EDIT_RETURN_ORDER = 'edit_and_update_return_order';
     const PERMISSION_USER_LIST = 'user_list';
- 
 
+    // define permission for sub admin
+    const SUB_ADMIN_PERMISSION_LIST = [
+        self::PERMISSION_ADD_PRODUCT,
+        self::PERMISSION_LIST_PRODUCT,
+        self::PERMISSION_EDIT_PRODUCT_DETAILS,
+        self::PERMISSION_LIST_ORDER,
+        self::PERMISSION_EDIT_ORDER,
+        self::PERMISSION_CANCEL_ORDER,
+        self::PERMISSION_ADD_COURIER,
+        self::PERMISSION_LIST_COURIER,
+        self::PERMISSION_EDIT_COURIER,
+        self::PERMISSION_ORDER_TRACKING,
+        self::PERMISSION_PAYMENT_LIST,
+        self::PERMISSION_PAYMENT_EDIT,
+        self::PERMISSION_PAYMENT_EXPORT,
+        self::PERMISSION_TOP_CATEGORY,
+        self::PERMISSION_TOP_PRODUCT,
+        self::PERMISSION_BANNER,
+        self::PERMISSION_MIS_SETTING_INVENTORY,
+        self::PERMISSION_CREATE_RETURN_ORDER,
+        self::PERMISSION_LIST_RETURN_ORDER,
+        self::PERMISSION_VIEW_RETURN_ORDER,
+        self::PERMISSION_EDIT_RETURN_ORDER,
+        self::PERMISSION_USER_LIST,
+    ];
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
+
     /**
      * The attributes that are mass assignable.
      *

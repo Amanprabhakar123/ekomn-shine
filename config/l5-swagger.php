@@ -12,7 +12,7 @@ return [
                 /*
                  * Route for accessing api documentation interface
                 */
-                'api' => 'api/documentation',
+                'api' => env('APP_ENV') !== 'production' ? 'api/documentation' : null,
             ],
             'paths' => [
                 /*
@@ -61,7 +61,7 @@ return [
              * Middleware allows to prevent unexpected access to API documentation
             */
             'middleware' => [
-                'api' => [],
+                'api' => env('APP_ENV') !== 'production' ? [] : ['auth'],  // Apply middleware to protect the route in production
                 'asset' => [],
                 'docs' => [],
                 'oauth2_callback' => [],
