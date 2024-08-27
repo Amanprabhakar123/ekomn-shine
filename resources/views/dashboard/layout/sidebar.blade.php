@@ -230,6 +230,12 @@
                                 <span class="nav-link-text">User List</span>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.list') }}">
+                                <span class="nav-link-text">Admin List</span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </li>

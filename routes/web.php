@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAddListController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\WebController;
 use App\Http\Controllers\Return\ReturnOrderController;
@@ -111,6 +112,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('return-order-tracking', [ReturnOrderController::class, 'returnOrderTracking'])->name('return.order.tracking');
     Route::get('user-list', [DashboardController::class, 'userList'])->name('user.list');
     Route::get('view-page/{id}', [DashboardController::class, 'viewPage'])->name('view.page');
+    Route::get('admin-list', [AdminAddListController::class, 'index'])->name('admin.list');
+    Route::get('admin-add', [AdminAddListController::class, 'addAdmin'])->name('admin.add');
 
 });
 
@@ -185,6 +188,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
         Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
         Route::post('update-pan-gst-verified', [DashboardController::class, 'updatePanGstVerified'])->name('update.pan.gst.verified');
+        Route::post('sub-admin-store', [AdminAddListController::class, 'subAdminStore'])->name('sub.admin.store');
+        Route::get('admin-list-get', [AdminAddListController::class, 'adminList'])->name('admin.list.get');
     });
 });
 

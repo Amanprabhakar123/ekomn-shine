@@ -34,6 +34,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const ROLE_BUYER = 'buyer';
     const ROLE_SUPPLIER = 'supplier';
     const ROLE_ADMIN = 'super-admin';
+    const ROLE_SUB_ADMIN = 'admin';
     const PERMISSION_ADD_PRODUCT = 'add_product_details';
     const PERMISSION_LIST_PRODUCT = 'list_product_details';
     const PERMISSION_EDIT_PRODUCT_DETAILS = 'edit_product_details';
