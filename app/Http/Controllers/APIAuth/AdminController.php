@@ -124,15 +124,15 @@ class AdminController extends Controller
             // $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
             $users = User::role(User::ROLE_SUB_ADMIN);
 
-            // $users =  $users = User::role(User::ROLE_SUB_ADMIN)->get()->when($searchTerm, function ($query, $searchTerm) {
-            //     $query->where('name', 'like', '%' . $searchTerm . '%')
-            //         ->orWhere('email', 'like', '%' . $searchTerm . '%')
-            //         ->orWhereHas('companyDetails', function ($query) use ($searchTerm) {
-            //             $query->where('business_name', 'like', '%' . $searchTerm . '%')
-            //             ->orWhere('company_serial_id', 'like', '%' . $searchTerm . '%') // Search by company serial id
-            //                 ->orWhere('mobile_no', 'like', '%' . $searchTerm . '%');
-            //         });
-            // });
+            $users =  $users->when($searchTerm, function ($query, $searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('companyDetails', function ($query) use ($searchTerm) {
+                        $query->where('business_name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('company_serial_id', 'like', '%' . $searchTerm . '%') // Search by company serial id
+                            ->orWhere('mobile_no', 'like', '%' . $searchTerm . '%');
+                    });
+            });
 
             $users = $users->paginate($perPage);
             
