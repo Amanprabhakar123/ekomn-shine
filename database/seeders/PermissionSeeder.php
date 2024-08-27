@@ -15,7 +15,6 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $sub_admin_role = Role::create(['name' => ROLE_SUB_ADMIN]);
-        
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Revoke permissions from all users
@@ -28,12 +27,10 @@ class PermissionSeeder extends Seeder
 
         // Revoke roles from all users
         foreach (Role::all() as $role) {
-            $role->users()->detach();
             $role->permissions()->detach();
         }
 
         // create all permissions
-        
         Permission::create(['name' => PERMISSION_ADD_PRODUCT]);
         Permission::create(['name' => PERMISSION_LIST_PRODUCT]);
         Permission::create(['name' => PERMISSION_EDIT_PRODUCT_DETAILS]);
@@ -62,32 +59,32 @@ class PermissionSeeder extends Seeder
 
 
         // assign permissions Buyer
-        $role = Role::findByName(ROLE_BUYER);
-        $role->givePermissionTo(PERMISSION_ADD_CONNCETION);
-        $role->givePermissionTo(PERMISSION_EDIT_CONNCETION);
-        $role->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
-        $role->givePermissionTo(PERMISSION_LIST_ORDER);
-        $role->givePermissionTo(PERMISSION_CANCEL_ORDER);
-        $role->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
+        $role_buyer = Role::findByName(ROLE_BUYER);
+        $role_buyer->givePermissionTo(PERMISSION_ADD_CONNCETION);
+        $role_buyer->givePermissionTo(PERMISSION_EDIT_CONNCETION);
+        $role_buyer->givePermissionTo(PERMISSION_ADD_NEW_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_LIST_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_CANCEL_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
 
         // assign permissions Supplier
-        $role = Role::findByName(ROLE_SUPPLIER);
-        $role->givePermissionTo(PERMISSION_ADD_PRODUCT);
-        $role->givePermissionTo(PERMISSION_LIST_PRODUCT);
-        $role->givePermissionTo(PERMISSION_EDIT_PRODUCT_DETAILS);
-        $role->givePermissionTo(PERMISSION_LIST_ORDER);
-        $role->givePermissionTo(PERMISSION_CANCEL_ORDER);
-        $role->givePermissionTo(PERMISSION_EDIT_ORDER);
-        $role->givePermissionTo(PERMISSION_PAYMENT_LIST);
-        $role->givePermissionTo(PERMISSION_PAYMENT_EXPORT);
-        $role->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
-        $role->givePermissionTo(PERMISSION_EDIT_RETURN_ORDER);
+        $role_supplier = Role::findByName(ROLE_SUPPLIER);
+        $role_supplier->givePermissionTo(PERMISSION_ADD_PRODUCT);
+        $role_supplier->givePermissionTo(PERMISSION_LIST_PRODUCT);
+        $role_supplier->givePermissionTo(PERMISSION_EDIT_PRODUCT_DETAILS);
+        $role_supplier->givePermissionTo(PERMISSION_LIST_ORDER);
+        $role_supplier->givePermissionTo(PERMISSION_CANCEL_ORDER);
+        $role_supplier->givePermissionTo(PERMISSION_EDIT_ORDER);
+        $role_supplier->givePermissionTo(PERMISSION_PAYMENT_LIST);
+        $role_supplier->givePermissionTo(PERMISSION_PAYMENT_EXPORT);
+        $role_supplier->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
+        $role_supplier->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
+        $role_supplier->givePermissionTo(PERMISSION_EDIT_RETURN_ORDER);
 
         // assign permissions Super admin
-        $role = Role::findByName(ROLE_ADMIN);
-        $role->givePermissionTo(Permission::all());        
+        $role_admin = Role::findByName(ROLE_ADMIN);
+        $role_admin->givePermissionTo(Permission::all());        
     }
 }

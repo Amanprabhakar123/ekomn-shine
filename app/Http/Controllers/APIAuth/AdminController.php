@@ -40,8 +40,7 @@ class AdminController extends Controller
 
     public function addAdmin()
     {
-        $permission = Permission::all();
-        $permissionsArray = $permission->toArray();
+        $permissionsArray = User::SUB_ADMIN_PERMISSION_LIST;
 
         // dd($permissionsArray);
         $permissions = [];

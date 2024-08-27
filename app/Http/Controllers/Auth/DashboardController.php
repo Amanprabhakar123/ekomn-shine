@@ -493,7 +493,7 @@ class DashboardController extends Controller
     public function getUserList(Request $request)
     {
         try {
-            $perPage = $request->get('per_page', 10);
+            $perPage = $request->get('perPage', 10);
             $searchTerm = $request->input('query', null);
             $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
 
