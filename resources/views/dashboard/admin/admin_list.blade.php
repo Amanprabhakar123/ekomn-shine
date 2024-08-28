@@ -19,7 +19,9 @@
                             <th data-sort-field="order_number">Name</th>
                             </th>
                             <th data-sort-field="courier_name">Email</th>
+                            <th>Permission</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="dataContainer">
@@ -242,17 +244,27 @@
                    ${item.name}
                 </div>
             </td>
+           
              <td>
                 <div class="productTitle_t">
                    ${item.email}
-
                 </div>
             </td>
+
+             <td>
+                <div class="productTitle_t" title="${item.permissions}">
+                   ${item.permissions}
+                </div>
+            </td>
+           
              <td>
                 <select class="changeStatus_t form-select" ${isDisabled} onchange="handleInput('${item.id}', 2, this)">
                    <option value="1" ${item.status == "1" ? "selected" : ""}>Active</option>
                    <option value="2" ${item.status == "2   " ? "selected" : ""}>In Active</option>
                 </select>
+            </td>
+             <td>
+                <a href="${item.link}">Edit</a>
             </td>
         </tr>
     `;
@@ -293,13 +305,13 @@
      */
     function updateStatus(itemId, newStatus) {
         Swal.fire({
-            title: "Do you want to update status active ina-active?",
+            title: "Do you want to update status?",
             showCancelButton: true,
             confirmButtonText: "Save",
             denyButtonText: `Don't save`,
             didOpen: () => {
                 const title = Swal.getTitle();
-                title.style.fontSize = '25px';
+                title.style.fontSize = '22px';
                 // Apply inline CSS to the content
                 const content = Swal.getHtmlContainer();
                 // Apply inline CSS to the confirm button

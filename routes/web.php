@@ -114,6 +114,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('view-page/{id}', [DashboardController::class, 'viewPage'])->name('view.page');
     Route::get('admin-list', [AdminController::class, 'index'])->name('admin.list');
     Route::get('admin-add', [AdminController::class, 'addAdmin'])->name('admin.add');
+    Route::get('admin-edit/{id}', [AdminController::class, 'editAdmin'])->name('admin.edit');
 
 });
 
@@ -191,6 +192,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('sub-admin-store', [AdminController::class, 'subAdminStore'])->name('sub.admin.store');
         Route::get('admin-list-get', [AdminController::class, 'adminList'])->name('admin.list.get');
         Route::post('update-admin-active', [AdminController::class, 'updateUserActive'])->name('update.admin.active');
+        Route::post('update-admin-list', [AdminController::class, 'updateAdminList'])->name('update.admin.list');
     });
 });
 

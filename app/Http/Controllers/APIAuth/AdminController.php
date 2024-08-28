@@ -138,7 +138,7 @@ class AdminController extends Controller
             $searchTerm = $request->input('query', null);
             // $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
             $users = User::role(User::ROLE_SUB_ADMIN);
-
+            
             $users =  $users->when($searchTerm, function ($query, $searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%')
                     ->orWhere('email', 'like', '%' . $searchTerm . '%')
@@ -149,7 +149,8 @@ class AdminController extends Controller
                     });
             });
 
-            $users = $users->paginate($perPage);
+            
+            $users = $users->orderBy('id', 'desc')->paginate($perPage);
             
 
             // Transform the paginated results using Fractal
@@ -160,7 +161,6 @@ class AdminController extends Controller
 
             // Create the data array using Fractal
             $data = $this->fractal->createData($resource)->toArray();
-            // dd($data);
             // Return the JSON response with paginated data
             return response()->json($data);
         } catch (\Exception $e) {
@@ -214,6 +214,104 @@ class AdminController extends Controller
                     'message' => $e->getMessage(),
                 ],
             ], __('statusCode.statusCode422'));
+        }
+    }
+
+    /**
+     * Edit admin view 
+     * @param Request $request
+     * @return void
+     */
+    public function editAdmin(Request $request, $id)
+    {
+        $users = User::where('id', salt_decrypt($id))->role(User::ROLE_SUB_ADMIN)->first();
+         $selectedPermission = [];
+        foreach ($users->permissions as $key => $value) {
+            $selectedPermission[] = $value->name;
+        }
+
+        $permissionsArray = User::SUB_ADMIN_PERMISSION_LIST;
+        $permissions = [];
+
+        foreach ($permissionsArray as $key =>  $item) {
+            $permissions[$item] = str_replace('_', ' ', ucfirst($item));
+        }
+        
+        return view('dashboard.admin.edit_admin', compact('users', 'permissions', 'selectedPermission'));
+    }
+        
+
+    /**
+     * update admin list 
+     * @param Request $request
+     * @return void
+     */
+    public function updateAdminList(Request $request){
+        try {
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADMIN_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|string',
+                'name' => 'required|string',
+                'email' => 'required|string|email',
+                'permissions' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode400'),
+                    'status' => __('statusCode.status400'),
+                    'message' => $validator->errors()->first(),
+                ]], __('statusCode.statusCode400'));
+            }
+
+            if($request->password){
+                $validator = Validator::make($request->all(), [
+                    'password' => 'required|string|min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%@_.]).*$/|confirmed',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode400'),
+                        'status' => __('statusCode.status400'),
+                        'message' => $validator->errors()->first(),
+                    ]], __('statusCode.statusCode400'));
+                }
+            }
+
+            $user = User::find(salt_decrypt($request->id));
+            $user->name = $request->name;
+            if($request->password){
+                $user->password = Hash::make($request->password);
+            }
+            $user->save();
+
+            $permission =  explode(',', $request->permissions);
+            // Assign permission to user
+            $user->syncPermissions($permission);
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.userUpdated'),
+            ]], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => $e->getMessage(),
+            ]], __('statusCode.statusCode422'));
         }
     }
 }

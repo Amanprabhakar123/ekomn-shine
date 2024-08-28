@@ -14,7 +14,7 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $sub_admin_role = Role::create(['name' => ROLE_SUB_ADMIN]);
+        // $sub_admin_role = Role::create(['name' => ROLE_SUB_ADMIN]);
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Revoke permissions from all users

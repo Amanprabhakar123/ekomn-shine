@@ -9,12 +9,17 @@ class SubAdminTransformer extends TransformerAbstract
 {
     public function transform(User $user)
     {
+        $permissions = [];
+        foreach ($user->permissions as $key => $value) {
+            $permissions[] = str_replace('_', ' ', ucfirst($value->name));
+        }
        try{
         $data = [
             'id' => salt_encrypt($user->id),
-            // 'link' => route('view.page', salt_encrypt($user->companyDetails->id)),
+            'link' => route('admin.edit', salt_encrypt($user->id)),
             'name' => $user->name,
             'email' => $user->email,
+            'permissions' => implode(', ', $permissions),
             // 'role' => ucfirst($user->getRoleNames()->first()),
             'status' => $user->isactive,
             'created_at' => $user->created_at->toDateTimeString(),
