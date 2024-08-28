@@ -766,7 +766,7 @@
                 </div>
 
             </div>
-        @elseif(auth()->user()->hasRole(ROLE_ADMIN))
+        @elseif(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
         <div class="card ekcard pa shadow-sm">
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>

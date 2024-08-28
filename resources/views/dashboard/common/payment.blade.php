@@ -15,7 +15,7 @@
             <div class="tableTop mt10">
             <ul class="ekfilterList">
                 <li>
-                @if (auth()->user()->hasRole(ROLE_ADMIN))
+                @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                         <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
                         @else
                         <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
@@ -71,7 +71,7 @@
                         <tr>
                             <th>Select</th>
                             <th>eKomn Order No</th>
-                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                             <th>Supplier Id</th>
                             @endif
                             <th>Date</th>
@@ -382,7 +382,7 @@
                                     <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
                                 </div>
                             </td>
-                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                             <td class="text-center">${item.supplier_id}</td>
                             @endif
                             <td class="text-center">${item.order_date}</td>
@@ -399,7 +399,7 @@
                             <td class="text-center">${item.refund_amount}</td>
                             <td class="text-center">${item.processing_charges}</td>
                             
-                             @if(auth()->user()->hasRole(ROLE_ADMIN))
+                             @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                                 <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
                                 @else
                                  <td class="text-center">${item.adjustment_amount}</td>

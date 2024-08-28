@@ -227,7 +227,8 @@
             </li>
             @endif
 
-            @if (auth()->user()->hasRole(ROLE_ADMIN))
+            @if (auth()->user()->hasPermissionTo(PERMISSION_ADD_COURIER) ||
+            auth()->user()->hasPermissionTo(PERMISSION_LIST_COURIER))
                 <li class="nav-item">
                     <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#SettingControl"
                         data-bs-parent="#dashboard_ekomn" id="components">
@@ -235,21 +236,21 @@
                         <span class="nav-link-text">Setting</span>
                         <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                     </a>
-                    @if (auth()->user()->hasPermissionTo(PERMISSION_ADD_COURIER) ||
-                            auth()->user()->hasPermissionTo(PERMISSION_LIST_COURIER))
                         <ul class="sidenav-second-level collapse" id="SettingControl"
                             data-bs-parent="#dashboard_ekomn">
+                             @if (auth()->user()->hasPermissionTo(PERMISSION_ADD_COURIER))
                             <li>
                                 <a class="nav-link" href="{{ route('courier-details') }}">Add Courier Details</a>
                             </li>
+                            @endif
                             </li>
+                            @if(auth()->user()->hasPermissionTo(PERMISSION_LIST_COURIER))
                             <li>
                                 <a class="nav-link" href="{{ route('courier.list') }}">Courier List</a>
                             </li>
-
+                            @endif
                             </li>
                     </ul>
-                    @endif
                 </li>
             @endif
             {{--

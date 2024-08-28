@@ -215,7 +215,7 @@
             @endif
             <!-- admin orders -->
 
-            @if (auth()->user()->hasRole(ROLE_ADMIN))
+            @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">Admin Orders</h3>
@@ -517,7 +517,7 @@
          * @param {Object} item - The item object containing the details.
          * @returns {string} - The HTML markup for the table row.
          */
-        @if (auth()->user()->hasRole(ROLE_ADMIN))
+        @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             function generateTableRow(item) {
                 var isvalid = false;
                 if(item.status == "Cancelled" || item.payment_status == "Pending"){

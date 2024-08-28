@@ -29,7 +29,7 @@ class BulkDataTransformer extends TransformerAbstract
                 'updated_at' => $import->updated_at->toDateTimeString(),
             ];
 
-            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+            if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                 $data['company_id'] = salt_encrypt($import->company_id);
             }
             return $data;

@@ -28,7 +28,7 @@
 
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
-            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <div class="ek_group">
                 <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -998,7 +998,7 @@
       $('#product_sub_categoryErr').text('');
     }
 
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
     const supplierId = $('#supplier_id').val();
     if (!supplierId) {
       $('#supplier_id').addClass('is-invalid');

@@ -121,7 +121,7 @@ class OrderPaymentTransformer extends TransformerAbstract
                 'updated_at' => $order->updated_at->toDateTimeString(),
             ];
             
-            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+            if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                 $data['supplier_id'] = $order->supplier->CompanyDetails->company_serial_id;
                 $data['bank_name'] = $order->supplier->CompanyDetails->bank_name;
                 $data['bank_account_no'] = $order->supplier->CompanyDetails->bank_account_no;

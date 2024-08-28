@@ -188,7 +188,7 @@ class ProductInvetoryController extends Controller
                 }
                 $variations = $variations->paginate($perPage); // Paginate results
 
-            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN)  || auth()->user()->hasRole(User::ROLE_SUB_ADMIN) ) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Eager load product variations with product inventory that matches user_id
                 $variations = ProductVariation::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
@@ -342,7 +342,7 @@ class ProductInvetoryController extends Controller
                     "$variant_key.*.color.string" => 'The color must be a string.',
                 ];
 
-                if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $rules['supplier_id'] = 'required|string|max:20';
                 }
 
@@ -412,7 +412,7 @@ class ProductInvetoryController extends Controller
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $user_id = auth()->user()->id;
                     $company_id = auth()->user()->companyDetails->id;
-                } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $companyDetail = CompanyDetail::where('company_serial_id', $request->supplier_id)->first();
                     if ($companyDetail) {
                         $user_id = $companyDetail->user_id;
@@ -732,7 +732,7 @@ class ProductInvetoryController extends Controller
                     'package_volumetric_weight' => 'required|numeric',
                     'product_listing_status' => 'required|in:1,2,3,4',
                 ];
-                if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $rules['supplier_id'] = 'required|string|max:20';
                     $rules = array_merge($rules, [
                         'product_keywords' => 'required|array',
@@ -854,7 +854,7 @@ class ProductInvetoryController extends Controller
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $user_id = auth()->user()->id;
                     $company_id = auth()->user()->companyDetails->id;
-                } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $companyDetail = CompanyDetail::where('company_serial_id', $request->supplier_id)->first();
                     if ($companyDetail) {
                         $user_id = $companyDetail->user_id;
@@ -1211,7 +1211,7 @@ class ProductInvetoryController extends Controller
                             }
                         }
                     } else {
-                        // if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                        // if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                         $product = ProductInventory::where('id', $product_id)->first();
                         $product->description = $data['product_description'];
                         $product->product_category = salt_decrypt($data['product_category_id']);
@@ -1561,7 +1561,7 @@ class ProductInvetoryController extends Controller
 
                 // Return a success message
                 return response()->json($response);
-            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
                 // Update the stock of the product variation
                 $variation->stock = $request->input('stock');
                 if ($request->input('stock') == 0) {
@@ -1719,7 +1719,7 @@ class ProductInvetoryController extends Controller
 
                 // Return a success message
                 return response()->json($response);
-            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
                 // Update the status of the product variation
                 $variation->status = $request->input('status');
                 if ($request->input('status') == ProductVariation::STATUS_OUT_OF_STOCK) {
@@ -1798,7 +1798,7 @@ class ProductInvetoryController extends Controller
                 })->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results
 
-            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Eager load product variations with product inventory that matches user_id
                 $bulkData = Import::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {

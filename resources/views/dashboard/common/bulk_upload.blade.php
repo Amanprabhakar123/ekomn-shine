@@ -19,7 +19,7 @@
           <i class="fas fa-long-arrow-alt-right"></i>
         </div>
         <div class="uploadContainer">
-          @if(auth()->user()->hasRole(ROLE_ADMIN) && auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
+          @if((auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(PERMISSION_LIST_PRODUCT))
           <div class="ek_group">
             <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
             <div class="ek_f_input">

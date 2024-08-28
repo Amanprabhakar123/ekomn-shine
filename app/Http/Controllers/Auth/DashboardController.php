@@ -96,7 +96,7 @@ class DashboardController extends Controller
             $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
 
             return view('dashboard.buyer.profile', get_defined_vars());
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
             return view('dashboard.admin.profile', get_defined_vars());
         }
         abort('403', 'Unauthorized action.');
@@ -209,7 +209,7 @@ class DashboardController extends Controller
                 ->get()->count();
 
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }
         abort('403', 'Unauthorized action.');
@@ -224,10 +224,11 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
         }
         abort('403', 'Unauthorized action.');
+        
     }
 
     /**
@@ -239,7 +240,7 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN))  && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
         }
         abort('403', 'Unauthorized action.');
@@ -287,7 +288,7 @@ class DashboardController extends Controller
 
             // dd(DB::getQueryLog());
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
 
             $variation_id = salt_decrypt($variation_id);
             // DB::enableQueryLog();
