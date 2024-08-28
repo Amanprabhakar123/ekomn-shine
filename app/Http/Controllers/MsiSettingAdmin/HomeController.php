@@ -281,7 +281,7 @@ class HomeController extends Controller
     public function getCategory(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! (auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY) ||  auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT))) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
