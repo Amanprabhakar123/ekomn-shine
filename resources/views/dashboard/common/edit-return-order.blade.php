@@ -1192,8 +1192,8 @@
         $('#show_courier').hide();
         @endif
 
-    
-        $(function() {
+@if(!isset($courier_detatils))
+    $(function() {
     const today = moment().format('DD-MM-YYYY');
     
     $('input[name="shippingDate"]').daterangepicker({
@@ -1222,7 +1222,23 @@
             }
         });
     });
+    $('input[name="deliveryDate"]').daterangepicker({
+            singleDatePicker: true,    
+            autoApply: true,
+            opens: 'left',
+            startDate: today,
+            minDate: moment().startOf('day'), // Disable previous dates
+            locale: {
+                format: 'DD-MM-YYYY'
+            }
+        },function(selectDate){
+            const deliveryDate = selectedDate.format('DD-MM-YYYY');
+            $('input[name="deliveryDate"]').val(deliveryDate);
+        }
+    );
 });
+
+@endif
 
     });
     
