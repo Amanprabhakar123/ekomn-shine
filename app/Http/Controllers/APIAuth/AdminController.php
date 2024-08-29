@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiAuth;
+namespace App\Http\Controllers\APIAuth;
 
 use App\Models\User;
 use League\Fractal\Manager;
@@ -9,13 +9,9 @@ use App\Events\ExceptionEvent;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use League\Fractal\Resource\Collection;
-use Spatie\Permission\Models\Permission;
 use App\Transformers\SubAdminTransformer;
 use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-
-
-
 
 class AdminController extends Controller
 {
