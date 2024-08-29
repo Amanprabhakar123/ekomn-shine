@@ -2,21 +2,22 @@
 
 namespace App\Jobs;
 
-use App\Models\Order;
-use App\Models\CompanyDetail;
-use Illuminate\Bus\Queueable;
 use App\Events\ExceptionEvent;
+use App\Models\CompanyAddressDetail;
+use App\Models\CompanyDetail;
+use App\Models\CompanyPlanPayment;
+use App\Models\Order;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\ReturnOrder;
 use App\Models\UserLoginHistory;
-use App\Models\CompanyPlanPayment;
-use Illuminate\Support\Facades\Log;
-use App\Models\CompanyAddressDetail;
 use App\Services\ExportFileServices;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
@@ -275,8 +276,8 @@ class ExportMisReport implements ShouldQueue
                 UserLoginHistory::with(['user', 'companyDetail'])
                     ->chunk(100, function ($userLogin) use (&$csvData) {
                         foreach ($userLogin as $user) {
-                            $role = $user->user->getRoleNames()->first(); 
-                            if($role && ($role == ROLE_SUPPLIER) || ($role == ROLE_BUYER)){
+                            $role = $user->user->getRoleNames()->first();
+                            if ($role && ($role == ROLE_SUPPLIER) || ($role == ROLE_BUYER)) {
                                 $full_name = isset($user->companyDetail->first_name) ? $user->companyDetail->first_name.' '.$user->companyDetail->last_name : '';
                                 $company_serial_id = isset($user->companyDetail->company_serial_id) ? $user->companyDetail->company_serial_id : '';
                                 $csvData[] = [
@@ -294,10 +295,10 @@ class ExportMisReport implements ShouldQueue
                 CompanyDetail::with(['address', 'variations', 'products', 'loginHistory', 'user'])
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
-                            $role = $com->user->getRoleNames()->first(); 
+                            $role = $com->user->getRoleNames()->first();
                             $loginHistory = $com->loginHistory->first();
                             isset($loginHistory) ? $loginHistory = $loginHistory->last_login : $loginHistory = '';
-                            if($role && ($role == ROLE_SUPPLIER)){
+                            if ($role && ($role == ROLE_SUPPLIER)) {
                                 $fullAddress = $com->address->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
                                 isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
@@ -310,7 +311,7 @@ class ExportMisReport implements ShouldQueue
                                     $com->created_at,
                                     $loginHistory,
                                 ];
-                            }elseif($role && ($role == ROLE_BUYER)){
+                            } elseif ($role && ($role == ROLE_BUYER)) {
                                 $fullAddress = $com->address->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
                                 isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
@@ -332,7 +333,7 @@ class ExportMisReport implements ShouldQueue
                 CompanyPlanPayment::with(['companyDetails', 'plan'])
                     ->chunk(100, function ($companyPlans) use (&$csvData) {
                         foreach ($companyPlans as $com) {
-                                if(!empty($com->companyDetails)){
+                            if (! empty($com->companyDetails)) {
                                 $full_name = isset($com->companyDetails->first_name) ? $com->companyDetails->first_name.' '.$com->companyDetails->last_name : '';
                                 $subscription_start_date = isset($com->companyDetails->subscription[0]['subscription_start_date']) ? $com->companyDetails->subscription[0]['subscription_start_date'] : '';
                                 $subscription_end_date = isset($com->companyDetails->subscription[0]['subscription_end_date']) ? $com->companyDetails->subscription[0]['subscription_end_date'] : '';
@@ -350,6 +351,31 @@ class ExportMisReport implements ShouldQueue
                             }
                         }
                     });
+            } elseif ($this->type === 'return') {
+                $fileName = 'RETURN_ORDER.csv';
+                $csvHeaders = ['Return Number', 'Order Number', 'Return Date', 'Order Date', 'Amount', 'Buyer ID', 'Supplier ID', 'Return Status'];
+                ReturnOrder::with(['order'])
+                    ->chunk(100, function ($returnOrder) use (&$csvData) {
+                        foreach ($returnOrder as $return) {
+                            if (! empty($return->order)) {
+
+                                $csvData[] = [
+                                    $return->return_number,
+                                    $return->order->order_number,
+                                    $return->return_date,
+                                    $return->order->order_date,
+                                    $return->amount,
+                                    $return->order->buyer->companyDetails->company_serial_id,
+                                    $return->order->supplier->companyDetails->company_serial_id,
+                                    $return->getStatus(),
+
+                                ];
+
+                            }
+
+                        }
+                    });
+
             }
             // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportFileServices;
