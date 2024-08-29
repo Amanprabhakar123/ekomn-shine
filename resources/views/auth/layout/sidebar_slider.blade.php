@@ -9,5 +9,14 @@
         <div class="carousel-item">
             <img src="{{asset('assets/images/login-slider/3-Login-Screens.webp')}}" class="sliderImg" />
         </div>
+        <div class="carousel-item">
+            <img src="{{asset('assets/images/login-slider/4-Login-Screens.webp')}}" class="sliderImg" />
+        </div>
+        <div class="carousel-item">
+            <img src="{{asset('assets/images/login-slider/5-Login-Screens.webp')}}" class="sliderImg" />
+        </div>
+        <div class="carousel-item">
+            <img src="{{asset('assets/images/login-slider/6-Login-Screens.webp')}}" class="sliderImg" />
+        </div>
     </div>
 </div>
