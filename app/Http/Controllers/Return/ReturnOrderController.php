@@ -232,6 +232,9 @@ class ReturnOrderController extends Controller
      */
     public function listReturnOrder(Request $request)
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_RETURN_ORDER)) {
+            abort(403);
+        }
         return view('dashboard.common.list-return-order');
     }
 
@@ -244,6 +247,13 @@ class ReturnOrderController extends Controller
     public function getReturnOrderList(Request $request)
     {
         try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_LIST_RETURN_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
             $sort = $request->input('sort', 'id'); // Default sort by 'title'
@@ -309,6 +319,9 @@ class ReturnOrderController extends Controller
      */
     public function editReturnOrder(Request $request, $return_id)
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_VIEW_RETURN_ORDER)) {
+            abort(403);
+        }
         $returnOrder = ReturnOrder::where('id', salt_decrypt($return_id))->with('order.orderItemsCharges')->first();
         if (!$returnOrder) {
             abort(404);
@@ -386,7 +399,7 @@ class ReturnOrderController extends Controller
         try{
             if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
+                    'statusCode' => __('statusCode.statusCode403'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
@@ -576,6 +589,9 @@ class ReturnOrderController extends Controller
      * Create return order tracking view page
     */
     public function returnOrderTracking(){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_ORDER_TRACKING)) {
+            abort(403);
+        }
         return view('dashboard.common.return-order-tracking');
     }
 
@@ -588,6 +604,13 @@ class ReturnOrderController extends Controller
     public function getReturnOrderTracking(Request $request)
     {
         try {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_ORDER_TRACKING)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $perPage = $request->input('per_page', 10);
             $search = $request->input('query', null);
             $sort = $request->input('sort', 'return_date'); // Default sort by 'title'
@@ -644,6 +667,13 @@ class ReturnOrderController extends Controller
     public function updateShipmentStatus(Request $request)
     {
         try{
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_RETURN_ORDER)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode403'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $returnShipment = ReturnShipment::find(salt_decrypt($request->shipment_id));
             if (!$returnShipment) {
                 return response()->json(['data' => [

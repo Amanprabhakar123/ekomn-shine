@@ -68,6 +68,7 @@
                             </th>
                             <th>Return reason</th>
                             <th>Order amount</th>
+                            <th>Refund amount</th>
                             <th>Return status</th>
                             <th class="h_sorting" data-sort-field="dispute">Dispute
                                 <span class="sort_pos">
@@ -300,6 +301,7 @@
                       <td>${item.return_date}</td>
                       <td>${item.reason}</td>
                       <td>${item.total_amount}</td>
+                      <td>${item.refund_amount}</td>
                        <td>${item.status}</td>
                         <td>${item.dispute}</td>
                    

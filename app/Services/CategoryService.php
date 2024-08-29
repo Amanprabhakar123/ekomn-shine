@@ -188,8 +188,8 @@ class CategoryService
     {
         try {
             // Find the category based on the slug
-            $category = Category::select('name', 'slug', 'root_parent_id', 'id')->where('slug', $slug)->where('is_active', Category::IS_ACTIVE_TRUE)->firstOrFail();
-
+            $category = Category::select('name', 'slug', 'root_parent_id', 'id', 'depth', 'parent_id')->where('slug', $slug)->where('is_active', Category::IS_ACTIVE_TRUE)->firstOrFail();
+            
             // Initialize a collection to hold relevant categories
             $categories = collect();
 
@@ -202,7 +202,8 @@ class CategoryService
                 $categories = $category->children()->get();
             } elseif ($category->depth == 2) {
                 // If the category is at depth 2, only the category itself is relevant
-                $categories->push($category);
+                // $categories->push($category);
+                $categories = $category->parent()->get();
             }
 
             // Add the original category itself to the collection
@@ -210,7 +211,7 @@ class CategoryService
 
             // Get all the relevant category IDs
             $categoryIds = $categories->pluck('id');
-
+            
             // Retrieve product IDs from the ProductInventory table based on category associations
             $productIds = ProductInventory::distinct('id')->whereIn('product_category', $categoryIds)
                 ->orWhereIn('product_subcategory', $categoryIds)

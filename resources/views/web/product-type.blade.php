@@ -143,33 +143,57 @@
                 }
             });
 
-            // Event handler for price range filter
             $(".inputokbtn").on('click', function() {
-                min = $("#min").val();
-                max = $("#max").val();
-                minimumStk = $("#minimumStk").val();
-                min = $("#mobileMin").val();
-                max = $("#mobileMax").val();
-                minimumStk = $("#mobileMinimumStk").val();
                 page = 1;
                 html = '';
-                if (min != '' && max != '') {
+                mobileMin = $("#mobileMin").val();
+                mobileMax = $("#mobileMax").val();
+                min = ($("#min").val() == '') ? mobileMin : $("#min").val();
+                max = ($("#max").val() == '') ? mobileMax : $("#max").val();
+                minimumStk = $("#mobileMinimumStk").val();
+                minimumStk = ($("#minimumStk").val() == '') ? minimumStk : $("#minimumStk").val();
+
+                if (min != '' && max != '' && minimumStk != '') {
+                    // All values are provided
                     priceRange = `min=${min}&max=${max}`;
-                    fetchData();
-                } else if (min == '' && max != '') {
-                    priceRange = `max=${max}`;
-                    fetchData();
-                } else if (min != '' && max == '') {
-                    priceRange = `min=${min}`;
-                    fetchData();
-                } else if (minimumStk == '') {
-                    minimumStock = '';
-                    fetchData();
-                } else {
                     minimumStock = `minimumStock=${minimumStk}`;
                     fetchData();
+                } else if (min != '' && max != '' && minimumStk == '') {
+                    // Min and Max are provided, MinimumStk is empty
+                    priceRange = `min=${min}&max=${max}`;
+                    minimumStock = '';
+                    fetchData();
+                } else if (min != '' && max == '' && minimumStk != '') {
+                    // Min and MinimumStk are provided, Max is empty
+                    priceRange = `min=${min}`;
+                    minimumStock = `minimumStock=${minimumStk}`;
+                    fetchData();
+                } else if (min != '' && max == '' && minimumStk == '') {
+                    // Only Min is provided, Max and MinimumStk are empty
+                    priceRange = `min=${min}`;
+                    minimumStock = '';
+                    fetchData();
+                } else if (min == '' && max != '' && minimumStk != '') {
+                    // Max and MinimumStk are provided, Min is empty
+                    priceRange = `max=${max}`;
+                    minimumStock = `minimumStock=${minimumStk}`;
+                    fetchData();
+                } else if (min == '' && max != '' && minimumStk == '') {
+                    // Only Max is provided, Min and MinimumStk are empty
+                    priceRange = `max=${max}`;
+                    minimumStock = '';
+                    fetchData();
+                } else if (min == '' && max == '' && minimumStk != '') {
+                    // Only MinimumStk is provided, Min and Max are empty
+                    priceRange = '';
+                    minimumStock = `minimumStock=${minimumStk}`;
+                    fetchData();
+                } else {
+                    // All inputs are empty
+                    priceRange = '';
+                    minimumStock = '';
+                    fetchData();
                 }
-
             });
 
 
