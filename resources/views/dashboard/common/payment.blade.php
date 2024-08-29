@@ -418,7 +418,7 @@
                             <td class="text-center collapse-group-2">${item.processing_charges}</td>
                             
                              @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
-                                <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
+                                <td class="text-center collapse-group-2"><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
                                 @else
                                  <td class="text-center collapse-group-2">${item.adjustment_amount}</td>
                                 @endif

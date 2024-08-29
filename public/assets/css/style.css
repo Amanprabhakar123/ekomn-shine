@@ -4040,6 +4040,10 @@ header,footer{position: relative;z-index: 1000;}
   color: indianred;
   cursor: pointer;
 }
+a.underline{
+  text-decoration: none !important;
+  color: inherit;
+}
 @media (max-width: 1024px) {
   .barIcon,.topSection_w_cat{display: block;}
   .productFilters,.brandLogo,.notificationDropdown,
