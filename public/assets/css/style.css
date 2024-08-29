@@ -4025,6 +4025,8 @@ header,footer{position: relative;z-index: 1000;}
   width: 100%;
   border-radius: 0.25rem;
 }
+.collapse-group-1,.collapse-group-2 {display: none;}
+.collapse-toggle {cursor: pointer;}
 
 @media (max-width: 1024px) {
   .barIcon,.topSection_w_cat{display: block;}

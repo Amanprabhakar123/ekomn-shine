@@ -86,31 +86,35 @@
                                 CSV</button>
             </div>
             <div class="table-responsive tres_border">
-                <table class="normalTable tableSorting whitespace">
+                <table class="normalTable whitespace">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Select</th>
+                            <th>
+															<div class="form-check form-check-sm form-check-custom form-check-solid">
+																<input class="form-check-input" type="checkbox" id="select-all">
+															</div>
+														</th>
                             <th>eKomn Order No</th>
                             @if(auth()->user()->hasRole(ROLE_ADMIN))
                             <th>Supplier Id</th>
                             @endif
                             <th>Date</th>
-                            <th>Product Charges</th>
-                            <th>Discount</th>
-                            <th>Shipping Charges</th>
-                            <th>Packing Charges</th>
-                            <th>Labour Charges</th>
-                            <th>Payment Charges</th>
-                            <th>Total GST</th>
-                            <th>Order Amount</th>
+                            <th class="collapse-group-1">Product Charges</th>
+                            <th class="collapse-group-1">Discount</th>
+                            <th class="collapse-group-1">Shipping Charges</th>
+                            <th class="collapse-group-1">Packing Charges</th>
+                            <th class="collapse-group-1">Labour Charges</th>
+                            <th class="collapse-group-1">Payment Charges</th>
+                            <th class="collapse-group-1">Total GST</th>
+                            <th>Order Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group1"></i></th>
                             <th>Order Status</th>
                             <th>Category</th>
-                            <th>Refunds</th>
-                            <th>Referral Fee</th>
-                            <th>Adjustments</th>
-                            <th>TDS</th>
-                            <th>TCS</th>
-                            <th>Order Disbursement Amount</th>
+                            <th class="collapse-group-2">Refunds</th>
+                            <th class="collapse-group-2">Referral Fee</th>
+                            <th class="collapse-group-2">Adjustments</th>
+                            <th class="collapse-group-2">TDS</th>
+                            <th class="collapse-group-2">TCS</th>
+                            <th>Order Disbursement Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group2"></i></th>
                             <th>Supplier Payment Status</th>
                             <th>Statement Wk</th>
                             <th>Invoice</th>
@@ -148,7 +152,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
-    $(function() {
+  $(function() {
     $('input[name="daterange"]').daterangepicker({
       autoApply: true,
       opens: 'left'
@@ -156,7 +160,23 @@
       console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
     });
   });
-  </script>
+	$('.collapse-toggle').on('click', function() {
+		var targetGroup = $(this).data('target');
+		var groupSelector = '.collapse-group-' + targetGroup.slice(-1);
+		$(groupSelector).toggle();
+		$(this).toggleClass('fa-plus-square fa-minus-square');
+	});
+
+
+		$('#select-all').on('change', function() {
+      var isChecked = $(this).prop('checked');
+      $('.row_ckeck').prop('checked', isChecked);
+    });
+    $('.row_ckeck').on('change', function() {
+      var allChecked = $('.row_ckeck').length === $('.row_ckeck:checked').length;
+      $('#select-all').prop('checked', allChecked);
+    });
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
@@ -366,43 +386,41 @@
         return `
                         <tr>
                             <td> 
-                                <div class="form-check form-check-sm form-check-custom form-check-solid mt-3">
-                                    <input class="form-check-input" type="checkbox"
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mt-0">
+                                    <input class="form-check-input row_ckeck" type="checkbox"
                                         value="${item.id}">
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <div class="productTitle_t">
-                                    <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
-                                </div>
+                            <td>
+                                <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
                             </td>
                             @if(auth()->user()->hasRole(ROLE_ADMIN))
-                            <td class="text-center">${item.supplier_id}</td>
+                            <td>${item.supplier_id}</td>
                             @endif
                             <td class="text-center">${item.order_date}</td>
-                            <td class="text-center">${item.product_cost_exc_gst}</td>
-                            <td class="text-center">${item.discount}</td>
-                            <td class="text-center">${item.shipping_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.packing_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.labour_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.payment_gateway_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.total_gst_amount}</td>
+                            <td class="text-center  collapse-group-1">${item.product_cost_exc_gst}</td>
+                            <td class="text-center collapse-group-1">${item.discount}</td>
+                            <td class="text-center collapse-group-1">${item.shipping_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.packing_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.labour_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.payment_gateway_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.total_gst_amount}</td>
                             <td class="text-center">${item.order_total}</td>
                             <td class="text-center">${item.order_status}</td>
                             <td class="text-center">${item.order_type}</td>
-                            <td class="text-center">${item.refund_amount}</td>
-                            <td class="text-center">${item.processing_charges}</td>
+                            <td class="text-center collapse-group-2">${item.refund_amount}</td>
+                            <td class="text-center collapse-group-2">${item.processing_charges}</td>
                             
                              @if(auth()->user()->hasRole(ROLE_ADMIN))
-                                <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
+                                <td class="collapse-group-2"><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
                                 @else
-                                 <td class="text-center">${item.adjustment_amount}</td>
+                                 <td class="text-center collapse-group-2">${item.adjustment_amount}</td>
                                 @endif
                                 
                             
                            
-                            <td class="text-center">${item.tds_amount}</td>
-                            <td class="text-center">${item.tcs_amount}</td>
+                            <td class="text-center collapse-group-2">${item.tds_amount}</td>
+                            <td class="text-center collapse-group-2">${item.tcs_amount}</td>
                             <td class="text-center">${item.disburse_amount}</td>
                             <td class="text-center">${item.payment_status}</td>
                             <td class="text-center">${item.statement_date}</td>
