@@ -11,7 +11,7 @@
       <div>
         <ul class="nav nav-underline ekom_tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active pointereventnone" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            <a class="nav-link active pointereventnone" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="false">General</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link pointereventnone" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
@@ -20,7 +20,7 @@
             <a class="nav-link pointereventnone" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link pointereventnone" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+            <a class="nav-link " id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="true">Product Images & Variants</a>
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
@@ -28,7 +28,7 @@
 
           <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
-            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <div class="ek_group">
                 <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -998,7 +998,7 @@
       $('#product_sub_categoryErr').text('');
     }
 
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
     const supplierId = $('#supplier_id').val();
     if (!supplierId) {
       $('#supplier_id').addClass('is-invalid');
@@ -1753,6 +1753,12 @@ let stockAndSizeCounter = 1;
     const containers = document.getElementById("main-container");
     const newContainer = document.createElement("div");
     newContainer.className = "imagecontainer";
+    const deleteMainContainerButton = document.createElement("span");
+    deleteMainContainerButton.className = "deleteMain";
+    deleteMainContainerButton.innerHTML =  '<i class="far fa-trash-alt" title="Delete Variant"></i>';
+    deleteMainContainerButton.onclick = function () {
+      deleteMainContainer(this);
+    };
     newContainer.id = `imagecontainerVariation-${containerCount}`;
 
     // Add the first image upload box
@@ -1849,6 +1855,7 @@ let stockAndSizeCounter = 1;
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    newContainer.appendChild(deleteMainContainerButton);
     stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
@@ -1916,6 +1923,10 @@ let stockAndSizeCounter = 1;
     newContainer.appendChild(multiRowContainer);
     containers.appendChild(newContainer);
 
+  }
+  function deleteMainContainer(button) {
+    const mainContainer = button.parentNode;
+    mainContainer.parentNode.removeChild(mainContainer);
   }
   // End code Image Upload and video upload Step 4
 

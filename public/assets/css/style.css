@@ -4028,6 +4028,18 @@ header,footer{position: relative;z-index: 1000;}
 .collapse-group-1,.collapse-group-2 {display: none;}
 .collapse-toggle {cursor: pointer;}
 
+.imagecontainer{
+  position: relative;
+}
+.imagecontainer .deleteMain{
+  padding: 0px !important;
+  font-size: 16px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: indianred;
+  cursor: pointer;
+}
 @media (max-width: 1024px) {
   .barIcon,.topSection_w_cat{display: block;}
   .productFilters,.brandLogo,.notificationDropdown,

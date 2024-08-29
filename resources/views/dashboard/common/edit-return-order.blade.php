@@ -1,5 +1,7 @@
 @extends('dashboard.layout.app')
-
+@section('styles')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+@endsection
 @section('content')
 <div class="ek_dashboard">
     <div class="ek_content">
@@ -360,13 +362,25 @@
                                 <div class="commentBoxfloat">
                                     <form id="cmnt">
                                         <fieldset>
+                                        @if($returnOrder->isRejected() || $returnOrder->isApproved())
+                                                @if($returnOrder->updated_at->diffInHours() >= 48)
+                                                <div class="form_grp">
+                                                <label id="comment">comment </label>
+                                                <textarea id="userCmnt" placeholder="Write your comment here." disabled></textarea>
+                                            </div>
                                             <div class="form_grp">
+                                                <button type="button" id="comment_submit" disabled>Submit</button>
+                                            </div>
+                                                @else
+                                                <div class="form_grp">
                                                 <label id="comment">comment</label>
                                                 <textarea id="userCmnt" placeholder="Write your comment here."></textarea>
                                             </div>
                                             <div class="form_grp">
                                                 <button type="button" id="comment_submit">Submit</button>
                                             </div>
+                                                @endif
+                                            @endif
                                         </fieldset>
                                     </form>
                                 </div>
@@ -376,7 +390,7 @@
                 </div>
                 <div class="saveform_footer text-right single-button">
                      @if($returnOrder->isRejected() || $returnOrder->isApproved())
-                     @if($returnOrder->isDisputed() || $returnOrder->isDisputeResolved())
+                     @if($returnOrder->isDisputed() || $returnOrder->isDisputeResolved() || $returnOrder->updated_at->diffInHours() >= 48)
                     <button id="btnDispute" class="btn btnekomn_dark" disabled>Dispute</button>
                     @else
                     <button id="btnDispute" class="btn btnekomn_dark">Dispute</button>
@@ -489,10 +503,10 @@
                         <div class="mt10">
                             <label class="bold">Shipping Date</label>
                             @isset($courier_detatils)
-                            <input type="date" class="form-control" id="shippingDate"
-                            name="shippingDate" value="{{$courier_detatils->shipment_date->toDateString()}}" disabled>
+                            <input type="text" class="form-control" id="shippingDate"
+                            name="shippingDate" value="{{$courier_detatils->shipment_date->format('d-m-Y')}}" disabled>
                             @else
-                            <input type="date" class="form-control" id="shippingDate"
+                            <input type="text" class="form-control" id="shippingDate"
                                 name="shippingDate" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
                             @endif
 
@@ -504,10 +518,10 @@
                         <div class="mt10">
                             <label class="bold">Delivery Date</label>
                             @isset($courier_detatils)
-                            <input type="date" class="form-control"  value="{{$courier_detatils->expected_delivery_date->toDateString()}}" id="deliveryDate" value=""
+                            <input type="text" class="form-control"  value="{{$courier_detatils->expected_delivery_date->format('d-m-Y')}}" id="deliveryDate" value=""
                                 name="deliveryDate" disabled>
                             @else
-                            <input type="date" class="form-control" id="deliveryDate" {{$returnOrder->isApproved() ? 'disabled' : ''}}
+                            <input type="text" class="form-control" id="deliveryDate" {{$returnOrder->isApproved() ? 'disabled' : ''}}
                             name="deliveryDate">
                             @endif
                         </div>
@@ -746,13 +760,25 @@
                                 <div class="commentBoxfloat">
                                     <form id="cmnt">
                                         <fieldset>
+                                        @if($returnOrder->isRejected() || $returnOrder->isApproved())
+                                                @if($returnOrder->updated_at->diffInHours() >= 48)
+                                                <div class="form_grp">
+                                                <label id="comment">comment </label>
+                                                <textarea id="userCmnt" placeholder="Write your comment here." disabled></textarea>
+                                            </div>
                                             <div class="form_grp">
+                                                <button type="button" id="comment_submit" disabled>Submit</button>
+                                            </div>
+                                                @else
+                                                <div class="form_grp">
                                                 <label id="comment">comment</label>
                                                 <textarea id="userCmnt" placeholder="Write your comment here."></textarea>
                                             </div>
                                             <div class="form_grp">
                                                 <button type="button" id="comment_submit">Submit</button>
                                             </div>
+                                                @endif
+                                            @endif
                                         </fieldset>
                                     </form>
                                 </div>
@@ -766,7 +792,7 @@
                 </div>
 
             </div>
-        @elseif(auth()->user()->hasRole(ROLE_ADMIN))
+        @elseif(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
         <div class="card ekcard pa shadow-sm">
                 <div class="cardhead d-flex justify-content-between align-items-center">
                     <h3 class="cardtitle">Return Order</h3>
@@ -868,10 +894,10 @@
                         <div class="mt10">
                             <label class="bold">Shipping Date</label>
                             @isset($courier_detatils)
-                            <input type="date" class="form-control" id="shippingDate"
-                            name="shippingDate" value="{{$courier_detatils->shipment_date->toDateString()}}" disabled>
+                            <input type="text" class="form-control" id="shippingDate"
+                            name="shippingDate" value="{{$courier_detatils->shipment_date->format('d-m-Y')}}" disabled>
                             @else
-                            <input type="date" class="form-control" id="shippingDate"
+                            <input type="text" class="form-control" id="shippingDate"
                                 name="shippingDate">
                             @endif
 
@@ -883,10 +909,10 @@
                         <div class="mt10">
                             <label class="bold">Delivery Date</label>
                             @isset($courier_detatils)
-                            <input type="date" class="form-control"  value="{{$courier_detatils->expected_delivery_date->toDateString()}}" id="deliveryDate" value=""
+                            <input type="text" class="form-control"  value="{{$courier_detatils->expected_delivery_date->format('d-m-Y')}}" id="deliveryDate" value=""
                                 name="deliveryDate" disabled>
                             @else
-                            <input type="date" class="form-control" id="deliveryDate"
+                            <input type="text" class="form-control" id="deliveryDate"
                             name="deliveryDate">
                             @endif
                         </div>
@@ -1152,6 +1178,8 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
     $(document).ready(function() {
         @isset($shipment)
@@ -1163,6 +1191,55 @@
         @else
         $('#show_courier').hide();
         @endif
+
+@if(!isset($courier_detatils))
+    $(function() {
+    const today = moment().format('DD-MM-YYYY');
+    
+    $('input[name="shippingDate"]').daterangepicker({
+        singleDatePicker: true,    // Enables single date picker
+        autoApply: true,
+        opens: 'left',
+        startDate: today,
+        minDate: moment().startOf('day'), // Disable previous dates
+        locale: {
+            format: 'DD-MM-YYYY'   // Ensures the date format is consistent
+        }
+    },
+    function(selectedDate) {
+        const shippingDate = selectedDate.format('DD-MM-YYYY');
+        $('input[name="shippingDate"]').val(shippingDate);
+        
+        // Update deliveryDate picker with the new minDate and startDate
+        $('input[name="deliveryDate"]').daterangepicker({
+            singleDatePicker: true,    
+            autoApply: true,
+            opens: 'left',
+            startDate: shippingDate,
+            minDate: shippingDate, // Disable dates earlier than shippingDate
+            locale: {
+                format: 'DD-MM-YYYY'
+            }
+        });
+    });
+    $('input[name="deliveryDate"]').daterangepicker({
+            singleDatePicker: true,    
+            autoApply: true,
+            opens: 'left',
+            startDate: today,
+            minDate: moment().startOf('day'), // Disable previous dates
+            locale: {
+                format: 'DD-MM-YYYY'
+            }
+        },function(selectDate){
+            const deliveryDate = selectedDate.format('DD-MM-YYYY');
+            $('input[name="deliveryDate"]').val(deliveryDate);
+        }
+    );
+});
+
+@endif
+
     });
     
     $('#courier_id').change(function() {

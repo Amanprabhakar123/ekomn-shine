@@ -281,7 +281,7 @@ class HomeController extends Controller
     public function getCategory(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! (auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY) ||  auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT))) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -350,9 +350,9 @@ class HomeController extends Controller
     public function findProduct(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
+            if (! (auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT) || auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY))) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
+                    'statusCode' => __('statusCode.statusCode403'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
@@ -451,7 +451,7 @@ class HomeController extends Controller
     public function topProduct(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! (auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY) ||  auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT))) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),
@@ -683,9 +683,9 @@ class HomeController extends Controller
     public function getTopProductData(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT) ) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
+                    'statusCode' => __('statusCode.statusCode403'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
@@ -738,7 +738,7 @@ class HomeController extends Controller
     public function deleteTopProductData(Request $request)
     {
         try {
-            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_CATEGORY)) {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_TOP_PRODUCT)) {
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status403'),

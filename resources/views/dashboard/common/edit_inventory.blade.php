@@ -28,7 +28,7 @@
           <input type="hidden" value="{{salt_encrypt($variations->id)}}" id="varition_id">
           <div class="tab-pane show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
-            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <div class="ek_group">
                 <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -230,7 +230,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @elseif($variations->allow_editable)  
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
@@ -255,7 +255,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
                     @elseif($variations->allow_editable)
                     <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
@@ -298,7 +298,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">UPC:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
                       @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
@@ -313,7 +313,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">ISBN:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
                       @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
@@ -328,7 +328,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">MPN:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
                       @elseif($variations->allow_editable) 
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
@@ -1098,7 +1098,7 @@
       $('#product_sub_categoryErr').text('');
     }
 
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
     const supplierId = $('#supplier_id').val();
     if (!supplierId) {
       $('#supplier_id').addClass('is-invalid');
@@ -1854,6 +1854,12 @@ let stockAndSizeCounter = 1;
     const containers = document.getElementById("main-container");
     const newContainer = document.createElement("div");
     newContainer.className = "imagecontainer";
+    const deleteMainContainerButton = document.createElement("span");
+    deleteMainContainerButton.className = "deleteMain";
+    deleteMainContainerButton.innerHTML =  '<i class="far fa-trash-alt" title="Delete Variant"></i>';
+    deleteMainContainerButton.onclick = function () {
+      deleteMainContainer(this);
+    };
     newContainer.id = `imagecontainerVariation-${containerCount}`;
 
     // Add the first image upload box
@@ -1950,6 +1956,7 @@ let stockAndSizeCounter = 1;
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    newContainer.appendChild(deleteMainContainerButton);
     stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
@@ -2017,6 +2024,10 @@ let stockAndSizeCounter = 1;
     newContainer.appendChild(multiRowContainer);
     containers.appendChild(newContainer);
 
+  }
+  function deleteMainContainer(button) {
+    const mainContainer = button.parentNode;
+    mainContainer.parentNode.removeChild(mainContainer);
   }
   // End code Image Upload and video upload Step 4
 

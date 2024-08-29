@@ -54,7 +54,7 @@ class DashboardController extends Controller
             $distance = $distance->calculateDistance('122016', '226018');
 
             return view('dashboard.buyer.index', get_defined_vars());
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
             return view('dashboard.admin.index');
         }
         abort('403', 'Unauthorized action.');
@@ -96,7 +96,7 @@ class DashboardController extends Controller
             $selected_sales = auth()->user()->companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
 
             return view('dashboard.buyer.profile', get_defined_vars());
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
             return view('dashboard.admin.profile', get_defined_vars());
         }
         abort('403', 'Unauthorized action.');
@@ -209,7 +209,7 @@ class DashboardController extends Controller
                 ->get()->count();
 
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
         }
         abort('403', 'Unauthorized action.');
@@ -224,10 +224,11 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.add_inventory');
         }
         abort('403', 'Unauthorized action.');
+        
     }
 
     /**
@@ -239,7 +240,7 @@ class DashboardController extends Controller
     {
         if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN))  && auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
             return view('dashboard.common.bulk_upload');
         }
         abort('403', 'Unauthorized action.');
@@ -287,7 +288,7 @@ class DashboardController extends Controller
 
             // dd(DB::getQueryLog());
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
-        } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
+        } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_EDIT_PRODUCT_DETAILS)) {
 
             $variation_id = salt_decrypt($variation_id);
             // DB::enableQueryLog();
@@ -471,6 +472,9 @@ class DashboardController extends Controller
      */
     public function orderTracking()
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_ORDER_TRACKING)) {
+            return abort('403', 'Unauthorized action.');
+        }
         return view('dashboard.admin.order_tracking');
     }
 
@@ -482,6 +486,10 @@ class DashboardController extends Controller
 
     public function userList()
     {
+        // Check if the user has the permission to cancel an order
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_USER_LIST)) {
+            return abort('403', 'Unauthorized action.');
+        }
         return view('dashboard.admin.user-list');
     }
 
@@ -493,7 +501,15 @@ class DashboardController extends Controller
     public function getUserList(Request $request)
     {
         try {
-            $perPage = $request->get('per_page', 10);
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_USER_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $perPage = $request->get('perPage', 10);
             $searchTerm = $request->input('query', null);
             $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
 
@@ -542,6 +558,14 @@ class DashboardController extends Controller
     public function updateUserStatus(Request $request)
     {
         try {
+            // Check if the user has the permission to cancel an order
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_USER_LIST)) {
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status403'),
+                    'message' => __('auth.unauthorizedAction'),
+                ]], __('statusCode.statusCode200'));
+            }
             $user = User::find(salt_decrypt($request->id));
             $user->isactive = $request->status;
             $user->save();

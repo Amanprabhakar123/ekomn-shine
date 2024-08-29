@@ -170,7 +170,7 @@ class OrderPaymentController extends Controller
             $order_date = $request->input('order_date', now()->subDays(30)->format('Y-m-d'));
             $order_last_date = $request->input('order_last_date', now()->format('Y-m-d'));
             $statement_date = $request->input('statement_date', null);
-
+            
             // Allowed sort fields to prevent SQL injection
             $allowedSorts = ['order_number', 'quantity', 'order_date', 'order_type', 'order_channel_type', 'payment_status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
@@ -279,7 +279,7 @@ class OrderPaymentController extends Controller
              $file = fopen($csvFilepath, 'w');
 
              $header = [];
-            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+            if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                 $header = ['SUPPLIER_ID'];
             }
             // Add the default headers
@@ -305,7 +305,7 @@ class OrderPaymentController extends Controller
                 'PAYMENT_STATUS',
                 'STATEMENT_WK'
             ]);
-            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+            if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                 $header = array_merge($header,['BANK_NAME', 'BANK_ACCOUNT_NO', 'IFSC_CODE', 'SWIFT_CODE']);
             }
             fputcsv($file, $header);
@@ -326,7 +326,7 @@ class OrderPaymentController extends Controller
             if($transformedData['data']){
                 foreach($transformedData['data'] as $order){
                     $list = [];
-                    if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                    if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                         $list[] = $order['supplier_id'];
                     }
                     $list = array_merge($list, [
@@ -352,7 +352,7 @@ class OrderPaymentController extends Controller
                         $order['statement_date']
                     ]);
 
-                    if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                    if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                         $list = array_merge($list, [
                             $order['bank_name'],
                             $order['bank_account_no'],
