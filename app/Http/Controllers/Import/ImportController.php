@@ -27,6 +27,7 @@ class ImportController extends Controller
     {
         try {
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER) || auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+               
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $validator = Validator::make($request->all(), [
                         'import_file' => 'required|file|mimes:xls,xlsx,xlsm|max:4096',

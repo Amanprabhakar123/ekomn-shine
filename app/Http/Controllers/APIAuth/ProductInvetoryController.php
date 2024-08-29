@@ -1779,7 +1779,7 @@ class ProductInvetoryController extends Controller
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
             $sortOrder = in_array($sortOrder, ['asc', 'desc']) ? $sortOrder : 'asc';
 
-            if (auth()->user()->hasRole(User::ROLE_SUPPLIER) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                 // Get the authenticated user's ID
                 $company_id = auth()->user()->companyDetails->id;
                 // Eager load product variations with product inventory that matches user_id
@@ -1798,7 +1798,7 @@ class ProductInvetoryController extends Controller
                 })->orderBy($sort, $sortOrder) // Apply sorting
                     ->paginate($perPage); // Paginate results
 
-            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
+            } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && (auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT) || auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT))) {
                 // Eager load product variations with product inventory that matches user_id
                 $bulkData = Import::when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
