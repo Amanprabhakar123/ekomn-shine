@@ -202,14 +202,16 @@ class OrderPaymentController extends Controller
             
             $orderList = $orderList->where(function ($qu) use ($order_date, $order_last_date) {
                 $qu->where('order_date', '>=', $order_date)
-                ->Orwhere('order_date', '<=', $order_last_date);
+                ->where('order_date', '<=', $order_last_date);
             });
             if($statement_date){
                 $orderList = $orderList->whereHas('supplierPayments', function ($query) use ($statement_date) {
                     $query->where('statement_date', $statement_date);
                 });
             }
-            $orderList = $orderList->orderBy($sort, $sortOrder) // Apply sorting
+            $orderList = $orderList->orderBy($sort, $sortOrder)
+            
+            // Apply sorting
             ->paginate($perPage); // Paginate results
          
              // Add pagination information to the resource
