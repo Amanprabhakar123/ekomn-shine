@@ -19,6 +19,8 @@ class UserListTransformer extends TransformerAbstract
             'email' => $user->email,
             'mobile_no' => $user->companyDetails->mobile_no,
             'role' => ucfirst($user->getRoleNames()->first()),
+            'pan_verified' => $user->companyDetails->pan_verified,
+            'gst_verified' => $user->companyDetails->gst_verified,
             'company_serial_id' => $user->companyDetails->company_serial_id,
             'status' => $user->isactive,
             'created_at' => $user->created_at->toDateTimeString(),

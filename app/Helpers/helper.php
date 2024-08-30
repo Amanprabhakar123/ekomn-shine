@@ -67,6 +67,12 @@ const SORTING_PRICE_LOW_TO_HIGH = 4;
 const SORTING_REGULAR_AVAILABLE = 5;
 const SORTING_TILL_STOCK_LAST = 6;
 
+const PAN_VERIFIED = 1;
+const PAN_NOT_VERIFIED = 0;
+const GST_VERIFIED = 1;
+const GST_NOT_VERIFIED = 0;
+
+
 /**
  * Encrypts a string using a salt key.
  *

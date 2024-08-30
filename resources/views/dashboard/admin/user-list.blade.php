@@ -11,13 +11,39 @@
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
                 <div class="filter">
                     <div class="ek_group m-0">
-                        <!-- <label class="eklabel w_50_f">Sort by:</label> -->
+                        <label class="eklabel w_100_f">GST Verified:</label>
+                        <div class="ek_f_input w_150_f">
+                            <select class="form-select" id="sort_by_gst">
+                                <option value="">Select</option>
+                                <option value="{{GST_VERIFIED}}">Yes</option>
+                                <option value="{{GST_NOT_VERIFIED}}">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter">
+                    <div class="ek_group m-0">
+                        <label class="eklabel w_100_f">PAN Verified:</label>
+                        <div class="ek_f_input w_150_f">
+                            <select class="form-select" id="sort_by_pan">
+                                <option value="">Select</option>
+                                <option value="{{PAN_VERIFIED}}">Yes</option>
+                                <option value="{{PAN_NOT_VERIFIED}}">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter">
+                    <div class="ek_group m-0">
+                        <label class="eklabel w_100_f">Sort by:</label>
                         <div class="ek_f_input w_150_f">
                             <select class="form-select" id="sort_by_status">
                                 <option value="0">Select</option>
                                 <option value="{{ROLE_BUYER}}">Buyer</option>
                                 <option value="{{ROLE_SUPPLIER}}">Supplier</option>
                             </select>
+                            
                         </div>
                     </div>
                 </div>
@@ -32,6 +58,8 @@
                             <th data-sort-field="courier_name">Email</th>
                             <th data-sort-field="tracking_url">Mobile</th>
                             <th data-sort-field="status">Role</th>
+                            <th data-sort-field="status">Gst Verified</th>
+                            <th data-sort-field="status">Pan Verified</th>
                             <th data-sort-field="status">Company Serial Id</th>
                             <th>Status</th>
                         </tr>
@@ -96,6 +124,16 @@
             fetchData();
         });
 
+        const sort_by_gst = document.getElementById("sort_by_gst");
+        sort_by_gst.addEventListener("change", () => {
+            fetchData();
+        });
+
+        const sort_by_pan = document.getElementById("sort_by_pan");
+        sort_by_pan.addEventListener("change", () => {
+            fetchData();
+        });
+
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
         let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
         const h_sorting = document.querySelectorAll(".h_sorting");
@@ -129,6 +167,14 @@
 
             if (sortByStatus) {
             apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            }
+
+            if (sort_by_gst) {
+            apiUrl += `&sort_by_gst=${sort_by_gst.value}`;
+            }
+
+            if (sort_by_pan) {
+            apiUrl += `&sort_by_pan=${sort_by_pan.value}`;
             }
 
             ApiRequest(apiUrl, 'GET')
@@ -272,12 +318,26 @@
 
                 </div>
              </td>
-                <td>
+             <td>
                 <div class="productTitle_t">
                    ${item.role}
 
                 </div>
              </td>
+                 <td>
+                <div class="productTitle_t">
+                   ${item.gst_verified == 1 ? 'Yes' : 'No'}
+
+                </div>
+             </td>
+                <td>
+                <div class="productTitle_t">
+                   ${item.pan_verified == 1 ? 'Yes' : 'No'}
+
+                </div>
+             </td>
+           
+               
                 <td>
                 <div class="productTitle_t">
                    ${item.company_serial_id}

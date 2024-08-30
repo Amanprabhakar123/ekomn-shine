@@ -673,7 +673,7 @@
                                 </label>
                             </div>
                         </div>
-
+                   
                         <div class="ek_group">
                         <div class="d-flex">
 
@@ -685,10 +685,14 @@
                             </label>
                             <input type="file" id="UploadInvoice" class="upload_invoice" accept=".pdf,jpeg,jpg" style="display: none;" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
                             <div class="d-flex gap-2 align-items-center">
-                                <div id="UploadInvoiceErr" class="text-danger"></div>
+                                 <!-- <div class="UploadInvoiceName fs-14 opacity-75"></div> -->
+                                
+                               
                                 <label for="UploadInvoice" class="file-label invice m-0" {{$returnOrder->isApproved() ? 'disabled' : ''}}>
                                     <span class="file-label-text">Upload Shipping Label</span>
                                 </label>
+                                 <div class="UploadInvoiceName fs-14 opacity-75"></div>
+                                 <div id="UploadInvoiceErr" class="text-danger"></div>
                             </div>
                         </div>
                         </div>
@@ -778,6 +782,14 @@
                                                 <button type="button" id="comment_submit">Submit</button>
                                             </div>
                                                 @endif
+                                            @else
+                                            <div class="form_grp">
+                                                <label id="comment">comment</label>
+                                                <textarea id="userCmnt" placeholder="Write your comment here."></textarea>
+                                            </div>
+                                            <div class="form_grp">
+                                                <button type="button" id="comment_submit">Submit</button>
+                                            </div>
                                             @endif
                                         </fieldset>
                                     </form>
@@ -1181,6 +1193,18 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
+  // Upload Invoice 
+  document.addEventListener('change', function(event) {
+    if (event.target.classList.contains('upload_invoice')) {
+      const invoice = event.target.closest('.upload-original-invoice');
+      const invoiceName = invoice.querySelector('.UploadInvoiceName');
+      const invoicefileName = event.target.files[0]?.name || '';
+      invoiceName.textContent = invoicefileName;
+    }
+  });
+  // end upload Invoice
+
+
     $(document).ready(function() {
         @isset($shipment)
         @if($shipment->courier_id == 1)

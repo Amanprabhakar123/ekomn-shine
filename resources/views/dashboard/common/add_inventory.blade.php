@@ -11,7 +11,7 @@
       <div>
         <ul class="nav nav-underline ekom_tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active pointereventnone" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="false">General</a>
+            <a class="nav-link active pointereventnone" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
           </li>
           <li class="nav-item" role="presentation">
             <a class="nav-link pointereventnone" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
@@ -20,7 +20,7 @@
             <a class="nav-link pointereventnone" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link " id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="true">Product Images & Variants</a>
+            <a class="nav-link pointereventnone" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
@@ -649,12 +649,12 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size">
-                                <div id="sizeErr-0" class="invalid-feedback"></div>
+                                <input type="text" class="smallInput_n sizeInput" placeholder="Size" id="size-0" name="size">
+                                <div id="sizeErr-0" class="invalid-feedback sizeInputErr"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock">
-                                <div id="stockErr-0" class="invalid-feedback"></div>
+                                <input type="text" class="smallInput_n stockInput" placeholder="0" id="stock-0" name="stock">
+                                <div id="stockErr-0" class="invalid-feedback stockInputErr"></div>
                               </td>
                               <td>
                                 <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -1677,25 +1677,25 @@ let stockAndSizeCounter = 1;
       const sizeInput = document.createElement("input");
       const ErrorDiv = document.createElement("div");
       sizeInput.type = "text";
-      sizeInput.className = "smallInput_n";
+      sizeInput.className = "smallInput_n sizeInput";
       sizeInput.placeholder = "Size";
       sizeInput.name = "size";
       sizeInput.id = "size-"+stockAndSizeCounter;
       sizeCell.appendChild(sizeInput);
       ErrorDiv.id = "sizeErr-"+stockAndSizeCounter;
-      ErrorDiv.className = "invalid-feedback";
+      ErrorDiv.className = "invalid-feedback sizeInputErr";
       sizeCell.appendChild(ErrorDiv);
       const stockCell = document.createElement("td");
       const stockInput = document.createElement("input");
       stockInput.type = "text";
-      stockInput.className = "smallInput_n";
+      stockInput.className = "smallInput_n stockInput";
       stockInput.placeholder = "0";
       stockInput.name = "stock";
       stockInput.id = "stock-"+stockAndSizeCounter;
       stockCell.appendChild(stockInput);
       const ErrorDivTwo = document.createElement("div");
       ErrorDivTwo.id = "stockErr-"+stockAndSizeCounter;
-      ErrorDivTwo.className = "invalid-feedback";
+      ErrorDivTwo.className = "invalid-feedback stockInputErr";
       stockCell.appendChild(ErrorDivTwo);
       stockAndSizeCounter++;
       const actionCell = document.createElement("td");
@@ -1805,12 +1805,12 @@ let stockAndSizeCounter = 1;
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
-                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    <input type="text" class="smallInput_n stockInput" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
+                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback sizeInputErr"></div>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
-                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    <input type="text" class="smallInput_n  sizeInput" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
+                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback stockInputErr"></div>
                                     </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -2037,32 +2037,66 @@ let stockAndSizeCounter = 1;
         keysToDelete.forEach(key => formData.delete(key));
 
 
+
         // add validation stock and size
-        const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
-        stockAndSizeElement.forEach((variantElement, i) => {
-          const stockIn = $("#stock-"+i);
-          const sizeIn = $("#size-"+i);
-          let = stock_value = stockIn.val();
-          let = size_value = sizeIn.val();
-          if (stock_value == '') {
-            stockIn.addClass('is-invalid');
-            $("#stockErr-"+i).text('Stock is required.');
-          } 
-          else if (!/^\d+$/.test(stock_value) && stock_value != '') {
-            $("#stockErr-"+i).text('Stock shuld be a number.');
-          } 
-          else {
-            stockIn.removeClass('is-invalid');
-            $("#stockErr-"+i).text('');
-          }
-          if (size_value == '') {
-            sizeIn.addClass('is-invalid');
-            $("#sizeErr-"+i).text('Size is required.');
-          } else {
-            sizeIn.removeClass('is-invalid');
-            $("#sizeErr-"+i).text('');
-          }
+        // const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
+        const stockElement = document.querySelectorAll('.sizeInput');
+        const sizeElement = document.querySelectorAll('.stockInput');
+        const stockErrElement = document.querySelectorAll('.stockInputErr');
+        const sizeErrElement = document.querySelectorAll('.sizeInputErr');
+
+        sizeElement.forEach((variantElement, i) => {
+          // alert(stockElement[i].value);
+            let size_value = stockElement[i].value;
+            if (size_value == '') {
+            stockElement[i].classList.add('is-invalid');
+            sizeErrElement[i].textContent = 'Size is required.';
+            } else {
+            stockElement[i].classList.remove('is-invalid');
+            sizeErrElement[i].textContent = '';
+            }
         });
+
+        stockElement.forEach((variantElement, i) => {
+            let stock_value = sizeElement[i].value;
+            if (stock_value == '') {
+            sizeElement[i].classList.add('is-invalid');
+            stockErrElement[i].textContent = 'Stock is required.';
+            }else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+              stockErrElement[i].textContent = 'Stock shuld be a number.';
+            }else {
+            sizeElement[i].classList.remove('is-invalid');
+            stockErrElement[i].textContent = '';
+            }
+        });
+          
+        {{--
+        // const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
+        // stockAndSizeElement.forEach((variantElement, i) => {
+        //   const stockIn = $("#stock-"+i);
+        //   const sizeIn = $("#size-"+i);
+        //   let = stock_value = stockIn.val();
+        //   let = size_value = sizeIn.val();
+        //   if (stock_value == '') {
+        //     stockIn.addClass('is-invalid');
+        //     $("#stockErr-"+i).text('Stock is required.');
+        //   } 
+        //   else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+        //     $("#stockErr-"+i).text('Stock shuld be a number.');
+        //   } 
+        //   else {
+        //     stockIn.removeClass('is-invalid');
+        //     $("#stockErr-"+i).text('');
+        //   }
+        //   if (size_value == '') {
+        //     sizeIn.addClass('is-invalid');
+        //     $("#sizeErr-"+i).text('Size is required.');
+        //   } else {
+        //     sizeIn.removeClass('is-invalid');
+        //     $("#sizeErr-"+i).text('');
+        //   }
+        // }); 
+        --}}
 
         // // Append files for the 'yes_variant' case
         const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");

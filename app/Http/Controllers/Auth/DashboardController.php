@@ -24,6 +24,7 @@ use App\Models\CompanyAddressDetail;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
+use Faker\Provider\ar_EG\Company;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DashboardController extends Controller
@@ -512,6 +513,8 @@ class DashboardController extends Controller
             $perPage = $request->get('perPage', 10);
             $searchTerm = $request->input('query', null);
             $sort_by_status = $request->input('sort_by_status'); // Default sort by 'all'
+            $sort_by_gst = $request->input('sort_by_gst',  null); // Default sort by 'all'
+            $sort_by_pan = $request->input('sort_by_pan', null); // Default sort by 'all'
 
             $users = User::with('companyDetails')->when($searchTerm, function ($query, $searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%')
@@ -522,7 +525,18 @@ class DashboardController extends Controller
                             ->orWhere('mobile_no', 'like', '%' . $searchTerm . '%');
                     });
             });
+            
+            if (! is_null($sort_by_gst)) {
+                $users = $users->whereHas('companyDetails', function ($query) use ($sort_by_gst) {
+                    $query->where('gst_verified', $sort_by_gst);
+                });
+            }
 
+            if (! is_null($sort_by_pan)) {
+                $users = $users->whereHas('companyDetails', function ($query) use ($sort_by_pan) {
+                    $query->where('pan_verified', $sort_by_pan);
+                });
+            } 
             if ($sort_by_status == ROLE_BUYER || $sort_by_status == ROLE_SUPPLIER) {
                 $users = $users->role([$sort_by_status]);
             } else {
