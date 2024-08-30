@@ -1,4 +1,4 @@
-@if($role == "supplier")
+@if($role == ROLE_SUPPLIER)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,7 +51,7 @@
     </table>
 </body>
 </html>
-@elseif($role == "buyer")
+@elseif($role == ROLE_BUYER)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +66,7 @@
                 <img src="logo_url_here" alt="eKomn Logo" style="display: block; margin: 0 auto;"/>
             </td>
             <td align="right" style="padding: 20px;">
-                <span style="font-size: 12px; color: #999;">Notification<br>March 18, 2024</span>
+                <span style="font-size: 12px; color: #999;">Notification<br><?php echo date('F j, Y'); ?></span>
             </td>
         </tr>
         <tr>
