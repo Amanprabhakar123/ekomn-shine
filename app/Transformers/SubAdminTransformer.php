@@ -2,34 +2,36 @@
 
 namespace App\Transformers;
 use App\Models\User;
-use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
 
-class UserListTransformer extends TransformerAbstract
+class SubAdminTransformer extends TransformerAbstract
 {
     public function transform(User $user)
     {
+        $permissions = [];
+        foreach ($user->permissions as $key => $value) {
+            $permissions[] = str_replace('_', ' ', ucfirst($value->name));
+        }
        try{
         $data = [
             'id' => salt_encrypt($user->id),
-            'link' => route('view.page', salt_encrypt($user->companyDetails->id)),
+            'link' => route('admin.edit', salt_encrypt($user->id)),
             'name' => $user->name,
-            'business_name' => $user->companyDetails->business_name,
             'email' => $user->email,
-            'mobile_no' => $user->companyDetails->mobile_no,
-            'role' => ucfirst($user->getRoleNames()->first()),
-            'pan_verified' => $user->companyDetails->pan_verified,
-            'gst_verified' => $user->companyDetails->gst_verified,
-            'company_serial_id' => $user->companyDetails->company_serial_id,
+            'permissions' => implode(', ', $permissions),
+            // 'role' => ucfirst($user->getRoleNames()->first()),
             'status' => $user->isactive,
             'created_at' => $user->created_at->toDateTimeString(),
             'updated_at' => $user->updated_at->toDateTimeString(),
         ];
+        // dd($data);
         return $data;
          }catch(\Exception $e){
             Log::error('Error transforming User list: ' . $e->getMessage());
             return [];
          }
     }
+
+    
 }

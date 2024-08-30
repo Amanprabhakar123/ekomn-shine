@@ -35,6 +35,7 @@ class ReturnListTransformer extends TransformerAbstract
                 'qnty' => $quantity,
                 'reason' => $returnOrder->reason,
                 'total_amount'=> $returnOrder->order->total_amount,
+                'refund_amount' => $returnOrder->amount,
                 'status' => $returnOrder->getStatus(),
                 'dispute' => $returnOrder->getDispute(),
                 'link' => route('product.details', $slug),

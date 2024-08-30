@@ -145,70 +145,135 @@
 
         // Event handler for price range filter
         $(".inputokbtn").on('click', function() {
-            let min = $("#min").val();
-            let max = $("#max").val();
-            let minimumStk = $("#minimumStk").val();
             page = 1;
             html = '';
-            if (min != '' && max != '') {
+            mobileMin = $("#mobileMin").val();
+            mobileMax = $("#mobileMax").val();
+            min = ($("#min").val() == '') ? mobileMin : $("#min").val();
+            max = ($("#max").val() == '') ? mobileMax : $("#max").val();
+            minimumStk = $("#mobileMinimumStk").val();
+            minimumStk = ($("#minimumStk").val() == '') ? minimumStk : $("#minimumStk").val();
+
+            if (min != '' && max != '' && minimumStk != '') {
+                // All values are provided
                 priceRange = `min=${min}&max=${max}`;
-                fetchData();
-            } else if (min == '' && max != '') {
-                priceRange = `max=${max}`;
-                fetchData();
-            } else if (min != '' && max == '') {
-                priceRange = `min=${min}`;
-                fetchData();
-            }else if (minimumStk == '') {
-                minimumStock = '';
-                fetchData();
-            } else {
                 minimumStock = `minimumStock=${minimumStk}`;
                 fetchData();
+            } else if (min != '' && max != '' && minimumStk == '') {
+                // Min and Max are provided, MinimumStk is empty
+                priceRange = `min=${min}&max=${max}`;
+                minimumStock = '';
+                fetchData();
+            } else if (min != '' && max == '' && minimumStk != '') {
+                // Min and MinimumStk are provided, Max is empty
+                priceRange = `min=${min}`;
+                minimumStock = `minimumStock=${minimumStk}`;
+                fetchData();
+            } else if (min != '' && max == '' && minimumStk == '') {
+                // Only Min is provided, Max and MinimumStk are empty
+                priceRange = `min=${min}`;
+                minimumStock = '';
+                fetchData();
+            } else if (min == '' && max != '' && minimumStk != '') {
+                // Max and MinimumStk are provided, Min is empty
+                priceRange = `max=${max}`;
+                minimumStock = `minimumStock=${minimumStk}`;
+                fetchData();
+            } else if (min == '' && max != '' && minimumStk == '') {
+                // Only Max is provided, Min and MinimumStk are empty
+                priceRange = `max=${max}`;
+                minimumStock = '';
+                fetchData();
+            } else if (min == '' && max == '' && minimumStk != '') {
+                // Only MinimumStk is provided, Min and Max are empty
+                priceRange = '';
+                minimumStock = `minimumStock=${minimumStk}`;
+                fetchData();
+            } else {
+                // All inputs are empty
+                priceRange = '';
+                minimumStock = '';
+                fetchData();
             }
-
         });
 
 
 
-        // Fetch categories and populate the menu
-        $.ajax({
-            url: '{{ route('categories.list') }}', // Endpoint for fetching categories
-            type: 'GET', // HTTP method
-            dataType: 'json', // Expected data type
-            success: function(res) {
-                // jQuery object for the category menu
-                const $menu = $("#itemListCategory");
-                const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
+         // Fetch categories and populate the menu
+         $.ajax({
+                url: '{{ route('categories.list') }}', // Endpoint for fetching categories
+                type: 'GET', // HTTP method
+                dataType: 'json', // Expected data type
+                success: function(res) {
+                    // jQuery object for the category menu
+                    const $menu = $("#itemListCategory");
+                    const $mobileMenu = $("#mob_cat_list");
 
-                if (res.data.statusCode == 200) {
-                    const data = res.data.data;
+                    const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
 
-                    // Clear existing content
-                    $menu.empty();
+                    if (res.data.statusCode == 200) {
+                        const data = res.data.data;
 
-                    // Populate menu with categories
-                    $.each(data, function(index, category) {
-                        const active = slug == category.parent_slug ? 'active' : '';
-                        const mainCategoryHtml = `
+                        // Clear existing content
+                        $menu.empty();
+                        $mobileMenu.empty();
+
+                        // Populate menu with categories
+                        $.each(data, function(index, category) {
+                            const active = slug == category.parent_slug ? 'active' : '';
+                            const mainCategoryHtml = `
                             <li class="nav-link ${active}">
                                 <a href="${url.replace('SLUG', category.parent_slug)}">${category.parent_name}</a>
                             </li>`;
-                        $menu.append(mainCategoryHtml);
-                    });
+                            $menu.append(mainCategoryHtml);
+                            // Begin HTML structure for mobile menu
+                            var mobileCategory = '<li class="nav-item">';
+                            mobileCategory += `<a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#${category.parent_slug}"
+                                                    data-bs-parent="#mob_cat_list" id="components">
+                                                    <span class="nav-link-text">${category.parent_name}</span>
+                                                    <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
+                                                    </a>`;
+
+                            // Loop through sub-parent categories and build HTML for each
+                            $.each(category.sub_parents, function(index, subParent) {
+                                // Begin HTML structure for sub-parent category
+                                var mobilesubParentHtml =
+                                    `<ul class="sidenav-second-level collapse" id="${category.parent_slug}" data-bs-parent="#mob_cat_list">`;
+
+                                // Loop through child categories of the sub-parent
+                                $.each(subParent.children, function(index, child) {
+                                    // Add child category links dynamically using its slug and name
+                                    mobilesubParentHtml +=
+                                        '<li><a class="nav-link" href="' + url
+                                        .replace('SLUG', child.child_slug) +
+                                        '">' + child.child_name + '</a></li>';
+                                });
+
+                                // Close the sub-parent's child category list
+                                mobilesubParentHtml += '</ul>';
+
+                                // Append the sub-parent HTML to the main category structure
+                                mobileCategory += mobilesubParentHtml;
+                            });
+
+                            // Append the completed category structure to the mobile menu
+                            $mobileMenu.append(mobileCategory);
+
+
+                        });
+                    }
+                },
+                fail: function() {
+                    console.log("Error fetching categories");
                 }
-            },
-            fail: function() {
-                console.log("Error fetching categories");
-            }
-        });
+            });
     });
 
 
     // Function to fetch filtered data
     function fetchData() {
         // API URL for fetching products
-        let apiUrl = `search/${query}?&page=${page}&query_type=`+query_type;
+        let apiUrl = `search/${query}?&page=${page}&query_type=`+query_type+'&';
         
         // Append filters to the API URL
         if (newArrived) apiUrl += `new_arrived=${newArrived}&`;

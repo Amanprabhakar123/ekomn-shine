@@ -31,6 +31,9 @@ class CategoryManagmentController extends Controller
 
     public function misSettingInventory()
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
+            abort(403);
+         }
         return view('dashboard.admin.category-management');
     }
 
@@ -42,7 +45,7 @@ class CategoryManagmentController extends Controller
      */
     public function misCategories(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -57,7 +60,7 @@ class CategoryManagmentController extends Controller
             $sort_by_status = $request->input('sort_by_status', null);
             //
             if($search){
-                $categories = Category::with('parent')->query()->where('name', 'like', '%' . $search . '%')
+                $categories = Category::with('parent')->where('name', 'like', '%' . $search . '%')
                 
                 ->where('id', '!=', 1)
                 ->orderBy('id', 'desc');
@@ -107,14 +110,8 @@ class CategoryManagmentController extends Controller
      */
     public function addCategoryView()
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
-            return response()->json([
-                'data' => [
-                    'statusCode' => __('statusCode.statusCode403'),
-                    'status' => __('statusCode.status403'),
-                    'message' => __('auth.permissionDenied'),
-                ],
-            ], __('statusCode.statusCode403'));
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
+           abort(403);
         }
         return view('dashboard.admin.add-category');
     }
@@ -127,7 +124,7 @@ class CategoryManagmentController extends Controller
      */
     public function updateCategoryStatus(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -177,7 +174,7 @@ class CategoryManagmentController extends Controller
      */
     public function addCategory(Request $request)
     {
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -372,7 +369,7 @@ class CategoryManagmentController extends Controller
      */
 
     public function editCategoryView(Request $request, $id){
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),
@@ -397,7 +394,7 @@ class CategoryManagmentController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateCategory(Request $request){
-        if(auth()->user()->hasRole(User::PERMISSION_MIS_SETTING_INVENTORY)){
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_CATEGORY_MANAGEMENT)) {
             return response()->json([
                 'data' => [
                     'statusCode' => __('statusCode.statusCode403'),

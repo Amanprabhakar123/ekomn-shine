@@ -543,7 +543,7 @@ class OrderController extends Controller
             } elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
                 $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
                 $orderList = $orderList->where('buyer_id', auth()->user()->id);
-            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+            } elseif (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                 // $orderList = $orderList->whereIn('status', Order::STATUS_ARRAY);
             }
 
@@ -1062,7 +1062,7 @@ class OrderController extends Controller
                 if ($sort_by_status != 0) {
                     $orderList = $orderList->where('status', $sort_by_status);
                 }
-                if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+                if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                     $orderList = $orderList->whereIn('status', Order::STATUS_ORDER_TRACKING);
                 }
                 
@@ -1176,7 +1176,7 @@ class OrderController extends Controller
                         $order->getPaymentStatus(),
                     ]);
                 }else{
-                    if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                    if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                         fputcsv($file, [
                             $order->order_number,
                             $order->store_order ?? '',

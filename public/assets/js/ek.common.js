@@ -114,43 +114,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
  
-  // add product keywords
+  // end
+
+
+  // ######### add product keywords #########
   const tagContainer = document.querySelector(".tag-container");
   const input = document.querySelector("#tag-input");
   if(tagContainer && input) {
-  function createTag(label) {
-    const div = document.createElement("div");
-    div.setAttribute("class", "tag");
-    const span = document.createElement("span");
-    span.innerHTML = label.trim();
-    div.appendChild(span);
-    const closeIcon = document.createElement("span");
-    closeIcon.innerHTML = "";
-    closeIcon.setAttribute("class", "remove-tag");
-    closeIcon.onclick = function () {
-      tagContainer.removeChild(div);
-    };
-    div.appendChild(closeIcon);
-    return div;
-  }
-  function addTag() {
-    const inputValue = input.value.trim().replace(/,$/, '');
-    if(inputValue !== "") {
-      const tag = createTag(inputValue);
-      tagContainer.insertBefore(tag, input.parentElement);
-      input.value = "";
+    function createTag(label) {
+      const div = document.createElement("div");
+      div.setAttribute("class", "tag");
+      const span = document.createElement("span");
+      span.innerHTML = label.trim();
+      div.appendChild(span);
+      const closeIcon = document.createElement("span");
+      closeIcon.setAttribute("class", "remove-tag");
+      closeIcon.onclick = function () {
+        tagContainer.removeChild(div);
+      };
+      div.appendChild(closeIcon);
+      return div;
     }
-  }
-  input.addEventListener("keyup", function (e) {
-    if (e.key === "Enter" || e.key === ",") {
+    function addTag() {
+      const inputValue = input.value.trim();
+      if (inputValue !== "") {
+        const values = inputValue.split(",").filter(value => value.trim() !== "");
+        values.forEach(value => {
+          const tag = createTag(value.trim());
+          tagContainer.insertBefore(tag, input.parentElement);
+        });
+        input.value = "";
+      }
+    }
+    input.addEventListener("keyup", function (e) {
+      if (e.key === "Enter" || e.key === ",") {
+        addTag();
+      }
+    });
+    input.addEventListener("blur", function () {
       addTag();
-    }
-  });
-  input.addEventListener("blur", function () {
-    addTag();
-  });
-}
-  // end
+    });
+    input.addEventListener("input", function () {
+      if (input.value.includes(",")) {
+        addTag();
+      }
+    });
+  }
+  // ## end add product keywords ##
 
   
  // ######### Radio Check to Show/Hide #######

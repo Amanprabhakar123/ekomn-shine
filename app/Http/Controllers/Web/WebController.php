@@ -116,7 +116,7 @@ class WebController extends Controller
             $sort = $request->input('sort', 'id'); // Default sort field 'id'
             $sortOrder = $request->input('categories', 'desc'); // Default sort direction 'desc'
             $sortByStatus = (int) $request->input('status', 0); // Default status filter
-
+            // dd($min, $max, $minimumStock);
             // Define allowed sort fields to prevent SQL injection
             $allowedSorts = ['slug', 'sku', 'title', 'description', 'created_at', 'status'];
             $sort = in_array($sort, $allowedSorts) ? $sort : 'id';
@@ -178,23 +178,31 @@ class WebController extends Controller
                 });
             }
 
-            // Filter by price range
-            if ($min != '' && $max == '') {
-                // Only $min is provided
-                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
-            } elseif ($max != '' && $min == '') {
-                // Only $max is provided
-                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
-            } elseif ($min !== '' && $max !== '') {
+            // Check both price range and minimum stock
+            if ($min !== '' && $max !== '' && $minimumStock !== '') {
+                // Both $min, $max, and $minimumStock are provided
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max])
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max !== '' && $minimumStock === '') {
+                // Both $min and $max are provided, $minimumStock is empty
                 $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
-            }
-
-            // Filter by minimum stock
-            if ($minimumStock !== '') {
-                $minimumStock = (int) $minimumStock;
-                if ($minimumStock > 0) {
-                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
-                }
+            } elseif ($min !== '' && $max === '' && $minimumStock !== '') {
+                // Only $min and $minimumStock are provided, $max is empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min === '' && $max !== '' && $minimumStock !== '') {
+                // Only $max and $minimumStock are provided, $min is empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max === '' && $minimumStock === '') {
+                // Only $min is provided, $max and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($min === '' && $max !== '' && $minimumStock === '') {
+                // Only $max is provided, $min and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            } elseif ($min === '' && $max === '' && $minimumStock !== '') {
+                // Only $minimumStock is provided, $min and $max are empty
+                $productVariations = $productVariations->where('stock', '>=', (int)$minimumStock);
             }
 
             if ($sortByStatus > 0) {
@@ -537,21 +545,31 @@ class WebController extends Controller
                 });
             }
 
-            // Apply price range filter if specified
-            if ($min != '' && $max == '') {
-                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
-            } elseif ($max != '' && $min == '') {
-                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
-            } elseif ($min !== '' && $max !== '') {
+            // Check both price range and minimum stock
+            if ($min !== '' && $max !== '' && $minimumStock !== '') {
+                // Both $min, $max, and $minimumStock are provided
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max])
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max !== '' && $minimumStock === '') {
+                // Both $min and $max are provided, $minimumStock is empty
                 $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
-            }
-
-            // Filter by minimum stock if specified
-            if ($minimumStock !== '') {
-                $minimumStock = (int) $minimumStock;
-                if ($minimumStock > 0) {
-                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
-                }
+            } elseif ($min !== '' && $max === '' && $minimumStock !== '') {
+                // Only $min and $minimumStock are provided, $max is empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min === '' && $max !== '' && $minimumStock !== '') {
+                // Only $max and $minimumStock are provided, $min is empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max === '' && $minimumStock === '') {
+                // Only $min is provided, $max and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($min === '' && $max !== '' && $minimumStock === '') {
+                // Only $max is provided, $min and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            } elseif ($min === '' && $max === '' && $minimumStock !== '') {
+                // Only $minimumStock is provided, $min and $max are empty
+                $productVariations = $productVariations->where('stock', '>=', (int)$minimumStock);
             }
 
             if ($sortByStatus > 0) {
@@ -697,21 +715,31 @@ class WebController extends Controller
                 });
             }
 
-            // Apply price range filter if specified
-            if ($min != '' && $max == '') {
-                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
-            } elseif ($max != '' && $min == '') {
-                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
-            } elseif ($min !== '' && $max !== '') {
+            // Check both price range and minimum stock
+            if ($min !== '' && $max !== '' && $minimumStock !== '') {
+                // Both $min, $max, and $minimumStock are provided
+                $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max])
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max !== '' && $minimumStock === '') {
+                // Both $min and $max are provided, $minimumStock is empty
                 $productVariations = $productVariations->whereBetween('price_before_tax', [$min, $max]);
-            }
-
-            // Filter by minimum stock if specified
-            if ($minimumStock !== '') {
-                $minimumStock = (int) $minimumStock;
-                if ($minimumStock > 0) {
-                    $productVariations = $productVariations->where('stock', '>=', $minimumStock);
-                }
+            } elseif ($min !== '' && $max === '' && $minimumStock !== '') {
+                // Only $min and $minimumStock are provided, $max is empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min === '' && $max !== '' && $minimumStock !== '') {
+                // Only $max and $minimumStock are provided, $min is empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max)
+                ->where('stock', '>=', (int)$minimumStock);
+            } elseif ($min !== '' && $max === '' && $minimumStock === '') {
+                // Only $min is provided, $max and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '>=', $min);
+            } elseif ($min === '' && $max !== '' && $minimumStock === '') {
+                // Only $max is provided, $min and $minimumStock are empty
+                $productVariations = $productVariations->where('price_before_tax', '<=', $max);
+            } elseif ($min === '' && $max === '' && $minimumStock !== '') {
+                // Only $minimumStock is provided, $min and $max are empty
+                $productVariations = $productVariations->where('stock', '>=', (int)$minimumStock);
             }
 
             if ($sortByStatus > 0) {

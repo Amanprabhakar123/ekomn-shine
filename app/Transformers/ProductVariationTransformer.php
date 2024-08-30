@@ -49,7 +49,7 @@ class ProductVariationTransformer extends TransformerAbstract
                 'editInventory' => route('edit.inventory', ['variation_id' => salt_encrypt($product->id)]),
             ];
 
-            if(auth()->user()->hasRole(User::ROLE_ADMIN)){
+            if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){
                 $data['supplier_id'] = $product->product->company->company_serial_id;
             }
             return $data;

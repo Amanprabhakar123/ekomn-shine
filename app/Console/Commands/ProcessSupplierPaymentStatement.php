@@ -92,7 +92,7 @@ class ProcessSupplierPaymentStatement extends Command
                             if($payment){
                                 $payment->tds = $tds_amount;
                                 $payment->tcs = $tcs_amount;
-                                $payment->disburse_amount = $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + $payment->adjustment_amount);
+                                $payment->disburse_amount = (float) $order->total_amount - ((float) $tds_amount + (float) $tcs_amount + (float) $processing_charges + (float) $payment_gateway_charges + (float) $refund_amount + (float) $payment->adjustment_amount);
                                 $payment->payment_status = $payment_status;
                                 $payment->statement_date = $payment_week;
                                 $payment->save();
@@ -106,7 +106,7 @@ class ProcessSupplierPaymentStatement extends Command
                                     'tds' => $tds_amount,
                                     'tcs' => $tcs_amount,
                                     'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
-                                    'disburse_amount' => $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                                    'disburse_amount' => (float)  $order->total_amount - ((float) $tds_amount + (float) $tcs_amount + (float) $processing_charges + (float) $payment_gateway_charges + (float) $refund_amount + (float) OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
                                     'payment_status' => $payment_status,
                                     'statement_date' => $payment_week,
                                     'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER
@@ -118,7 +118,7 @@ class ProcessSupplierPaymentStatement extends Command
                         if($payment){
                             $payment->tds = $tds_amount;
                             $payment->tcs = $tcs_amount;
-                            $payment->disburse_amount = $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + $payment->adjustment_amount);
+                            $payment->disburse_amount = (float) $order->total_amount - ((float) $tds_amount + (float) $tcs_amount + (float) $processing_charges + (float) $payment_gateway_charges + (float) $refund_amount + (float) $payment->adjustment_amount);
                             $payment->payment_status = $payment_status;
                             $payment->statement_date = $payment_week;
                             $payment->save();
@@ -132,7 +132,7 @@ class ProcessSupplierPaymentStatement extends Command
                                 'tds' => $tds_amount,
                                 'tcs' => $tcs_amount,
                                 'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
-                                'disburse_amount' => $order->total_amount - ($tds_amount + $tcs_amount + $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
+                                'disburse_amount' => (float)  $order->total_amount - ((float) $tds_amount + (float) $tcs_amount + (float) $processing_charges + (float) $payment_gateway_charges + (float) $refund_amount + (float) OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT),
                                 'payment_status' => $payment_status,
                                 'statement_date' => $payment_week,
                                 'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER

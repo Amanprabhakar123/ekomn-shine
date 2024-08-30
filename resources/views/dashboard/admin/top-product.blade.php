@@ -79,7 +79,7 @@
                         // Initialize Select2 with options
                         $('#product-title').select2({
                             data: options,
-                            placeholder: 'Select a category',
+                            placeholder: 'Select a product',
                             allowClear: true
                         });
 

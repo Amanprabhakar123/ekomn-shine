@@ -28,7 +28,7 @@
           <input type="hidden" value="{{salt_encrypt($variations->id)}}" id="varition_id">
           <div class="tab-pane show active" id="general" role="tabpanel" aria-labelledby="general-tab" tabindex="0">
             <div class="addProductForm">
-            @if(auth()->user()->hasRole(ROLE_ADMIN))
+            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <div class="ek_group">
                 <label class="eklabel req"><span>Supplier Id:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
@@ -230,7 +230,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      @if(auth()->user()->hasRole(ROLE_ADMIN))
+                      @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
                       @elseif($variations->allow_editable)  
                       <input type="text" class="form-control" placeholder="Enter Modal Number" value="{{$variations->product->model}}" name="model" id="model" required />
@@ -255,7 +255,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
                     @elseif($variations->allow_editable)
                     <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" value="{{$variations->sku}}"/>
@@ -298,7 +298,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">UPC:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc" />
                       @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="Universal Product Code" value="{{$variations->product->upc}}" name="upc" id="upc"/>
@@ -313,7 +313,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">ISBN:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
                       @elseif($variations->allow_editable)
                       <input type="text" class="form-control" placeholder="International Standard Book Number" value="{{$variations->product->isbn}}" name="isbn" id="isbn" />
@@ -328,7 +328,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">MPN:</label>
                     <div class="ek_f_input">
-                    @if(auth()->user()->hasRole(ROLE_ADMIN))
+                    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
                       @elseif($variations->allow_editable) 
                       <input type="text" class="form-control" placeholder="Manufacturer Port Number" value="{{$variations->product->mpin}}" name="mpn" id="mpn" />
@@ -707,12 +707,12 @@
                           <tbody>
                             <tr>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Size" id="size-0" name="size" value="{{$variations->size}}">
-                                <div id="sizeErr-0" class="invalid-feedback"></div>
+                                <input type="text" class="smallInput_n sizeInput" placeholder="Size" id="size-0" name="size" value="{{$variations->size}}">
+                                <div id="sizeErr-0" class="invalid-feedback sizeInputErr"></div>
                               </td>
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="0" id="stock-0" name="stock" value="{{$variations->stock}}">
-                                <div id="stockErr-0" class="invalid-feedback"></div>
+                                <input type="text" class="smallInput_n stockInput" placeholder="0" id="stock-0" name="stock" value="{{$variations->stock}}">
+                                <div id="stockErr-0" class="invalid-feedback stockInputErr"></div>
                               </td>
                               <td>
                                 <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -1098,7 +1098,7 @@
       $('#product_sub_categoryErr').text('');
     }
 
-    @if(auth()->user()->hasRole(ROLE_ADMIN))
+    @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
     const supplierId = $('#supplier_id').val();
     if (!supplierId) {
       $('#supplier_id').addClass('is-invalid');
@@ -1778,25 +1778,25 @@ let stockAndSizeCounter = 1;
       const sizeInput = document.createElement("input");
       const ErrorDiv = document.createElement("div");
       sizeInput.type = "text";
-      sizeInput.className = "smallInput_n";
+      sizeInput.className = "smallInput_n sizeInput";
       sizeInput.placeholder = "Size";
       sizeInput.name = "size";
       sizeInput.id = "size-"+stockAndSizeCounter;
       sizeCell.appendChild(sizeInput);
       ErrorDiv.id = "sizeErr-"+stockAndSizeCounter;
-      ErrorDiv.className = "invalid-feedback";
+      ErrorDiv.className = "invalid-feedback sizeInputErr";
       sizeCell.appendChild(ErrorDiv);
       const stockCell = document.createElement("td");
       const stockInput = document.createElement("input");
       stockInput.type = "text";
-      stockInput.className = "smallInput_n";
+      stockInput.className = "smallInput_n stockInput";
       stockInput.placeholder = "0";
       stockInput.name = "stock";
       stockInput.id = "stock-"+stockAndSizeCounter;
       stockCell.appendChild(stockInput);
       const ErrorDivTwo = document.createElement("div");
       ErrorDivTwo.id = "stockErr-"+stockAndSizeCounter;
-      ErrorDivTwo.className = "invalid-feedback";
+      ErrorDivTwo.className = "invalid-feedback stockInputErr";
       stockCell.appendChild(ErrorDivTwo);
       stockAndSizeCounter++;
       const actionCell = document.createElement("td");
@@ -1854,6 +1854,12 @@ let stockAndSizeCounter = 1;
     const containers = document.getElementById("main-container");
     const newContainer = document.createElement("div");
     newContainer.className = "imagecontainer";
+    const deleteMainContainerButton = document.createElement("span");
+    deleteMainContainerButton.className = "deleteMain";
+    deleteMainContainerButton.innerHTML =  '<i class="far fa-trash-alt" title="Delete Variant"></i>';
+    deleteMainContainerButton.onclick = function () {
+      deleteMainContainer(this);
+    };
     newContainer.id = `imagecontainerVariation-${containerCount}`;
 
     // Add the first image upload box
@@ -1900,12 +1906,12 @@ let stockAndSizeCounter = 1;
                               <tbody>
                                 <tr>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
-                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    <input type="text" class="smallInput_n sizeInput" placeholder="Size" name="size" id="size-${stockAndSizeCounter}">
+                                    <div id="sizeErr-${stockAndSizeCounter}" class="invalid-feedback sizeInputErr"></div>
                                   </td>
                                   <td>
-                                    <input type="text" class="smallInput_n" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
-                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback"></div>
+                                    <input type="text" class="smallInput_n stockInput" placeholder="0" name="stock" id="stock-${stockAndSizeCounter}">
+                                  <div id="stockErr-${stockAndSizeCounter}" class="invalid-feedback stockInputErr"></div>
                                     </td>
                                   <td>
                                     <button class="deleteRow lookdisable" type="button"><i class="far fa-trash-alt"></i></button>
@@ -1950,6 +1956,7 @@ let stockAndSizeCounter = 1;
     firstBoxContainer.appendChild(singlebox);
     firstBoxContainer.appendChild(firstboxsize);
     newContainer.appendChild(firstBoxContainer);
+    newContainer.appendChild(deleteMainContainerButton);
     stockAndSizeCounter++;
 
     // Create additional boxes in a multi-row
@@ -2017,6 +2024,10 @@ let stockAndSizeCounter = 1;
     newContainer.appendChild(multiRowContainer);
     containers.appendChild(newContainer);
 
+  }
+  function deleteMainContainer(button) {
+    const mainContainer = button.parentNode;
+    mainContainer.parentNode.removeChild(mainContainer);
   }
   // End code Image Upload and video upload Step 4
 
@@ -2154,7 +2165,37 @@ let stockAndSizeCounter = 1;
         // Delete the collected keys
         keysToDelete.forEach(key => formData.delete(key));
 
+        const stockElement = document.querySelectorAll('.sizeInput');
+        const sizeElement = document.querySelectorAll('.stockInput');
+        const stockErrElement = document.querySelectorAll('.stockInputErr');
+        const sizeErrElement = document.querySelectorAll('.sizeInputErr');
 
+        sizeElement.forEach((variantElement, i) => {
+          // alert(stockElement[i].value);
+            let size_value = stockElement[i].value;
+            if (size_value == '') {
+            stockElement[i].classList.add('is-invalid');
+            sizeErrElement[i].textContent = 'Size is required.';
+            } else {
+            stockElement[i].classList.remove('is-invalid');
+            sizeErrElement[i].textContent = '';
+            }
+        });
+
+        stockElement.forEach((variantElement, i) => {
+            let stock_value = sizeElement[i].value;
+            if (stock_value == '') {
+            sizeElement[i].classList.add('is-invalid');
+            stockErrElement[i].textContent = 'Stock is required.';
+            }else if (!/^\d+$/.test(stock_value) && stock_value != '') {
+              stockErrElement[i].textContent = 'Stock shuld be a number.';
+            }else {
+            sizeElement[i].classList.remove('is-invalid');
+            stockErrElement[i].textContent = '';
+            }
+        });
+
+{{--
         // add validation stock and size
         const stockAndSizeElement = document.querySelectorAll("[id^='stock-']");
         stockAndSizeElement.forEach((variantElement, i) => {
@@ -2181,7 +2222,7 @@ let stockAndSizeCounter = 1;
             $("#sizeErr-"+i).text('');
           }
         });
-
+--}}
         // // Append files for the 'yes_variant' case
         const imagecontainerVariationElements = document.querySelectorAll("[id^='imagecontainerVariation-']");
         // Iterate over each variant element to collect data

@@ -11,6 +11,8 @@
                     @if(auth()->check())
                         @if(auth()->user()->hasRole(ROLE_ADMIN))
                             <p class="m-0">Admin</p>
+                        @elseif(auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                            <p class="m-0">Sub Admin</p>
                         @elseif(auth()->user()->hasRole(ROLE_BUYER) || auth()->user()->hasRole(ROLE_SUPPLIER))
                             <p class="m-0">User ID: {{auth()->user()->companyDetails->company_serial_id}}</p>
                         @endif

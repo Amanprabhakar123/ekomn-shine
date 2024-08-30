@@ -410,8 +410,8 @@
                                 $.each(category.sub_parents, function(index, subParent) {
                                     // HTML structure for each sub-parent
                                     var subParentHtml = '<div class="inner_category">';
-                                    subParentHtml += '<h4>' + subParent.sub_parent_name +
-                                        '</h4>';
+                                    subParentHtml += '<h4> <a href="'+url.replace('SLUG', subParent.sub_parent_slug)+'" class="underline">' + subParent.sub_parent_name +
+                                        '</a></h4>';
                                     subParentHtml += '<ul class="web_sub_category">';
 
                                     // Iterate through each child category of the sub-parent

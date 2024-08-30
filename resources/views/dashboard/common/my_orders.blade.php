@@ -35,7 +35,6 @@
                             <thead>
                                 <tr>
                                     <th data-sort-field="order_number">eKomn Order</th>
-                                    <th data-sort-field="store_order">Store Order</th>
                                     <th data-sort-field="title">Product Title
                                     </th>
                                     <th data-sort-field="full_name">Customer Name</th>
@@ -59,6 +58,8 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
+                                    <th>Store Order</th>
+
                                     <th class="h_sorting" data-sort-field="order_channel_type">Type
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
@@ -142,7 +143,6 @@
                                 <tr>
                                     <th>Select</th>
                                     <th>eKomn Order</th>
-                                    <th>Store Order</th>
                                     <th>Product Title
                                     </th>
                                     <th>Customer Name</th>
@@ -166,6 +166,8 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
+                                    <th>Store Order</th>
+
                                     <th class="h_sorting" data-sort-field="order_channel_type">Type
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
@@ -215,7 +217,7 @@
             @endif
             <!-- admin orders -->
 
-            @if (auth()->user()->hasRole(ROLE_ADMIN))
+            @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                     <div class="cardhead">
                         <h3 class="cardtitle">Admin Orders</h3>
@@ -256,7 +258,6 @@
                         <label for="selectAll" class="m-0">All</label>
                     </div></th>
                                     <th>eKomn Order</th>
-                                    <th>Store Order</th>
                                     <th>Product Title
                                     <th>Customer Name</th>
                                     <th>Supplier ID</th>
@@ -282,6 +283,8 @@
                                                     class="fas fa-caret-down"></i></small>
                                         </span>
                                     </th>
+                                    <th>Store Order</th>
+
                                     <th class="h_sorting" data-sort-field="order_channel_type">Type
                                         <span class="sort_pos">
                                             <small class="sort_t"><i class="fas fa-caret-up"></i><i
@@ -517,7 +520,7 @@
          * @param {Object} item - The item object containing the details.
          * @returns {string} - The HTML markup for the table row.
          */
-        @if (auth()->user()->hasRole(ROLE_ADMIN))
+        @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             function generateTableRow(item) {
                 var isvalid = false;
                 if(item.status == "Cancelled" || item.payment_status == "Pending"){
@@ -538,10 +541,6 @@
                     <a href="${item.view_order}" class="a_link">${item.order_no}</a>
                   </div>
                 </td>
-                
-                <td>
-                  ${item.store_order}
-                </td>
                 <td>
                   <div class="productTitle_t" title="${item.title}">
                     <a href="${item.link}" class="a_link" target="_blank">${item.title}</a>
@@ -558,6 +557,9 @@
                   <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
                 </td>
                 <td>${item.order_type}</td>
+                <td>
+                  ${item.store_order}
+                </td>
                 <td>${item.order_channel_type}</td>
                 <td>${item.status}</td>
                 <td>${item.payment_status}</td>
@@ -590,9 +592,6 @@
                 <a href="${item.view_order}" class="a_link">${item.order_no}</a>
                 </td>
                 <td>
-                  ${item.store_order}
-                </td>
-                <td>
                   <div class="productTitle_t" title="${item.title}">
                     <a href="${item.link}" class="a_link" target="_blank">${item.title}</a>
                   </div>
@@ -606,6 +605,9 @@
                   <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
                 </td>
                 <td>${item.order_type}</td>
+                 <td>
+                  ${item.store_order}
+                </td>
                 <td>${item.order_channel_type}</td>
                 <td>${item.status}</td>
                 <td>${item.payment_status}</td>
@@ -636,9 +638,6 @@
                  <a href="${item.view_order}" class="a_link">${item.order_no}</a>
                 </td>
                 <td>
-                  ${item.store_order}
-                </td>
-                <td>
                   <div class="productTitle_t" title="${item.title}">
                     <a href="${item.link}" class="a_link" target="_blank">${item.title}</a>
                   </div>
@@ -652,6 +651,9 @@
                   <div class="sell_t"><i class="fas fa-rupee-sign"></i>${item.total_amount}</div>
                 </td>
                 <td>${item.order_type}</td>
+                 <td>
+                  ${item.store_order}
+                </td>
                 <td>${item.order_channel_type}</td>
                 <td>${item.status}</td>
                 <td>${item.payment_status}</td>

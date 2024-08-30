@@ -5,63 +5,23 @@
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
-                <h3 class="cardtitle">User List</h3>
+                <h3 class="cardtitle">Admin List</h3>
+                <a href="{{route('admin.add')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Add New Admin</a>
             </div>
             <div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">GST Verified:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_gst">
-                                <option value="">Select</option>
-                                <option value="{{GST_VERIFIED}}">Yes</option>
-                                <option value="{{GST_NOT_VERIFIED}}">No</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">PAN Verified:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_pan">
-                                <option value="">Select</option>
-                                <option value="{{PAN_VERIFIED}}">Yes</option>
-                                <option value="{{PAN_NOT_VERIFIED}}">No</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">Sort by:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_status">
-                                <option value="0">Select</option>
-                                <option value="{{ROLE_BUYER}}">Buyer</option>
-                                <option value="{{ROLE_SUPPLIER}}">Supplier</option>
-                            </select>
-                            
-                        </div>
-                    </div>
-                </div>
+             
             </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
                             <th data-sort-field="order_number">Name</th>
-                            <th data-sort-field="title">Business Name
                             </th>
                             <th data-sort-field="courier_name">Email</th>
-                            <th data-sort-field="tracking_url">Mobile</th>
-                            <th data-sort-field="status">Role</th>
-                            <th data-sort-field="status">Gst Verified</th>
-                            <th data-sort-field="status">Pan Verified</th>
-                            <th data-sort-field="status">Company Serial Id</th>
+                            <th>Permission</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="dataContainer">
@@ -94,8 +54,10 @@
 @endsection
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+    
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
         const pagination = document.getElementById("pagination");
@@ -105,7 +67,6 @@
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
-
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
         searchQuery.addEventListener("keydown", (e) => {
@@ -119,79 +80,62 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
+        // const sortByStatus = document.getElementById("sort_by_status");
+        // sortByStatus.addEventListener("change", () => {
+        //     fetchData();
+        // });
 
-        const sort_by_gst = document.getElementById("sort_by_gst");
-        sort_by_gst.addEventListener("change", () => {
-            fetchData();
-        });
-
-        const sort_by_pan = document.getElementById("sort_by_pan");
-        sort_by_pan.addEventListener("change", () => {
-            fetchData();
-        });
-
-        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-        let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-        const h_sorting = document.querySelectorAll(".h_sorting");
-        h_sorting.forEach(element => {
-            element.addEventListener("click", () => {
-            const sortFieldElement = element;
-            sortField = sortFieldElement.getAttribute("data-sort-field");
-            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-            fetchData();
-            h_sorting.forEach(el => {
-                el.classList.remove("active");
-                el.classList.remove("asc");
-                el.classList.remove("desc");
-            });
-            element.classList.add("active");
-            element.classList.add(sortOrder);
-            });
-        });
+        // let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+        // let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+        // const h_sorting = document.querySelectorAll(".h_sorting");
+        // h_sorting.forEach(element => {
+        //     element.addEventListener("click", () => {
+        //         const sortFieldElement = element;
+        //         sortField = sortFieldElement.getAttribute("data-sort-field");
+        //         sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+        //         fetchData();
+        //         h_sorting.forEach(el => {
+        //             el.classList.remove("active");
+        //             el.classList.remove("asc");
+        //             el.classList.remove("desc");
+        //         });
+        //         element.classList.add("active");
+        //         element.classList.add(sortOrder);
+        //     });
+        // });
         // Function to fetch data from the server
         function fetchData() {
+            
             // Make an API request to fetch inventory data
-            let apiUrl = `get-user-list?per_page=${rows}&page=${currentPage}`;
+            let apiUrl = `admin-list-get?per_page=${rows}&page=${currentPage}`;
 
-            if (sortField && sortOrder) {
-                apiUrl += `&sort=${sortField}&order=${sortOrder}`;
-            }
+            // if (sortField && sortOrder) {
+            //     apiUrl += `&sort=${sortField}&order=${sortOrder}`;
+            // }
 
             if (searchQuery) {
-            apiUrl += `&query=${searchQuery.value}`;
+                apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-            apiUrl += `&sort_by_status=${sortByStatus.value}`;
-            }
-
-            if (sort_by_gst) {
-            apiUrl += `&sort_by_gst=${sort_by_gst.value}`;
-            }
-
-            if (sort_by_pan) {
-            apiUrl += `&sort_by_pan=${sort_by_pan.value}`;
-            }
+            // if (sortByStatus) {
+            //     apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            // }
 
             ApiRequest(apiUrl, 'GET')
-            .then(response => {
-                const data = (response.data);
-                if(data.length === 0) {
-                dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
-                }else{
-                response = (response.meta.pagination);
-                totalRows = response.total;
-                updatePagination();
-                displayData(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+                .then(response => {
+                    const data = (response.data);
+                    if (data.length === 0) {
+                        dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                    } else {
+                        response = (response.meta.pagination);
+                        totalRows = response.total;
+                        updatePagination();
+                        displayData(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
         }
 
         // Function to update the pagination UI
@@ -290,7 +234,7 @@
     function generateTableRow(item) {
         // let stock = allowEditable(item);
         let isDisabled = "";
-        if(item.order_action_status == 6){
+        if (item.order_action_status == 6) {
             isDisabled = "disabled";
         }
         return `
@@ -300,55 +244,27 @@
                    ${item.name}
                 </div>
             </td>
-            <td>
-                 <div class="productTitle_t">
-                  <a href="${item.link}" target="_blank">${item.business_name}</a> 
-
-                </div>
-            </td>
+           
              <td>
                 <div class="productTitle_t">
                    ${item.email}
-
                 </div>
             </td>
-            <td>
-                <div class="productTitle_t">
-                   ${item.mobile_no}
 
-                </div>
-             </td>
              <td>
-                <div class="productTitle_t">
-                   ${item.role}
-
+                <div class="productTitle_t" title="${item.permissions}">
+                   ${item.permissions}
                 </div>
-             </td>
-                 <td>
-                <div class="productTitle_t">
-                   ${item.gst_verified == 1 ? 'Yes' : 'No'}
-
-                </div>
-             </td>
-                <td>
-                <div class="productTitle_t">
-                   ${item.pan_verified == 1 ? 'Yes' : 'No'}
-
-                </div>
-             </td>
+            </td>
            
-               
-                <td>
-                <div class="productTitle_t">
-                   ${item.company_serial_id}
-
-                </div>
-             </td>
              <td>
                 <select class="changeStatus_t form-select" ${isDisabled} onchange="handleInput('${item.id}', 2, this)">
                    <option value="1" ${item.status == "1" ? "selected" : ""}>Active</option>
                    <option value="2" ${item.status == "2   " ? "selected" : ""}>In Active</option>
                 </select>
+            </td>
+             <td>
+                <a href="${item.link}">Edit</a>
             </td>
         </tr>
     `;
@@ -377,17 +293,17 @@
      * @param {number} type - The type of the input.
      * @param {HTMLElement} element - The input element.
      */
-    function handleInput(itemId,  type, element) {
-            updateStatus(itemId, element.value);
+    function handleInput(itemId, type, element) {
+        updateStatus(itemId, element.value);
     }
 
-    
+
     /**
      * Updates the status of a product.
      *
      * @param {number} productId - The ID of the product.
      */
-    function updateStatus(itemId,  newStatus) {
+    function updateStatus(itemId, newStatus) {
         Swal.fire({
             title: "Do you want to update status?",
             showCancelButton: true,
@@ -395,7 +311,7 @@
             denyButtonText: `Don't save`,
             didOpen: () => {
                 const title = Swal.getTitle();
-                title.style.fontSize = '25px';
+                title.style.fontSize = '22px';
                 // Apply inline CSS to the content
                 const content = Swal.getHtmlContainer();
                 // Apply inline CSS to the confirm button
@@ -403,47 +319,48 @@
                 confirmButton.style.backgroundColor = '#feca40';
                 confirmButton.style.color = 'white';
             }
-            }).then((result) => {
+        }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                  // Make an API request to update the status of the product
-                ApiRequest(`update-user-status`, 'POST', {
-                status: newStatus,
-                'id': itemId
-            })
-            .then(response => {
-                Swal.fire({
-                    title: "Good job!",
-                    text: response.data.message,
-                    icon: "success",
-                    didOpen: () => {
-                    // Apply inline CSS to the title
-                    const title = Swal.getTitle();
-                    title.style.color = 'red';
-                    title.style.fontSize = '20px';
+                // Make an API request to update the status of the product
+                ApiRequest(`update-admin-active`, 'POST', {
+                        status: newStatus,
+                        'id': itemId
+                    })
+                    .then(response => {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = 'red';
+                                title.style.fontSize = '20px';
 
-                    // Apply inline CSS to the content
-                    const content = Swal.getHtmlContainer();
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
 
-                    // Apply inline CSS to the confirm button
-                    const confirmButton = Swal.getConfirmButton();
-                    confirmButton.style.backgroundColor = '#feca40';
-                    confirmButton.style.color = 'white';
-                    }
-                }).then(() => {
-                    // Redirect to the inventory page
-                    window.location.href = "{{ route('user.list') }}";
-                })
-            })
-            .catch(error => {
-                console.error('Error updating status:', error);
-            });
-                
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = '#feca40';
+                                confirmButton.style.color = 'white';
+                            }
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href = "{{ route('admin.list') }}";
+                        })
+                    })
+                    .catch(error => {
+                        console.error('Error updating status:', error);
+                    });
+
             } else if (result.isDenied) {
                 Swal.fire("The status is not updated.", "", "info");
             }
-            });
-      
-        }
+        });
+
+    }
 </script>
+
 @endsection

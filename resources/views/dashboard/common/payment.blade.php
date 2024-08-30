@@ -9,108 +9,92 @@
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Order Payments</h3>
-                <!-- <div>Total Amount : <strong>120000</strong></div> -->
+                <div>Total Balance : <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_balance_due}}</strong></div>
+                <div>Payment Due: <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_payment_due}}</strong></div>
             </div>
             <div class="tableTop mt10">
-                @if (auth()->user()->hasRole(ROLE_ADMIN))
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
-                @else
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
-                @endif
-                <div class="ek_group m-0">
-                    <label class="eklabel eklabel_80 m-0">Order Status:</label>
-                    <div class="ek_f_input">
-                        <select id="sort_by_order_status" class="form-select w_150_f">
-                            <option value="0" selected>Select</option>
-                            <option value="4">Dispatched</option>
-                            <option value="5">In Transit</option>
-                            <option value="6">Delivered</option>
-                            <option value="8">RTO</option>
+            <ul class="ekfilterList">
+                <li>
+                @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
+                        @else
+                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
+                        @endif
+                </li>
+                    <li>
+                        <div class="d-flex">
+                        <input type="text" name="date" class="form-control">
 
-                        </select>
-                    </div>
-                </div>
-                <div class="ek_group m-0">
-                    <label class="eklabel eklabel_80 m-0">Payment Status:</label>
-                    <div class="ek_f_input">
-                        <select id="sort_by_status" class="form-select w_150_f">
-                            <option value="0" selected>Select</option>
-                            <option value="1">Hold</option>
-                            <option value="2">Accrued</option>
-                            <option value="3">Paid</option>
-                            <option value="4">Due</option>
-                        </select>
-                    </div>
-                </div>
-{{--
-        <ul class="ekfilterList">
-          <li>
-          @if (auth()->user()->hasRole(ROLE_ADMIN))
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
-                @else
-                <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
-                @endif
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue"></strong>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '4')">Dispatched</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '5')">In Transit</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectValue(this, '6')">Delivered</a></li>
-              </ul>
-            </div>       
-          </li>
-          <li>
-            <div class="dropdown">
-              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue"></strong>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '1')">Hold</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '2')">Accrued</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '3')">Paid</a></li>
-                <li><a class="dropdown-item" href="#" onclick="selectSortByValue(this, '4')">Due</a></li>
-              </ul>
-            </div>       
-          </li>
-          <li>
-            <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
-          </li>
-        </ul>
-        --}}
-                <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
-                                    class="fas fa-file-csv me-2"></i>Export
-                                CSV</button>
+                        <div class="total_statement_amount"><strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</strong></div>
+
+                        </div>
+                    </li>
+                    <li>
+                    <div class="dropdown" id="orderStatusDropdown">
+                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="5">In Transit</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+                                </ul>
+                            </div>      
+                    </li>
+                    <li>
+                    <div class="dropdown" id="paymentStatusDropdown">
+                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue">All</strong>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="1">Hold</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="2">Accrued</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="3">Paid</a></li>
+                                    <li><a class="dropdown-item" href="#" data-value="4">Due</a></li>
+                                </ul>
+                            </div>      
+                    </li>
+                    <li>
+                        <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
+                    </li>
+                    <li>
+                        <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                    </li>
+                </ul>
+        
             </div>
             <div class="table-responsive tres_border">
-                <table class="normalTable tableSorting whitespace">
+                <table class="normalTable whitespace">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Select</th>
+                            <th>
+															<div class="form-check form-check-sm form-check-custom form-check-solid">
+																<input class="form-check-input" type="checkbox" id="select-all">
+															</div>
+														</th>
                             <th>eKomn Order No</th>
-                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                             <th>Supplier Id</th>
                             @endif
                             <th>Date</th>
-                            <th>Product Charges</th>
-                            <th>Discount</th>
-                            <th>Shipping Charges</th>
-                            <th>Packing Charges</th>
-                            <th>Labour Charges</th>
-                            <th>Payment Charges</th>
-                            <th>Total GST</th>
-                            <th>Order Amount</th>
+                            <th class="collapse-group-1">Product Charges</th>
+                            <th class="collapse-group-1">Discount</th>
+                            <th class="collapse-group-1">Shipping Charges</th>
+                            <th class="collapse-group-1">Packing Charges</th>
+                            <th class="collapse-group-1">Labour Charges</th>
+                            <th class="collapse-group-1">Payment Charges</th>
+                            <th class="collapse-group-1">Total GST</th>
+                            <th>Order Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group1"></i></th>
                             <th>Order Status</th>
                             <th>Category</th>
-                            <th>Refunds</th>
-                            <th>Referral Fee</th>
-                            <th>Adjustments</th>
-                            <th>TDS</th>
-                            <th>TCS</th>
-                            <th>Order Disbursement Amount</th>
+                            <th class="collapse-group-2">Refunds</th>
+                            <th class="collapse-group-2">Referral Fee</th>
+                            <th class="collapse-group-2">Adjustments</th>
+                            <th class="collapse-group-2">TDS</th>
+                            <th class="collapse-group-2">TCS</th>
+                            <th>Order Disbursement Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group2"></i></th>
                             <th>Supplier Payment Status</th>
                             <th>Statement Wk</th>
                             <th>Invoice</th>
@@ -148,15 +132,23 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
-    $(function() {
-    $('input[name="daterange"]').daterangepicker({
-      autoApply: true,
-      opens: 'left'
-    }, function(start, end, label) {
-      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+	$('.collapse-toggle').on('click', function() {
+		var targetGroup = $(this).data('target');
+		var groupSelector = '.collapse-group-' + targetGroup.slice(-1);
+		$(groupSelector).toggle();
+		$(this).toggleClass('fa-plus-square fa-minus-square');
+	});
+
+
+		$('#select-all').on('change', function() {
+      var isChecked = $(this).prop('checked');
+      $('.row_ckeck').prop('checked', isChecked);
     });
-  });
-  </script>
+    $('.row_ckeck').on('change', function() {
+      var allChecked = $('.row_ckeck').length === $('.row_ckeck:checked').length;
+      $('#select-all').prop('checked', allChecked);
+    });
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
@@ -165,26 +157,45 @@
         const prevPage = document.getElementById("prevPage");
         const nextPage = document.getElementById("nextPage");
         const dataContainer = document.getElementById("dataContainer");
-        // let sort_by_order_status = 0;
-        // let sortByStatus = 0;
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
-        
-        // function selectValue(element, value) {
-        //     var dropdown = element.closest('.dropdown');
-        //     dropdown.querySelector('.dropdownValue').textContent = value;
-        //     let sort_by_order_status = value;
-        //     fetchData();
-        // }
+        let order_date = order_last_date = '';
+        var total_statement_amount = 0;
 
-        // function selectSortByValue(element, value) {
-        //     var dropdown = element.closest('.dropdown');
-        //     dropdown.querySelector('.dropdownValue').textContent = value;
-        //     let sortByStatus = value;
-        //     fetchData();
-        // }
 
+        $(function() {
+            const today = moment().format('YYYY-MM-DD');
+            const thirtyDaysAgo = moment().subtract(30, 'days').format('YYYY-MM-DD');
+            $('input[name="daterange"]').daterangepicker({
+                autoApply: true,
+                opens: 'left',
+                startDate: thirtyDaysAgo,
+                endDate: today,
+                locale: {
+                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                }
+            }, function(start, end, label) {
+                // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                order_date = start.format('YYYY-MM-DD');
+                order_last_date = end.format('YYYY-MM-DD');
+                fetchData();
+            });
+
+            //
+            $('input[name="date"]').daterangepicker({
+                singleDatePicker: true,    // Enables single date picker
+                autoApply: true,
+                opens: 'left',
+                startDate: today,
+                locale: {
+                    format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+                }
+            },
+            function(selectedDate) {
+                console.log("A new date was selected: " + selectedDate.format('YYYY-MM-DD'));
+            });
+        });
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
         searchQuery.addEventListener("keydown", (e) => {
@@ -198,15 +209,28 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
-
-        const sort_by_order_status = document.getElementById("sort_by_order_status");
-        sort_by_order_status.addEventListener("change", () => {
-            fetchData();
-        });
+        let selectedValues = {
+            sort_by_order_status: "0",
+            sortByStatus: "0"
+            };
+            function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const value = this.getAttribute('data-value');
+                        const text = this.textContent;
+                        dropdownValue.textContent = text;
+                        selectedValues[key] = value;
+                        fetchData();
+                    });
+                });
+            }
+            const orderStatusDropdown = document.getElementById('orderStatusDropdown');
+            const paymentStatusDropdown = document.getElementById('paymentStatusDropdown');
+            handleDropdownSelection(orderStatusDropdown, 'sort_by_order_status');
+            handleDropdownSelection(paymentStatusDropdown, 'sortByStatus');
      
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
@@ -240,12 +264,16 @@
                 apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-                apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+                apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
-            if (sort_by_order_status) {
-                apiUrl += `&sort_by_order_status=${sort_by_order_status.value}`;
+            if (selectedValues.sort_by_order_status) {
+                apiUrl += `&sort_by_order_status=${selectedValues.sort_by_order_status}`;
+            }
+
+            if(order_date && order_last_date) {
+                apiUrl += `&order_date=${order_date}&order_last_date=${order_last_date}`;
             }
 
 
@@ -362,47 +390,48 @@
     function generateTableRow(item) {
 
         var orderType = '';
+        document.querySelector('.total_statement_amount').innerHTML = `<strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>${item.total_statement_amount}</strong>`;
+
+        
         // let a = status(item);
         return `
                         <tr>
                             <td> 
-                                <div class="form-check form-check-sm form-check-custom form-check-solid mt-3">
-                                    <input class="form-check-input" type="checkbox"
+                                <div class="form-check form-check-sm form-check-custom form-check-solid mt-0">
+                                    <input class="form-check-input row_ckeck" type="checkbox"
                                         value="${item.id}">
                                 </div>
                             </td>
-                            <td class="text-center">
-                                <div class="productTitle_t">
-                                    <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
-                                </div>
+                            <td>
+                                <a href="${item.view_order}" class="a_link" target="_blank">${item.order_no}</a>
                             </td>
-                            @if(auth()->user()->hasRole(ROLE_ADMIN))
+                            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                             <td class="text-center">${item.supplier_id}</td>
                             @endif
                             <td class="text-center">${item.order_date}</td>
-                            <td class="text-center">${item.product_cost_exc_gst}</td>
-                            <td class="text-center">${item.discount}</td>
-                            <td class="text-center">${item.shipping_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.packing_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.labour_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.payment_gateway_charges_gst_exc_amount}</td>
-                            <td class="text-center">${item.total_gst_amount}</td>
+                            <td class="text-center  collapse-group-1">${item.product_cost_exc_gst}</td>
+                            <td class="text-center collapse-group-1">${item.discount}</td>
+                            <td class="text-center collapse-group-1">${item.shipping_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.packing_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.labour_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.payment_gateway_charges_gst_exc_amount}</td>
+                            <td class="text-center collapse-group-1">${item.total_gst_amount}</td>
                             <td class="text-center">${item.order_total}</td>
                             <td class="text-center">${item.order_status}</td>
                             <td class="text-center">${item.order_type}</td>
-                            <td class="text-center">${item.refund_amount}</td>
-                            <td class="text-center">${item.processing_charges}</td>
+                            <td class="text-center collapse-group-2">${item.refund_amount}</td>
+                            <td class="text-center collapse-group-2">${item.processing_charges}</td>
                             
-                             @if(auth()->user()->hasRole(ROLE_ADMIN))
-                                <td><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
+                             @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                                <td class="text-center collapse-group-2"><input type="text" class="stock_t" onchange="updateAdjustmentAmount('${item.id}', this)" ${item.payment_status == 'Paid' ? 'disabled' : ''} adjustmentAmount" value="${item.adjustment_amount}"></td>
                                 @else
-                                 <td class="text-center">${item.adjustment_amount}</td>
+                                 <td class="text-center collapse-group-2">${item.adjustment_amount}</td>
                                 @endif
                                 
                             
                            
-                            <td class="text-center">${item.tds_amount}</td>
-                            <td class="text-center">${item.tcs_amount}</td>
+                            <td class="text-center collapse-group-2">${item.tds_amount}</td>
+                            <td class="text-center collapse-group-2">${item.tcs_amount}</td>
                             <td class="text-center">${item.disburse_amount}</td>
                             <td class="text-center">${item.payment_status}</td>
                             <td class="text-center">${item.statement_date}</td>

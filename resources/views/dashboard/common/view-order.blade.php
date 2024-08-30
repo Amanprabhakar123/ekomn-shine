@@ -1,5 +1,7 @@
 @extends('dashboard.layout.app')
-
+@section('styles')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+@endsection
 @section('content')
     <div class="ek_dashboard">
         <div class="ek_content">
@@ -33,7 +35,7 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->format('d-m-Y')}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -108,6 +110,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reason))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
@@ -328,7 +337,7 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->format('d-m-Y')}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -411,10 +420,10 @@
                                         <div class="mt10">
                                             <label class="bold">Shipping Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control" id="shippingDate"
-                                            name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" id="shippingDate"
+                                            name="shippingDate" value="{{$shipment_date->format('d-m-Y')}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            <input type="text" class="form-control" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -426,10 +435,10 @@
                                         <div class="mt10">
                                             <label class="bold">Delivery Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control"  id="deliveryDate" value="{{$delivery_date->toDateString()}}"
+                                            <input type="text" class="form-control"  id="deliveryDate" value="{{$delivery_date->format('d-m-Y')}}"
                                                 name="deliveryDate" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            <input type="text" class="form-control" id="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                             name="deliveryDate">
                                             @endif
                                         </div>
@@ -438,6 +447,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reson))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 @if($orderUpdate->isDropship())
@@ -603,15 +619,15 @@
  
  
  
- @if (auth()->user()->hasRole(ROLE_ADMIN))
+ @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
                 <div class="card ekcard pa shadow-sm">
                 <div class="cardhead d-flex justify-content-between align-items-center">
-    <h3 class="cardtitle">View Order Details</h3>
-    <div class="text-end">
-        <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
-        <span class="fs-15">{{$orderUpdate->updated_at->toDateString()}} - ({{$orderUpdate->updated_at->diffForHumans()}})</span>
-    </div>
-</div>
+                        <h3 class="cardtitle">View Order Details</h3>
+                        <div class="text-end">
+                            <h4 class="subheading">Last Update - Activity/Order Tracking</h4>
+                            <span class="fs-15">{{$orderUpdate->updated_at->toDateString()}} - ({{$orderUpdate->updated_at->diffForHumans()}})</span>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 col-md-12">
                             <section class="">
@@ -631,7 +647,7 @@
                                     <div class="col-sm-4 col-md-2">
                                         <div class="mt10">
                                             <label class="bold">Order Date</label>
-                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" value="{{$orderUpdate->order_date->format('d-m-Y')}}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-sm-4 col-md-2">
@@ -744,10 +760,10 @@
                                         <div class="mt10">
                                             <label class="bold">Shipping Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control" id="shippingDate"
-                                            name="shippingDate" value="{{$shipment_date->toDateString()}}" disabled>
+                                            <input type="text" class="form-control" id="shippingDate"
+                                            name="shippingDate" value="{{$shipment_date->format('d-m-Y')}}" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
+                                            <input type="text" class="form-control" id="shippingDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}
                                                 name="shippingDate">
                                             @endif
 
@@ -759,10 +775,10 @@
                                         <div class="mt10">
                                             <label class="bold">Delivery Date</label>
                                             @isset($courier_detatils)
-                                            <input type="date" class="form-control"  id="deliveryDate" value="{{$delivery_date->toDateString()}}"
+                                            <input type="text" class="form-control"  id="deliveryDate" value="{{$delivery_date->format('d-m-Y')}}"
                                                 name="deliveryDate" disabled>
                                             @else
-                                            <input type="date" class="form-control" value="" id="deliveryDate"
+                                            <input type="text" class="form-control"  id="deliveryDate"
                                             name="deliveryDate" {{$orderUpdate->isCancelled() ? 'disabled' : ''}}>
                                             @endif
                                         </div>
@@ -789,6 +805,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reason))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
@@ -951,8 +974,10 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
 
 $(document).ready(function() {
@@ -965,6 +990,55 @@ $(document).ready(function() {
     @else
     $('#show_courier').hide();
     @endif
+
+    @if(!isset($courier_detatils))
+    $(function() {
+    const today = moment().format('DD-MM-YYYY');
+    
+    $('input[name="shippingDate"]').daterangepicker({
+        singleDatePicker: true,    // Enables single date picker
+        autoApply: true,
+        opens: 'left',
+        startDate: today,
+        minDate: moment().startOf('day'), // Disable previous dates
+        locale: {
+            format: 'DD-MM-YYYY'   // Ensures the date format is consistent
+        }
+    },
+    function(selectedDate) {
+        const shippingDate = selectedDate.format('DD-MM-YYYY');
+        $('input[name="shippingDate"]').val(shippingDate);
+        
+        // Update deliveryDate picker with the new minDate and startDate
+        $('input[name="deliveryDate"]').daterangepicker({
+            singleDatePicker: true,    
+            autoApply: true,
+            opens: 'left',
+            startDate: shippingDate,
+            minDate: shippingDate, // Disable dates earlier than shippingDate
+            locale: {
+                format: 'DD-MM-YYYY'
+            }
+        });
+    });
+
+    $('input[name="deliveryDate"]').daterangepicker({
+            singleDatePicker: true,    
+            autoApply: true,
+            opens: 'left',
+            startDate: today,
+            minDate: moment().startOf('day'), // Disable previous dates
+            locale: {
+                format: 'DD-MM-YYYY'
+            }
+        },function(selectDate){
+            const deliveryDate = selectedDate.format('DD-MM-YYYY');
+            $('input[name="deliveryDate"]').val(deliveryDate);
+        }
+    );
+});
+@endif
+
 });
         $('#courier_id').change(function() {
             var courier_id = $('#courier_id').val();

@@ -27,11 +27,12 @@ class ImportController extends Controller
     {
         try {
             if (auth()->user()->hasRole(User::ROLE_SUPPLIER) || auth()->user()->hasPermissionTo(User::PERMISSION_ADD_PRODUCT)) {
+               
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $validator = Validator::make($request->all(), [
                         'import_file' => 'required|file|mimes:xls,xlsx,xlsm|max:4096',
                     ]);
-                } else if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                } else if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $validator = Validator::make($request->all(), [
                         'import_file' => 'required|file|mimes:xls,xlsx,xlsm|max:4096',
                         'supplier_id' => 'required|string',
@@ -48,7 +49,7 @@ class ImportController extends Controller
 
                 if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     $company_id = auth()->user()->companyDetails->id;
-                } else if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+                } else if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                     $company_detail = CompanyDetail::where('company_serial_id', $request->supplier_id)->first();
                     if (!$company_detail) {
                         return response()->json(['data' => [

@@ -143,4 +143,5 @@ return [
     'suspend' => 'Your account has been suspended.',
     'contactUsSuccess' => 'Thank you for contacting us. We will connect with you shortly.',
     'commentRequired' => 'Comment is required because buyer raised a dispute.',
+    'registerSuccess' => 'Sub admin registered successfully.',
 ];

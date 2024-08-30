@@ -380,7 +380,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   updatePrices(switchInput.checked);
   updateValues(switchInput.checked);
+
+  var subscript = document.querySelectorAll('.subscribebtn');
+  subscript.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      window.location.href = "{{route('buyer.login')}}";
+    });
+  });
 });
+
+
     </script>
 @section('scripts')
 @endsection

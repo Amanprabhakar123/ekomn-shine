@@ -43,7 +43,7 @@ class OrderDataTransformer extends TransformerAbstract
                 'updated_at' => $order->updated_at->toDateTimeString(),
     
             ];
-            if (auth()->user()->hasRole(User::ROLE_ADMIN)) {
+            if (auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) {
                 $data['supplier_id'] = $order->supplier->companyDetails->company_serial_id;
                 $data['buyer_id'] = $order->buyer->companyDetails->company_serial_id;
             }

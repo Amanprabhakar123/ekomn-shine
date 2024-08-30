@@ -215,7 +215,7 @@ class IndexProducts extends Command
                 $this->elasticsearchService->index($parameter);
             }
 
-            $categories = Category::distinct('name')->where('depth', 3)->select('name')->where('is_active', Category::IS_ACTIVE_TRUE)->get();
+            $categories = Category::distinct('name')->whereIn('depth', [2,3])->select('name')->where('is_active', Category::IS_ACTIVE_TRUE)->get();
             foreach ($categories as $category) {
                 $key= strtolower($category->name);
                 $list = [

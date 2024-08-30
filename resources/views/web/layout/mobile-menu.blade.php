@@ -1,21 +1,25 @@
 <div class="mobileMenu">
     <div class="mob_head profile gap-2">
         <span class="closeDrawer"><i class="fas fa-angle-double-left"></i></span>
-        <div class="img-box">
-            <img src="https://i.postimg.cc/BvNYhMHS/user-img.jpg" alt="some user image" width="44px" height="44px" />
-        </div>
         @if (Auth::check())
+        <div class="img-box">
+            <img src="{{asset('assets/images/icon/user-2.png')}}" alt="some user image" width="44px" height="44px" />
+        </div>
             <div class="user align-items-start">
                 <h4 style="text-align: justify;">{{ auth()->user()->name }}</h4>
                 @if (auth()->user()->hasRole(ROLE_BUYER) ||
                         auth()->user()->hasRole(ROLE_SUPPLIER))
                     <p class="m-0">User ID: {{ auth()->user()->companyDetails->company_serial_id }}</p>
+                    @elseif (auth()->user()->hasRole(ROLE_ADMIN))
+                        <p class="m-0">Admin</p>
+                    @elseif(auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                    <p class="m-0">Sub Admin</p>
                 @endif
             </div>
         @else
             <div class="userAction">
-                <a href="{{ route('supplier.login') }}" class="text-white fs-6">Login</a>
-                <a href="{{ route('supplier.register') }}" class="btn btnekomn btnround">Register</a>
+                <a href="{{ route('buyer.login') }}" class="text-white underline fs-6">Login</a>
+                <a href="{{ route('buyer.register') }}" class="btn btn-sm w_100_f btnekomn btnround">Register</a>
             </div>
         @endif
     </div>

@@ -40,6 +40,8 @@
                             @if (auth()->check())
                                 @if (auth()->user()->hasRole(ROLE_ADMIN))
                                     <p class="m-0">Admin</p>
+                                @elseif(auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                                <p class="m-0">Sub Admin</p>
                                 @elseif(auth()->user()->hasRole(ROLE_BUYER) ||
                                         auth()->user()->hasRole(ROLE_SUPPLIER))
                                     <p class="m-0">User ID:
@@ -88,7 +90,7 @@
             </div>
         @else
             <div class="userAction">
-                <a href="{{ route('buyer.login') }}" class="text-white fs-6">Login</a>
+                <a href="{{ route('buyer.login') }}" class="text-white underline fs-6">Login</a>
                 <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5">Register</a>
             </div>
             <!-- <a href="{{ route('buyer.login') }}" class="text-white" >Login</a>

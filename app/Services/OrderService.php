@@ -976,7 +976,7 @@ class OrderService
                 'tds' => $tds_amount,
                 'tcs' => $tcs_amount,
                 'adjustment_amount' => OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT,
-                'disburse_amount' => ($orderDistribution->amount - ($tds_amount + $tcs_amount +  $processing_charges + $payment_gateway_charges + $refund_amount + OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT)),
+                'disburse_amount' => ((float) $orderDistribution->amount - ( (float) $tds_amount + (float) $tcs_amount + (float) $processing_charges + (float) $payment_gateway_charges + (float) $refund_amount + (float) OrderPaymentDistribution::DEFAULT_ADJUSTMENT_AMOUNT)),
                 'payment_method' => SupplierPayment::PAYMENT_METHOD_BANK_TRANSFER,
                 'payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD,
                 'statement_date' => $payment_week,
