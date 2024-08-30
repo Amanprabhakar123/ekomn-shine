@@ -110,6 +110,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reason))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">
@@ -440,6 +447,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reson))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 @if($orderUpdate->isDropship())
@@ -791,6 +805,13 @@
                                     </div>
                                 </div>
                             </section>
+                            @if(!empty($orderUpdate->orderCancellations->reason))
+                            <section class="mt20">
+                                <div class="alert alert-warning p-2" role="alert">
+                                <h5 class="subheading m-0 text-danger mb-1">Cancellation Reson</h5> {{$orderUpdate->orderCancellations->reason}}
+                            </div>
+                            </section>
+                            @endif
                             <section class="mt30">
                                 <h4 class="subheading mb-1">Customer Details</h4>
                                 <div class="orderStatus_d">

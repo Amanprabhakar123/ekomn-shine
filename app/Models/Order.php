@@ -325,7 +325,7 @@ class Order extends Model
      */
     public function orderCancellations()
     {
-        return $this->hasMany(OrderCancellations::class, 'order_id', 'id');
+        return $this->hasOne(OrderCancellations::class, 'order_id', 'id');
     }
 
     /**

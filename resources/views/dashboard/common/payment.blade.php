@@ -25,7 +25,7 @@
                         <div class="d-flex">
                         <input type="text" name="date" class="form-control">
 
-                        <div><strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</strong></div>
+                        <div class="total_statement_amount"><strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</strong></div>
 
                         </div>
                     </li>
@@ -161,6 +161,8 @@
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
         let order_date = order_last_date = '';
+        var total_statement_amount = 0;
+
 
         $(function() {
             const today = moment().format('YYYY-MM-DD');
@@ -388,6 +390,9 @@
     function generateTableRow(item) {
 
         var orderType = '';
+        document.querySelector('.total_statement_amount').innerHTML = `<strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>${item.total_statement_amount}</strong>`;
+
+        
         // let a = status(item);
         return `
                         <tr>
