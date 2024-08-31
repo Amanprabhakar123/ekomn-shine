@@ -2,6 +2,7 @@
 <header>
     <div class="top_header">
         <ul class="b_h_list">
+            <li class="logoOnStrip"><a href="{{ route('home') }}"><img src="{{ asset('assets/images/logo.png') }}" alt="Logo"/></a></li>
             <li><a href="{{ route('become.supplier') }}" class="active">Become a Supplier</a></li>
             <li><a href="{{route('subscription')}}">Subscriptions</a></li>
             <li><a href="{{route('integration')}}">Integrations</a></li>
@@ -11,8 +12,8 @@
     <div class="main_header" id="main_header">
         <div class="barIcon" id="barIcon"><i class="fas fa-bars"></i></div>
         <div class="brandLogo">
-            <a href="{{ route('home') }}"><img src="{{ asset('assets/images/Logo.svg') }}" alt="Logo"
-                    height="40" /></a>
+            <a href="{{ route('home') }}"><img src="{{ asset('assets/images/logo.png') }}" alt="Logo"
+                     /></a>
         </div>
         <div class="headersearch">
 
@@ -92,8 +93,10 @@
             </div>
         @else
             <div class="userAction">
-                <a href="{{ route('buyer.login') }}" class="text-white underline fs-6">Login</a>
-                <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5">Register</a>
+            <a href="{{ route('buyer.login') }}" class="webhide"><img src="{{asset('assets/images/icon/beforeLogin.png')}}" alt="some user image" width="30px"
+            height="30px" /></a>
+                <a href="{{ route('buyer.login') }}" class="text-white underline fs-6 hideMob">Login</a>
+                <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5 hideMob">Register</a>
             </div>
             <!-- <a href="{{ route('buyer.login') }}" class="text-white" >Login</a>
         <a href="{{ route('buyer.register') }}" class="btn btnekomn btnround px-5" >Register</a> -->
