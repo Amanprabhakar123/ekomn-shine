@@ -12,6 +12,12 @@ class OrderPaymentTransformer extends TransformerAbstract
     protected $total_balance_due = 0;
     protected $total_payment_due = 0;
     protected $total_statement_amount = 0;
+    protected $statement_date = null;
+    
+    public function __construct($statement_date = null)
+    {
+        $this->statement_date = $statement_date;
+    }
     /**
      * Transform the given Order model into a formatted array.
      *
@@ -80,7 +86,18 @@ class OrderPaymentTransformer extends TransformerAbstract
                 if($payment->isPaymentStatusDue()){
                     $this->total_payment_due += $payment->disburse_amount;
                 }
-                $this->total_statement_amount += $payment->disburse_amount;
+
+                if(!is_null($this->statement_date)) {
+                    $this->total_statement_amount += $payment->disburse_amount;
+                }else{
+                    // check next thurday date
+                    $next_thursday = Carbon::parse('next thursday')->format('Y-m-d');
+                    if($payment->statement_date == $next_thursday){
+                        $this->total_statement_amount += $payment->disburse_amount;
+                    }else{
+                        $this->total_balance_due += 0;
+                    }
+                }
             });
             $data = [
                 'id' => salt_encrypt($order->id),

@@ -32,7 +32,11 @@
           <table class="normalTable tableSorting whitespace">
             <thead>
               <tr>
-                <th>Select</th>
+                <th>
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox" id="select-all" />
+                </div>
+              </th>
                 <th>Product Image</th>
                 <th class="h_sorting"  data-sort-field="title">Product Title
                     <span class="sort_pos">
@@ -136,6 +140,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        $('#select-all').on('change', function() {
+        var isChecked = $(this).prop('checked');
+            $('.row_ckeck').prop('checked', isChecked);
+        });
+        $('.row_ckeck').on('change', function() {
+        var allChecked = $('.row_ckeck').length === $('.row_ckeck:checked').length;
+            $('#select-all').prop('checked', allChecked);
+        });
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
         const pagination = document.getElementById("pagination");
@@ -323,7 +335,7 @@
         <tr>
             <td>
                 <div class="form-check">
-                <input type="checkbox" id="${item.variation_id}" class="form-check-input">
+                <input type="checkbox" id="${item.variation_id}" class="form-check-input row_ckeck">
                 <label for="${item.variation_id}" class="ms-1"></label>
                 </div>
             </td>
@@ -428,7 +440,7 @@
     }
     const downloadProduct = document.getElementById("download_product");
     downloadProduct.addEventListener("click", () => {
-    const checkboxes = document.querySelectorAll(".form-check-input:checked");
+    const checkboxes = document.querySelectorAll(".row_ckeck:checked");
     const variationIds = Array.from(checkboxes).map(checkbox => checkbox.id);
     const data = { variation_id: [] };
     
