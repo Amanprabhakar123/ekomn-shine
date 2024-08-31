@@ -299,19 +299,27 @@
 
                             var text = '';
                             if (product.is_login == true) {
-                                text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">Add to Inventory
                                                     List</button>
                                                 <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
                                             </div>`;
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
+                                    <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">+ Inventory List</button>
+                                    <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
+                                </div>`;
                             } else {
-                                text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <a href="${product.login_url}" class="btn btnround cardaddinventry" >Add to Inventory
                                                     List</a>
                                                 <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
                                             </div>`;
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
+                                <a href="${product.login_url}" class="btn btnround cardaddinventry">+ Inventory List</a>
+                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
+                            </div>`;
                             }
-                            html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
+                            html += ` <div class="col-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
                                             <a href="${product.link}" class="text_u" target="_blank">

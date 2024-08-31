@@ -85,7 +85,7 @@
                     <div class="cartAction">
                         <a href="{{ route('create.order') }}" class="cart">
                             <span class="counter">{{ getCartItemCount($user_id) }}</span>
-                            <img src="https://static-assets-web.flixcart.com/batman-returns/batman-returns/p/images/header_cart-eed150.svg"
+                            <img src="{{ asset('assets/images/icon/header_cart-eed150.svg') }}"
                                 alt="Cart" class="_1XmrCc" width="30" height="30">
                         </a>
                     </div>
