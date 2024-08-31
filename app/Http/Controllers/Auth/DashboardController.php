@@ -121,6 +121,7 @@ class DashboardController extends Controller
         $languages = ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
         $read_selected_languages = json_decode($companyDetails->language_i_can_read, true) ?? [];
         $understand_selected_languages = json_decode($companyDetails->language_i_can_understand, true) ?? [];
+        $role = $companyDetails->user->getRoleNames()->first();
         $product_category = Category::where([
             'root_parent_id' => 0,
             'is_active' => true,
@@ -463,7 +464,6 @@ class DashboardController extends Controller
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
         $courierList = CourierDetails::orderBy('id', 'desc')->get();
-        // dd($orderUpdate->orderCancellations);
         return view('dashboard.common.view-order', get_defined_vars());
     }
 

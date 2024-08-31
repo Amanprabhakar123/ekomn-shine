@@ -314,7 +314,7 @@
                         html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
-                                            <a href="${product.link}" class="text_u">
+                                            <a href="${product.link}" class="text_u" target="_blank">
                                                 <div class="product_image_wraper">
                                                     <div class="form-check onimg">
                                                         <input type="checkbox" id="${product.id}" class="form-check-input">

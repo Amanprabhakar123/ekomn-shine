@@ -340,6 +340,14 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        $('#selectAll').on('change', function() {
+      var isChecked = $(this).prop('checked');
+      $('.row_ckeck').prop('checked', isChecked);
+    });
+    $('.row_ckeck').on('change', function() {
+      var allChecked = $('.row_ckeck').length === $('.row_ckeck:checked').length;
+      $('#selectAll').prop('checked', allChecked);
+    });
         document.addEventListener("DOMContentLoaded", () => {
             const rowsPerPage = document.getElementById("rowsPerPage");
             const rowInfo = document.getElementById("rowInfo");
@@ -530,10 +538,10 @@
 
                 let a = status(item);
                 return `
-               <tr>
+               <tr class="">
                 <td> <div
                         class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox"
+                        <input class="form-check-input row_ckeck" type="checkbox"
                             value="${item.id}">
                     </div></td>
                 <td>
@@ -585,7 +593,7 @@
                <tr>
                 <td> <div
                         class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox"
+                        <input class="form-check-input row_ckeck" type="checkbox"
                             value="${item.id}">
                     </div></td>
                 <td>
@@ -802,7 +810,7 @@
          */
         function collectCheckedIdsForCsv() {
             // Select all checkboxes with the class 'form-check-input'
-            const allCheckboxes = document.querySelectorAll('.form-check-input');
+            const allCheckboxes = document.querySelectorAll('.row_ckeck');
 
             // Initialize an array to store the IDs of checked checkboxes
             const orderId = {

@@ -20,19 +20,19 @@ class SalesChannelSeeder extends Seeder
             ],
             [
             'name' => 'Flipkart',
-            'is_active' => false,
+            'is_active' => true,
             ],
             [
             'name' => 'Jiomart',
-            'is_active' => false,
+            'is_active' => true,
             ],
             [
             'name' => 'Meesho',
-            'is_active' => false,
+            'is_active' => true,
             ],
             [
             'name' => 'Social Media',
-            'is_active' => false,
+            'is_active' => true,
             ],
             [
             'name' => 'Own Store',

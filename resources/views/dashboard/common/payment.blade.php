@@ -15,13 +15,21 @@
       </div>
 			<div class="filterStrip filterStripwithbtn">
         <ul class="ekfilterList">
+        <li>
+                <div class="calanderWithName">
+                    <div class="calUplabel dateRange_c">
+                        <span class="calLabel">Date Range</span>
+                        <input type="text" name="daterange" />
+                    </div>
+                </div>
+            </li>
           <li>
             <div class="calanderWithName">
-							<div class="calUplabel">
-								<span class="calLabel">Statement Week</span>
-								<input type="text" name="date" />
-							</div>
-							<div class="weekamount"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</div>
+                <div class="calUplabel">
+                    <span class="calLabel">Statement Week</span>
+                    <input type="text" name="date" />
+                </div>
+                <div class="weekamount"><i class="fas fa-rupee-sign fs-13 me-1"></i>0.00</div>
             </div>
           </li>
           <li>
@@ -47,14 +55,6 @@
               </ul>
             </div>
           </li>
-					<li>
-						<div class="calanderWithName">
-							<div class="calUplabel dateRange_c">
-								<span class="calLabel">Date Range</span>
-								<input type="text" name="daterange" />
-							</div>
-            </div>
-					</li>
           <li>
             @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control  searchicon" placeholder="Search" />
@@ -167,7 +167,7 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
-        let order_date = order_last_date = '';
+        let order_date = order_last_date = statement_date = '';
 
         $(function() {
             const today = moment().format('YYYY-MM-DD');
@@ -198,7 +198,8 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
                 }
             },
             function(selectedDate) {
-                console.log("A new date was selected: " + selectedDate.format('YYYY-MM-DD'));
+                statement_date = selectedDate.format('YYYY-MM-DD');
+                fetchData();
             });
         });
         // Event listener for the search input field
@@ -281,12 +282,16 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
                 apiUrl += `&order_date=${order_date}&order_last_date=${order_last_date}`;
             }
 
+            if(statement_date){
+                apiUrl += `&statement_date=${statement_date}`;
+            }
+
 
             ApiRequest(apiUrl, 'GET')
                 .then(response => {
                     const data = (response.data);
-                    // console.log(data);
                     if (data.length === 0) {
+                        document.querySelector('.weekamount').innerHTML = `<i class="fas fa-rupee-sign fs-13 me-1"></i>0.00`;
                         dataContainer.innerHTML =
                             `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
                     } else {
@@ -395,7 +400,8 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
     function generateTableRow(item) {
 
         var orderType = '';
-        // let a = status(item);
+        document.querySelector('.weekamount').innerHTML = `<i class="fas fa-rupee-sign fs-13 me-1"></i>${item.total_statement_amount}`;
+
         return `
                         <tr>
                             <td> 

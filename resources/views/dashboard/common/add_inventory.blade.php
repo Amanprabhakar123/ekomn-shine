@@ -11,16 +11,16 @@
       <div>
         <ul class="nav nav-underline ekom_tab" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active pointereventnone" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+            <a class="nav-link active pointereventnone1" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link pointereventnone" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
+            <a class="nav-link pointereventnone1" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" role="tab" aria-controls="shipping" aria-selected="false">Pricing & Shipping</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link pointereventnone" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
+            <a class="nav-link pointereventnone1" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" role="tab" aria-controls="data" aria-selected="false">Data & dimensions</a>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link pointereventnone" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
+            <a class="nav-link pointereventnone1" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" role="tab" aria-controls="images" aria-selected="false">Product Images & Variants</a>
           </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
@@ -40,32 +40,45 @@
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                  <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required />
+                  <div class="tooltips">
+                  <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required/>
+                <span class="tooltiptext">Add a product Name/Title containing all relevant keywords and key features of the product</span>
+                </div>
                   <div id="product_nameErr" class="invalid-feedback"></div>
                 </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel req"><span>Description:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
+                  <div class="tooltips">
+                    <span class="tooltiptext">Detailed product information</span>
                   <textarea class="form-control" placeholder="Product Description" name="product_description" id="product_description" required></textarea>
+                  </div>
                   <div id="product_descriptionErr" class="invalid-feedback"></div>
                 </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel"><span>Product Keywords:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                  <div class="tag-container">
+                <div class="tooltips">
+                  <span class="tooltiptext">Add all relevant and important product keywords separated by comma. This will drive visibility of your product</span>
+                   
+                <div class="tag-container">
                     <div class="tag-input">
                       <input type="text" id="tag-input" placeholder="Type and Press Enter or Comma" class="form-control" name="product_keywords" required />
                       <div id="tag-inputErr" class="invalid-feedback"></div>
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
               <div class="ek_group">
                 <label class="eklabel req"><span>Product Features:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
-                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button"></textarea>
+                  <div class="tooltips">
+                    <span class="tooltiptext">Add key features of the product that you wish to show to customers on product page.</span>
+                  <textarea id="product-description" class="form-control" placeholder="Enter Product Features & Press Add Button" ></textarea>
+                  </div>
                   <span id="features-error" class="text-danger hide">At least one product feature is required.</span>
                   <div class="clearfix">
                     <span class="fs-14 opacity-25">You can only add up to 7 features</span>
@@ -105,19 +118,30 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Single Piece / Dropship Rate:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" name="dropship_rate" id="dropship_rate" required />
+                      <!-- <div class="tooltips">
+                        <span class="tooltiptext">Enter per piece rate in INR</span> -->
+                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" name="dropship_rate" id="dropship_rate" required data-toggle="tooltip" data-placement="top" title="Enter per piece rate in INR"/>
+                      </div>
                       <div id="dropship_rateErr" class="invalid-feedback"></div>
-                    </div>
+                    <!-- </div> -->
                   </div>
                 </div>
+                
                 <div class="col-sm-12 col-md-4">
+                  <!-- <div class="tooltips"> -->
                   <div class="ek_group">
+                    
                     <label class="eklabel req"><span>Potential MRP:<span class="req_star">*</span></span></label>
+                    
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Potential MRP" name="potential_mrp" id="potential_mrp" required />
+                     
+                        <!-- <span class="tooltiptext">Enter maximum potential rate this product is sold on various online marketplaces</span> -->
+                      <input type="text" class="form-control" placeholder="Enter Potential MRP" name="potential_mrp" id="potential_mrp" required data-toggle="tooltip" data-placement="top" title="Enter maximum potential rate this product is sold on various online marketplaces"/>
+                      
                       <div id="potential_mrpErr" class="invalid-feedback"></div>
+                      </div>
                     </div>
-                  </div>
+                  <!-- </div> -->
                 </div>
                 <div class="col-sm-12 col-md-12">
                   <div class="ek_group">
@@ -138,9 +162,13 @@
                                 <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="bulk[0][quantity]" id="bulk[0][quantity]" required>
                                 <div id="bulk_quantityErr0" class="invalid-feedback"></div>
                               </td>
+
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required>
+                                <div class="productTitle_t">
+                                <input type="text" class="smallInput_n" placeholder="Rs. 0.00" name="bulk[0][price]" id="bulk[0][price]" required data-toggle="tooltip" data-placement="top" title=" Here you can define quantity based multiple tiered/Discount pricing for your product. This will help buyers see discounted rates with bulk quantity. You are suggested to add at least 3 bulk/quantity based rates">
+                                
                                 <div id="bulk_priceErr0" class="invalid-feedback"></div>
+                                </div>
                               </td>
                             </tr>
                           </tbody>
@@ -156,7 +184,7 @@
                       <div class="">
                         <table class="normalTable addrowTable" id="shippingRateTable">
                           <thead>
-                            <tr>
+                            <tr >
                               <th>Quantity upto</th>
                               <th>Local</th>
                               <th>Regional</th>
@@ -165,9 +193,9 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr>
+                            <tr data-toggle="tooltip" data-placement="top" title="Define shipping rates based on quantity range for Local, Regional and National level. You should at least define 3 quantity range most commonly ordered">
                               <td>
-                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required>
+                                <input type="text" class="smallInput_n" placeholder="Qty. Upto" name="shipping[0][quantity]" id="shipping[0][quantity]" required >
                                 <div id="shipping_quantityErr0" class="invalid-feedback"></div>
                               </td>
                               <td>
@@ -207,7 +235,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Model:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Modal Number" name="model" id="model" required />
+                      <input type="text" class="form-control" placeholder="Enter Modal Number" name="model" id="model" required data-toggle="tooltip" data-placement="top" title="Add a relevant model name"/>
                       <div id="modelErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -216,7 +244,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Product HSN:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter HSN Code" name="product_hsn" id="product_hsn" required />
+                      <input type="text" class="form-control" placeholder="Enter HSN Code" name="product_hsn" id="product_hsn" required data-toggle="tooltip" data-placement="top" title="Add a six digit HSN for your product"/>
                       <div id="product_hsnErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -225,7 +253,7 @@
                   <div class="ek_group">
                     <label class="eklabel req">SKU:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" />
+                      <input type="text" class="form-control" placeholder="Product SKU" name="sku" id="sku" data-toggle="tooltip" data-placement="top" title="Add a unique SKU value for your product"/>
                       <div id="skuErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -234,7 +262,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>GST Bracket:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <select class="form-select" name="gst_bracket" id="gst_bracket" required>
+                      <select class="form-select" name="gst_bracket" id="gst_bracket" required data-toggle="tooltip" data-placement="top" title="Select applicable GST bracket">
                         <option value="0">0%</option>
                         <option value="5" selected>5%</option>
                         <option value="12">12%</option>
@@ -249,7 +277,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Availability:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <select class="form-select" name="availability" id="availability" required>
+                      <select class="form-select" name="availability" id="availability" required data-toggle="tooltip" data-placement="top" title="Select Regular available - If you regularly restock your product. If not, select 'Till Stock Last'">
                         <option value="1">Till Stock Lasts</option>
                         <option value="2" selected>Regular Available</option>
                       </select>
@@ -796,6 +824,10 @@
 <script>
 
   $(document).ready(function(){
+       // tooltip function script here 
+       $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     $('#no').click(function(){
       $('#product_listing_status').append('<option value="4">Draft</option>');
     });
