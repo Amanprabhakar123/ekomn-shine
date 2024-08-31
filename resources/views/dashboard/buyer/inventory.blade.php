@@ -32,7 +32,11 @@
           <table class="normalTable tableSorting whitespace">
             <thead>
               <tr>
-                <th>Select</th>
+                <th>
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox" id="select-all" />
+                </div>
+              </th>
                 <th>Product Image</th>
                 <th class="h_sorting"  data-sort-field="title">Product Title
                     <span class="sort_pos">
@@ -136,6 +140,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        $('#select-all').on('change', function() {
+        var isChecked = $(this).prop('checked');
+        $('.form-check-input').prop('checked', isChecked);
+        });
+        $('.form-check-input').on('change', function() {
+        var allChecked = $('.form-check-input').length === $('.form-check-input:checked').length;
+        $('#select-all').prop('checked', allChecked);
+        });
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
         const pagination = document.getElementById("pagination");
@@ -436,6 +448,9 @@
     variationIds.forEach(variationId => {
         data.variation_id.push(variationId);
     });
+
+    console.log(data);
+    
 
     if (variationIds.length === 0) {
         Swal.fire({
