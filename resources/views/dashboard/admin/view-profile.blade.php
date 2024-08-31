@@ -221,6 +221,7 @@
                                     @endforeach
                                 </ul>
                             </div>
+                            @if($role == ROLE_SUPPLIER)
                             <div class="profilesection" id="canHandleSection">
                                 <label class="bold">Can handle</label>
                                 <ul class="categoryList listnone">
@@ -232,6 +233,7 @@
                                     @endforeach
                                 </ul>
                             </div>
+                            @endif
                             <div class="profilesection mt-4">
                                 <h3 class="line_h">Alternate Business Contact<span class="line"></span></h3>
                                 <div class="form-group">
