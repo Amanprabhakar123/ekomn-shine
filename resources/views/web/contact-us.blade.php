@@ -145,23 +145,15 @@
             </div>
             <div class="faq-item">
               <div class="faq-question">What is your return policy?</div>
-              <div class="faq-answer">We offer a 30-day return policy for most items. If you're not satisfied with your purchase, you can return it for a full refund or exchange within 30 days of delivery.</div>
+              <div class="faq-answer">All products on eKomn are governed by a standard policy. Please refer <a href="{{route('return.policy')}}">Return & Refund Policy</a> here</div>
             </div>
             <div class="faq-item">
               <div class="faq-question">Do you offer international shipping?</div>
-              <div class="faq-answer">Yes, we offer international shipping to many countries. Shipping costs and delivery times vary depending on the destination. You can check shipping options during checkout.</div>
+              <div class="faq-answer">At the moment, our network does not support International shipping. Please reach out to us through <a href="{{route('contactus')}}">Contact Us</a> for  any specific requirement.</div>
             </div>
             <div class="faq-item">
               <div class="faq-question">How can I contact customer support?</div>
-              <div class="faq-answer">You can contact our customer support team through email, phone, or the contact form on our website. We aim to respond to all inquiries within 24 hours.</div>
-            </div>
-            <div class="faq-item">
-              <div class="faq-question">What is your return policy?</div>
-              <div class="faq-answer">A return has to be reported back within 48 hours from delivery with all necessary details. Please refer to our <a href="{{route('return.policy')}}">Return & Refund Policy</a> page</div>
-            </div>
-            <div class="faq-item">
-              <div class="faq-question">Do you offer international shipping?</div>
-              <div class="faq-answer">At the moment we do not support International shipping however, our international buyers can still use our platform. Please submit your interest through contact us form and we shall get back earliest.</div>
+              <div class="faq-answer">Check <a href="{{route('contactus')}}">Contact Us</a> page and submit your query. Our representative shall get back to you on priority.</div>
             </div>
           </div>
         </div>

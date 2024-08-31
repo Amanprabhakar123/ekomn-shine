@@ -1,7 +1,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="ek_nav">
     <div class="sidebar-header">
-        <a href="{{ route('home') }}"><img src="{{ asset('assets/images/Logo.svg') }}" alt="logo" height="40px" /></a>
+        <a href="{{ route('home') }}"><img src="{{ asset('assets/images/logo_b.png') }}" alt="logo" /></a>
         <div class="collapseIcon"><i class="fas fa-angle-double-left"></i></div>
     </div>
     <div class="sidebar-menu">
