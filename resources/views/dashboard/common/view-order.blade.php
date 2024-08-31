@@ -259,7 +259,7 @@
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
                                    
-                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
+                                    @if($orderUpdate->isInProgress() || $orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isReturnFilled() || $orderUpdate->isCancelled())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
@@ -603,7 +603,7 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isReturnFilled() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
@@ -952,11 +952,11 @@
                                     </table>
                                 </div>
                                 <div class="text-right d-flex justify-content-end mt10">
-                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isCancelled())
+                                    @if($orderUpdate->isDispatched() || $orderUpdate->isDelivered() || $orderUpdate->isInTransit() || $orderUpdate->isRTO() || $orderUpdate->isReturnFilled() || $orderUpdate->isCancelled())
                                     @else
                                     <button class="btn CancelOrderbtn btn-sm px-2" onclick="cancelOrder('{{salt_encrypt($orderUpdate->id)}}')">Cancel Order</button>
                                     @endif
-                                    @if($orderUpdate->isDelivered()|| $orderUpdate->isRTO() || $orderUpdate->isCancelled())
+                                    @if($orderUpdate->isDelivered()|| $orderUpdate->isRTO() || $orderUpdate->isReturnFilled() || $orderUpdate->isCancelled())
                                     @else
                                     <button type="button" class="btn btn-primary btn-sm ml-10"  id="updateOrder">Update Order</button>
                                     @endif

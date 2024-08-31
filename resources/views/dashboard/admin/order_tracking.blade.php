@@ -18,6 +18,7 @@
                                 <option value="4">Dispatched</option>
                                 <option value="5">In Transit</option>
                                 <option value="6">Delivered</option>
+                                <option value="8">RTO</option>
                             </select>
                         </div>
                     </div>
@@ -288,6 +289,7 @@
             <option value="4" ${item.order_action_status == "4" ? "selected" : ""}>Dispatched</option>
             <option value="5" ${item.order_action_status == "5" ? "selected" : ""}>In Transit</option>
             <option value="6" ${item.order_action_status == "6" ? "selected" : ""}>Delivered</option>
+            <option value="6" ${item.order_action_status == "8" ? "selected" : ""}>RTO</option>
         `;
        
     }
