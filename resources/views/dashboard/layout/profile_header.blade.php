@@ -1,4 +1,4 @@
-<header class="ekheader">
+<header class="ekheader dashboard-header">
     <div class="menutoggle"><i class="fas fa-bars"></i></div>
     <div class="d-flex justify-content-between align-items-center">
         <div class="logo_brand">
@@ -23,7 +23,6 @@
                 </div>
             </div>
             <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">
-                <li><a class="dropdown-item" href="{{route('dashboard')}}">Dashboard</a></li>
                 @if(auth()->user()->hasRole(ROLE_BUYER) ||
                 auth()->user()->hasRole(ROLE_SUPPLIER))
                 <li><a class="dropdown-item" href="{{route('edit.profile')}}">Profile</a></li>
