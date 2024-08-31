@@ -463,7 +463,6 @@ class DashboardController extends Controller
         $delivery_address = OrderAddress::where('order_id', $myOrderId)->Delivery()->first();
         $pickup_address = OrderAddress::where('order_id', $myOrderId)->Pickup()->first();
         $courierList = CourierDetails::orderBy('id', 'desc')->get();
-        // dd($orderUpdate->orderCancellations);
         return view('dashboard.common.view-order', get_defined_vars());
     }
 

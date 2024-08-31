@@ -1,3 +1,4 @@
+<div class="page-wrapper">
 <header>
     <div class="top_header">
         <ul class="b_h_list">
@@ -57,9 +58,10 @@
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">
                         <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
+                        @if(auth()->user()->hasRole(ROLE_BUYER) ||
+                        auth()->user()->hasRole(ROLE_SUPPLIER))
                         <li><a class="dropdown-item" href="{{ route('edit.profile') }}">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Wish List</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        @endif
                         <li>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
