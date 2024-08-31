@@ -190,7 +190,7 @@ class ProductInvetoryController extends Controller
 
             } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN)  || auth()->user()->hasRole(User::ROLE_SUB_ADMIN) ) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
                 // Eager load product variations with product inventory that matches user_id
-                $variations = ProductVariation::when($searchTerm, function ($query) use ($searchTerm) {
+                $variations = ProductVariation::with('company')->when($searchTerm, function ($query) use ($searchTerm) {
                     $query->where(function ($query) use ($searchTerm) {
                         $query->where('title', 'like', '%'.$searchTerm.'%')
                             ->orWhere('sku', 'like', '%'.$searchTerm.'%')
@@ -198,6 +198,9 @@ class ProductInvetoryController extends Controller
                             ->orWhereHas('product.category', function ($query) use ($searchTerm) {
                                 $query->where('name', 'like', '%'.$searchTerm.'%');
                             });
+                    })
+                    ->orWhereHas('company', function ($query) use ($searchTerm) {
+                        $query->where('company_serial_id', 'like', '%'.$searchTerm.'%');
                     });
                 });
                 if ($sort_by_status != 0) {
@@ -242,7 +245,7 @@ class ProductInvetoryController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
+dd($exceptionDetails);
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 

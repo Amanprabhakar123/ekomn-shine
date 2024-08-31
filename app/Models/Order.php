@@ -45,6 +45,8 @@ class Order extends Model
 
     const STATUS_RTO = 8;
 
+    const STATUS_RETURN_FILLED = 9;
+
     /**
      * Constants for payment status.
      */
@@ -102,13 +104,15 @@ class Order extends Model
         self::STATUS_DELIVERED,
         self::STATUS_CANCELLED,
         self::STATUS_RTO,
+        self::STATUS_RETURN_FILLED
     ];
 
     const STATUS_ORDER_TRACKING = [
         self::STATUS_DISPATCHED,
         self::STATUS_IN_TRANSIT,
         self::STATUS_DELIVERED,
-        self::STATUS_RTO
+        self::STATUS_RTO,
+        self::STATUS_RETURN_FILLED
     ];
 
     //Default Refund amound Draft Case
@@ -650,6 +654,14 @@ class Order extends Model
     }
 
     /**
+     * Check if the order is RTO.
+     */
+    public function isReturnFilled(): bool
+    {
+        return $this->status === self::STATUS_RETURN_FILLED;
+    }
+
+    /**
      * Check if the order is pending.
      */
     public function isPendingPayment(): bool
@@ -807,6 +819,8 @@ class Order extends Model
                 return 'Cancelled';
             case self::STATUS_RTO:
                 return 'RTO';
+            case self::STATUS_RETURN_FILLED:
+                return 'Return Filled';
             default:
                 return 'Unknown';
         }

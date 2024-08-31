@@ -43,13 +43,16 @@ class OrderPaymentController extends Controller
         if(auth()->user()->hasRole(User::ROLE_SUPPLIER)){
             $orderList = Order::with(['supplierPayments'])
             ->where('supplier_id', auth()->user()->id)
-            ->whereIn('status', Order::STATUS_ORDER_TRACKING)
-            ->get();
+            ->whereIn('status', Order::STATUS_ORDER_TRACKING);
         }else{
             $orderList = Order::with(['supplierPayments'])
-            ->whereIn('status', Order::STATUS_ORDER_TRACKING)
-            ->get();
+            ->whereIn('status', Order::STATUS_ORDER_TRACKING);
         }
+
+        $orderList = $orderList->where(function ($qu) {
+            $qu->where('order_date', '>=', now()->subDays(30)->format('Y-m-d'))
+            ->where('order_date', '<=', now()->format('Y-m-d'));
+        })->get();
         $total_balance_due = 0;
         $total_payment_due = 0;
         $total_statement_amount = 0;
@@ -200,11 +203,14 @@ class OrderPaymentController extends Controller
                 $orderList = $orderList->where('supplier_id', auth()->user()->id);
             }
             
-            $orderList = $orderList->where(function ($qu) use ($order_date, $order_last_date) {
-                $qu->where('order_date', '>=', $order_date)
-                ->where('order_date', '<=', $order_last_date);
-            });
-            if($statement_date){
+            if(is_null($statement_date)){
+                $orderList = $orderList->where(function ($qu) use ($order_date, $order_last_date) {
+                    $qu->where('order_date', '>=', $order_date)
+                    ->where('order_date', '<=', $order_last_date);
+                });
+            }
+
+            if(!is_null($statement_date)){
                 $orderList = $orderList->whereHas('supplierPayments', function ($query) use ($statement_date) {
                     $query->where('statement_date', $statement_date);
                 });
@@ -215,7 +221,7 @@ class OrderPaymentController extends Controller
             ->paginate($perPage); // Paginate results
          
              // Add pagination information to the resource
-            $resource = new Collection($orderList, new OrderPaymentTransformer);
+            $resource = new Collection($orderList, new OrderPaymentTransformer($statement_date));
 
             // Prepare the response
             $resource->setPaginator(new IlluminatePaginatorAdapter($orderList));

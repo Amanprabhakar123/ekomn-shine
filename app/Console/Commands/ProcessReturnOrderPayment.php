@@ -163,11 +163,9 @@ class ProcessReturnOrderPayment extends Command
                 'line' => $e->getLine(),
             ];
             // Trigger the event
-            // event(new ExceptionEvent($exceptionDetails));
+            event(new ExceptionEvent($exceptionDetails));
 
             Log::error($e->getMessage(), $e->getTrace(), $e->getLine());
-            
-            dd($e->getMessage(), $e->getLine(), $e->getFile());
         }
     }
 }

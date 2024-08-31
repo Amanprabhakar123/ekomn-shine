@@ -61,18 +61,14 @@ class CategoryManagmentController extends Controller
             //
             if($search){
                 $categories = Category::with('parent')->where('name', 'like', '%' . $search . '%')
-                
-                ->where('id', '!=', 1)
                 ->orderBy('id', 'desc');
             }else{
                 $categories = Category::query()
-                ->where('id', '!=', 1)
                 ->orderBy('id', 'desc');
             }
 
             if(!is_null($sort_by_status)){
                 $categories = $categories->where('depth', $sort_by_status)
-                ->where('id', '!=', 1)
                 ->orderBy('id', 'desc');
             }
             $categories = $categories->paginate($perPage);

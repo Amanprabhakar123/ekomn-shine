@@ -87,7 +87,7 @@ class ProcessSupplierPaymentStatement extends Command
                     });
 
                     if(!empty($order->returnOrder)){
-                        if($order->isRTO() && $order->returnOrder->isApproved() && ($order->returnOrder->isDisputeResolved() || $order->returnOrder->isDisputeNo())){
+                        if($order->isReturnFilled() && $order->returnOrder->isApproved() && ($order->returnOrder->isDisputeResolved() || $order->returnOrder->isDisputeNo())){
                             $payment = SupplierPayment::where('order_id', $order->id)->first();
                             if($payment){
                                 $payment->tds = $tds_amount;

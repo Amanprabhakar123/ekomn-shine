@@ -1,8 +1,8 @@
-<header class="ekheader">
+<header class="ekheader dashboard-header">
     <div class="menutoggle"><i class="fas fa-bars"></i></div>
     <div class="d-flex justify-content-between align-items-center">
         <div class="logo_brand">
-            <a href="{{route('dashboard')}}" class="brandLogo_d"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" height="40" /></a>
+            <a href="{{route('dashboard')}}" class="brandLogo_d"><img src="{{asset('assets/images/logo.png')}}" alt="Logo" /></a>
         </div>
         <div class="dropdown">
             <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,10 +23,10 @@
                 </div>
             </div>
             <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">
-                <li><a class="dropdown-item" href="{{route('dashboard')}}">Dashboard</a></li>
+                @if(auth()->user()->hasRole(ROLE_BUYER) ||
+                auth()->user()->hasRole(ROLE_SUPPLIER))
                 <li><a class="dropdown-item" href="{{route('edit.profile')}}">Profile</a></li>
-                <li><a class="dropdown-item" href="#">Wish List</a></li>
-                <li><a class="dropdown-item" href="#">Settings</a></li>
+                @endif
                 <li>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf

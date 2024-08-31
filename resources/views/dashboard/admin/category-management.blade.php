@@ -8,7 +8,7 @@
                     <h3 class="cardtitle">Category Management</h3>
                 </div>
             <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
+                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Category">
                 <div class="filter">
                     <div class="ek_group m-0">
                          <label class="eklabel w_50_f">Sort by:</label>

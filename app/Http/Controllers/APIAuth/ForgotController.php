@@ -61,7 +61,8 @@ class   ForgotController extends Controller
         // check if the email belongs to a supplier or buyer
         $user = User::where('email', $request->email)->first();
 
-        if ($user && $user->hasAnyRole([User::ROLE_SUPPLIER, User::ROLE_BUYER])) {
+        // if ($user && $user->hasAnyRole([User::ROLE_SUPPLIER, User::ROLE_BUYER])) {
+        if ($user) {
             // User exists and has the role of supplier or buyer
             // Proceed with sending the password reset link
             $response = Password::sendResetLink(

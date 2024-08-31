@@ -1035,9 +1035,7 @@ body {
   margin: 0px;
 }
 .brandLogo_d img{
-  max-height: 40px;
-  position: relative;
-  top: -2px;
+  max-height: 28px;
 }
 .sidebar-header{
   display: block;
@@ -1050,9 +1048,8 @@ body {
   position: relative;
 }
 .sidebar-header img{
-  filter: invert(100%);
+  max-height: 30px;
   position: relative;
-  top: -3px;
 }
 .sidebar-menu {
   height: calc(100% - 58px);
@@ -1326,7 +1323,7 @@ opacity: 0.5;
   .ek_dashboard{padding-left: 15px;}
   .ekheader{padding-left: 60px;}
   .ek_nav.active{left: 0px;}
-  .sidebar-header,.brandLogo_d{display: none;}
+  .sidebar-header{display: none;}
   .ek_group{display: block;}
   .eklabel{height: auto;line-height: 14px;width: 100%;}
   .categoryList > li {width: 50%;}
@@ -1337,6 +1334,8 @@ opacity: 0.5;
   .categoryList > li {width: 100%;}
   .categoryList.mobile50 > li {width: 50%;}
   .uploadlabel{left: 0px;}
+  .stockdiv span{display: block;}
+  .stockdiv {flex-direction: column; align-items: start !important;}
 }
 /* end dashboard */
 
@@ -2121,9 +2120,8 @@ textarea.resizer_none{resize:none!important;}
 }
 .brandLogo{max-width: 170px;margin-right: 40px;}
 .brandLogo img {
-  filter: invert(100%);
   position: relative;
-  top: -3px;
+  max-height: 30px;
 }
 .headersearch{
   flex: 1;
@@ -2272,6 +2270,12 @@ textarea.resizer_none{resize:none!important;}
 .top_header .b_h_list{
   justify-content: end;
 }
+.logoOnStrip{display: none;}
+.logoOnStrip img{
+  max-height: 22px;
+  position: relative;
+  top: -1px;
+}
 /* eKomn web header end */
 
 /* --------footer---------- */
@@ -2283,8 +2287,10 @@ textarea.resizer_none{resize:none!important;}
 }
 .eKomonsummary{color: var(--footer-text-color);}
 .eKomonsummary .footerlogo{
-  filter: invert(100%);
-  margin: 10px 0px;
+  max-height: 32px;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
 }
 .footer-heading{
   color: var(--text-color-white)!important;
@@ -2804,7 +2810,7 @@ img._pdimg {
 .productPrice{
   font-size: 14px;
   margin: 0px;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 .section_gap{
   margin-bottom: 20px;
@@ -3990,7 +3996,7 @@ header,footer{position: relative;z-index: 1000;}
 .ekfilterList {
   list-style-type: none;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-direction: row;
   flex-wrap: wrap;
   padding: 0;
@@ -4005,9 +4011,9 @@ header,footer{position: relative;z-index: 1000;}
   background-color: #fff;
   border: 1px solid #ced4da;
   border-radius: 3px;
-  height: 36px;
-  padding: 0px 30px 0px 10px!important;
-  line-height: 34px!important;
+  height: 34px;
+  padding: 0px 25px 0px 10px!important;
+  line-height: 32px!important;
   box-sizing: border-box;
   position: relative;
 }
@@ -4020,11 +4026,93 @@ header,footer{position: relative;z-index: 1000;}
   top: 50%;
   transform: translateY(-50%);
 }
-
 .ekfilterList .dropdown-menu {
   width: 100%;
   border-radius: 0.25rem;
 }
+.ekfilterList input,.ekfilterList select, .ekfilterList .filterSelectBox,
+  .tableSearch input,.tableSearch select, .tableSearch .filterSelectBox,.stripbtn{
+		font-size: 15px!important;
+		height: 34px!important;
+	}
+  .tableSearch{
+    margin-bottom: 5px;
+    margin-top: 30px;
+  }
+	.calanderWithName{
+		border: 1px solid #ced4da;
+		border-radius: 3px;
+		display: flex;
+	}
+	.calUplabel{
+		position: relative;
+	}
+	.calUplabel input{
+		width: 220px!important;
+		height: 32px!important;
+		padding-left: 126px;
+	}
+  .filterbtnsize{height: 32px!important;}
+	.calLabel{
+		position: absolute;
+		left: 9px;
+		top: 6px;
+		opacity: 0.5;
+	}
+	.calUplabel.dateRange_c input{
+		width: 280px!important;
+		padding-left: 96px;
+	}
+	.weekamount{
+		background-color: #f8f8f8;
+		height: 32px;
+		line-height: 32px;
+		padding: 0px 8px;
+		border-left: 1px solid #f0f0f0;
+    width: 100%;
+	}
+  .showTotalBox{
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    column-gap: 20px;
+    height: 30px;
+  }
+  .showTotalBox:last-child{
+    border-right: 1px solid #fff;
+  }
+  .paymentcardhead{position: relative;}
+  .filterStrip{
+    position: relative;
+    margin: 15px 0px 10px 0px;
+  }
+  .filterStripwithbtn{
+    padding-right: 140px;
+  }
+  .stripbtn{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+  @media(max-width:576px){
+    .ekfilterList{display: block;}
+    .cardhead.paymentcardhead{display: block;padding-bottom: 0px;}
+    .filterStripwithbtn{padding-right: 0px;}
+    .stripbtn{position: static;top: 10px;float: right;}
+    .ekfilterList > li{margin-bottom: 10px;}
+    .showTotalBox._productID{
+    position: static;
+    display: block;
+    height: auto;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #e2e2e2;
+  }
+  .showTotalBox._productID::before{content: none;}
+  }
+
 .collapse-group-1,.collapse-group-2 {display: none;}
 .collapse-toggle {cursor: pointer;}
 
@@ -4044,10 +4132,16 @@ a.underline{
   text-decoration: none !important;
   color: inherit;
 }
+.webhide{display: none;}
 @media (max-width: 1024px) {
-  .barIcon,.topSection_w_cat{display: block;}
+  .barIcon,.topSection_w_cat,.logoOnStrip,.webhide{display: block;}
+  /* .productFilters,.brandLogo,.notificationDropdown,
+  .userDropdown,.primary_category,.introduction_sec,.secondaryNav,.userAction{display: none;} */
   .productFilters,.brandLogo,.notificationDropdown,
-  .userDropdown,.primary_category,.introduction_sec,.secondaryNav{display: none;}
+  .primary_category,.introduction_sec,.secondaryNav,.user,.hideMob{display: none;}
+  .productSearch .serchinput{height: 36px;padding-right: 40px;}
+  .productSearch button,.productSearch button:hover,.productSearch button:active,.productSearch button:focus{height: 36px;width: 38px;font-size: 16px;}
+  .header_search_card{top: 37px;}
   .main_header{
     padding-left: 75px;
     position: fixed;
@@ -4055,6 +4149,7 @@ a.underline{
     top: 0px;
     left: 0px;
     z-index: 1000;
+    padding-right: 10px;
   }
   .page-wrapper{padding-top: 60px;}
   .top_header {border-bottom: none;border-top: 1px solid #282828;}
@@ -4070,7 +4165,7 @@ a.underline{
   .barIcon{left: 5px;}
   .main_header{padding-left: 50px;}
   .userAction{margin-left: 10px;}
-  .userDropdown{margin-left: 10px;}
+  .userDropdown{margin-left: 3px;}
   .b_h_list,.ekom_tab{display: block;white-space: nowrap;overflow: hidden;overflow-x: auto;}
   .b_h_list > li,.ekom_tab > li{display: inline-block;white-space: nowrap;}
   .det_btnbox{max-width: 100%;}
@@ -4080,11 +4175,12 @@ a.underline{
   .eKomUsefulLink{min-height: auto;}
   .copyrightText{text-align: center;margin-bottom: 20px;}
   .socialLinks{margin: auto;}
+  .advantagecontent::after{content: none;}
   .eKomonsummary p{margin-bottom: 10px!important;}
   .adv-section,.commit-section{padding: 40px 0px;}
   .advantagecontent{padding-left: 0px;}
-  .advantage{padding-right: 0px;}
-  .mbspace{margin: 0px 0px 50px 0px !important; padding-top: 10px !important;}
+  .advantage{padding-right: 0px;text-align: center;}
+  .mbspace{margin: 0px 0px 50px 0px !important; padding-top: 10px !important;justify-content: center;}
   .advantage img {max-width: 220px;display: block;margin: auto;}
   .services {display: block;}
   .service-item{margin-top: 20px;padding-bottom: 40px;}
@@ -4117,7 +4213,8 @@ a.underline{
   .h_filterbox .filterbtn,
   .h_filterbox .filterSelect {margin-top: 2px!important;margin-bottom: 2px!important;}
   .promotional_banner,.promotional_banner .carousel-item{height: 186px;}
-  .clientWords{padding: 15px;}
+  .clientWords{padding: 15px;padding-top: 50px;}
+  .authorContent{height: 97px;}
   .testimonalBlock {padding: 15px 20px 40px 20px;}
   .unitext{margin-bottom: 75px;}
   .contact-section{padding: 0px;background-image: none;} 
@@ -4128,3 +4225,22 @@ a.underline{
   .contContainer{background-color: transparent;box-shadow: none;border-radius: 0px;}
   .faq-section{padding: 40px 0px;}
 }
+@media (max-width: 768px) {
+  .img-card {
+    height: 300px;
+  }
+  .small-card {
+    max-width: calc(5 * 54px + 4 * 6px);
+  }
+  .smImg,.smImg.smImgVideo{
+    min-width: 54px;
+    height: 54px;
+  }
+  .smImg.smImgVideo svg{
+    width: 30px;
+    margin-left: 50%;
+    transform: translateX(-15px);
+    margin-top: 3px;
+}
+}
+

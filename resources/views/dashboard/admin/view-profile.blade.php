@@ -21,6 +21,7 @@
                                         <div id="business_nameErr" class="invalid-feedback"></div>
                                     </div>
                                 </div>
+                                @if($role == ROLE_SUPPLIER)
                                 <div class="ek_group">
                                     <label class="eklabel req">Display name:</label>
                                     <div class="ek_f_input">
@@ -28,6 +29,7 @@
                                         <input type="text" class="form-control py-1 mt-1 " placeholder="" id="display_name" name="" value="{{ $companyDetails->display_name }}" disabled />
                                     </div>
                                 </div>
+                                @endif
                                 <div class="ek_group">
                                     <label class="eklabel">Business owner name:</label>
                                     <div class="ek_f_input">
@@ -130,6 +132,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if($role == ROLE_SUPPLIER)
                             <div class="profilesection">
                                 <h3 class="line_h">Shipping Address<span class="line"></span></h3>
                                 <div class="form-group">
@@ -167,6 +170,46 @@
                                     <div id="location_linkErr" class="invalid-feedback"></div>
                                 </div>
                             </div>
+                            @elseif($role == ROLE_BUYER)
+                            <div class="profilesection">
+                                <h3 class="line_h">Delivery Address<span class="line"></span></h3>
+                                <div class="form-group">
+                                    <label>Street address<span class="r_color">*</span></label>
+                                    <input type="hidden" id="d_id" name="b_name" value="{{ isset($delivery_address) ? $delivery_address->id : '' }}">
+                                    <input type="text" class="form-control" id="d_address_line1" name="d_address_line1" placeholder="Enter street address" name="delivery_address" value="{{ isset($delivery_address) ? $delivery_address->address_line1 : '' }}" disabled/>
+                                    <div id="d_address_line1Err" class="invalid-feedback"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-4">
+                                        <div class="form-group">
+                                            <label class="line_h">State</label>
+                                            <input type="text" class="form-control" placeholder="Enter state" id="d_state" name="d_state" value="{{ isset($delivery_address) ? $delivery_address->state : '' }}" disabled/>
+                                            <div id="d_stateErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4">
+                                        <div class="form-group">
+                                            <label class="line_h">City</label>
+                                            <input type="text" class="form-control" placeholder="Enter city" id="d_city" name="d_city" value="{{ isset($delivery_address) ? $delivery_address->city : '' }}" disabled/>
+                                            <div id="d_cityErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4">
+                                        <div class="form-group">
+                                            <label>Pincode<span class="r_color">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Pin code" id="d_pincode" name="d_pincode" value="{{ isset($delivery_address) ? $delivery_address->pincode : '' }}" disabled/>
+                                            <div id="d_pincodeErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Location link</label>
+                                    <input type="text" class="form-control" placeholder="Enter shippinig location link" id="location_link" name="location_link" value="{{ isset($delivery_address) ? $delivery_address->location_link : '' }}"  data-toggle="tooltip" data-placement="top" title=" Please copy and paste your home or whatsapp location link here" disabled/>
+                                    <div id="location_linkErr" class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            @endif
                             <div class="profilesection">
                                 <h3 class="line_h">Billing Address<span class="line"></span></h3>
                                 <div class="form-group">
@@ -199,6 +242,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @if($role == ROLE_SUPPLIER)
                             <div class="profilesection" id="businessTypeSection">
                                 <label class="bold">Business type</label>
                                 <ul class="categoryList listnone">
@@ -210,6 +254,19 @@
                                     @endforeach
                                 </ul>
                             </div>
+                            @elseif($role == ROLE_BUYER)
+                            <div class="profilesection" id="businessTypeSection">
+                                <label class="bold">Business type</label>
+                                <ul class="categoryList listnone">
+                                    @foreach ($business_types as $business_type)
+                                    <li>
+                                        <input class="form-check-input" type="checkbox" id="b_{{$business_type->id}}" name="business_type[]" value="{{$business_type->id}}" {{(in_array($business_type->id, $selected_business_type) ? 'checked' : '')}} />
+                                        <label for="b_{{$business_type->id}}">{{$business_type->name}}</label>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
                             <div class="profilesection" id="productCategorySection">
                                 <label class="bold">Product categories</label>
                                 <ul class="categoryList listnone">
@@ -221,6 +278,7 @@
                                     @endforeach
                                 </ul>
                             </div>
+                            @if($role == ROLE_SUPPLIER)
                             <div class="profilesection" id="canHandleSection">
                                 <label class="bold">Can handle</label>
                                 <ul class="categoryList listnone">
@@ -232,21 +290,24 @@
                                     @endforeach
                                 </ul>
                             </div>
+                            @endif
+                            @if($role == ROLE_BUYER)
+                            <div class="profilesection" id="salesSection">
+                                <label class="bold">Sales Channel</label>
+                                <ul class="categoryList listnone">
+                                    @foreach ($sales as $sales)
+                                    <li>
+                                        <input class="form-check-input" type="checkbox" value="{{ $sales->id }}" name="sales[]" id="pc_{{$sales->id}}" {{(in_array($sales->id, $selected_sales) ? 'checked' : '')}} disabled/>
+                                        <label for="">{{ $sales->name }}</label>
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
+                            @if($role == ROLE_SUPPLIER)
                             <div class="profilesection mt-4">
                                 <h3 class="line_h">Alternate Business Contact<span class="line"></span></h3>
-                                <div class="form-group">
-                                    <label class="">Business Performance & Critical events:</label>
-                                    <div class="row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" id="business_performance_name" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductListings->name : ''}}" disabled/>
-                                            <div id="business_performance_nameErr" class="invalid-feedback"></div>
-                                        </div>
-                                        <div class="col">
-                                            <input type="text" class="form-control" id="business_performance_mobile" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductListings->mobile_no : ''}}" disabled/>
-                                            <div id="business_performance_mobileErr" class="invalid-feedback"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                          
                                 <div class="form-group">
                                     <label class="">Product Listings:</label>
                                     <div class="row">
@@ -257,6 +318,19 @@
                                         <div class="col">
                                             <input type="text" class="form-control" id="product_listings_mobile" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->mobile_no : ''}}" disabled/>
                                             <div id="product_listings_mobileErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="">Business Performance & Critical events:</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="business_performance_name" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductListings->name : ''}}" disabled/>
+                                            <div id="business_performance_nameErr" class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="business_performance_mobile" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductListings->mobile_no : ''}}" disabled/>
+                                            <div id="business_performance_mobileErr" class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -274,6 +348,50 @@
                                     </div>
                                 </div>
                             </div>
+                            @elseif($role == ROLE_BUYER)
+                            <div class="profilesection mt-4">
+                                <h3 class="line_h">Alternate Business Contact<span class="line"></span></h3>
+                                <div class="form-group">
+                                    <label class="">Business Performance & Critical events:</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="business_performance_name" name="name" placeholder="Full name" value="{{ !empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->name : ''}}" disabled/>
+                                            <div id="business_performance_nameErr" class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="business_performance_mobile" name="mobile_no" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BusinessPerformanceAndCriticalEvents->mobile_no : ''}}" disabled/>
+                                            <div id="business_performance_mobileErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="">ProductSourcingAlert:</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="product_listings_name" placeholder="Full name" value="{{!empty($alternate_business_contact) ?$alternate_business_contact->alternate_business_contact->ProductSourcingAlert->name : ''}}" disabled/>
+                                            <div id="product_listings_nameErr" class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="product_listings_mobile" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->ProductSourcingAlert->mobile_no : ''}}" disabled/>
+                                            <div id="product_listings_mobileErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="">BulkOrderContact:</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="order_delivery_enquiry_name" placeholder="Full name" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BulkOrderContact->name : ''}}" disabled/>
+                                            <div id="order_delivery_enquiry_nameErr" class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col">
+                                            <input type="text" class="form-control" id="order_delivery_enquiry_mobile" placeholder="Mobile number" value="{{!empty($alternate_business_contact) ? $alternate_business_contact->alternate_business_contact->BulkOrderContact->mobile_no : ''}}" disabled/>
+                                            <div id="order_delivery_enquiry_mobileErr" class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
 

@@ -387,10 +387,20 @@ class BuyerInventoryController extends Controller
             if (! file_exists($basePath)) {
                 mkdir($basePath, 0777, true);
             }
-
+           
             $userActivityService = new UserActivityService;
             // Process each product variation
             foreach ($allProductVariations as $key => $productVariation) {
+                // check auth user role
+                if ( auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+                    if(auth()->user()->companyDetails->company_serial_id == $productVariation->company_id){
+                        return response()->json(['data' => [
+                            'statusCode' => __('statusCode.statusCode422'),
+                            'status' => __('statusCode.status422'),
+                            'message' => __('auth.otherSupplierProduct'),
+                        ]], __('statusCode.statusCode200'));
+                    }
+                }
                 // Log the download activity
                 $userActivityService->logActivity($productVariation->id, UserActivity::ACTIVITY_TYPE_DOWNLOAD);
                 $product = $productVariation->product;
