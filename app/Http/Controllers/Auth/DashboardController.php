@@ -111,12 +111,16 @@ class DashboardController extends Controller
     public function viewPage(Request $request, $id)
     {
         $companyDetails = CompanyDetail::where('id', salt_decrypt($id))->with('address')->first();
-        // dd($companyDetails);
         $shipping_address = $companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_PICKUP_ADDRESS)->first();
         $billing_address = $companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_BILLING_ADDRESS)->first();
+        $delivery_address = $companyDetails->address()->where('address_type', CompanyAddressDetail::TYPE_DELIVERY_ADDRESS)->first();
         $business_type = BusinessType::where('type', BusinessType::TYPE_SUPPLIER)->get();
+        $business_types = BusinessType::where('type', BusinessType::TYPE_BUYER)->get();
+        $sales = SalesChannel::where('is_active', true)->get();
+        $selected_sales = $companyDetails->salesChannel->pluck('sales_channel_id')->toArray();
         $selected_business_type = $companyDetails->businessType->pluck('business_type_id')->toArray();
         $selected_product_category = $companyDetails->productCategory->pluck('product_category_id')->toArray();
+        $alternate_business_contact = json_decode($companyDetails->alternate_business_contact);
         $selected_can_handle = $companyDetails->canHandle->pluck('can_handles_id')->toArray();
         $languages = ['English', 'Hindi', 'Bengali', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Malayalam', 'Kannada'];
         $read_selected_languages = json_decode($companyDetails->language_i_can_read, true) ?? [];

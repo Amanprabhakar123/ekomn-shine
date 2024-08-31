@@ -143,7 +143,11 @@
                         <table class="normalTable tableSorting whitespace">
                             <thead>
                                 <tr>
-                                    <th>Select</th>
+                                <th><div
+                        class="form-check min-height m-0">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label for="selectAll" class="m-0">All</label>
+                    </div></th>
                                     <th>eKomn Order</th>
                                     <th>Product Title
                                     </th>
