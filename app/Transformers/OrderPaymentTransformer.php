@@ -119,6 +119,7 @@ class OrderPaymentTransformer extends TransformerAbstract
                 'view_order' => route('view.order', salt_encrypt($order->id)),
                 'created_at' => $order->created_at->toDateTimeString(),
                 'updated_at' => $order->updated_at->toDateTimeString(),
+                'total_statement_amount' => number_format($this->total_statement_amount, 2),
             ];
             
             if(auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)){

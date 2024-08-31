@@ -3,129 +3,131 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 @endsection
 @section('content')
-
 <div class="ek_dashboard">
-    <div class="ek_content">
-        <div class="card ekcard pa shadow-sm">
-            <div class="cardhead">
-                <h3 class="cardtitle">Order Payments</h3>
-                <div>Total Balance : <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_balance_due}}</strong></div>
-                <div>Payment Due: <strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_payment_due}}</strong></div>
-            </div>
-            <div class="tableTop mt10">
-            <ul class="ekfilterList">
-                <li>
-                @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
-                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No. and Supplier ID">
-                        @else
-                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control w_300_f searchicon" placeholder="Search By Order No">
-                        @endif
-                </li>
-                    <li>
-                        <div class="d-flex">
-                        <input type="text" name="date" class="form-control">
-
-                        <div><strong> <i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</strong></div>
-
-                        </div>
-                    </li>
-                    <li>
-                    <div class="dropdown" id="orderStatusDropdown">
-                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="5">In Transit</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
-                                </ul>
-                            </div>      
-                    </li>
-                    <li>
-                    <div class="dropdown" id="paymentStatusDropdown">
-                                <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue">All</strong>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="1">Hold</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="2">Accrued</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="3">Paid</a></li>
-                                    <li><a class="dropdown-item" href="#" data-value="4">Due</a></li>
-                                </ul>
-                            </div>      
-                    </li>
-                    <li>
-                        <input type="text" name="daterange" class="form-control" value="1/01/2024 - 01/31/2024" />
-                    </li>
-                    <li>
-                        <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
-                    </li>
-                </ul>
-        
-            </div>
-            <div class="table-responsive tres_border">
-                <table class="normalTable whitespace">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>
-															<div class="form-check form-check-sm form-check-custom form-check-solid">
-																<input class="form-check-input" type="checkbox" id="select-all">
-															</div>
-														</th>
-                            <th>eKomn Order No</th>
-                            @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
-                            <th>Supplier Id</th>
-                            @endif
-                            <th>Date</th>
-                            <th class="collapse-group-1">Product Charges</th>
-                            <th class="collapse-group-1">Discount</th>
-                            <th class="collapse-group-1">Shipping Charges</th>
-                            <th class="collapse-group-1">Packing Charges</th>
-                            <th class="collapse-group-1">Labour Charges</th>
-                            <th class="collapse-group-1">Payment Charges</th>
-                            <th class="collapse-group-1">Total GST</th>
-                            <th>Order Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group1"></i></th>
-                            <th>Order Status</th>
-                            <th>Category</th>
-                            <th class="collapse-group-2">Refunds</th>
-                            <th class="collapse-group-2">Referral Fee</th>
-                            <th class="collapse-group-2">Adjustments</th>
-                            <th class="collapse-group-2">TDS</th>
-                            <th class="collapse-group-2">TCS</th>
-                            <th>Order Disbursement Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group2"></i></th>
-                            <th>Supplier Payment Status</th>
-                            <th>Statement Wk</th>
-                            <th>Invoice</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataContainer">
-                        <!-- Data will be displayed here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="ek_pagination">
-                <span class="row_select rowcount" id="rowInfo"></span>
-                <div class="pager_box">
-                    <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
-                    <ul class="pager_" id="pagination"></ul>
-                    <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="row_select jumper">Go to
-                    <select id="rowsPerPage">
-                        <option value="10" selected>10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                    </select>
-                </div>
-            </div>
+  <div class="ek_content">
+    <div class="card ekcard pa shadow-sm">
+      <div class="cardhead paymentcardhead">
+        <h3 class="cardtitle">Order Payments</h3>
+        <div class="showTotalBox _productID">
+          <div>Total Balance: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_balance_due}}</strong></div>
+          <div>Payment Due: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_payment_due}}</strong></div>
         </div>
+      </div>
+			<div class="filterStrip filterStripwithbtn">
+        <ul class="ekfilterList">
+          <li>
+            <div class="calanderWithName">
+							<div class="calUplabel">
+								<span class="calLabel">Statement Week</span>
+								<input type="text" name="date" />
+							</div>
+							<div class="weekamount"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{$total_statement_amount}}</div>
+            </div>
+          </li>
+          <li>
+            <div class="dropdown" id="orderStatusDropdown">
+              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong></button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                <li><a class="dropdown-item" href="#" data-value="5">In Transit</a></li>
+                <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <div class="dropdown" id="paymentStatusDropdown">
+              <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Payment Status</span><strong class="dropdownValue">All</strong></button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                <li><a class="dropdown-item" href="#" data-value="1">Hold</a></li>
+                <li><a class="dropdown-item" href="#" data-value="2">Accrued</a></li>
+                <li><a class="dropdown-item" href="#" data-value="3">Paid</a></li>
+                <li><a class="dropdown-item" href="#" data-value="4">Due</a></li>
+              </ul>
+            </div>
+          </li>
+					<li>
+						<div class="calanderWithName">
+							<div class="calUplabel dateRange_c">
+								<span class="calLabel">Date Range</span>
+								<input type="text" name="daterange" />
+							</div>
+            </div>
+					</li>
+          <li>
+            @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
+            <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control  searchicon" placeholder="Search" />
+            @else
+            <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control  searchicon" placeholder="Search" />
+            @endif
+          </li>
+        </ul>
+        <button class="btn btnekomn_dark stripbtn" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+      </div>
+      <div class="table-responsive tres_border">
+        <table class="normalTable whitespace">
+          <thead class="thead-dark">
+            <tr>
+              <th>
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox" id="select-all" />
+                </div>
+              </th>
+              <th>eKomn Order No</th>
+              @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
+              <th>Supplier Id</th>
+              @endif
+              <th>Date</th>
+              <th class="collapse-group-1">Product Charges</th>
+              <th class="collapse-group-1">Discount</th>
+              <th class="collapse-group-1">Shipping Charges</th>
+              <th class="collapse-group-1">Packing Charges</th>
+              <th class="collapse-group-1">Labour Charges</th>
+              <th class="collapse-group-1">Payment Charges</th>
+              <th class="collapse-group-1">Total GST</th>
+              <th>Order Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group1"></i></th>
+              <th>Order Status</th>
+              <th>Category</th>
+              <th class="collapse-group-2">Refunds</th>
+              <th class="collapse-group-2">Referral Fee</th>
+              <th class="collapse-group-2">Adjustments</th>
+              <th class="collapse-group-2">TDS</th>
+              <th class="collapse-group-2">TCS</th>
+              <th>Order Disbursement Amount<i class="fas fa-plus-square collapse-toggle fs-14 ms-1" data-target="group2"></i></th>
+              <th>Supplier Payment Status</th>
+              <th>Statement Wk</th>
+              <th>Invoice</th>
+            </tr>
+          </thead>
+          <tbody id="dataContainer">
+            <!-- Data will be displayed here -->
+          </tbody>
+        </table>
+      </div>
+      <div class="ek_pagination">
+        <span class="row_select rowcount" id="rowInfo"></span>
+        <div class="pager_box">
+          <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
+          <ul class="pager_" id="pagination"></ul>
+          <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="row_select jumper">
+          Go to
+          <select id="rowsPerPage">
+            <option value="10" selected>10</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+        </div>
+      </div>
     </div>
-    @include('dashboard.layout.copyright')
+  </div>
+  @include('dashboard.layout.copyright')
 </div>
 @endsection
+
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -150,6 +152,11 @@
     });
 </script>
 <script>
+document.querySelectorAll('.calUplabel').forEach(function(element) {
+    element.addEventListener('click', function() {
+        this.querySelector('input').focus();  // Focus on the input field to trigger the calendar.
+    });
+});
     document.addEventListener("DOMContentLoaded", () => {
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
@@ -479,7 +486,7 @@
      */
     function collectCheckedIdsForCsv() {
         // Select all checkboxes with the class 'form-check-input'
-        const allCheckboxes = document.querySelectorAll('.form-check-input');
+        const allCheckboxes = document.querySelectorAll('.row_ckeck');
 
         // Initialize an array to store the IDs of checked checkboxes
         const orderId = {
