@@ -4,8 +4,11 @@
 <div class="ek_dashboard">
 <div class="ek_content">
       <div class="card ekcard pa shadow-sm">
-        <div class="cardhead">
-          <h3 class="cardtitle">Buyer Inventory ({{$inventory_count}})</h3>
+        <div class="cardhead paymentcardhead">
+        <h3 class="cardtitle">Buyer Inventory</h3>
+          <div class="showTotalBox _productID">
+          <div>Product Count: {{$inventory_count}}</strong></div>
+        </div>
           <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
         <div class="tableTop mt10">

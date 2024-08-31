@@ -52,7 +52,7 @@ class ChangeOrderStatusNotification extends Notification
             ->subject('eKomn – Order '.$order_number.' Delivered.')
             ->view('email.orderDelivered', compact('name', 'order_number', 'courier_name', 'tracking_number'));
         }
-        elseif($this->details['status'] == Order::STATUS_RTO){ 
+        elseif($this->details['status'] == Order::STATUS_RETURN_FILLED){ 
             return (new MailMessage)
             ->subject('eKomn – Order '.$order_number.' Cancelled.')
             ->view('email.orderReturn.blade', compact('name', 'order_number'));

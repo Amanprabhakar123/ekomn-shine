@@ -99,7 +99,7 @@ class ReturnOrderController extends Controller
             ]], __('statusCode.statusCode200'));
         }
 
-        if ($order->isRTO()) {
+        if ($order->isReturnFilled()) {
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
@@ -192,7 +192,7 @@ class ReturnOrderController extends Controller
                 'role_type' => User::ROLE_BUYER,
                 'comment' => $request->comment
             ]);
-            $order->status = Order::STATUS_RTO;
+            $order->status = Order::STATUS_RETURN_FILLED;
             $order->save();
 
             // Supplier Payment Status
