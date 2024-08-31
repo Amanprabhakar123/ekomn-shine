@@ -34,7 +34,7 @@
               <tr>
                 <th>
                 <div class="form-check form-check-sm form-check-custom form-check-solid">
-                  <input class="form-check-input" type="checkbox" id="select-all" />
+                    <input class="form-check-input" type="checkbox" id="select-all" />
                 </div>
               </th>
                 <th>Product Image</th>
@@ -142,11 +142,11 @@
     document.addEventListener("DOMContentLoaded", () => {
         $('#select-all').on('change', function() {
         var isChecked = $(this).prop('checked');
-        $('.form-check-input').prop('checked', isChecked);
+            $('.row_ckeck').prop('checked', isChecked);
         });
-        $('.form-check-input').on('change', function() {
-        var allChecked = $('.form-check-input').length === $('.form-check-input:checked').length;
-        $('#select-all').prop('checked', allChecked);
+        $('.row_ckeck').on('change', function() {
+        var allChecked = $('.row_ckeck').length === $('.row_ckeck:checked').length;
+            $('#select-all').prop('checked', allChecked);
         });
         const rowsPerPage = document.getElementById("rowsPerPage");
         const rowInfo = document.getElementById("rowInfo");
@@ -335,7 +335,7 @@
         <tr>
             <td>
                 <div class="form-check">
-                <input type="checkbox" id="${item.variation_id}" class="form-check-input">
+                <input type="checkbox" id="${item.variation_id}" class="form-check-input row_ckeck">
                 <label for="${item.variation_id}" class="ms-1"></label>
                 </div>
             </td>
@@ -440,7 +440,7 @@
     }
     const downloadProduct = document.getElementById("download_product");
     downloadProduct.addEventListener("click", () => {
-    const checkboxes = document.querySelectorAll(".form-check-input:checked");
+    const checkboxes = document.querySelectorAll(".row_ckeck:checked");
     const variationIds = Array.from(checkboxes).map(checkbox => checkbox.id);
     const data = { variation_id: [] };
     
@@ -448,9 +448,6 @@
     variationIds.forEach(variationId => {
         data.variation_id.push(variationId);
     });
-
-    console.log(data);
-    
 
     if (variationIds.length === 0) {
         Swal.fire({
