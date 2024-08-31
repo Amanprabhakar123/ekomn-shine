@@ -4162,11 +4162,12 @@ a.underline{
   .eKomUsefulLink{min-height: auto;}
   .copyrightText{text-align: center;margin-bottom: 20px;}
   .socialLinks{margin: auto;}
+  .advantagecontent::after{content: none;}
   .eKomonsummary p{margin-bottom: 10px!important;}
   .adv-section,.commit-section{padding: 40px 0px;}
   .advantagecontent{padding-left: 0px;}
-  .advantage{padding-right: 0px;}
-  .mbspace{margin: 0px 0px 50px 0px !important; padding-top: 10px !important;}
+  .advantage{padding-right: 0px;text-align: center;}
+  .mbspace{margin: 0px 0px 50px 0px !important; padding-top: 10px !important;justify-content: center;}
   .advantage img {max-width: 220px;display: block;margin: auto;}
   .services {display: block;}
   .service-item{margin-top: 20px;padding-bottom: 40px;}
@@ -4199,7 +4200,8 @@ a.underline{
   .h_filterbox .filterbtn,
   .h_filterbox .filterSelect {margin-top: 2px!important;margin-bottom: 2px!important;}
   .promotional_banner,.promotional_banner .carousel-item{height: 186px;}
-  .clientWords{padding: 15px;}
+  .clientWords{padding: 15px;padding-top: 50px;}
+  .authorContent{height: 97px;}
   .testimonalBlock {padding: 15px 20px 40px 20px;}
   .unitext{margin-bottom: 75px;}
   .contact-section{padding: 0px;background-image: none;} 
@@ -4210,3 +4212,22 @@ a.underline{
   .contContainer{background-color: transparent;box-shadow: none;border-radius: 0px;}
   .faq-section{padding: 40px 0px;}
 }
+@media (max-width: 768px) {
+  .img-card {
+    height: 300px;
+  }
+  .small-card {
+    max-width: calc(5 * 54px + 4 * 6px);
+  }
+  .smImg,.smImg.smImgVideo{
+    min-width: 54px;
+    height: 54px;
+  }
+  .smImg.smImgVideo svg{
+    width: 30px;
+    margin-left: 50%;
+    transform: translateX(-15px);
+    margin-top: 3px;
+}
+}
+

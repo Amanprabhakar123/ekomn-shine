@@ -408,37 +408,8 @@
                                 tabindex="0">
                                 <div class="descList">
                                     <h4 class="mt-0 fs-18 bold">Refund Policy</h4>
-                                    <ul>
-                                        <li>
-                                            LUXURIOUSLY 2000 GSM THICK SOFT BATHMAT– Our microfibre Bath Mats are thick and
-                                            fluffy which makes these Bath Mats a good quality and a long lasting product.
-                                            Don’t sacrifice quality for durability. Your feet will say thank you when
-                                            stepping out of the shower on the soft microfibre mat. Use in your Bathroom,
-                                            Living room, Kitchen or as Door Mat.
-                                        </li>
-                                        <li>
-                                            NON SLIP – Anti Skid will help the bath mat stay still in wet areas. The
-                                            Bathroom Mats have been tested and can be machine washed. This non-skid backing
-                                            ensures the bathroom won’t move and you’ll be safe when stepping out of your
-                                            shower. We use hot melt glue which is stickier, stronger, and more durable for
-                                            long lasting use.
-                                        </li>
-                                        <li>
-                                            SUPER ABSORBENT– The Microfiber Bathmat is much more absorbent than cotton or
-                                            memory foam bath rugs, so it won't stay soggy all day or start to stink after
-                                            just a couple uses. High-pile, thick microfiber helps save your floors from
-                                            dripping water while you're stepping out of the bath, shower, or getting ready
-                                            by the sink. Moisture is trapped in the mat's deep pile, allowing the bath mat
-                                            to dry quickly.
-                                        </li>
-                                        <li>
-                                            MACHINE WASHABLE - After your toddler or kids get out of the bath tub, just
-                                            throw the bath mat into the washing machine. Hang to dry, and you’re done. Quick
-                                            drying and long lasting, the microfiber bath rugs are durable accessories for
-                                            your restroom and will last for years to come
-                                        </li>
-
-                                    </ul>
+                                    <p>All products on eKomn are governed by a standard policy. Please refer <a href="{{route('return.policy')}}">Return & Refund Policy</a> here
+                                    </p>
                                 </div>
                             </div>
                         </div>
