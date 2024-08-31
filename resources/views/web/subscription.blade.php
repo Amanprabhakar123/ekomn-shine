@@ -102,24 +102,33 @@
                 </div>
               </div>
             </div>
+          
             <div class="features-list">
-              <div class="feature-row">
-                <div class="feature">My Inventory List Limit</div>
-                <div class="feature-value">30</div>
-                <div class="feature-value">100</div>
-                <div class="feature-value">500</div>
-                <div class="feature-value">1000</div>
-                <div class="feature-value">2000</div>
+              <div class="tooltips">
+                <div class="feature-row">
+                  <span class="tooltiptext">Allowed limit of total selected products that can be added to Inventory</span>
+                  <div class="feature">My Inventory List Limit</div>
+                  <div class="feature-value">30</div>
+                  <div class="feature-value">100</div>
+                  <div class="feature-value">500</div>
+                  <div class="feature-value">1000</div>
+                  <div class="feature-value">2000</div>
+                </div>
               </div>
-              <div class="feature-row">
-                <div class="feature">Monthly Products Download Count</div>
-                <div class="feature-value">30</div>
-                <div class="feature-value">100</div>
-                <div class="feature-value">500</div>
-                <div class="feature-value">1000</div>
-                <div class="feature-value">2000</div>
+              <div class="tooltips">
+              <span class="tooltiptext">Allowed limit of product content download that you are allowed to do in a month</span>
+                <div class="feature-row">
+                  <div class="feature">Monthly Products Download Count</div>
+                  <div class="feature-value">30</div>
+                  <div class="feature-value">100</div>
+                  <div class="feature-value">500</div>
+                  <div class="feature-value">1000</div>
+                  <div class="feature-value">2000</div>
+                </div>
               </div>
+              <div class="tooltips">
               <div class="feature-row">
+              <span class="tooltiptext">Periodic New product alert sent to your email</span>
                 <div class="feature">New Products Alerts</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -127,6 +136,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+            <div class="tooltips">
+              <span class="tooltiptext">Important product related notifications</span>
               <div class="feature-row">
                 <div class="feature">Product Notifications</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -134,8 +146,11 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-              </div>
+              </div>  
+            </div>
+              <div class="tooltips">
               <div class="feature-row">
+                <span class="tooltiptext">Curated product list especially prepared for you as per your product category and usage</span>
                 <div class="feature">Curated Product List</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -143,6 +158,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
+                <span class="tooltiptext">Periodic communication on high profit products</span>
               <div class="feature-row">
                 <div class="feature">Access to High profit, Low competetion, Unique products</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
@@ -151,7 +169,11 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
+                
               <div class="feature-row">
+                <span class="tooltiptext">Manage your Store Orders, Dropship orders, Bulk Orders & Order product Samples</span>
                 <div class="feature">Order Manager</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -159,6 +181,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
+                <span class="tooltiptext">File and review returns</span>
               <div class="feature-row">
                 <div class="feature">Returns</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -167,7 +192,10 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
               <div class="feature-row">
+                <span class="tooltiptext">Access to Pan India bulk reseller program</span>
                 <div class="feature">ReSeller Program</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
@@ -175,6 +203,7 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
               <div class="feature-row">
                 <div class="feature">Shine Program</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
@@ -183,7 +212,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+              <div class="tooltips">
               <div class="feature-row">
+                <span class="tooltiptext">Integrate your Amazon account and update product stock and Manager Orders automatically</span>
                 <div class="feature">Amazon Integration</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -191,6 +222,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
+                <span class="tooltiptext">Panel access to manage your integration with leading platforms</span>
               <div class="feature-row">
                 <div class="feature">My Connections</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -199,7 +233,10 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
               <div class="feature-row">
+                <span class="tooltiptext">Prompt business support to manage your daily operations smoothly</span>
                 <div class="feature">Chat & Email Support</div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
@@ -207,6 +244,9 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
+                <span class="tooltiptext">Direct access to Expert/Engineer to address urgent issues</span>
               <div class="feature-row">
                 <div class="feature">Phone Support</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
@@ -215,7 +255,10 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
+              <div class="tooltips">
               <div class="feature-row">
+                <span class="tooltiptext">An eKomn expert just a call away to to collaborate with you on your business growth</span>
                 <div class="feature">Dedicated Account Manager</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
@@ -223,6 +266,7 @@
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                 <div class="feature-value"><i class="fas fa-check text-success"></i></div>
               </div>
+            </div>
               <div class="feature-row">
                 <div class="feature">Download Center</div>
                 <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
