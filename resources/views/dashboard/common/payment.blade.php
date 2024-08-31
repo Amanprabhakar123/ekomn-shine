@@ -190,13 +190,32 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
             });
 
             //
+            // $('input[name="date"]').daterangepicker({
+            //     singleDatePicker: true,    // Enables single date picker
+            //     autoApply: true,
+            //     opens: 'left',
+            //     startDate: today,
+            //     locale: {
+            //         format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+            //     }
+            // },
+            // function(selectedDate) {
+            //     statement_date = selectedDate.format('YYYY-MM-DD');
+            //     fetchData();
+            // });
+
+            const nextThursday = moment().day(4).format('YYYY-MM-DD');
             $('input[name="date"]').daterangepicker({
                 singleDatePicker: true,    // Enables single date picker
                 autoApply: true,
                 opens: 'left',
-                startDate: today,
+                startDate: nextThursday,
                 locale: {
                     format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+                },
+                isInvalidDate: function(date) {
+                    // Check if the date is not a Thursday
+                    return date.day() !== 4;
                 }
             },
             function(selectedDate) {
