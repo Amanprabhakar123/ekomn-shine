@@ -6,7 +6,7 @@
         </div>
         <div class="dropdown">
             <div class="profile" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="user">
+                <div class="user" style="display: block !important;">
                     <h4>{{auth()->user()->name}}</h4>
                     @if(auth()->check())
                         @if(auth()->user()->hasRole(ROLE_ADMIN))

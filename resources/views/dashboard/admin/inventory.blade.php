@@ -1,69 +1,102 @@
-@extends('dashboard.layout.app')
-
-@section('content')
+@extends('dashboard.layout.app') @section('content')
 <div class="ek_dashboard">
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">My Inventory</h3>
-                @if(auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                @if(auth()->user()->hasRole(ROLE_ADMIN) ||
+                auth()->user()->hasRole(ROLE_SUB_ADMIN))
                 @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_PRODUCT))
-                <a class="btn btnekomn btn-sm" href="{{route('add.inventory')}}"><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
-                @endif
-                @endif
+                <a class="btn btnekomn btn-sm"
+                    href="{{ route('add.inventory') }}"
+                    ><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
+                @endif @endif
             </div>
-            <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <!-- <label class="eklabel w_50_f">Sort by:</label> -->
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_status">
-                                <option value="0">Select</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                                <option value="3">Out of Stock</option>
-                                <option value="4">Draft</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
+						<div class="filterStrip filterStripwithbtn">
+            	<ul class="ekfilterList">
+								<li class="search-width">
+								<input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Product Title, SKU, Product ID">
+								</li>
+            		<li>
+									<div class="dropdown" id="sort_by_status">
+										<button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Product Status</span><strong class="dropdownValue">All</strong></button>
+										<ul class="dropdown-menu">
+											<li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+											<li><a class="dropdown-item" href="#" data-value="1">Active</a></li>
+											<li><a class="dropdown-item" href="#" data-value="2">Inactive</a></li>
+											<li><a class="dropdown-item" href="#" data-value="3">Out of Stock</a></li>
+											<li><a class="dropdown-item" href="#" data-value="4">Draft</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</div>
+
+
             <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
                             <th>Image</th>
-                            <th class="h_sorting"  data-sort-field="title">Product Title
+                            <th class="h_sorting" data-sort-field="title">
+                                Product Title
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
-                            <th class="h_sorting"  data-sort-field="sku">SKU
+                            <th class="h_sorting" data-sort-field="sku">
+                                SKU
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
-                            <th class="h_sorting" data-sort-field="product_slug_id">Product ID
+                            <th
+                                class="h_sorting"
+                                data-sort-field="product_slug_id"
+                            >
+                                Product ID
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
                             <th>Supplier ID</th>
-                            <th class="h_sorting"  data-sort-field="stock">Stock
+                            <th class="h_sorting" data-sort-field="stock">
+                                Stock
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
-                            <th class="h_sorting" data-sort-field="price_after_tax">Selling Price
+                            <th
+                                class="h_sorting"
+                                data-sort-field="price_after_tax"
+                            >
+                                Selling Price
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
-                            <th class="h_sorting"  data-sort-field="name">
+                            <th class="h_sorting" data-sort-field="name">
                                 Category
                                 <span class="sort_pos">
-                                    <small class="sort_t"><i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i></small>
+                                    <small class="sort_t"
+                                        ><i class="fas fa-caret-up"></i
+                                        ><i class="fas fa-caret-down"></i
+                                    ></small>
                                 </span>
                             </th>
                             <th>Availability</th>
@@ -79,11 +112,16 @@
             <div class="ek_pagination">
                 <span class="row_select rowcount" id="rowInfo"></span>
                 <div class="pager_box">
-                    <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
+                    <button id="prevPage" class="pager_btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
                     <ul class="pager_" id="pagination"></ul>
-                    <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
+                    <button id="nextPage" class="pager_btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <div class="row_select jumper">Go to
+                <div class="row_select jumper">
+                    Go to
                     <select id="rowsPerPage">
                         <option value="5">5</option>
                         <option selected value="10">10</option>
@@ -98,8 +136,7 @@
     </div>
     @include('dashboard.layout.copyright')
 </div>
-@endsection
-@section('scripts')
+@endsection @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -126,27 +163,43 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
+				let selectedValues = {
+					sort_by_order_status: "0",
+					sortByStatus: "0"
+				};
+				function handleDropdownSelection(dropdown, key) {
+						const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+						const dropdownValue = dropdown.querySelector('.dropdownValue');
+						dropdownItems.forEach(function(item) {
+								item.addEventListener('click', function(e) {
+										e.preventDefault();
+										const value = this.getAttribute('data-value');
+										const text = this.textContent;
+										dropdownValue.textContent = text;
+										selectedValues[key] = value;
+										fetchData();
+								});
+						});
+				}
+				const sort_by_status = document.getElementById('sort_by_status');
+				handleDropdownSelection(sort_by_status, 'sortByStatus');
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
         let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
         const h_sorting = document.querySelectorAll(".h_sorting");
-        h_sorting.forEach(element => {
+        h_sorting.forEach((element) => {
             element.addEventListener("click", () => {
-            const sortFieldElement = element;
-            sortField = sortFieldElement.getAttribute("data-sort-field");
-            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-            fetchData();
-            h_sorting.forEach(el => {
-                el.classList.remove("active");
-                el.classList.remove("asc");
-                el.classList.remove("desc");
-            });
-            element.classList.add("active");
-            element.classList.add(sortOrder);
+                const sortFieldElement = element;
+                sortField = sortFieldElement.getAttribute("data-sort-field");
+                sortOrder = sortOrder === "asc" ? "desc" : "asc";
+                fetchData();
+                h_sorting.forEach((el) => {
+                    el.classList.remove("active");
+                    el.classList.remove("asc");
+                    el.classList.remove("desc");
+                });
+                element.classList.add("active");
+                element.classList.add(sortOrder);
             });
         });
         // Function to fetch data from the server
@@ -159,28 +212,28 @@
             }
 
             if (searchQuery) {
-            apiUrl += `&query=${searchQuery.value}`;
+                apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-            apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+                apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
-            ApiRequest(apiUrl, 'GET')
-            .then(response => {
-                const data = (response.data);
-                if(data.length === 0) {
-                dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
-                }else{
-                response = (response.meta.pagination);
-                totalRows = response.total;
-                updatePagination();
-                displayData(data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+            ApiRequest(apiUrl, "GET")
+                .then((response) => {
+                    const data = response.data;
+                    if (data.length === 0) {
+                        dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
+                    } else {
+                        response = response.meta.pagination;
+                        totalRows = response.total;
+                        updatePagination();
+                        displayData(data);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
         }
 
         // Function to update the pagination UI
@@ -190,12 +243,16 @@
             let pageList = "";
             if (totalPages <= 5) {
                 for (let i = 1; i <= totalPages; i++) {
-                    pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                    pageList += `<li><a href="#" class="${
+                        i === currentPage ? "active" : ""
+                    }" data-page="${i}">${i}</a></li>`;
                 }
             } else {
                 if (currentPage <= 3) {
                     for (let i = 1; i <= 4; i++) {
-                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        pageList += `<li><a href="#" class="${
+                            i === currentPage ? "active" : ""
+                        }" data-page="${i}">${i}</a></li>`;
                     }
                     pageList += `<li>...</li>`;
                     pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
@@ -203,13 +260,17 @@
                     pageList += `<li><a href="#" data-page="1">1</a></li>`;
                     pageList += `<li>...</li>`;
                     for (let i = totalPages - 3; i <= totalPages; i++) {
-                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        pageList += `<li><a href="#" class="${
+                            i === currentPage ? "active" : ""
+                        }" data-page="${i}">${i}</a></li>`;
                     }
                 } else {
                     pageList += `<li><a href="#" data-page="1">1</a></li>`;
                     pageList += `<li>...</li>`;
                     for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-                        pageList += `<li><a href="#" class="${i === currentPage ? "active" : ""}" data-page="${i}">${i}</a></li>`;
+                        pageList += `<li><a href="#" class="${
+                            i === currentPage ? "active" : ""
+                        }" data-page="${i}">${i}</a></li>`;
                     }
                     pageList += `<li>...</li>`;
                     pageList += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
@@ -267,7 +328,6 @@
 
         // Initial fetch of data
         fetchData();
-
     });
 
     /**
@@ -277,7 +337,7 @@
      * @returns {string} - The HTML markup for the table row.
      */
     function generateTableRow(item) {
-        let stock = allowEditable(item)
+        let stock = allowEditable(item);
         return `
         <tr>
             <td>
@@ -287,7 +347,9 @@
             </td>
             <td>
                 <div class="productTitle_t" title="${item.title}">
-                    <a href="${item.link}" class="a_link" target="_blank">${item.title}</a>
+                    <a href="${item.link}" class="a_link" target="_blank">${
+            item.title
+        }</a>
                 </div>
             </td>
             <td>
@@ -300,47 +362,73 @@
                 ${item.supplier_id}
             </td>
              <td>
-                <input type="text" class="stock_t" value="${item.stock}" onfocusout="handleInput('${item.id}', '${item.product_id}', 1, this)">
+                <input type="text" class="stock_t" value="${
+                    item.stock
+                }" onfocusout="handleInput('${item.id}', '${
+            item.product_id
+        }', 1, this)">
             </td>
             <td>
-                <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${item.selling_price}</div>
+                <div class="sell_t"><i class="fas fa-rupee-sign"></i> ${
+                    item.selling_price
+                }</div>
             </td>
             <td>
-                <div class="productTitle_t" title="${item.product_category}">${item.product_category}</div>
+                <div class="productTitle_t" title="${item.product_category}">${
+            item.product_category
+        }</div>
             </td>
             <td>
                 <div>${item.availability_status}</div>
             </td>
              <td>
-                <select class="changeStatus_t form-select" onchange="handleInput('${item.id}', '${item.product_id}', 2, this)" ${item.allow_editable == true ? 'disabled' : '' }>
+                <select class="changeStatus_t form-select" onchange="handleInput('${
+                    item.id
+                }', '${item.product_id}', 2, this)" ${
+            item.allow_editable == true ? "disabled" : ""
+        }>
                     ${stock}
                 </select>
             </td>
             <td>
-                <a class="nbtn btn-link btn-sm" href="${item.editInventory}" target="_blank">Edit</a>
+                <a class="nbtn btn-link btn-sm" href="${
+                    item.editInventory
+                }" target="_blank">Edit</a>
             </td>
         </tr>
     `;
     }
 
-    function allowEditable(item){
-       if(item.allow_editable){
-        
-           return `
-                    <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-                    <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-                    <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
-                    <option value="4" ${item.status === "Draft" ? "selected" : ""}>Draft</option>
+    function allowEditable(item) {
+        if (item.allow_editable) {
+            return `
+                    <option value="1" ${
+                        item.status === "Active" ? "selected" : ""
+                    }>Active</option>
+                    <option value="2" ${
+                        item.status === "Inactive" ? "selected" : ""
+                    }>Inactive</option>
+                    <option value="3" ${
+                        item.status === "Out of Stock" ? "selected" : ""
+                    }>Out of Stock</option>
+                    <option value="4" ${
+                        item.status === "Draft" ? "selected" : ""
+                    }>Draft</option>
                 `;
-       }
-       else{
-        // console.log(item.allow_editable);
-        return `
-            <option value="1" ${item.status === "Active" ? "selected" : ""}>Active</option>
-            <option value="2" ${item.status === "Inactive" ? "selected" : ""}>Inactive</option>
-            <option value="3" ${item.status === "Out of Stock" ? "selected" : ""}>Out of Stock</option>
+        } else {
+            // console.log(item.allow_editable);
+            return `
+            <option value="1" ${
+                item.status === "Active" ? "selected" : ""
+            }>Active</option>
+            <option value="2" ${
+                item.status === "Inactive" ? "selected" : ""
+            }>Inactive</option>
+            <option value="3" ${
+                item.status === "Out of Stock" ? "selected" : ""
+            }>Out of Stock</option>
         `;
-       }
+        }
     }
 
     function handleInput(itemId, productId, type, element) {
@@ -357,39 +445,37 @@
      */
     function updateStock(itemId, productId, newStock) {
         // Make an API request to update the stock of the product
-        ApiRequest(`product/updateStock/${itemId}`, 'PATCH', {
-                stock: newStock,
-                product_id: productId
-            })
-            .then(response => {
-
+        ApiRequest(`product/updateStock/${itemId}`, "PATCH", {
+            stock: newStock,
+            product_id: productId,
+        })
+            .then((response) => {
                 Swal.fire({
-                title: "Good job!",
-                text: response.data.message,
-                icon: "success",
-                didOpen: () => {
-                  // Apply inline CSS to the title
-                  const title = Swal.getTitle();
-                  title.style.color = 'red';
-                  title.style.fontSize = '20px';
+                    title: "Good job!",
+                    text: response.data.message,
+                    icon: "success",
+                    didOpen: () => {
+                        // Apply inline CSS to the title
+                        const title = Swal.getTitle();
+                        title.style.color = "red";
+                        title.style.fontSize = "20px";
 
-                  // Apply inline CSS to the content
-                  const content = Swal.getHtmlContainer();
-                //   content.style.color = 'blue';
+                        // Apply inline CSS to the content
+                        const content = Swal.getHtmlContainer();
+                        //   content.style.color = 'blue';
 
-                  // Apply inline CSS to the confirm button
-                  const confirmButton = Swal.getConfirmButton();
-                  confirmButton.style.backgroundColor = '#feca40';
-                  confirmButton.style.color = 'white';
-                }
-            }).then(() => {
-                // Redirect to the inventory page
-                window.location.href = "{{ route('my.inventory') }}";
+                        // Apply inline CSS to the confirm button
+                        const confirmButton = Swal.getConfirmButton();
+                        confirmButton.style.backgroundColor = "#feca40";
+                        confirmButton.style.color = "white";
+                    },
+                }).then(() => {
+                    // Redirect to the inventory page
+                    window.location.href = "{{ route('my.inventory') }}";
+                });
             })
-               
-            })
-            .catch(error => {
-                console.error('Error updating stock:', error);
+            .catch((error) => {
+                console.error("Error updating stock:", error);
             });
     }
 
@@ -406,55 +492,54 @@
             denyButtonText: `Don't save`,
             didOpen: () => {
                 const title = Swal.getTitle();
-                title.style.fontSize = '25px';
+                title.style.fontSize = "25px";
                 // Apply inline CSS to the content
                 const content = Swal.getHtmlContainer();
                 // Apply inline CSS to the confirm button
                 const confirmButton = Swal.getConfirmButton();
-                confirmButton.style.backgroundColor = '#feca40';
-                confirmButton.style.color = 'white';
-            }
-            }).then((result) => {
+                confirmButton.style.backgroundColor = "#feca40";
+                confirmButton.style.color = "white";
+            },
+        }).then((result) => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
-                  // Make an API request to update the status of the product
-                ApiRequest(`product/updateStatus/${itemId}`, 'PATCH', {
-                status: newStatus,
-                product_id: productId
-            })
-            .then(response => {
-                Swal.fire({
-                    title: "Good job!",
-                    text: response.data.message,
-                    icon: "success",
-                    didOpen: () => {
-                    // Apply inline CSS to the title
-                    const title = Swal.getTitle();
-                    title.style.color = 'red';
-                    title.style.fontSize = '20px';
-
-                    // Apply inline CSS to the content
-                    const content = Swal.getHtmlContainer();
-
-                    // Apply inline CSS to the confirm button
-                    const confirmButton = Swal.getConfirmButton();
-                    confirmButton.style.backgroundColor = '#feca40';
-                    confirmButton.style.color = 'white';
-                    }
-                }).then(() => {
-                    // Redirect to the inventory page
-                    window.location.href = "{{ route('my.inventory') }}";
+                // Make an API request to update the status of the product
+                ApiRequest(`product/updateStatus/${itemId}`, "PATCH", {
+                    status: newStatus,
+                    product_id: productId,
                 })
-            })
-            .catch(error => {
-                console.error('Error updating status:', error);
-            });
-                
+                    .then((response) => {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                            didOpen: () => {
+                                // Apply inline CSS to the title
+                                const title = Swal.getTitle();
+                                title.style.color = "red";
+                                title.style.fontSize = "20px";
+
+                                // Apply inline CSS to the content
+                                const content = Swal.getHtmlContainer();
+
+                                // Apply inline CSS to the confirm button
+                                const confirmButton = Swal.getConfirmButton();
+                                confirmButton.style.backgroundColor = "#feca40";
+                                confirmButton.style.color = "white";
+                            },
+                        }).then(() => {
+                            // Redirect to the inventory page
+                            window.location.href =
+                                "{{ route('my.inventory') }}";
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error updating status:", error);
+                    });
             } else if (result.isDenied) {
                 Swal.fire("The status is not updated.", "", "info");
             }
-            });
-      
-        }
+        });
+    }
 </script>
 @endsection

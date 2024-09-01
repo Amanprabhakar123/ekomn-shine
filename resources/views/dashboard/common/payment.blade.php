@@ -57,7 +57,7 @@
               </ul>
             </div>
           </li>
-          <li>
+          <li class="search-width">
             @if (auth()->user()->hasRole(ROLE_ADMIN) || auth()->user()->hasRole(ROLE_SUB_ADMIN))
             <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name" class="form-control  searchicon" placeholder="Search" />
             @else

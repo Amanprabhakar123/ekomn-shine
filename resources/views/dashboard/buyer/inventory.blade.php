@@ -11,22 +11,25 @@
         </div>
           <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
         </div>
-        <div class="tableTop mt10">
-          <input type="text" id="searchQuery" title="Search with Product Title, SKU, Product ID" class="form-control w_350_f searchicon" placeholder="Search with Product Title, SKU, Product ID">
-          <div class="d-flex gap-2">
-            <div class="ek_group m-0">
-              <label class="eklabel eklabel_60 m-0">Status:</label>
-                <div class="ek_f_input w_150_f">
-                    <select class="form-select" id="sort_by_status">
-                        <option value="0">Select</option>
-                        <option value="1">Active</option>
-                        <option value="2">Inactive</option>
-                        <option value="3">Out of Stock</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn btn-sm btnekomn_dark" id="download_product"><i class="fas fa-download me-2"></i>Download</button>
-          </div>
+        <div class="filterStrip filterStripwithbtn">
+            <ul class="ekfilterList">
+                <li class="search-width">
+                    <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Product Title, SKU, Product ID">
+                </li>
+                <li>
+                    <div class="dropdown" id="sort_by_status">
+                        <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Product Status</span><strong class="dropdownValue">All</strong></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="1">Active</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="2">Inactive</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="3">Out of Stock</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <button class="btn btnekomn_dark stripbtn" id="download_product"><i class="fas fa-download me-2"></i>Download</button>
+
         </div>
         <div class="table-responsive tres_border"> 
           <table class="normalTable tableSorting whitespace">
@@ -171,10 +174,31 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
+        // const sortByStatus = document.getElementById("sort_by_status");
+        // sortByStatus.addEventListener("change", () => {
+        //     fetchData();
+        // });
+
+        let selectedValues = {
+					sort_by_order_status: "0",
+					sortByStatus: "0"
+				};
+        function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                        item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const value = this.getAttribute('data-value');
+                                const text = this.textContent;
+                                dropdownValue.textContent = text;
+                                selectedValues[key] = value;
+                                fetchData();
+                        });
+                });
+        }
+        const sort_by_status = document.getElementById('sort_by_status');
+        handleDropdownSelection(sort_by_status, 'sortByStatus');
 
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
@@ -207,9 +231,9 @@
             if (searchQuery) {
                 apiUrl += `&query=${searchQuery.value}`;
             }
-
-            if (sortByStatus) {
-                apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            
+            if (selectedValues.sortByStatus) {
+                apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
             ApiRequest(apiUrl, 'GET')

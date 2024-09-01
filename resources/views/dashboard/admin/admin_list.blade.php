@@ -8,9 +8,12 @@
                 <h3 class="cardtitle">Admin List</h3>
                 <a href="{{route('admin.add')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Add New Admin</a>
             </div>
-            <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-             
+            <div class="filterStrip filterStripwithbtn">
+            	<ul class="ekfilterList">
+                    <li class="search-width">
+                        <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with name email ">
+                    </li>
+                </ul>
             </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
