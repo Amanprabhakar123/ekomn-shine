@@ -946,7 +946,7 @@ class WebController extends Controller
             $unSubscribe->subscribe = User::SUBSCRIBE_NO;
             $unSubscribe->save();
           
-            return redirect()->route('unsubscribe-view');
+            return redirect()->route('unsubscribe.view');
             
         } catch (\Exception $e) {
             // Handle and log exception details
