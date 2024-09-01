@@ -363,7 +363,7 @@
 
    // Function to check if the user has scrolled to the bottom of the page
     function isScrolledToBottom() {
-        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+        return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight || document.body.scrollHeight);
     }
 
     // Event listener for scroll events
