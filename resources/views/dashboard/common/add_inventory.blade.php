@@ -41,8 +41,9 @@
                 <label class="eklabel req"><span>Product Name:<span class="req_star">*</span></span></label>
                 <div class="ek_f_input">
                   <div class="tooltips">
+                  <span class="tooltiptext">Add a product Name/Title containing all relevant keywords and key features of the product</span>
                   <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required/>
-                <span class="tooltiptext">Add a product Name/Title containing all relevant keywords and key features of the product</span>
+                
                 </div>
                   <div id="product_nameErr" class="invalid-feedback"></div>
                 </div>

@@ -2,10 +2,11 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Notifications\NewOrderSupplierNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NewOrderBuyerNotification;
+use App\Notifications\NewOrderSupplierNotification;
 
 class NotifySupplierNewOrderListener implements ShouldQueue
 {
@@ -24,7 +25,8 @@ class NotifySupplierNewOrderListener implements ShouldQueue
     {
         $supplier = $event->supplier;
         $details = $event->details;
-
+        $link = User::unsubscribeTokens($supplier);
+        $details['link'] = $link;
         Notification::send($supplier, new NewOrderSupplierNotification($details));
 
     }

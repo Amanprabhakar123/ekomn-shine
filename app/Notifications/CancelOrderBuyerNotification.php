@@ -39,10 +39,10 @@ class CancelOrderBuyerNotification extends Notification
     {
         $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_number = $this->details['order_id'];
-
+        $link = $this->details['link'];
         return (new MailMessage)
         ->subject('eKomn – Cancelled Order '.$order_number.'.')
-        ->view('email.orderCancellation', compact('name', 'order_number'));
+        ->view('email.orderCancellation', compact('name', 'order_number', 'link'));
     }
 
     /**

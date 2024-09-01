@@ -40,15 +40,16 @@ class ReturnDeclinedApporvedNotification extends Notification
         $name =  $this->details['name'];
         $return_number = $this->details['return_number'];
         $status = $this->details['status'];
+        $link = $this->details['link'];
         if($status == ReturnOrder::STATUS_APPROVED){
 
         return (new MailMessage)
             ->subject('eKomn – Return '.$return_number.' is approved.')
-            ->view('email.returnApproved', compact('name', 'return_number'));
+            ->view('email.returnApproved', compact('name', 'return_number', 'link'));
         }else if($status == ReturnOrder::STATUS_REJECTED){
             return (new MailMessage)
             ->subject('eKomn – Return '.$return_number.' is decline.')
-            ->view('email.returnDeclined', compact('name', 'return_number'));
+            ->view('email.returnDeclined', compact('name', 'return_number', 'link'));
         }
     }
 

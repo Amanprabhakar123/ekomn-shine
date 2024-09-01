@@ -39,10 +39,11 @@ class SupplierPaymentDisburseNotification extends Notification
         $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_type = $this->details['order_type'];
         $order_number = $this->details['order_id'];
+        $link = $this->details['link'];
 
         return (new MailMessage)
             ->subject('eKomn – Order '.$order_number.' Payment Received.')
-            ->view('email.supplierPaymentDisbursment', compact('name', 'order_type', 'order_number'));
+            ->view('email.supplierPaymentDisbursment', compact('name', 'order_type', 'order_number', 'link'));
                     
     }
 

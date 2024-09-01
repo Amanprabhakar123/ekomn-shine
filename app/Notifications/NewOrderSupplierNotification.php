@@ -37,10 +37,11 @@ class NewOrderSupplierNotification extends Notification
     {
         $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_type = $this->details['order_type'];
+        $link = $this->details['link'];
 
         return (new MailMessage)
             ->subject('eKomn – New '.$order_type.' Order Received. Process Today!!')
-            ->view('email.newOrderSupplierCreate', compact('name', 'order_type'));
+            ->view('email.newOrderSupplierCreate', compact('name', 'order_type', 'link'));
     }
 
     /**

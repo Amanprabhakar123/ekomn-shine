@@ -169,6 +169,11 @@ class ResetController extends Controller
     {
         return view('auth.verify-link');
     }
+
+    public function unsubscribeView()
+    {
+        return view('auth.unsubscribe');
+    }
     
 
     /**
