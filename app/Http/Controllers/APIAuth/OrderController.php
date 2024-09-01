@@ -15,6 +15,7 @@ use App\Models\UserActivity;
 use Illuminate\Http\Request;
 use App\Events\ExceptionEvent;
 use App\Services\OrderService;
+use App\Models\SupplierPayment;
 use App\Models\ProductVariation;
 use App\Models\OrderItemAndCharges;
 use Illuminate\Support\Facades\Log;
@@ -1142,11 +1143,11 @@ class OrderController extends Controller
 
                     return response()->json([
                         'data' => [
-                            'statusCode' => __('statusCode.statusCode400'),
+                            'statusCode' => __('statusCode.statusCode404'),
                             'status' => __('statusCode.status404'),
                             'message' => __('auth.orderNotFound'),
                         ],
-                    ], __('statusCode.statusCode200'));
+                    ], __('statusCode.statusCode404'));
                 }
 
                 // Collect and write order data to the CSV file
@@ -1304,6 +1305,11 @@ class OrderController extends Controller
             $order->status = $request->status;
             $order->save();
 
+            if($request->status == Order::STATUS_RTO){
+                 // Supplier Payment Status
+                SupplierPayment::where('order_id', $order->id)
+                ->update(['payment_status' => SupplierPayment::PAYMENT_STATUS_HOLD]);
+            }
             if($request->status == Order::STATUS_DELIVERED){
                 $shipment = Shipment::where('order_id', $order_id)->first();
                 $shipment->delivery_date = now();

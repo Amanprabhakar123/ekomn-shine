@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use App\Events\NewOrderCreatedEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
@@ -24,6 +25,8 @@ class NotifyBuyerNewOrderListener implements ShouldQueue
     {
         $buyer = $event->buyer;
         $details = $event->details;
+        $link = User::unsubscribeTokens($buyer);
+        $details['link'] = $link;
         Notification::send($buyer, new NewOrderBuyerNotification($details));
     }
 }

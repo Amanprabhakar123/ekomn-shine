@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use App\Events\OrderCanceledEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
@@ -24,6 +25,8 @@ class NotifyBuyerOrderCanceledListener implements ShouldQueue
     {
         $user = $event->buyer;
         $details = $event->details;
+        $link = User::unsubscribeTokens($user);
+        $details['link'] = $link;
         Notification::send($user, new CancelOrderBuyerNotification($details));
 
     }

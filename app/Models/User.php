@@ -3,13 +3,16 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\OrderRefund;
+use Illuminate\Support\Str;
 use App\Models\OrderInvoice;
 use App\Models\CompanyDetail;
 use App\Models\BuyerInventory;
 use App\Models\SupplierPayment;
 use App\Models\ProductInventory;
+use Faker\Provider\ar_EG\Person;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\OrderCancellations;
 use App\Notifications\VerifyEmail;
@@ -25,7 +28,6 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
-use Faker\Provider\ar_EG\Person;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
@@ -95,8 +97,14 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         self::PERMISSION_USER_LIST,
         self::PERMISSION_ADMIN_LIST,
     ];
+
+    // define status user active and inactive
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 2;
+
+    // define subscribe and unsubscribe 
+    const SUBSCRIBE_YES = 1;
+    const SUBSCRIBE_NO = 0;
 
     /**
      * The attributes that are mass assignable.
@@ -399,6 +407,25 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function orderSupplierPayments()
     {
         return $this->hasMany(SupplierPayment::class, 'supplier_id', 'id');
+    }
+
+    /**
+     * Define to token generated for unsubscribe.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public static function unsubscribeTokens($user)
+    {
+         $token = Str::random(60);
+    
+         UnSubscribeToken::create([
+                'user_id' => $user->id,
+                'token' => hash('sha256', $token),
+                'expires_at' => Carbon::now()->addMinutes(60), // Token valid for 60 minutes
+            ]);
+    
+        return  route('unsubscribe', ['token' => $token]);
+    
     }
     
 }

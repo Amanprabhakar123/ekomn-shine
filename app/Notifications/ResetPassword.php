@@ -65,8 +65,9 @@ class ResetPassword extends Notification
 
         $action  = route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset(), 'role' => $role]);
         $expire = config('auth.passwords.' . config('auth.defaults.passwords') . '.expire');
+        $link = User::unsubscribeTokens($notifiable);
         return (new MailMessage)->subject(Lang::get('Reset your ekomn.com password'))
-            ->view('email.reset', compact('action', 'expire'));
+            ->view('email.reset', compact('action', 'expire', 'link'));
     }
 
     /**

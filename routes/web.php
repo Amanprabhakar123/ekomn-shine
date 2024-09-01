@@ -54,6 +54,7 @@ Route::get('supplier/register', [AuthViewController::class, 'loginFormView'])->n
 Route::get('supplier/forget', [AuthViewController::class, 'loginFormView'])->name('supplier.forget');
 Route::get('buyer/forget', [AuthViewController::class, 'loginFormView'])->name('buyer.forget');
 Route::get('verify/show/email', [ResetController::class, 'showVerifyEmailForm'])->name('verification.email.verify');
+Route::get('unsubscribe-view', [ResetController::class, 'unsubscribeView'])->name('unsubscribe.view');
 Route::get('reset', [AuthViewController::class, 'loginFormView'])->name('password.reset');
 Route::get('verify/email', [ResetController::class, 'showVerifyForm'])->name('verification.verify');
 Route::get('thankyou', [AuthViewController::class, 'loginFormView'])->name('thankyou');
@@ -72,6 +73,7 @@ Route::get('shipping-policy', [WebController::class, 'shippingPolicy'])->name('s
 Route::get('become-a-supplier', [WebController::class, 'becomeSupplier'])->name('become.supplier');
 Route::get('subscription', [WebController::class, 'subscription'])->name('subscription');
 Route::get('integration', [WebController::class, 'integration'])->name('integration');
+Route::get('unsubscribe/{token}', [WebController::class, 'unsubscribe'])->name('unsubscribe');
 
 
 // Define routes for Google authentication
@@ -187,7 +189,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-shipment-status', [ReturnOrderController::class, 'updateShipmentStatus'])->name('update.shipment.status');
         Route::get('get-user-list', [DashboardController::class, 'getUserList'])->name('get.user.list');
         Route::post('update-user-status', [DashboardController::class, 'updateUserStatus'])->name('update.user.status');
-        Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
+        
         Route::post('update-pan-gst-verified', [DashboardController::class, 'updatePanGstVerified'])->name('update.pan.gst.verified');
         Route::post('sub-admin-store', [AdminController::class, 'subAdminStore'])->name('sub.admin.store');
         Route::get('admin-list-get', [AdminController::class, 'adminList'])->name('admin.list.get');
@@ -236,6 +238,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
     Route::post('order/payment-success/callback', [OrderController::class, 'orderPaymentSuccess'])->name('order.payment.success');
+    Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
 });
 
 // Define routes for authenticated API routes

@@ -39,10 +39,11 @@ class ReturnRaisedNotification extends Notification
     {
         $name =  $this->details['name'];
         $return_number = $this->details['return_number'];
+        $link = $this->details['link'];
 
         return (new MailMessage)
         ->subject('eKomn – New Return '.$return_number.' is created.')
-        ->view('email.returnRaised', compact('name', 'return_number'));
+        ->view('email.returnRaised', compact('name', 'return_number', 'link'));
     }
 
     /**

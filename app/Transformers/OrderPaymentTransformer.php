@@ -90,11 +90,16 @@ class OrderPaymentTransformer extends TransformerAbstract
                 if(!is_null($this->statement_date)) {
                     $this->total_statement_amount += $payment->disburse_amount;
                 }else{
-                    // check next thurday date
-                    $next_thursday = Carbon::parse('next thursday')->format('Y-m-d');
-                    if($payment->statement_date == $next_thursday){
-                        $this->total_statement_amount += $payment->disburse_amount;
-                    }else{
+                    if(!is_null($payment->statement_date)){
+                        // check next thurday date
+                        $next_thursday = Carbon::parse('next thursday')->format('Y-m-d');
+                        if($payment->statement_date->format('Y-m-d') == $next_thursday){
+                            $this->total_statement_amount += $payment->disburse_amount;
+                        } else{
+                            $this->total_balance_due += 0;
+                        }
+                    }
+                    else{
                         $this->total_balance_due += 0;
                     }
                 }
