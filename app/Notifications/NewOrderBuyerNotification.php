@@ -40,6 +40,7 @@ class NewOrderBuyerNotification extends Notification
         $name = $notifiable->companyDetails->first_name . ' ' . $notifiable->companyDetails->last_name;
         $order_number = $this->details['order_id'];
         $order_id = $this->details['id'];
+        $link = $this->details['link'];
 
         $service = new OrderService;
         $fileName = $service->orderInvoice($order_id); 
@@ -50,7 +51,7 @@ class NewOrderBuyerNotification extends Notification
 
         $mailMessage = (new MailMessage)
             ->subject('eKomn – New Order '.$order_number.' is created.')
-            ->view('email.newOrderBuyerCreate', compact('name', 'order_number'))
+            ->view('email.newOrderBuyerCreate', compact('name', 'order_number', 'link'))
             ->attachData($file, $order_number.'.pdf', [
             'mime' => 'application/pdf',
             ]);

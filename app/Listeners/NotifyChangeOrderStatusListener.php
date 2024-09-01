@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use App\Events\OrderStatusChangedEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Notification;
@@ -25,7 +26,8 @@ class NotifyChangeOrderStatusListener implements ShouldQueue
         $user = $event->buyer;
         $details = $event->details;
         // Send the notification
-
+        $link = User::unsubscribeTokens($user);
+        $details['link'] = $link;
         Notification::send($user, new ChangeOrderStatusNotification($details));
     }
 }

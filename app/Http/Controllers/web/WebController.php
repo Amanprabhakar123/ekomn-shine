@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\ContactUs;
 use Razorpay\Api\Product;
 use App\Models\TopProduct;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ProductVariationMedia;
+use App\Models\UnSubscribeToken;
 use App\Services\UserActivityService;
 use App\Services\RecommendationService;
 use League\Fractal\Resource\Collection;
@@ -904,6 +906,48 @@ class WebController extends Controller
                     'message' => __('auth.contactUsSuccess'),
                 ],
             ], __('statusCode.statusCode200'));
+        } catch (\Exception $e) {
+            // Handle and log exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode500'),
+                    'status' => __('statusCode.status500'),
+                    'message' => __('auth.invalidInputData'),
+                ],
+            ], __('statusCode.statusCode500'));
+        }
+    }
+
+    /**
+     * unsubscribe post request user model
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function unsubscribe($token)
+    {
+        try {
+            $hashedToken = hash('sha256', $token);
+            $unsubscribeToken = UnSubscribeToken::where('token', $hashedToken)->first();
+    
+            if (!$unsubscribeToken || $unsubscribeToken->expires_at->isPast()) {
+                return response()->json(['message' => 'This token is invalid or has expired.'], 400);
+            }
+    
+            $user = $unsubscribeToken->user_id;
+            $unSubscribe = User::find($user);
+            $unSubscribe->subscribe = User::SUBSCRIBE_NO;
+            $unSubscribe->save();
+          
+            return redirect()->route('unsubscribe-view');
+            
         } catch (\Exception $e) {
             // Handle and log exception details
             $exceptionDetails = [
