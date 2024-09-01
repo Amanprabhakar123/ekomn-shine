@@ -4143,6 +4143,7 @@ a.underline{
   color: inherit;
 }
 .webhide{display: none;}
+
 @media (max-width: 1024px) {
   .barIcon,.topSection_w_cat,.logoOnStrip,.webhide{display: block;}
   .productFilters,.brandLogo,.notificationDropdown,
@@ -4165,6 +4166,7 @@ a.underline{
   .secondaryContainer{padding: 20px 15px!important;}
   .staticContent {padding-bottom: 20px;}
   .mobile-padding{padding-top: 0px !important}
+  .login-container{max-width: 100%;}
 }
 @media(max-width:991px){
   .services {column-gap: 20px;}
