@@ -1035,9 +1035,7 @@ body {
   margin: 0px;
 }
 .brandLogo_d img{
-  max-height: 40px;
-  position: relative;
-  top: -2px;
+  max-height: 28px;
 }
 .sidebar-header{
   display: block;
@@ -1050,9 +1048,8 @@ body {
   position: relative;
 }
 .sidebar-header img{
-  filter: invert(100%);
+  max-height: 30px;
   position: relative;
-  top: -3px;
 }
 .sidebar-menu {
   height: calc(100% - 58px);
@@ -1326,7 +1323,7 @@ opacity: 0.5;
   .ek_dashboard{padding-left: 15px;}
   .ekheader{padding-left: 60px;}
   .ek_nav.active{left: 0px;}
-  .sidebar-header,.brandLogo_d{display: none;}
+  .sidebar-header{display: none;}
   .ek_group{display: block;}
   .eklabel{height: auto;line-height: 14px;width: 100%;}
   .categoryList > li {width: 50%;}
@@ -1337,6 +1334,8 @@ opacity: 0.5;
   .categoryList > li {width: 100%;}
   .categoryList.mobile50 > li {width: 50%;}
   .uploadlabel{left: 0px;}
+  .stockdiv span{display: block;}
+  .stockdiv {flex-direction: column; align-items: start !important;}
 }
 /* end dashboard */
 
@@ -2121,9 +2120,8 @@ textarea.resizer_none{resize:none!important;}
 }
 .brandLogo{max-width: 170px;margin-right: 40px;}
 .brandLogo img {
-  filter: invert(100%);
   position: relative;
-  top: -3px;
+  max-height: 30px;
 }
 .headersearch{
   flex: 1;
@@ -2272,6 +2270,12 @@ textarea.resizer_none{resize:none!important;}
 .top_header .b_h_list{
   justify-content: end;
 }
+.logoOnStrip{display: none;}
+.logoOnStrip img{
+  max-height: 22px;
+  position: relative;
+  top: -1px;
+}
 /* eKomn web header end */
 
 /* --------footer---------- */
@@ -2283,8 +2287,10 @@ textarea.resizer_none{resize:none!important;}
 }
 .eKomonsummary{color: var(--footer-text-color);}
 .eKomonsummary .footerlogo{
-  filter: invert(100%);
-  margin: 10px 0px;
+  max-height: 32px;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
 }
 .footer-heading{
   color: var(--text-color-white)!important;
@@ -2804,7 +2810,7 @@ img._pdimg {
 .productPrice{
   font-size: 14px;
   margin: 0px;
-  margin-top: 5px;
+  margin-top: 2px;
 }
 .section_gap{
   margin-bottom: 20px;
@@ -4126,10 +4132,16 @@ a.underline{
   text-decoration: none !important;
   color: inherit;
 }
+.webhide{display: none;}
 @media (max-width: 1024px) {
-  .barIcon,.topSection_w_cat{display: block;}
+  .barIcon,.topSection_w_cat,.logoOnStrip,.webhide{display: block;}
+  /* .productFilters,.brandLogo,.notificationDropdown,
+  .userDropdown,.primary_category,.introduction_sec,.secondaryNav,.userAction{display: none;} */
   .productFilters,.brandLogo,.notificationDropdown,
-  .userDropdown,.primary_category,.introduction_sec,.secondaryNav{display: none;}
+  .primary_category,.introduction_sec,.secondaryNav,.user,.hideMob{display: none;}
+  .productSearch .serchinput{height: 36px;padding-right: 40px;}
+  .productSearch button,.productSearch button:hover,.productSearch button:active,.productSearch button:focus{height: 36px;width: 38px;font-size: 16px;}
+  .header_search_card{top: 37px;}
   .main_header{
     padding-left: 75px;
     position: fixed;
@@ -4137,6 +4149,7 @@ a.underline{
     top: 0px;
     left: 0px;
     z-index: 1000;
+    padding-right: 10px;
   }
   .page-wrapper{padding-top: 60px;}
   .top_header {border-bottom: none;border-top: 1px solid #282828;}
@@ -4152,7 +4165,7 @@ a.underline{
   .barIcon{left: 5px;}
   .main_header{padding-left: 50px;}
   .userAction{margin-left: 10px;}
-  .userDropdown{margin-left: 10px;}
+  .userDropdown{margin-left: 3px;}
   .b_h_list,.ekom_tab{display: block;white-space: nowrap;overflow: hidden;overflow-x: auto;}
   .b_h_list > li,.ekom_tab > li{display: inline-block;white-space: nowrap;}
   .det_btnbox{max-width: 100%;}

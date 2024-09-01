@@ -516,7 +516,7 @@
 
                                 if (key === 'just_for_you') {
 
-                                    just_for_you += `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
+                                    just_for_you += `<div class="col-6 col-md-4 col-lg-2 mb16">
                                                     <div class="ekom_card">
                                                         <a href="${element.product_slug}" class="product_card text_u">
                                                             <div class="product_image_wraper">
@@ -587,7 +587,7 @@ $('#viewMore').click( function() {
                 var viewMore = '';
                 // Iterate through each key-value pair in the object
                 $.each(list, function(key, element) {
-                        viewMore += `<div class="col-sm-6 col-md-4 col-lg-2 mb16">
+                        viewMore += `<div class="col-6 col-md-4 col-lg-2 mb16">
                                                     <div class="ekom_card">
                                                         <a href="${element.product_slug}" class="product_card text_u">
                                                             <div class="product_image_wraper">

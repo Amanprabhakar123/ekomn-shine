@@ -298,20 +298,28 @@
                         var productId = product.id; // Assuming `product` is your JavaScript object with the `id` property
 
                         var text = '';
-                        if(product.is_login == true){
-                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                        if (product.is_login == true) {
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">Add to Inventory
                                                     List</button>
-                                                <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></button>
+                                                <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
                                             </div>`;
-                        }else {
-                            text = ` <div class="product_foot d-flex justify-content-between align-items-center">
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
+                                    <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">+ Inventory List</button>
+                                    <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
+                                </div>`;
+                            } else {
+                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <a href="${product.login_url}" class="btn btnround cardaddinventry" >Add to Inventory
                                                     List</a>
-                                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{asset('assets/images/icon/download.png')}}" alt="download-product"></a>
+                                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
                                             </div>`;
-                        }
-                        html += ` <div class="col-sm-6 col-md-4 col-lg-3 mb16">
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
+                                <a href="${product.login_url}" class="btn btnround cardaddinventry">+ Inventory List</a>
+                                <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
+                            </div>`;
+                            }
+                        html += ` <div class="col-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
                                             <a href="${product.link}" class="text_u" target="_blank">
@@ -355,7 +363,7 @@
 
    // Function to check if the user has scrolled to the bottom of the page
     function isScrolledToBottom() {
-        return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+        return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight || document.body.scrollHeight);
     }
 
     // Event listener for scroll events
@@ -491,6 +499,47 @@
                     body: JSON.stringify(product_id)
                 })
                 .then(response => {
+                    if (response.status === 403) {
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Forbidden',
+                                    text: data.data.message || 'You do not have permission to perform this action.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Forbidden');
+                            });
+                        }else if(response.status === 422){
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.data.message || 'Something went wrong. Please try again later.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Error');
+                            });
+                        }
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }

@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-sm-12 col-md-6">
         <div class="eKomonsummary">
-          <a href="#"><img src="{{asset('assets/images/Logo.svg')}}" class="footerlogo" alt="Logo" height="50" /></a>
+          <a href="{{ route('home') }}"><img src="{{ asset('assets/images/logo_b.png') }}" alt="Logo" class="footerlogo" /></a>
           <p class="m-0">
           eKomn is engaged into B2B ecommerce product sourcing and ecommerce related services to micro and small enterprises through our innovative Technology platform. With our technology led innovative features and services, we aim to empower all existing and new entrepreneurs in online ecommerce space to manage their ecommerce/online business efficiently and grow profitably. Our mission is to democratize product sourcing and online ecommerce services ushering in greater employment and wealth generation. 
           </p>

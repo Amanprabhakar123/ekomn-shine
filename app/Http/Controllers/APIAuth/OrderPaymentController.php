@@ -221,7 +221,7 @@ class OrderPaymentController extends Controller
             ->paginate($perPage); // Paginate results
          
              // Add pagination information to the resource
-            $resource = new Collection($orderList, new OrderPaymentTransformer);
+            $resource = new Collection($orderList, new OrderPaymentTransformer($statement_date));
 
             // Prepare the response
             $resource->setPaginator(new IlluminatePaginatorAdapter($orderList));
