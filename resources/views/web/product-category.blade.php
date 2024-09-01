@@ -497,7 +497,7 @@
                     });
             }
             // If action is 'Download', download the selected products as a ZIP file
-            else if (action == 'Download') { // Corrected the syntax here
+            else if (action == 'Download') {
                 fetch('{{ route('product.inventory.export') }}', {
                         method: 'POST',
                         headers: {
@@ -506,25 +506,67 @@
                         body: JSON.stringify(product_id)
                     })
                     .then(response => {
+                        if (response.status === 403) {
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Forbidden',
+                                    text: data.data.message || 'You do not have permission to perform this action.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Forbidden');
+                            });
+                        }else if(response.status === 422){
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.data.message || 'Something went wrong. Please try again later.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Error');
+                            });
+                        }
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
-                        return response.blob(); // Convert response to a Blob
+                        return response.blob();
                     })
                     .then(blob => {
-                        const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                        const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.style.display = 'none';
                         a.href = url;
-                        a.download = 'products_' + Date.now() + '.zip'; // Set download file name
+                        a.download = 'products_' + Date.now() + '.zip';
                         document.body.appendChild(a);
-                        a.click(); // Programmatically click the link to trigger download
-                        window.URL.revokeObjectURL(url); // Revoke the URL after download
+                        a.click();
+                        window.URL.revokeObjectURL(url);
                     })
                     .catch(error => {
-                        console.error('Error downloading products:', error); // Log any errors
+                        console.error('Error downloading products:', error);
                     });
             }
+
         }
 
         // banner api call

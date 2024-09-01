@@ -245,7 +245,7 @@
     function generateTableRow(item) {
         let stock = allowEditable(item);
         let isDisabled = "";
-        if(item.order_action_status == 6){
+        if(item.order_action_status == 6 || item.order_action_status == 8 || item.order_action_status == 9){
             isDisabled = "disabled";
         }
         return `
@@ -289,7 +289,8 @@
             <option value="4" ${item.order_action_status == "4" ? "selected" : ""}>Dispatched</option>
             <option value="5" ${item.order_action_status == "5" ? "selected" : ""}>In Transit</option>
             <option value="6" ${item.order_action_status == "6" ? "selected" : ""}>Delivered</option>
-            <option value="6" ${item.order_action_status == "8" ? "selected" : ""}>RTO</option>
+            <option value="8" ${item.order_action_status == "8" ? "selected" : ""}>RTO</option>
+            <option value="9" ${item.order_action_status == "9" ? "selected" : ""}>Retrun Filled</option>
         `;
        
     }
@@ -328,7 +329,28 @@
      * @param {number} productId - The ID of the product.
      */
     function updateStatus(itemId,  newStatus) {
-        Swal.fire({
+        if(newStatus == 9){
+            Swal.fire({
+                title: "Error ",
+                text: 'This action not allowed',
+                icon: "error",
+                didOpen: () => {
+                // Apply inline CSS to the title
+                const title = Swal.getTitle();
+                title.style.color = 'red';
+                title.style.fontSize = '20px';
+
+                // Apply inline CSS to the content
+                const content = Swal.getHtmlContainer();
+
+                // Apply inline CSS to the confirm button
+                const confirmButton = Swal.getConfirmButton();
+                confirmButton.style.backgroundColor = '#feca40';
+                confirmButton.style.color = 'white';
+                }
+            })
+        }else{
+            Swal.fire({
             title: "Do you want to update courier tracking status?",
             showCancelButton: true,
             confirmButtonText: "Save",
@@ -383,6 +405,8 @@
                 Swal.fire("The status is not updated.", "", "info");
             }
             });
+        }
+        
       
         }
 </script>
