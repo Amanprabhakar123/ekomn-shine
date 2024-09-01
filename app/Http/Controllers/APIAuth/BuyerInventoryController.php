@@ -312,10 +312,10 @@ class BuyerInventoryController extends Controller
         try {
             if (! auth()->check()) {
                 return response()->json(['data' => [
-                    'statusCode' => __('statusCode.statusCode422'),
+                    'statusCode' => __('statusCode.statusCode403'),
                     'status' => __('statusCode.status403'),
                     'message' => __('auth.unauthorizeLogin'),
-                ]], __('statusCode.statusCode201'));
+                ]], __('statusCode.statusCode403'));
             }
             
             // Validate the request data
@@ -329,7 +329,7 @@ class BuyerInventoryController extends Controller
                     'statusCode' => __('statusCode.statusCode422'),
                     'status' => __('statusCode.status422'),
                     'message' => $validator->errors()->first(),
-                ]], __('statusCode.statusCode200'));
+                ]], __('statusCode.statusCode422'));
             }
 
             // Decrypt the product variation IDs
@@ -395,10 +395,10 @@ class BuyerInventoryController extends Controller
                 if ( auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
                     if(auth()->user()->companyDetails->company_serial_id == $productVariation->company_id){
                         return response()->json(['data' => [
-                            'statusCode' => __('statusCode.statusCode422'),
+                            'statusCode' => __('statusCode.statusCode403'),
                             'status' => __('statusCode.status422'),
                             'message' => __('auth.otherSupplierProduct'),
-                        ]], __('statusCode.statusCode200'));
+                        ]], __('statusCode.statusCode403'));
                     }
                 }
                 // Log the download activity
