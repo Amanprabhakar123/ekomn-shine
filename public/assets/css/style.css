@@ -1541,7 +1541,7 @@ input.stock_t,.changeStatus_t.form-select{
   margin-bottom: 10px;
 }
 .cardhead{
-  padding-bottom: 15px;
+  padding-bottom: 10px;
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -4133,8 +4133,6 @@ a.underline{
 .webhide{display: none;}
 @media (max-width: 1024px) {
   .barIcon,.topSection_w_cat,.logoOnStrip,.webhide{display: block;}
-  /* .productFilters,.brandLogo,.notificationDropdown,
-  .userDropdown,.primary_category,.introduction_sec,.secondaryNav,.userAction{display: none;} */
   .productFilters,.brandLogo,.notificationDropdown,
   .primary_category,.introduction_sec,.secondaryNav,.user,.hideMob{display: none;}
   .productSearch .serchinput{height: 36px;padding-right: 40px;}

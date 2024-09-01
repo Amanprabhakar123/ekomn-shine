@@ -10,27 +10,29 @@
                         <a href="{{ route('create.order') }}" class="btn btnekomn btn-sm"><i
                                 class="fas fa-plus fs-12 me-1"></i>Create New Order</a>
                     </div>
-                    <div class="tableTop mt10">
-                        <input type="text" id="searchQuery" title="Search with eKomn Order, Store Order or Customer name"
-                            class="form-control w_300_f searchicon" placeholder="Search">
-                        <div class="ek_group m-0">
-                            <label class="eklabel eklabel_60 m-0">Status:</label>
-                            <div class="ek_f_input">
-                                <select id="sort_by_status" class="form-select w_150_f">
-                                    <option value="0" selected>Select</option>
-                                    <option value="2">Pending</option>
-                                    <option value="3">In Progress</option>
-                                    <option value="4">Dispatched</option>
-                                    <option value="6">Delivered</option>
-                                    <option value="7">Cancelled</option>
-                                    <option value="8">RTO</option>
-                                    <option value="9">Return Filled</option>
-                                </select>
-                            </div>
-
-                        </div>
-
+                    <div class="filterStrip">
+                      <ul class="ekfilterList">
+                        <li>
+                        <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
+                        </li>
+                        <li>
+                          <div class="dropdown" id="sort_by_status">
+                            <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong></button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="2">Pending</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="3">In Progress</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="7">Cancelled</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="8">RTO</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="9">Return Filled</a></li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
+
                     <div class="table-responsive tres_border">
                         <table class="normalTable tableSorting whitespace">
                             <thead>
@@ -114,30 +116,28 @@
                         <h3 class="cardtitle">Supplier Orders</h3>
                         <!-- <a href="create-order.html" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
                     </div>
-                    <div class="tableTop mt10">
-                        <input type="text" id="searchQuery"
-                            title="Search with eKomn Order, Store Order or Customer name"
-                            class="form-control w_300_f searchicon" placeholder="Search">
-                        <div class="d-flex gap-2">
-                            <div class="ek_group m-0">
-                                <label class="eklabel eklabel_60 m-0">Status:</label>
-                                <div class="ek_f_input">
-                                    <select id="sort_by_status" class="form-select w_150_f">
-                                        <option value="0" selected>Select</option>
-                                        <option value="2">Pending</option>
-                                        <option value="3">In Progress</option>
-                                        <option value="4">Dispatched</option>
-                                        <option value="6">Delivered</option>
-                                        <option value="7">Cancelled</option>
-                                        <option value="8">RTO</option>
-                                        <option value="9">Return Filled</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv()"><i
-                                    class="fas fa-file-csv me-2"></i>Export
-                                CSV</button>
-                        </div>
+                    <div class="filterStrip filterStripwithbtn">
+                      <ul class="ekfilterList">
+                        <li>
+                        <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
+                        </li>
+                        <li>
+                          <div class="dropdown" id="sort_by_status">
+                            <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong></button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="2">Pending</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="3">In Progress</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="7">Cancelled</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="8">RTO</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="9">Return Filled</a></li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                      <button class="btn btnekomn_dark stripbtn" onclick="collectCheckedIdsForCsv();"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
                     </div>
                     <div class="table-responsive tres_border">
                         <table class="normalTable tableSorting whitespace">
@@ -225,31 +225,29 @@
                         <h3 class="cardtitle">Admin Orders</h3>
                         <!-- <a href="{{ route('create.order') }}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Create New Order</a> -->
                     </div>
-                    <div class="tableTop mt10">
-                        <input type="text" id="searchQuery"
-                            title="Search with eKomn Order, Store Order or Customer name"
-                            class="form-control w_300_f searchicon" placeholder="Search">
-                        <div class="d-flex gap-2">
-                            <div class="ek_group m-0">
-                                <label class="eklabel eklabel_60 m-0">Status:</label>
-                                <div class="ek_f_input">
-                                    <select id="sort_by_status" class="form-select w_150_f">
-                                        <option value="0" selected>Select</option>
-                                        <option value="1">Draft</option>
-                                        <option value="2">Pending</option>
-                                        <option value="3">In Progress</option>
-                                        <option value="4">Dispatched</option>
-                                        <option value="6">Delivered</option>
-                                        <option value="7">Cancelled</option>
-                                        <option value="8">RTO</option>
-                                        <option value="9">Return Filled</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button class="btn btn-sm btnekomn_dark" onclick="collectCheckedIdsForCsv();"><i
-                                    class="fas fa-file-csv me-2"></i>Export
-                                CSV</button>
-                        </div>
+                    <div class="filterStrip filterStripwithbtn">
+                      <ul class="ekfilterList">
+                        <li>
+                        <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
+                        </li>
+                        <li>
+                          <div class="dropdown" id="sort_by_status">
+                            <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Order Status</span><strong class="dropdownValue">All</strong></button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="1">Draft</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="2">Pending</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="3">In Progress</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="4">Dispatched</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="6">Delivered</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="7">Cancelled</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="8">RTO</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="9">Return Filled</a></li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                      <button class="btn btnekomn_dark stripbtn" onclick="collectCheckedIdsForCsv();"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
                     </div>
                     <div class="table-responsive tres_border">
                         <table class="normalTable tableSorting whitespace">
@@ -375,10 +373,26 @@
                 fetchData();
             });
 
-            const sortByStatus = document.getElementById("sort_by_status");
-            sortByStatus.addEventListener("change", () => {
-                fetchData();
-            });
+            let selectedValues = {
+              sort_by_order_status: "0",
+              sortByStatus: "0"
+            };
+            function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const value = this.getAttribute('data-value');
+                        const text = this.textContent;
+                        dropdownValue.textContent = text;
+                        selectedValues[key] = value;
+                        fetchData();
+                    });
+                });
+            }
+            const sort_by_status = document.getElementById('sort_by_status');
+            handleDropdownSelection(sort_by_status, 'sortByStatus');
 
 
             let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
@@ -412,8 +426,8 @@
                     apiUrl += `&query=${searchQuery.value}`;
                 }
 
-                if (sortByStatus) {
-                    apiUrl += `&sort_by_status=${sortByStatus.value}`;
+                if (selectedValues.sortByStatus) {
+                  apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
                 }
 
                 ApiRequest(apiUrl, 'GET')
