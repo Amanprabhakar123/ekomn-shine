@@ -4095,6 +4095,15 @@ header,footer{position: relative;z-index: 1000;}
     right: 0px;
     top: 0px;
   }
+
+  .web-login-user{
+    padding: 10px;
+    background-image: linear-gradient(to top, #fce7b8 0%, #f7fadd 100%);
+  }
+
+  .ekfilterList > li.search-width{
+    min-width: 280px;
+  }
   @media(max-width:576px){
     .ekfilterList{display: block;}
     .cardhead.paymentcardhead{display: block;padding-bottom: 0px;}
@@ -4111,6 +4120,7 @@ header,footer{position: relative;z-index: 1000;}
     border: 1px solid #e2e2e2;
   }
   .showTotalBox._productID::before{content: none;}
+  .ekfilterList > li.search-width{min-width: auto;}
   }
 
 .collapse-group-1,.collapse-group-2 {display: none;}
@@ -4154,6 +4164,7 @@ a.underline{
   .headersearch{max-width: 100%;}
   .secondaryContainer{padding: 20px 15px!important;}
   .staticContent {padding-bottom: 20px;}
+  .mobile-padding{padding-top: 0px !important}
 }
 @media(max-width:991px){
   .services {column-gap: 20px;}

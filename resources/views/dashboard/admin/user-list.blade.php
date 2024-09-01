@@ -7,47 +7,43 @@
             <div class="cardhead">
                 <h3 class="cardtitle">User List</h3>
             </div>
-            <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with business name, email, mobile">
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">GST Verified:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_gst">
-                                <option value="">Select</option>
-                                <option value="{{GST_VERIFIED}}">Yes</option>
-                                <option value="{{GST_NOT_VERIFIED}}">No</option>
-                            </select>
-                        </div>
+            <div class="filterStrip">
+            <ul class="ekfilterList">
+                <li class="search-width">
+                    <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with business name, email, mobile">
+                </li>
+                <li>
+                    <div class="dropdown" id="sort_by_gst">
+                        <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">GST Verified</span><strong class="dropdownValue">All</strong></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-value="">All</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{GST_VERIFIED}}">Yes</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{GST_NOT_VERIFIED}}">No</a></li>
+                        </ul>
                     </div>
-                </div>
-                
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">PAN Verified:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_pan">
-                                <option value="">Select</option>
-                                <option value="{{PAN_VERIFIED}}">Yes</option>
-                                <option value="{{PAN_NOT_VERIFIED}}">No</option>
-                            </select>
-                        </div>
+                </li>
+                <li>
+                    <div class="dropdown" id="sort_by_pan">
+                        <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">PAN Verified</span><strong class="dropdownValue">All</strong></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-value="">All</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{PAN_VERIFIED}}">Yes</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{PAN_NOT_VERIFIED}}">No</a></li>
+                        </ul>
                     </div>
-                </div>
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <label class="eklabel w_100_f">Sort by:</label>
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_status">
-                                <option value="0">Select</option>
-                                <option value="{{ROLE_BUYER}}">Buyer</option>
-                                <option value="{{ROLE_SUPPLIER}}">Supplier</option>
-                            </select>
-                            
-                        </div>
+                </li>
+                <li>
+                    <div class="dropdown" id="sort_by_status">
+                        <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Sort by</span><strong class="dropdownValue">All</strong></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{ROLE_BUYER}}">Buyer</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="{{ROLE_SUPPLIER}}">Supplier</a></li>
+                        </ul>
                     </div>
-                </div>
-            </div>
+                </li>
+            </ul>
+        </div>
             <div class="table-responsive tres_border">
                 <table class="normalTable tableSorting whitespace">
                     <thead>
@@ -119,20 +115,33 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
+        let selectedValues = {
+            sortByStatus: "0",
+            sort_by_gst: "",
+            sort_by_pan: ""
+        };
+        function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                        item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const value = this.getAttribute('data-value');
+                                const text = this.textContent;
+                                dropdownValue.textContent = text;
+                                selectedValues[key] = value;
+                                fetchData();
+                        });
+                });
+        }
+        const sort_by_status = document.getElementById('sort_by_status');
+        handleDropdownSelection(sort_by_status, 'sortByStatus');
 
-        const sort_by_gst = document.getElementById("sort_by_gst");
-        sort_by_gst.addEventListener("change", () => {
-            fetchData();
-        });
+        const sort_by_gst = document.getElementById('sort_by_gst');
+        handleDropdownSelection(sort_by_gst, 'sort_by_gst');
 
-        const sort_by_pan = document.getElementById("sort_by_pan");
-        sort_by_pan.addEventListener("change", () => {
-            fetchData();
-        });
+        const sort_by_pan = document.getElementById('sort_by_pan');
+        handleDropdownSelection(sort_by_pan, 'sort_by_pan');
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
         let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
@@ -165,16 +174,16 @@
             apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-            apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+            apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
-            if (sort_by_gst) {
-            apiUrl += `&sort_by_gst=${sort_by_gst.value}`;
+            if (selectedValues.sort_by_gst) {
+            apiUrl += `&sort_by_gst=${selectedValues.sort_by_gst}`;
             }
 
-            if (sort_by_pan) {
-            apiUrl += `&sort_by_pan=${sort_by_pan.value}`;
+            if (selectedValues.sort_by_pan) {
+            apiUrl += `&sort_by_pan=${selectedValues.sort_by_pan}`;
             }
 
             ApiRequest(apiUrl, 'GET')

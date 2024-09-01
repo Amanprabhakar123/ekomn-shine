@@ -2,69 +2,73 @@
 
 @section('content')
 <div class="ek_dashboard">
-    <div class="ek_content">
-        <div class="card ekcard pa shadow-sm">
-            <div class="cardhead">
-                <h3 class="cardtitle">Return Order Tracking</h3>
+   <div class="ek_content">
+      <div class="card ekcard pa shadow-sm">
+         <div class="cardhead">
+            <h3 class="cardtitle">Return Order Tracking</h3>
+         </div>
+         <div class="filterStrip filterStripwithbtn">
+            <ul class="ekfilterList">
+               <li class="search-width">
+                  <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Product Title, SKU, Product ID">
+               </li>
+               <li>
+                  <div class="dropdown" id="sort_by_status">
+                     <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Sort By Status</span><strong class="dropdownValue">All</strong></button>
+                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" data-value="0">All</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="1">Created</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="2">Dispatched</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="7">In Transit</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="3">Delivered</a></li>
+                     </ul>
+                  </div>
+               </li>
+            </ul>
+         </div>
+         <div class="table-responsive tres_border">
+            <table class="normalTable tableSorting whitespace">
+               <thead>
+                  <tr>
+                     <th data-sort-field="return_number">Return Number</th>
+                     <th data-sort-field="order_number">eKomn Order</th>
+                     <th data-sort-field="title">Product Title
+                     </th>
+                     <th data-sort-field="courier_name">Courier Name</th>
+                     <th data-sort-field="tracking_url">Tracking Url</th>
+                     <th>Status</th>
+                     <th>Action</th>
+                  </tr>
+               </thead>
+               <tbody id="dataContainer">
+                  <!-- Data will be displayed here -->
+               </tbody>
+            </table>
+         </div>
+         <div class="ek_pagination">
+            <span class="row_select rowcount" id="rowInfo"></span>
+            <div class="pager_box">
+               <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
+               <ul class="pager_" id="pagination"></ul>
+               <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <div class="tableTop">
-                <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Product Title, SKU, Product ID">
-                <div class="filter">
-                    <div class="ek_group m-0">
-                        <!-- <label class="eklabel w_50_f">Sort by:</label> -->
-                        <div class="ek_f_input w_150_f">
-                            <select class="form-select" id="sort_by_status">
-                                <option value="0">Select</option>
-                                <option value="1">Created</option>
-                                <option value="2">Dispatched</option>
-                                <option value="7">In Transit</option>
-                                <option value="3">Delivered</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+            <div class="row_select jumper">
+               Go to
+               <select id="rowsPerPage">
+                  <option value="5">5</option>
+                  <option selected value="10">10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                  <option value="200">200</option>
+               </select>
             </div>
-            <div class="table-responsive tres_border">
-                <table class="normalTable tableSorting whitespace">
-                    <thead>
-                        <tr>
-                            <th data-sort-field="return_number">Return Number</th>
-                            <th data-sort-field="order_number">eKomn Order</th>
-                            <th data-sort-field="title">Product Title
-                            </th>
-                            <th data-sort-field="courier_name">Courier Name</th>
-                            <th data-sort-field="tracking_url">Tracking Url</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataContainer">
-                        <!-- Data will be displayed here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="ek_pagination">
-                <span class="row_select rowcount" id="rowInfo"></span>
-                <div class="pager_box">
-                    <button id="prevPage" class="pager_btn"><i class="fas fa-chevron-left"></i></button>
-                    <ul class="pager_" id="pagination"></ul>
-                    <button id="nextPage" class="pager_btn"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="row_select jumper">Go to
-                    <select id="rowsPerPage">
-                        <option value="5">5</option>
-                        <option selected value="10">10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                    </select>
-                </div>
-            </div>
-            <!-- end pegination -->
-        </div>
-    </div>
-    @include('dashboard.layout.copyright')
+         </div>
+         <!-- end pegination -->
+      </div>
+   </div>
+   @include('dashboard.layout.copyright')
 </div>
+@endsection
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -92,11 +96,27 @@
             fetchData();
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-        sortByStatus.addEventListener("change", () => {
-            fetchData();
-        });
-
+        let selectedValues = {
+            sort_by_order_status: "0",
+            sortByStatus: "0"
+        };
+        function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                        item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const value = this.getAttribute('data-value');
+                                const text = this.textContent;
+                                dropdownValue.textContent = text;
+                                selectedValues[key] = value;
+                                fetchData();
+                        });
+                });
+        }
+        const sort_by_status = document.getElementById('sort_by_status');
+        handleDropdownSelection(sort_by_status, 'sortByStatus');
+        
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
         let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
         const h_sorting = document.querySelectorAll(".h_sorting");
@@ -128,8 +148,8 @@
             apiUrl += `&query=${searchQuery.value}`;
             }
 
-            if (sortByStatus) {
-            apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+            apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
             }
 
             ApiRequest(apiUrl, 'GET')

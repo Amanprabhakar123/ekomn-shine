@@ -14,10 +14,10 @@
             </div>
             <div class="filterStrip filterStripwithbtn">
             	<ul class="ekfilterList">
-								<li>
+								<li class="search-width">
 								<input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Product Title, SKU, Product ID">
 								</li>
-            		<li>
+                                <li>
 									<div class="dropdown" id="sort_by_status">
 										<button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Product Status</span><strong class="dropdownValue">All</strong></button>
 										<ul class="dropdown-menu">

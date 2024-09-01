@@ -7,16 +7,14 @@
                 @if(auth()->user()->hasRole(ROLE_ADMIN) ||
                 auth()->user()->hasRole(ROLE_SUB_ADMIN))
                 @if(auth()->user()->hasPermissionTo(PERMISSION_ADD_PRODUCT))
-                <a
-                    class="btn btnekomn btn-sm"
+                <a class="btn btnekomn btn-sm"
                     href="{{ route('add.inventory') }}"
-                    ><i class="fas fa-plus fs-12 me-1"></i> New Product</a
-                >
+                    ><i class="fas fa-plus fs-12 me-1"></i> New Product</a>
                 @endif @endif
             </div>
 						<div class="filterStrip filterStripwithbtn">
             	<ul class="ekfilterList">
-								<li>
+								<li class="search-width">
 								<input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Product Title, SKU, Product ID">
 								</li>
             		<li>

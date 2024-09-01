@@ -57,7 +57,22 @@
                                 height="32px" />
                         </div>
                     </div>
-                    <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200">
+                    <ul class="dropdown-menu dropdown-menu-end ekdropdown w_200 mobile-padding">
+                        <li class="web-login-user webhide">
+                            <h4 class="fs-16 bold">{{ auth()->user()->name }}</h4>
+                            @if (auth()->check())
+                                @if (auth()->user()->hasRole(ROLE_ADMIN))
+                                    <p class="m-0">Admin</p>
+                                @elseif(auth()->user()->hasRole(ROLE_SUB_ADMIN))
+                                <p class="m-0">Sub Admin</p>
+                                @elseif(auth()->user()->hasRole(ROLE_BUYER) ||
+                                        auth()->user()->hasRole(ROLE_SUPPLIER))
+                                    <p class="m-0 fs-14">User ID:
+                                        {{ auth()->user()->companyDetails->company_serial_id ?? '00000' }}
+                                    </p>
+                                @endif
+                            @endif
+                        </li>
                         <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
                         @if(auth()->user()->hasRole(ROLE_BUYER) ||
                         auth()->user()->hasRole(ROLE_SUPPLIER))

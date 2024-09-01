@@ -11,7 +11,7 @@
                         <a href="{{route('create.return.order')}}" class="btn btnekomn btn-sm"><i class="fas fa-plus fs-12 me-1"></i>Add New Return</a>
                     @endif
                 </div>  
-            <div class="tableTop">
+            {{--<div class="tableTop">
                 <input type="text" class="form-control w_350_f searchicon"  id="searchQuery" placeholder="Search with Order no and return no.">
                 <div class="filter">
                     <div class="ek_group m-0">
@@ -40,7 +40,38 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
+            <div class="filterStrip filterStripwithbtn">
+                      <ul class="ekfilterList">
+                        <li class="search-width">
+                        <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with Order no and return no.">
+                        </li>
+                        <li>
+                          <div class="dropdown" id="sort_by_dispute">
+                            <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Sort By Dispute</span><strong class="dropdownValue">All</strong></button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-value="">All</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="0">No</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="1">Yes</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="2">Resolved</a></li>
+                            </ul>
+                          </div>
+                        </li>
+                        <li>
+                          <div class="dropdown" id="sort_by_status">
+                            <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Sort By Status</span><strong class="dropdownValue">All</strong></button>
+                            <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-value="">All</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="1">Open</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="2">In Progress</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="3">Accepted</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="4">Approved</a></li>
+                              <li><a class="dropdown-item" href="#" data-value="5">Decline</a></li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
             <div class="table-responsive tres_border">
             <table class="normalTable tableSorting whitespace">
                     <thead>
@@ -130,19 +161,42 @@
             }
         });
 
-        const sortByStatus = document.getElementById("sort_by_status");
-            sortByStatus.addEventListener("change", () => {
-                fetchData();
-            });
+        // const sortByStatus = document.getElementById("sort_by_status");
+        //     sortByStatus.addEventListener("change", () => {
+        //         fetchData();
+        //     });
 
-        const sortByDispute = document.getElementById("sort_by_dispute");
-            sortByDispute.addEventListener("change", () => {
-                fetchData();
-            });
+        // const sortByDispute = document.getElementById("sort_by_dispute");
+        //     sortByDispute.addEventListener("change", () => {
+        //         fetchData();
+        //     });
         // Event listener for clicking outside the search input field
         searchQuery.addEventListener("blur", (e) => {
             fetchData();
         });
+
+        let selectedValues = {
+              sortByDispute: "",
+              sortByStatus: "0",
+            };
+            function handleDropdownSelection(dropdown, key) {
+                const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
+                const dropdownValue = dropdown.querySelector('.dropdownValue');
+                dropdownItems.forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const value = this.getAttribute('data-value');
+                        const text = this.textContent;
+                        dropdownValue.textContent = text;
+                        selectedValues[key] = value;
+                        fetchData();
+                    });
+                });
+            }
+            const sort_by_status = document.getElementById('sort_by_status');
+            handleDropdownSelection(sort_by_status, 'sortByStatus');
+            const sort_by_dispute = document.getElementById('sort_by_dispute');
+            handleDropdownSelection(sort_by_dispute, 'sortByDispute');
 
         let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
             let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
@@ -174,12 +228,12 @@
             if (searchQuery) {
             apiUrl += `&query=${searchQuery.value}`;
 
-            if (sortByStatus) {
-                    apiUrl += `&sort_by_status=${sortByStatus.value}`;
+            if (selectedValues.sortByStatus) {
+                    apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
                 }
             }
-            if (sortByDispute) {
-                    apiUrl += `&sort_by_dispute=${sortByDispute.value}`;
+            if (selectedValues.sortByDispute) {
+                    apiUrl += `&sort_by_dispute=${selectedValues.sortByDispute}`;
                 }
 
 

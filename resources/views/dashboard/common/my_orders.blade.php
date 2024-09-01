@@ -12,7 +12,7 @@
                     </div>
                     <div class="filterStrip">
                       <ul class="ekfilterList">
-                        <li>
+                        <li class="search-width">
                         <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
                         </li>
                         <li>
@@ -118,7 +118,7 @@
                     </div>
                     <div class="filterStrip filterStripwithbtn">
                       <ul class="ekfilterList">
-                        <li>
+                        <li class="search-width">
                         <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
                         </li>
                         <li>
@@ -231,7 +231,7 @@
                     </div>
                     <div class="filterStrip filterStripwithbtn">
                       <ul class="ekfilterList">
-                        <li>
+                        <li class="search-width">
                         <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with eKomn Order, Store Order or Customer name">
                         </li>
                         <li>
