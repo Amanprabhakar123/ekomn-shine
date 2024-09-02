@@ -42,6 +42,11 @@ return [
         'key' => env('TINIFY_API_KEY'),
     ],
 
+    'recaptcha' => [
+    'site_key'   => env('RECAPTCHAV3_SITEKEY'),
+    'secret_key' => env('RECAPTCHAV3_SECRET'),
+    ],
+
 
 
 ];

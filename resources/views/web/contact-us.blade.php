@@ -115,6 +115,7 @@
                   <textarea class="form-control resizer_none" id="message" rows="4" placeholder="Type your message"></textarea>
                   <div id="messageErr" class="invalid-feedback"></div>
                 </div>
+                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
                 <div class="d-flex justify-content-end">
                   <button type="" id="btnSubmit" class="btn btnekomn btnround py-2 px-4">Send Message</button>
                 </div>
@@ -239,7 +240,10 @@
         $('#messageErr').text('');
       }
 
-
+      grecaptcha.execute('<?php echo config('services.recaptcha.site_key'); ?>', {action: 'contact_us'}).then(function(token) {
+           document.getElementById('g-recaptcha-response').value = token;
+           
+        });
 
       formData.append('first_name', firstname);
       formData.append('last_name', lastname);
@@ -247,6 +251,7 @@
       formData.append('phone', contact);
       formData.append('subject', query);
       formData.append('message', message);
+      formData.append('g-recaptcha-response', $('#g-recaptcha-response').val());
 
       if(isValid){
         ApiRequest('contact-us-post', 'POST', formData)
