@@ -62,6 +62,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_BANNER = 'banner_crud';
     const PERMISSION_MIS_SETTING_INVENTORY = 'all_mis_setting';
 
+    // define permission for subsctiption
+    const PERMISSION_SUBSCRIPTION_LIST = 'subscription_list';
+    const PERMISSION_SUBSCRIPTION_VIEW = 'subscription_view'; 
+
     // define permission for return order
     const PERMISSION_CREATE_RETURN_ORDER = 'add_new_return_order';
     const PERMISSION_LIST_RETURN_ORDER = 'list_return_order';
@@ -96,6 +100,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         self::PERMISSION_EDIT_COURIER,
         self::PERMISSION_USER_LIST,
         self::PERMISSION_ADMIN_LIST,
+        self::PERMISSION_SUBSCRIPTION_LIST,
     ];
 
     // define status user active and inactive

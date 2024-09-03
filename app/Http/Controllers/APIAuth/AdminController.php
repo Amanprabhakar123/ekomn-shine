@@ -27,6 +27,9 @@ class AdminController extends Controller
      */
     public function index()
     {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_ADMIN_LIST)) {
+            abort(403);
+        }
         return view('dashboard.admin.admin_list');
     }
 
@@ -310,4 +313,5 @@ class AdminController extends Controller
             ]], __('statusCode.statusCode422'));
         }
     }
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Pincode;
@@ -18,13 +19,13 @@ use App\Models\BuyerInventory;
 use App\Models\CourierDetails;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
+use Faker\Provider\ar_EG\Company;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
-use Faker\Provider\ar_EG\Company;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DashboardController extends Controller
@@ -611,4 +612,81 @@ class DashboardController extends Controller
             ], __('statusCode.statusCode422'));
         }
     }
+
+    /**
+     * This subscription view 
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionList()
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_LIST)) {
+            abort('403');
+        }
+        return view('dashboard.common.subscription_list');
+    }
+
+    /**
+     * This function is used to get the list of all subscriptions.
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionView(Request $request)
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_VIEW)) {
+            abort('403');
+        }
+        return view('dashboard.common.subscription_view');
+    }
+
+    /**
+     * admin plans view
+     * @param Request $request
+     * @return void
+     * 
+     * public function plans()
+     */ 
+
+     public function plansView()
+     {
+       
+        return view('dashboard.admin.admin_plan');
+     }
+
+     /**
+      * This function is used to get the list of all plans.
+      * @param Request $request
+      * @return void
+      */
+        public function plansList(Request $request)
+        {
+            // if (! auth()->user()->hasPermissionTo(User::PERMISSION_PLAN_LIST)) {
+            //     abort('403');
+            // }
+
+            try{
+                $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get()->toArray();
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.plansList'),
+                        'data' => $plans,
+                    ],
+                ], __('statusCode.statusCode200'));
+            }
+            catch (\Exception $e) {
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $e->getMessage(),
+                    ],
+                ], __('statusCode.statusCode422'));
+            }
+          
+            
+        }
+
+
 }
