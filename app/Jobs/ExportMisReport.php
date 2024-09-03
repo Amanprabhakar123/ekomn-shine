@@ -2,22 +2,23 @@
 
 namespace App\Jobs;
 
-use App\Events\ExceptionEvent;
-use App\Models\CompanyAddressDetail;
-use App\Models\CompanyDetail;
-use App\Models\CompanyPlanPayment;
 use App\Models\Order;
+use App\Models\ContactUs;
+use App\Models\ReturnOrder;
+use App\Models\CompanyDetail;
+use Illuminate\Bus\Queueable;
+use App\Events\ExceptionEvent;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\ReturnOrder;
 use App\Models\UserLoginHistory;
+use App\Models\CompanyPlanPayment;
+use Illuminate\Support\Facades\Log;
+use App\Models\CompanyAddressDetail;
 use App\Services\ExportFileServices;
-use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\Models\Activity; // Import ProductInventory model
 
 class ExportMisReport implements ShouldQueue
@@ -291,7 +292,7 @@ class ExportMisReport implements ShouldQueue
                     });
             } elseif ($this->type === 'total_supplier') {
                 $fileName = 'MIS_TOTAL_SUPPLIER.csv';
-                $csvHeaders = ['Company Name', 'Address', 'Company Serial ID', 'User Role', 'GST No', 'Variations', 'Registered Date', 'Last Login'];
+                $csvHeaders = ['Company Name', 'Email', 'Address', 'Company Serial ID', 'User Role', 'GST No', 'Variations', 'Registered Date', 'Is Subscribe', 'Last Login'];
                 CompanyDetail::with(['address', 'variations', 'products', 'loginHistory', 'user'])
                     ->chunk(100, function ($companyDetails) use (&$csvData) {
                         foreach ($companyDetails as $com) {
@@ -303,12 +304,14 @@ class ExportMisReport implements ShouldQueue
                                 isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
                                     $com->getFullName(),
+                                    $com->email,
                                     $fullAddress,
                                     $com->company_serial_id,
                                     $role,
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
+                                    $com->user->subscribe ? 'Yes' : 'No',
                                     $loginHistory,
                                 ];
                             } elseif ($role && ($role == ROLE_BUYER)) {
@@ -316,16 +319,19 @@ class ExportMisReport implements ShouldQueue
                                 isset($fullAddress) ? $fullAddress = $fullAddress->getFullAddress() : $fullAddress = '';
                                 $csvData[] = [
                                     $com->getFullName(),
+                                    $com->email,
                                     $fullAddress,
                                     $com->company_serial_id,
                                     $role,
                                     $com->gst_no,
                                     $com->variations->count(),
                                     $com->created_at,
+                                    $com->user->subscribe ? 'Yes' : 'No',
                                     $loginHistory,
                                 ];
                             }
                         }
+                        // dd($csvData);
                     });
             } elseif ($this->type === 'total_active_buyer') {
                 $fileName = 'MIS_TOTAL_ACTIVE_BUYER.csv';
@@ -376,6 +382,21 @@ class ExportMisReport implements ShouldQueue
                         }
                     });
 
+            }else if($this->type === 'contact_us_history'){
+                $fileName = 'CONTACT_US.csv';
+                $csvHeaders = ['First name', 'Last name', 'Email', 'Mobile', 'Message', 'Date'];
+                ContactUs::orderBy('id', 'desc')->chunk(100, function ($contactUs) use (&$csvData) {
+                    foreach ($contactUs as $contact) {
+                        $csvData[] = [
+                            $contact->first_name,
+                            $contact->last_name,
+                            $contact->email,
+                            $contact->phone,
+                            $contact->message,
+                            $contact->created_at,
+                        ];
+                    }
+                });
             }
             // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportFileServices;

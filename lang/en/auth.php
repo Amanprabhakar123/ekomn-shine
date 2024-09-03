@@ -145,4 +145,5 @@ return [
     'commentRequired' => 'Comment is required because buyer raised a dispute.',
     'registerSuccess' => 'Sub admin registered successfully.',
     'otherSupplierProduct' => 'You can not download other supplier product.',
+    'recaptcha' => 'Google recaptcha is not validate. Plese retry again !',
 ];
