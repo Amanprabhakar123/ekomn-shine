@@ -27,7 +27,12 @@
 
                     </div>
 
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-login btnekomn"
+                            onclick="exportMisReport('contact_us_history')">Contact Us History
+                            - Export</button>
 
+                    </div>
 
                 </div>
             </div>

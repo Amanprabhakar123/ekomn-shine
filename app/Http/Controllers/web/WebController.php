@@ -17,13 +17,14 @@ use App\Models\ProductKeyword;
 use App\Models\ProductMatrics;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
+use App\Models\UnSubscribeToken;
 use OpenApi\Annotations\Contact;
 use App\Services\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ProductVariationMedia;
-use App\Models\UnSubscribeToken;
 use App\Services\UserActivityService;
 use App\Services\RecommendationService;
 use League\Fractal\Resource\Collection;
@@ -874,6 +875,9 @@ class WebController extends Controller
                 'phone' => 'required|string|max:255',
                 'subject' => 'required|string|max:255',
                 'message' => 'required|string',
+                'g-recaptcha-response' => 'required|recaptchav3:contact_us,0.5',
+            ],[
+                'g-recaptcha-response.recaptchav3' => __('auth.recaptcha'),
             ]);
 
             if ($validator->fails()) {
@@ -883,6 +887,22 @@ class WebController extends Controller
                     'message' => $validator->errors()->first(),
                 ]], __('statusCode.statusCode200'));
             }
+
+            // $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            //     'secret'   => config('services.recaptcha.secret_key'),
+            //     'response' => $request->input('g-recaptcha-response'),
+            //     'remoteip' => $request->ip(),
+            // ]);
+        
+            // $recaptchaData = $response->json();
+        
+            // if(!$recaptchaData['success'] || $recaptchaData['score'] < 0.5) {
+            //     return response()->json(['data' => [
+            //         'statusCode' => __('statusCode.statusCode422'),
+            //         'status' => __('statusCode.status422'),
+            //         'message' => __('auth.recaptcha'),
+            //     ]], __('statusCode.statusCode200'));
+            // }
 
             // Create a new contact us record
             ContactUs::create([
@@ -897,7 +917,6 @@ class WebController extends Controller
             // Send an email by mail
             Mail::to($request->email)
             ->send(new ContactUsMail($request->all()));
-
 
             return response()->json([
                 'data' => [

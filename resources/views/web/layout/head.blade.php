@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="{{asset('assets/css/owl.theme.default.min.css')}}">
   <link rel="stylesheet" href="{{asset('assets/css/style.css')}}" />
   <link rel="stylesheet" href="{{asset('assets/css/custom.css')}}" />
-
+  <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
   @yield('styles')
 </head>
 <body class="ekmonweb">
