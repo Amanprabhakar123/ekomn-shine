@@ -166,6 +166,11 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $(document).ready(function() {
+    grecaptcha.ready(function() {
+      grecaptcha.execute('<?php echo config('services.recaptcha.site_key'); ?>', {action: 'contact_us'}).then(function(token) {
+        document.getElementById('g-recaptcha-response').value = token;
+      });
+    });
     const mobileRegex = /^[6-9]\d{9}$/;
     $('#btnSubmit').click(function(){
       var formData = new FormData();
@@ -239,11 +244,6 @@
         $('#message').removeClass('is-invalid');
         $('#messageErr').text('');
       }
-
-      grecaptcha.execute('<?php echo config('services.recaptcha.site_key'); ?>', {action: 'contact_us'}).then(function(token) {
-           document.getElementById('g-recaptcha-response').value = token;
-           
-        });
 
       formData.append('first_name', firstname);
       formData.append('last_name', lastname);
