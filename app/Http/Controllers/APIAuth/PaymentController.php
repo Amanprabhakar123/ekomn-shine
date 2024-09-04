@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\APIAuth;
 
-use App\Events\ExceptionEvent;
-use App\Http\Controllers\Controller;
-use App\Models\BuyerRegistrationTemp;
-use App\Models\CompanyAddressDetail;
-use App\Models\CompanyDetail;
-use App\Models\CompanyPlanPayment;
+use Carbon\Carbon;
 use App\Models\Plan;
-use App\Models\Receipt;
 use App\Models\User;
+use Razorpay\Api\Api;
+use App\Models\Receipt;
+use App\Models\CompanyPlan;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\CompanyDetail;
+use App\Events\ExceptionEvent;
+use App\Models\CompanyPlanPayment;
 use App\Notifications\VerifyEmail;
 use App\Traits\ReceiptIdGenerator;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Razorpay\Api\Api;
+use App\Http\Controllers\Controller;
+use App\Models\CompanyAddressDetail;
+use App\Models\BuyerRegistrationTemp;
 
 class PaymentController extends Controller
 {
@@ -264,6 +265,7 @@ class PaymentController extends Controller
                 'plan_id' => $payment->plan_id,
                 'subscription_start_date' => Carbon::now(),
                 'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
+                'status' => CompanyPlan::STATUS_ACTIVE,
             ]);
 
             // Register Business Address Details

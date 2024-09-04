@@ -2,11 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+use App\Models\Import;
+use App\Models\CompanyPlan;
+use App\Models\BuyerInventory;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\CompanyCanHandle;
+use App\Models\CompanyOperation;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use App\Models\UserLoginHistory;
 use Spatie\Activitylog\LogOptions;
+use App\Models\CompanyBusinessType;
+use App\Models\CompanySalesChannel;
+use App\Models\CompanyAddressDetail;
+use App\Models\CompanyPlanPermission;
+use App\Models\CompanyProductCategory;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyDetail extends Model
 {
@@ -226,6 +242,14 @@ class CompanyDetail extends Model
     {
         return $this->hasMany(BuyerInventory::class, 'company_id', 'id');
     }
+
+    /**
+     * Get the company that owns the company plan subscription detail.
+     */
+    public function planSubscription(){
+        return $this->hasOne(CompanyPlanPermission::class, 'company_id', 'id');
+    }
+
 
     /**
      * Get the full name of the user.

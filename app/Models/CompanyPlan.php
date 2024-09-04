@@ -10,17 +10,31 @@ class CompanyPlan extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'company_id',
         'plan_id',
         'subscription_start_date',
         'subscription_end_date',
+        'status',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
         'subscription_start_date' => 'date',
         'subscription_end_date' => 'date',
     ];
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
 
     /**
      * Get the company that owns the plan.
