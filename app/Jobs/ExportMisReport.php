@@ -331,11 +331,10 @@ class ExportMisReport implements ShouldQueue
                                 ];
                             }
                         }
-                        // dd($csvData);
                     });
             } elseif ($this->type === 'total_active_buyer') {
                 $fileName = 'MIS_TOTAL_ACTIVE_BUYER.csv';
-                $csvHeaders = ['Full Name', 'Email', 'Mobile', 'Plan Type', 'Plan Amount', 'Plan Name', 'Transaction ID', 'Subscription Start Date', 'Subscription End Date'];
+                $csvHeaders = ['Full Name', 'Email', 'Mobile', 'Plan Type', 'Plan Amount', 'Total amount Paid', 'Plan Name', 'Transaction ID', 'Subscription Start Date', 'Subscription End Date', 'Status'];
                 CompanyPlanPayment::with(['companyDetails', 'plan'])
                     ->chunk(100, function ($companyPlans) use (&$csvData) {
                         foreach ($companyPlans as $com) {
@@ -343,16 +342,19 @@ class ExportMisReport implements ShouldQueue
                                 $full_name = isset($com->companyDetails->first_name) ? $com->companyDetails->first_name.' '.$com->companyDetails->last_name : '';
                                 $subscription_start_date = isset($com->companyDetails->subscription[0]['subscription_start_date']) ? $com->companyDetails->subscription[0]['subscription_start_date'] : '';
                                 $subscription_end_date = isset($com->companyDetails->subscription[0]['subscription_end_date']) ? $com->companyDetails->subscription[0]['subscription_end_date'] : '';
+                                $status = $com->companyDetails->subscription[0]['status'] ?? '';
                                 $csvData[] = [
                                     $full_name,
                                     $com->email,
                                     $com->mobile,
                                     $com->plan->getPlanType(),
                                     $com->amount,
+                                    $com->amount_with_gst,
                                     $com->plan->name,
                                     $com->transaction_id,
                                     $subscription_start_date,
                                     $subscription_end_date,
+                                    getCompanyPlanStatus($status),
                                 ];
                             }
                         }
@@ -398,6 +400,7 @@ class ExportMisReport implements ShouldQueue
                     }
                 });
             }
+        
             // Use ExportServices to generate and send the CSV file via email
             $exportFileService = new ExportFileServices;
             $exportFileService->sendCSVByEmail($csvHeaders, $csvData, $fileName, $email, $this->type);

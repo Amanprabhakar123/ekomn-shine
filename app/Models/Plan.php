@@ -20,6 +20,8 @@ class Plan extends Model
         'price',
         'duration',
         'features',
+        'gst',
+        'hsn',
         'status',
     ];
 

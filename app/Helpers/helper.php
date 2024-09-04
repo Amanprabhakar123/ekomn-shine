@@ -1,13 +1,14 @@
 <?php
 
-use App\Models\AddToCart;
+use App\Models\User;
 use App\Models\Category;
+use App\Models\AddToCart;
+use App\Models\CompanyPlan;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\ProductVariationMedia;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Storage;
 
 // User roles define for entire application
@@ -733,4 +734,22 @@ function getYearlyDiscountPercent($monthly_price, $yearly_price){
  */
 function yearlyPrice($monthly_price){
     return number_format(($monthly_price * 12), 2, '.', '');
+}
+
+/**
+ * get the active plan status
+ *
+ * @param [type] $status
+ * @return void
+ */
+function getCompanyPlanStatus($status)
+{
+    switch ($status) {
+        case CompanyPlan::STATUS_ACTIVE:
+            return 'Active';
+        case CompanyPlan::STATUS_INACTIVE:
+            return 'Inactive';
+        default:
+            return 'Unknown';
+    }
 }

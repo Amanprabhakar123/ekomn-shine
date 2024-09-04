@@ -70,10 +70,11 @@ class PaymentController extends Controller
             $hiddenField = salt_decrypt($request->input('hiddenField')) ?? null;
             $user_detail = BuyerRegistrationTemp::find($hiddenField);
             $receiptId = $this->getNextReceiptId($hiddenField);
+            $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
             if ($plan_details->is_trial_plan == 0) {
                 $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
                 $order = $api->order->create([
-                    'amount' => $plan_details->price * 100, // Amount in paise
+                    'amount' => round($amount_with_gst) * 100, // Amount in paise
                     'currency' => $currency,
                     'receipt' => (string) $receiptId,
                     'notes' => [
@@ -85,6 +86,8 @@ class PaymentController extends Controller
                     'purchase_id' => Str::uuid(),
                     'plan_id' => $plan_details->id,
                     'amount' => $plan_details->price,
+                    'amount_with_gst' => $amount_with_gst,
+                    'gst_percent' => $plan_details->gst,
                     'currency' => $currency,
                     'receipt_id' => $receiptId,
                     'is_trial_plan' => $plan_details->is_trial_plan,
@@ -108,6 +111,8 @@ class PaymentController extends Controller
                     'purchase_id' => Str::uuid(),
                     'plan_id' => $plan_details->id,
                     'amount' => $plan_details->price,
+                    'amount_with_gst' => $amount_with_gst,
+                    'gst_percent' => $plan_details->gst,
                     'currency' => $currency,
                     'receipt_id' => $receiptId,
                     'is_trial_plan' => $plan_details->is_trial_plan,
