@@ -16,11 +16,17 @@ class PermissionSubscriptionSeeder extends Seeder
     {
         Permission::create(['name' => PERMISSION_SUBSCRIPTION_LIST]);
         Permission::create(['name' => PERMISSION_SUBSCRIPTION_VIEW]);
+        Permission::create(['name' => PERMISSION_PLAN_LIST]);
+        Permission::create(['name' => PERMISSION_PLAN_EDIT]);
+
 
         $role = Role::findByName(ROLE_ADMIN);
         $role->givePermissionTo(PERMISSION_SUBSCRIPTION_LIST);
+        $role->givePermissionTo(PERMISSION_PLAN_LIST);
+        $role->givePermissionTo(PERMISSION_PLAN_EDIT);
 
         $role_buyer = Role::findByName(ROLE_BUYER);
         $role_buyer->givePermissionTo(PERMISSION_SUBSCRIPTION_VIEW);
+        
     }
 }

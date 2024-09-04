@@ -73,6 +73,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_EDIT_RETURN_ORDER = 'edit_and_update_return_order';
     const PERMISSION_USER_LIST = 'user_list';
     const PERMISSION_ADMIN_LIST = 'admin_list';
+    const PERMISSION_PLAN_LIST = 'plan_list';
+    const PERMISSION_PLAN_EDIT = 'plan_edit';
 
     // define permission for sub admin
     const SUB_ADMIN_PERMISSION_LIST = [
@@ -101,6 +103,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         self::PERMISSION_USER_LIST,
         self::PERMISSION_ADMIN_LIST,
         self::PERMISSION_SUBSCRIPTION_LIST,
+        self::PERMISSION_PLAN_LIST,
+        self::PERMISSION_PLAN_EDIT,
     ];
 
     // define status user active and inactive

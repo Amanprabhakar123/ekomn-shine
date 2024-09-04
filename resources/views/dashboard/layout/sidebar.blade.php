@@ -171,7 +171,7 @@
             @endif
 
             @if (auth()->user()->hasPermissionTo(PERMISSION_BANNER) || auth()->user()->hasPermissionTo(PERMISSION_TOP_CATEGORY) || auth()->user()->hasPermissionTo(PERMISSION_TOP_PRODUCT) || auth()->user()->hasPermissionTo(PERMISSION_USER_LIST) || auth()->user()->hasPermissionTo(PERMISSION_CATEGORY_MANAGEMENT) ||
-            auth()->user()->hasPermissionTo(PERMISSION_USER_LIST) || auth()->user()->hasPermissionTo(PERMISSION_ADMIN_LIST))
+            auth()->user()->hasPermissionTo(PERMISSION_USER_LIST) || auth()->user()->hasPermissionTo(PERMISSION_ADMIN_LIST) || auth()->user()->hasPermissionTo(PERMISSION_PLAN_LIST))
             <li class="nav-item">
                 <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#AdminControl"
                     data-bs-parent="#dashboard_ekomn" id="components">
@@ -223,6 +223,11 @@
                             </a>
                         </li>
                     @endif
+                    @if(auth()->user()->hasPermissionTo(PERMISSION_PLAN_LIST))
+                    <li>
+                        <a class="nav-link" href="{{ route('admin.plan.view') }}">Subscription plan</a>
+                    </li>
+                    @endif
                 </ul>
             </li>
             @endif
@@ -256,7 +261,7 @@
             <li class="nav-item">
                     <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#subscription"
                         data-bs-parent="#dashboard_ekomn" id="components">
-                        <i class="fas fa-cog menuIcon"></i>
+                        <i class="fas fa-calendar-check menuIcon"></i>
                         <span class="nav-link-text">Subscription</span>
                         <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                     </a>
@@ -266,9 +271,7 @@
                             <li>
                                 <a class="nav-link" href="{{ route('subscription.list') }}">Subscription List</a>
                             </li>
-                            <li>
-                                <a class="nav-link" href="{{ route('admin.plan.view') }}">Admin plan</a>
-                            </li>
+                            
                             @endif
                             
                             @if(auth()->user()->hasPermissionTo(PERMISSION_SUBSCRIPTION_VIEW))

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('plans', function (Blueprint $table) {
             $table->string('gst')->after('price')->nullable();
-            $table->string('hsn')->default('123456')->after('gst');
+            $table->string('hsn')->after('gst')->nullable();
         });
     }
 
