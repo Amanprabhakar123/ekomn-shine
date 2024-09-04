@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Pincode;
@@ -24,7 +25,7 @@ use App\Models\CompanyAddressDetail;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
-use Faker\Provider\ar_EG\Company;
+use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DashboardController extends Controller
@@ -611,4 +612,136 @@ class DashboardController extends Controller
             ], __('statusCode.statusCode422'));
         }
     }
+
+    /**
+     * This subscription view 
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionList()
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_LIST)) {
+            abort('403');
+        }
+        return view('dashboard.common.subscription_list');
+    }
+
+    /**
+     * This function is used to get the list of all subscriptions.
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionView(Request $request)
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_VIEW)) {
+            abort('403');
+        }
+        return view('dashboard.common.subscription_view');
+    }
+
+    /**
+     * admin plans view
+     * @param Request $request
+     * @return void
+     * 
+     * public function plans()
+     */ 
+     public function plansView()
+     {
+        if(!auth()->user()->hasPermissionTo(PERMISSION_PLAN_LIST)){
+            abort('403');
+        }
+        $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get();
+        return view('dashboard.admin.admin_plan', compact('plans'));
+     }
+
+        /**
+         * This function is edit the plan view
+         * @param Request $request
+         * @return void
+         */
+        public function planEdit($id){
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PLAN_EDIT)) {
+                abort('403');
+            }
+            $plan = Plan::find(salt_decrypt($id));
+            return view('dashboard.admin.edit_plans', compact('plan'));
+        }
+
+        /**
+         * This plan view update
+         * @param Request $request
+         * @return void
+         */
+        public function planUpdate(Request $request)
+        {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PLAN_EDIT)) {
+                abort('403');
+            }
+            try {
+                $validator = Validator::make($request->all(), [
+                    'name' => 'required',
+                    'description' => 'required',
+                    'price' => 'required',
+                    'gst' => 'required',
+                    'hsn' => 'required',
+                    'duration' => 'required',
+                    'inventory_count' => 'required',
+                    'download_count' => 'required',
+                    'price_and_stock' => 'required',
+                    'seller_program' => 'required',
+                    'shine_program' => 'required',
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'data' => [
+                            'statusCode' => __('statusCode.statusCode422'),
+                            'status' => __('statusCode.status422'),
+                            'message' => $validator->errors(),
+                        ],
+                    ], __('statusCode.statusCode422'));
+                }
+
+                $plan = Plan::find(salt_decrypt($request->id));
+                $plan->name = $request->name;
+                $plan->description = $request->description;
+                $plan->price = $request->price;
+                $plan->gst = $request->gst;
+                $plan->hsn = $request->hsn;
+                $plan->duration = $request->duration;
+                $features = [
+                    'inventory_count' => (int) $request->inventory_count,
+                    'download_count' => (int) $request->download_count,
+                    'price_and_stock' => (boolean) $request->price_and_stock,
+                    'seller_program' => (boolean) $request->seller_program,
+                    'shine_program' => (boolean) $request->shine_program,
+                ];
+                $plan->features = json_encode($features);
+                $plan->save();
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.updatedPlan'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            } catch (\Exception $e) {
+                $exceptionDetails = [
+                    'message' => $e->getMessage(),
+                    'line' => $e->getLine(),
+                    'file' => $e->getFile(),
+                ];
+                event(new ExceptionEvent($exceptionDetails));
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $e->getMessage(),
+                    ],
+                ], __('statusCode.statusCode422'));
+            }
+        }
+
+
 }

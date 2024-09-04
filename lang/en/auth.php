@@ -146,4 +146,5 @@ return [
     'registerSuccess' => 'Sub admin registered successfully.',
     'otherSupplierProduct' => 'You can not download other supplier product.',
     'recaptcha' => 'Google recaptcha is not validate. Plese retry again !',
+    'updatedPlan' => 'Plan updated successfully.',
 ];
