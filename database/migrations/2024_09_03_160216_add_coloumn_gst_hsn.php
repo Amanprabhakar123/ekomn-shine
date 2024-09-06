@@ -26,6 +26,7 @@ return new class extends Migration
         Schema::table('plans', function (Blueprint $table) {
             $table->dropColumn('gst');
             $table->dropColumn('hsn');
+            $table->dropColumn('razorpay_plan_id');
         });
     }
 };
