@@ -397,5 +397,13 @@ class CompanyDetail extends Model
     {
         return $this->subscription_status == self::SUBSCRIPTION_STATUS_EXPIRED;
     }
+
+    /**
+     * Get the companyPlan tabel data.
+     */
+    public function companyPlanPayment()
+    {
+        return $this->hasOne(CompanyPlanPayment::class, 'company_id', 'id');
+    }
     
 }

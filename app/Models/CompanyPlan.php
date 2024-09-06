@@ -44,5 +44,10 @@ class CompanyPlan extends Model
         return $this->belongsTo(CompanyDetail::class);
     }
 
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class, 'plan_id', 'id');
+    }
+
    
 }

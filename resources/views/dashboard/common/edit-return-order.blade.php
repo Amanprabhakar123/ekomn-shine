@@ -1219,7 +1219,7 @@
 @if(!isset($courier_detatils))
     $(function() {
     const today = moment().format('DD-MM-YYYY');
-    
+    const todayDelivery = moment().add(7, 'days').format('DD-MM-YYYY');
     $('input[name="shippingDate"]').daterangepicker({
         singleDatePicker: true,    // Enables single date picker
         autoApply: true,
@@ -1232,6 +1232,7 @@
     },
     function(selectedDate) {
         const shippingDate = selectedDate.format('DD-MM-YYYY');
+        const minDate = selectedDate.add(7, 'days').format('DD-MM-YYYY');
         $('input[name="shippingDate"]').val(shippingDate);
         
         // Update deliveryDate picker with the new minDate and startDate
@@ -1239,7 +1240,7 @@
             singleDatePicker: true,    
             autoApply: true,
             opens: 'left',
-            startDate: shippingDate,
+            startDate: minDate,
             minDate: shippingDate, // Disable dates earlier than shippingDate
             locale: {
                 format: 'DD-MM-YYYY'
@@ -1250,7 +1251,7 @@
             singleDatePicker: true,    
             autoApply: true,
             opens: 'left',
-            startDate: today,
+            startDate: todayDelivery,
             minDate: moment().startOf('day'), // Disable previous dates
             locale: {
                 format: 'DD-MM-YYYY'
