@@ -197,7 +197,7 @@ class PaymentController extends Controller
     public function paymentSuccess(Request $request)
     {
         // Store request all value in logs
-        \Log::info('Request data: '.json_encode($request->all()));
+        // \Log::info('Request data: '.json_encode($request->all()));
         if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
             $paymentId = $request->input('razorpay_payment_id');
             $signature = $request->input('razorpay_signature');
@@ -478,5 +478,141 @@ class PaymentController extends Controller
             ];
         }
         event(new ExceptionEvent($exceptionDetails));
+    }
+
+    /**
+     * change staus subscription.
+     * 
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response.
+     */
+    public function changeSubscriptionStatus(Request $request)
+    {
+        try{
+        $company_id = salt_decrypt($request->input('company_id'));
+        $company_detail = CompanyDetail::find($company_id);
+        $subscription = new PaymentSubscription();
+        if($request->is_cancel){
+            $subscription = $subscription->cancelSubscription($company_detail->razorpay_subscription_id);
+            if($subscription['status'] == 'cancelled'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_CANCELLED;
+                $company_detail->save();
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.subscriptionCancelled'),
+                ]], __('statusCode.statusCode200'));
+            }
+        }else{
+            $subscription = $subscription->changeSubscriptionStatus($company_detail->razorpay_subscription_id, !$company_detail->subscription_status);
+            if($subscription['status'] == 'active'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
+            }elseif($subscription['status'] == 'paused'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_IN_ACTIVE;
+            }elseif($subscription['status'] == 'completed'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_COMPLETED;
+            }elseif($subscription['status'] == 'cancelled'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_CANCELLED;
+            }elseif($subscription['status'] == 'expired'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_EXPIRED;
+            }
+            $company_detail->save();
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.subscriptionStatusChanged'),
+            ]], __('statusCode.statusCode200'));
+        }
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.subscriptionStatusFailed'),
+            ]], __('statusCode.statusCode422'));
+        }
+    }
+
+    /**
+     * enable subscription.
+     * 
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response.
+     */
+    public function enableSubscription(Request $request)
+    {
+        try{
+        $company_id = salt_decrypt($request->input('company_id'));
+        $plan_id = salt_decrypt($request->input('plan_id'));
+        $company_detail = CompanyDetail::find($company_id);
+        $plan_details = Plan::find($plan_id);
+        if($plan_details->is_trial_plan == 1) {
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.planNotEligible'),
+            ]], __('statusCode.statusCode422'));
+        }
+        $subscription = new PaymentSubscription();
+        if($plan_details->duration == 30){
+            $total_count = 12;
+        }else{
+            $total_count = 1;
+        }
+        $subscriptionData = $subscription->createNewSubscription($plan_details->razorpay_plan_id, $total_count, $request->subscription_end_date);
+        
+        if($subscriptionData['status'] == 'created'){
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_CREATED;
+            $company_detail->razorpay_subscription_id = $subscriptionData['id'];
+            $company_detail->razorpay_plan_id = $subscriptionData['plan_id'];
+        }
+        $company_detail->save();
+        
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'payment_link' => $subscriptionData['short_url'],
+        ]], __('statusCode.statusCode200'));
+
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.subscriptionStatusFailed'),
+            ]], __('statusCode.statusCode422'));
+        }
+    }
+
+    /**
+     * active subscription.
+     * 
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response.
+     */
+    public function activeSubscription(Request $request)
+    {
+         // Store request all value in logs
+        \Log::info('Request data: '.json_encode($request->all()));
+        $paymentId = $request->input('razorpay_payment_id');
+        $signature = $request->input('razorpay_signature');
+        $subscription_id = $request->input('razorpay_subscription_id');
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+        // Update Subscription status
+        $subscription = $api->subscription->fetch($subscription_id);
+
+        \Log::info('Subscription data: '.json_encode($subscription));
     }
 }

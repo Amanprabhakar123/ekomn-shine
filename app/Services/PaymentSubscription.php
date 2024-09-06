@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Razorpay\Api\Api;
+use App\Models\CompanyDetail;
 
 class PaymentSubscription
 {
@@ -45,16 +47,19 @@ class PaymentSubscription
      * @param $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function createNewSubscription($plan_id, $total_count)
+    public function createNewSubscription($plan_id, $total_count, $start_at = null)
     {
         $total_count = $total_count ? $total_count : 12;
         $subscriptionData = [
             'plan_id' => $plan_id, // New plan ID
             'customer_notify' => 1,
             'total_count' => $total_count * 10, // Number of billing cycles
-            // 'start_at' => now()->addMinutes(5)->timestamp, // Start time in Unix timestamp
             'expire_by' => now()->addYears(10)->timestamp, // End time in Unix timestamp
         ];
+
+        if(!is_null($start_at)){
+            $subscriptionData['start_at'] = Carbon::parse($start_at)->timestamp;
+        }
 
         $newSubscription = $this->razorpay->subscription->create($subscriptionData);
         return $newSubscription;
@@ -80,5 +85,25 @@ class PaymentSubscription
         $newSubscription = $this->createNewSubscription($newPlanId, $total_count);
 
         return $newSubscription;
+    }
+
+    /**
+     * Change subscription status
+     * @param $subscriptionId
+     * @param $status
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeSubscriptionStatus($subscriptionId, $status)
+    {
+        $subscription = $this->razorpay->subscription->fetch($subscriptionId);
+
+        if($status == CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE && $subscription->status == 'paused'){
+            $subscription = $this->razorpay->subscription->fetch($subscriptionId)->resume(['resume_at' => 'now']);  
+        }elseif($status == CompanyDetail::SUBSCRIPTION_STATUS_IN_ACTIVE && $subscription->status == 'active'){
+            $subscription = $this->razorpay->subscription->fetch($subscriptionId)->pause(['pause_at' => 'now']);  
+        }elseif($subscription->status == 'completed'){
+            return ['status' => 'completed'];
+        }
+        return $subscription;
     }
 }

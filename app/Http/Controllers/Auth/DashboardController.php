@@ -643,7 +643,7 @@ class DashboardController extends Controller
         $userId = auth()->user()->id;
         $companyDetail = CompanyDetail::with('subscription.plan', 'planSubscription', 'companyPlanPayment')
             ->whereHas('subscription', function ($query) {
-                $query->where('status', CompanyPlan::STATUS_ACTIVE);
+                $query->orderBy('id', 'desc')->limit(1);
             })
         ->where('user_id', $userId)->first();
         // dd($companyDetail);

@@ -49,5 +49,25 @@ class CompanyPlan extends Model
         return $this->belongsTo(Plan::class, 'plan_id', 'id');
     }
 
+    /**
+     * Get the plan type.
+     *
+     * @return string
+     */
+    public function isPlanActive()
+    {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+    /**
+     * Get the plan type.
+     *
+     * @return string
+     */
+    public function isPlanActiveInActive()
+    {
+        return $this->status == self::STATUS_INACTIVE;
+    }
+
    
 }

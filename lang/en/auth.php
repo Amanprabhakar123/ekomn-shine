@@ -147,4 +147,8 @@ return [
     'otherSupplierProduct' => 'You can not download other supplier product.',
     'recaptcha' => 'Google recaptcha is not validate. Plese retry again !',
     'updatedPlan' => 'Plan updated successfully.',
+    'subscriptionStatusChanged' => 'Subscription status changed successfully.',
+    'subscriptionCancelled' => 'Subscription cancelled successfully.',
+    'subscriptionStatusFailed' => 'Subscription status change failed.',
+    'planNotEligible' => 'Trial plan not eligible for subscription.',
 ];

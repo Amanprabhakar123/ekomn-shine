@@ -202,6 +202,8 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-admin-list', [AdminController::class, 'updateAdminList'])->name('update.admin.list');
         Route::post('update-plan', [DashboardController::class, 'planUpdate'])->name('update.plan');
         Route::get('get-payment-info', [PaymentController::class, 'getPaymentInfo'])->name('get.payment.info');
+        Route::post('change-subscription-status', [PaymentController::class, 'changeSubscriptionStatus'])->name('change.subscription.status');
+        Route::post('enable-subscription', [PaymentController::class, 'enableSubscription'])->name('enable.subscription');
     });
 });
 
@@ -245,6 +247,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
     Route::post('order/payment-success/callback', [OrderController::class, 'orderPaymentSuccess'])->name('order.payment.success');
+    Route::post('active-subscription', [PaymentController::class, 'activeSubscription'])->name('active.subscription');
     Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
 });
 
