@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('plans', function (Blueprint $table) {
             $table->string('gst')->after('price')->nullable();
             $table->string('hsn')->after('gst')->nullable();
+            $table->string('razorpay_plan_id')->after('hsn')->nullable();
         });
     }
 
