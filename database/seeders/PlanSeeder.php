@@ -35,7 +35,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => false,
                 'shine_program' => false,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -44,6 +44,7 @@ class PlanSeeder extends Seeder
             'price' => 1999.00,
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtiZBy9KHyUi6P',
             'duration' => '30', // in days
             'features' => json_encode([
                'inventory_count' => 100,
@@ -52,7 +53,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => false,
                 'shine_program' => false,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -61,6 +62,7 @@ class PlanSeeder extends Seeder
             'price' => round(1999.00 * 12 * 0.93),
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtihZhsKVRiLcj',
             'duration' => '365', // in days
             'features' => json_encode([
                 'inventory_count' => 100,
@@ -69,7 +71,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => false,
                 'shine_program' => false,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -78,6 +80,7 @@ class PlanSeeder extends Seeder
             'price' => 2999.00,
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjEApSpotR4v3',
             'duration' => '30', // in days
             'features' => json_encode([
                 'inventory_count' => 500,
@@ -86,7 +89,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -95,6 +98,7 @@ class PlanSeeder extends Seeder
             'price' => round(2999.00 * 12 * 0.93),
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjFcgBUngXQjS',
             'duration' => '365', // in days
             'features' => json_encode([
                 'inventory_count' => 500,
@@ -103,7 +107,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -112,6 +116,7 @@ class PlanSeeder extends Seeder
             'price' => 7999.00,
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjBE7aXTMlHZr',
             'duration' => '30', // in days
             'features' => json_encode([
                 'inventory_count' => 1000,
@@ -120,7 +125,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -129,6 +134,7 @@ class PlanSeeder extends Seeder
             'price' => round(7999.00 * 12 * 0.93),
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjD01hRb3VZtR',
             'duration' => '365', // in days
             'features' => json_encode([
                 'inventory_count' => 1000,
@@ -137,7 +143,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -146,6 +152,7 @@ class PlanSeeder extends Seeder
             'price' => 11999.00,
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjGpBABg4OMct',
             'duration' => '30', // in days
             'features' => json_encode([
                'inventory_count' => 2000,
@@ -154,7 +161,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         Plan::create([
@@ -163,6 +170,7 @@ class PlanSeeder extends Seeder
             'price' => round(11999.00 * 12 * 0.93),
             'gst' => '18',
             'hsn' => '123456',
+            'razorpay_plan_id' => 'plan_OtjIAvcuutdEuk',
             'duration' => '365', // in days
             'features' => json_encode([
                'inventory_count' => 2000,
@@ -171,7 +179,7 @@ class PlanSeeder extends Seeder
                 'seller_program' => true,
                 'shine_program' => true,
             ]),
-            'status' => 1,
+            'status' => Plan::STATUS_ACTIVE,
         ]);
 
         \DB::statement('SET FOREIGN_KEY_CHECKS=1');

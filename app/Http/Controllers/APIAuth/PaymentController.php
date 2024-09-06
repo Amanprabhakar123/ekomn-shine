@@ -278,7 +278,7 @@ class PaymentController extends Controller
                 'company_id' => $company_detail->id,
                 'plan_id' => $payment->plan_id,
                 'subscription_start_date' => Carbon::now(),
-                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
+                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration)->subDay(),
                 'status' => CompanyPlan::STATUS_ACTIVE,
             ]);
 
