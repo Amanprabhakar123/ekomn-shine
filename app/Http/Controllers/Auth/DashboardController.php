@@ -22,6 +22,7 @@ use App\Services\CompanyService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Models\CompanyPlan;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
@@ -312,7 +313,7 @@ class DashboardController extends Controller
                 ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
-
+                    
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
         }
         abort('403', 'Unauthorized action.');
@@ -638,7 +639,15 @@ class DashboardController extends Controller
         if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_VIEW)) {
             abort('403');
         }
-        return view('dashboard.common.subscription_view');
+        
+        $userId = auth()->user()->id;
+        $companyDetail = CompanyDetail::with('subscription.plan', 'planSubscription', 'companyPlanPayment')
+            ->whereHas('subscription', function ($query) {
+                $query->where('status', CompanyPlan::STATUS_ACTIVE);
+            })
+        ->where('user_id', $userId)->first();
+        // dd($companyDetail);
+        return view('dashboard.common.subscription_view', compact('companyDetail'));
     }
 
     /**
@@ -687,6 +696,7 @@ class DashboardController extends Controller
                     'price' => 'required',
                     'gst' => 'required',
                     'hsn' => 'required',
+                    'razorpay_plan_id' => 'required',
                     'duration' => 'required',
                     'inventory_count' => 'required',
                     'download_count' => 'required',
@@ -711,6 +721,7 @@ class DashboardController extends Controller
                 $plan->price = $request->price;
                 $plan->gst = $request->gst;
                 $plan->hsn = $request->hsn;
+                $plan->razorpay_plan_id = $request->razorpay_plan_id;
                 $plan->duration = $request->duration;
                 $features = [
                     'inventory_count' => (int) $request->inventory_count,

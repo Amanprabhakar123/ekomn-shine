@@ -17,6 +17,7 @@
                             <th>Price</th>
                             <th>GST</th>
                             <th>HSN</th>
+                            <th>Razorpay Plan Id</th>
                             <th>Duration</th>
                             {{--<th>Features</th>
                             <th>Status</th>--}}
@@ -30,6 +31,7 @@
                         <td>{{$item->price}}</td>
                         <td>{{$item->gst}}</td>
                         <td>{{$item->hsn}}</td>
+                        <td>{{ $item->razorpay_plan_id ?? 'N/A' }}</td>
                         <td>{{$item->duration}}</td>
                         {{--
                                     <td>

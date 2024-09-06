@@ -67,6 +67,17 @@
                   <div class="col-sm-12 col-md-4">
                     <div class="ek_group">
                       <label class="eklabel req">
+                        <span>Razorpay Plan Id:<span class="req_star">*</span></span>
+                      </label>
+                      <div class="ek_f_input">
+                        <input type="text" id="razorpay_plan_id"  class="form-control" value="{{$plan->razorpay_plan_id}}"  placeholder="Razorpay plan id" />
+                        <div id="razorpay_plan_idErr" class="invalid-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-4">
+                    <div class="ek_group">
+                      <label class="eklabel req">
                         <span>Duration:</span>
                       </label>
                       <div class="ek_f_input">
@@ -158,6 +169,15 @@
                 $('#hsnErr').html('');
             }
 
+            if ($('#razorpay_plan_id').val() == '') {
+                $('#razorpay_plan_id').addClass('is-invalid');
+                $('#razorpay_plan_idErr').html('Please enter razorpay plan id');
+                isValid = false;
+            } else {
+                $('#razorpay_plan_id').removeClass('is-invalid');
+                $('#razorpay_plan_idErr').html('');
+            }
+
             if ($('#duration').val() == '') {
                 $('#duration').addClass('is-invalid');
                 $('#durationErr').html('Please enter duration');
@@ -185,6 +205,7 @@
                 formData.append('price', $('#price').val());
                 formData.append('gst', $('#gst').val());
                 formData.append('hsn', $('#hsn').val());
+                formData.append('razorpay_plan_id', $('#razorpay_plan_id').val());
                 formData.append('duration', $('#duration').val());
                 // formData.append('feature', $('#feature').val());
                 formData.append('id', $('#id').val());
