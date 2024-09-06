@@ -18,7 +18,7 @@
                             <tr>
                                 <td>Free Trial - 14 days</td>
                                 <td>INR 0.00</td>
-                                <td>INR 0.00</td>
+                                <td>Paid Amount</td>
                                 <td>Start Date</td>
                                 <td>End Date</td>
                             </tr>
@@ -49,7 +49,39 @@
                         </div>
                     </div>
                 </div>
+
+              
+
             </div>
+
+            <div class="col-sm-12 col-md-4 mt-5">
+                    <div class="ek_group">
+                      <label class="eklabel req">
+                        <span class="autodebitStatus fw-bold fs-5">Smart Pay:</span>
+                      </label>
+                      <div class="ek_f_input">
+                      <div class="switch-container">
+                            <label class="switch">
+                                <input type="checkbox" id="autodebitToggle" onclick="toggleAutodebit()">
+                                <span class="slider"></span>
+                            </label>
+                            <span id="autodebitStatus">AutoDebit: Paused</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-sm-12 col-md-4 mt-3">
+                    <div class="ek_group">
+                      <label class="eklabel req">
+                        <span class=" fw-bold fs-5">Smart Pay:</span>
+                      </label>
+                      <div class="ek_f_input">
+                      <button id="btnSubmit" class="btn btn-danger">Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+            
             <div class="saveform_footer text-right single-button">
                 <button id="btnSubmit" class="btn btnekomn">Download</button>
             </div>
@@ -57,4 +89,19 @@
     </div>
     @include('dashboard.layout.copyright')
 </div>
+@endsection
+@section('scripts')
+<script>
+    function toggleAutodebit() {
+    var checkbox = document.getElementById("autodebitToggle");
+    var statusText = document.getElementById("autodebitStatus");
+    
+    if (checkbox.checked) {
+        statusText.textContent = "AutoDebit: Active";
+    } else {
+        statusText.textContent = "AutoDebit: Paused";
+    }
+}
+
+</script>
 @endsection

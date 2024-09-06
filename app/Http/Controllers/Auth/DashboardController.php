@@ -686,6 +686,7 @@ class DashboardController extends Controller
                     'price' => 'required',
                     'gst' => 'required',
                     'hsn' => 'required',
+                    'razorpay_plan_id' => 'required',
                     'duration' => 'required',
                     'inventory_count' => 'required',
                     'download_count' => 'required',
@@ -710,6 +711,7 @@ class DashboardController extends Controller
                 $plan->price = $request->price;
                 $plan->gst = $request->gst;
                 $plan->hsn = $request->hsn;
+                $plan->razorpay_plan_id = $request->razorpay_plan_id;
                 $plan->duration = $request->duration;
                 $features = [
                     'inventory_count' => (int) $request->inventory_count,
