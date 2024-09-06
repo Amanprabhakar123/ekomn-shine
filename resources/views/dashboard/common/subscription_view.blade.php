@@ -18,6 +18,7 @@
                             <tr>
                                 <td>Free Trial - 14 days</td>
                                 <td>INR 0.00</td>
+                                <td>INR 0.00</td>
                                 <td>Start Date</td>
                                 <td>End Date</td>
                             </tr>

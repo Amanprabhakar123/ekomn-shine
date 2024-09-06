@@ -27,22 +27,23 @@
                 </div>
             </li>
                 <li>
-                    <div class="dropdown" id="sort_by_gst">
+                    <div class="dropdown" id="sort_by_plan_name">
                         <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Plan</span><strong class="dropdownValue">All</strong></button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" data-value="">All</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="{{GST_VERIFIED}}">Yes</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="{{GST_NOT_VERIFIED}}">No</a></li>
+                             @foreach($plans as $plan)
+                            <li><a class="dropdown-item" href="#" data-value="{{salt_encrypt($plan->id)}}">{{$plan->name}}</a></li>
+                            @endforeach
                         </ul>
                     </div>
                 </li>
                 <li>
-                    <div class="dropdown" id="sort_by_pan">
+                    <div class="dropdown" id="sort_by_status">
                         <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Status</span><strong class="dropdownValue">All</strong></button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" data-value="">All</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="{{PAN_VERIFIED}}">Yes</a></li>
-                            <li><a class="dropdown-item" href="#" data-value="{{PAN_NOT_VERIFIED}}">No</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="1">Active</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="0">In Active</a></li>
                         </ul>
                     </div>
                 </li>
@@ -53,12 +54,14 @@
                 <table class="normalTable tableSorting whitespace">
                     <thead>
                         <tr>
-                            <th data-sort-field="order_number">User Name</th>
+                            <th>Name</th>
+                            <th data-sort-field="order_number">Compnay Name</th>
                             <th data-sort-field="title">User ID
                             </th>
                             <th data-sort-field="courier_name">Type</th>
                             <th data-sort-field="tracking_url">Plan</th>
                             <th data-sort-field="status">Plan Price</th>
+                            <th data-sort-field="status">Paid Amount</th>
                             <th data-sort-field="status">Start Date</th>
                             <th data-sort-field="status">End Date</th>
                             <th data-sort-field="status">Inventory Count</th>
@@ -106,25 +109,26 @@
         const prevPage = document.getElementById("prevPage");
         const nextPage = document.getElementById("nextPage");
         const dataContainer = document.getElementById("dataContainer");
+        let start_date = last_date = '';
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
 
         $(function() {
             const today = moment().format('YYYY-MM-DD');
-            const thirtyDaysAgo = moment().subtract(30, 'days').format('YYYY-MM-DD');
+            const endDate = moment().add(30, 'days').format('YYYY-MM-DD');
             $('input[name="daterange"]').daterangepicker({
                 autoApply: true,
                 opens: 'left',
-                startDate: thirtyDaysAgo,
-                endDate: today,
+                startDate: today,
+                endDate: endDate,
                 locale: {
                     format: 'YYYY-MM-DD' // Ensures the date format is consistent
                 }
             }, function(start, end, label) {
                 // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                order_date = start.format('YYYY-MM-DD');
-                order_last_date = end.format('YYYY-MM-DD');
+                start_date = start.format('YYYY-MM-DD');
+                last_date = end.format('YYYY-MM-DD');
                 fetchData();
             });
 
@@ -143,24 +147,24 @@
             //     fetchData();
             // });
 
-            const nextThursday = moment().day(4).format('YYYY-MM-DD');
-            $('input[name="date"]').daterangepicker({
-                singleDatePicker: true,    // Enables single date picker
-                autoApply: true,
-                opens: 'left',
-                startDate: nextThursday,
-                locale: {
-                    format: 'YYYY-MM-DD'   // Ensures the date format is consistent
-                },
-                isInvalidDate: function(date) {
-                    // Check if the date is not a Thursday
-                    return date.day() !== 4;
-                }
-            },
-            function(selectedDate) {
-                statement_date = selectedDate.format('YYYY-MM-DD');
-                fetchData();
-            });
+            // const nextThursday = moment().day(4).format('YYYY-MM-DD');
+            // $('input[name="date"]').daterangepicker({
+            //     singleDatePicker: true,    // Enables single date picker
+            //     autoApply: true,
+            //     opens: 'left',
+            //     startDate: nextThursday,
+            //     locale: {
+            //         format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+            //     },
+            //     isInvalidDate: function(date) {
+            //         // Check if the date is not a Thursday
+            //         return date.day() !== 4;
+            //     }
+            // },
+            // function(selectedDate) {
+            //     statement_date = selectedDate.format('YYYY-MM-DD');
+            //     fetchData();
+            // });
         });
 
         // Event listener for the search input field
@@ -177,9 +181,9 @@
         });
 
         let selectedValues = {
-            sortByStatus: "0",
+            sortByStatus: "",
             sort_by_gst: "",
-            sort_by_pan: ""
+            sort_by_plan_name: ""
         };
         function handleDropdownSelection(dropdown, key) {
                 const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
@@ -198,56 +202,64 @@
         const sort_by_status = document.getElementById('sort_by_status');
         handleDropdownSelection(sort_by_status, 'sortByStatus');
 
-        const sort_by_gst = document.getElementById('sort_by_gst');
-        handleDropdownSelection(sort_by_gst, 'sort_by_gst');
+        // const sort_by_gst = document.getElementById('sort_by_gst');
+        // handleDropdownSelection(sort_by_gst, 'sort_by_gst');
 
-        const sort_by_pan = document.getElementById('sort_by_pan');
-        handleDropdownSelection(sort_by_pan, 'sort_by_pan');
+        const sort_by_plan_name = document.getElementById('sort_by_plan_name');
+        handleDropdownSelection(sort_by_plan_name, 'sort_by_plan_name');
 
-        let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-        let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-        const h_sorting = document.querySelectorAll(".h_sorting");
-        h_sorting.forEach(element => {
-            element.addEventListener("click", () => {
-            const sortFieldElement = element;
-            sortField = sortFieldElement.getAttribute("data-sort-field");
-            sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-            fetchData();
-            h_sorting.forEach(el => {
-                el.classList.remove("active");
-                el.classList.remove("asc");
-                el.classList.remove("desc");
-            });
-            element.classList.add("active");
-            element.classList.add(sortOrder);
-            });
-        });
+        // let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
+        // let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
+        // const h_sorting = document.querySelectorAll(".h_sorting");
+        // h_sorting.forEach(element => {
+        //     element.addEventListener("click", () => {
+        //     const sortFieldElement = element;
+        //     sortField = sortFieldElement.getAttribute("data-sort-field");
+        //     sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+        //     fetchData();
+        //     h_sorting.forEach(el => {
+        //         el.classList.remove("active");
+        //         el.classList.remove("asc");
+        //         el.classList.remove("desc");
+        //     });
+        //     element.classList.add("active");
+        //     element.classList.add(sortOrder);
+        //     });
+        // });
         // Function to fetch data from the server
         function fetchData() {
             // Make an API request to fetch inventory data
-            let apiUrl = `get-user-list?per_page=${rows}&page=${currentPage}`;
+            let apiUrl = `get-payment-info?per_page=${rows}&page=${currentPage}`;
 
-            if (sortField && sortOrder) {
-                apiUrl += `&sort=${sortField}&order=${sortOrder}`;
-            }
+            // if (sortField && sortOrder) {
+            //     apiUrl += `&sort=${sortField}&order=${sortOrder}`;
+            // }
 
             if (searchQuery) {
             apiUrl += `&query=${searchQuery.value}`;
             }
 
             if (selectedValues.sortByStatus) {
-            apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`;
+            apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`; 
             }
 
-            if (selectedValues.sort_by_gst) {
-            apiUrl += `&sort_by_gst=${selectedValues.sort_by_gst}`;
+            // if (selectedValues.sort_by_gst) {
+            // apiUrl += `&sort_by_gst=${selectedValues.sort_by_gst}`;
+            // }
+
+            if (selectedValues.sort_by_plan_name) {
+            apiUrl += `&sort_by_plan_name=${selectedValues.sort_by_plan_name}`;
             }
 
-            if (selectedValues.sort_by_pan) {
-            apiUrl += `&sort_by_pan=${selectedValues.sort_by_pan}`;
+            if(start_date && last_date) {
+                apiUrl += `&start_date=${start_date}&last_date=${last_date}`;
             }
 
-            ApiRequest( 'GET')
+            // if(statement_date){
+            //     apiUrl += `&statement_date=${statement_date}`;
+            // }
+
+            ApiRequest(apiUrl, 'GET')
             .then(response => {
                 const data = (response.data);
                 if(data.length === 0) {
@@ -365,44 +377,49 @@
         }
         return `
         <tr>
-            <td>
+         <td>
                  <div class="productTitle_t">
                    ${item.name}
                 </div>
             </td>
             <td>
                  <div class="productTitle_t">
-                  <a href="${item.link}" target="_blank">${item.business_name}</a> 
+                   ${item.business_name}
+                </div>
+            </td>
+            <td>
+                 <div class="productTitle_t">
+                ${item.company_serial_id}
 
                 </div>
             </td>
              <td>
                 <div class="productTitle_t">
-                   ${item.email}
+                   ${item.type}
 
                 </div>
             </td>
             <td>
                 <div class="productTitle_t">
-                   ${item.mobile_no}
+                   ${item.plan_name}
 
                 </div>
              </td>
              <td>
                 <div class="productTitle_t">
-                   ${item.role}
+                   ${item.amount}
 
                 </div>
              </td>
                  <td>
                 <div class="productTitle_t">
-                   ${item.gst_verified == 1 ? 'Yes' : 'No'}
+                   ${item.amount_with_gst}
 
                 </div>
              </td>
                 <td>
                 <div class="productTitle_t">
-                   ${item.pan_verified == 1 ? 'Yes' : 'No'}
+                   ${item.subscription_start_date}
 
                 </div>
              </td>
@@ -410,15 +427,27 @@
                
                 <td>
                 <div class="productTitle_t">
-                   ${item.company_serial_id}
+                   ${item.subscription_end_date}
+
+                </div>
+                </td>
+                <td>
+                  <div class="productTitle_t">
+                   ${item.inventory_count}
+
+                </div>
+                </td>
+                <td>
+                  <div class="productTitle_t">
+                   ${item.download_count}
 
                 </div>
              </td>
              <td>
-                <select class="changeStatus_t form-select" ${isDisabled} onchange="handleInput('${item.id}', 2, this)">
-                   <option value="1" ${item.status == "1" ? "selected" : ""}>Active</option>
-                   <option value="2" ${item.status == "2   " ? "selected" : ""}>In Active</option>
-                </select>
+                <div class="productTitle_t">
+                   ${item.status}
+
+                </div>
             </td>
         </tr>
     `;

@@ -623,7 +623,8 @@ class DashboardController extends Controller
         if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_LIST)) {
             abort('403');
         }
-        return view('dashboard.common.subscription_list');
+        $plans = Plan::get();
+        return view('dashboard.common.subscription_list', compact('plans'));
     }
 
     /**
