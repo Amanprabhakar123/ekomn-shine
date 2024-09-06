@@ -201,6 +201,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('update-admin-active', [AdminController::class, 'updateUserActive'])->name('update.admin.active');
         Route::post('update-admin-list', [AdminController::class, 'updateAdminList'])->name('update.admin.list');
         Route::post('update-plan', [DashboardController::class, 'planUpdate'])->name('update.plan');
+        Route::get('get-payment-info', [PaymentController::class, 'getPaymentInfo'])->name('get.payment.info');
     });
 });
 

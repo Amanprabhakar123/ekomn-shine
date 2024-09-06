@@ -9,24 +9,33 @@ use Razorpay\Api\Api;
 use App\Models\Receipt;
 use App\Models\CompanyPlan;
 use Illuminate\Support\Str;
+use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
 use App\Events\ExceptionEvent;
 use App\Models\CompanyPlanPayment;
 use App\Notifications\VerifyEmail;
 use App\Traits\ReceiptIdGenerator;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Models\BuyerRegistrationTemp;
+use App\Models\CompanyPlanPermission;
+use League\Fractal\Resource\Collection;
+use App\Transformers\SubscriptionListTransformer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class PaymentController extends Controller
 {
     use ReceiptIdGenerator;
 
-    public function __construct()
+    protected $fractal;
+
+    public function __construct(Manager $fractal)
     {
-        //
+        $this->fractal = $fractal;
     }
+    
 
     /**
      * Create a payment request.
@@ -300,6 +309,13 @@ class PaymentController extends Controller
                 'product_channel' => $user->product_channel,
             ]);
 
+            // Add the user download and inventory count
+            CompanyPlanPermission::create([
+                'company_id' => $company_detail->id,
+                'inventory_count' => 0,
+                'download_count' => 0,
+            ]);
+
             if (config('app.front_end_tech') == false) {
                 // Trigger email verification notification
                 $buyer->notify(new VerifyEmail);
@@ -337,5 +353,93 @@ class PaymentController extends Controller
             ]], __('statusCode.statusCode422'));
         }
         
+    }
+
+    /**
+     * get the value payement information.
+     * 
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response.
+     */
+    public function getPaymentInfo(Request $request)
+    {
+        try{
+        $perPage = $request->get('per_page', 10);
+        $serchTerm = $request->input('query', null);
+        $sort_by_status = $request->input('sort_by_status', null);
+        $sort_by_plan_name = $request->input('sort_by_plan_name', null);
+        $start_date = $request->input('start_date', null);
+        $last_date = $request->input('last_date', null);
+
+        if (!empty($sort_by_plan_name)) {
+            // Assuming you have a way to detect if the value is encrypted
+            $plan_id = salt_decrypt($sort_by_plan_name);
+        } else {
+            // Handle the case where the value is not provided
+            $decrypted_value = null;
+        }
+
+        
+        $payments = CompanyPlanPayment::with('companyDetails.subscription', 'companyDetails.planSubscription', 'plan')
+        ->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
+
+        if (!empty($serchTerm)) {
+            $payments = $payments->whereHas('companyDetails', function ($query) use ($serchTerm) {
+                $query->where('business_name', 'like', '%' . $serchTerm . '%')
+                    ->orWhere('company_serial_id', 'like', '%' . $serchTerm . '%')
+                    ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $serchTerm . '%')
+                    ->orWhere('first_name', 'like', '%' . $serchTerm . '%')
+                    ->orWhere('last_name', 'like', '%' . $serchTerm . '%');
+            });
+        }
+
+        if (!empty($plan_id)) {
+            $payments = $payments->whereHas('plan', function ($query) use ($plan_id) {
+                $query->where('id', 'like', '%' . $plan_id . '%');
+            });
+        }
+
+        if (!is_null($sort_by_status)) {
+            $payments = $payments->whereHas('companyDetails.subscription', function ($query) use ($sort_by_status) {
+                $query->where('status', 'like', '%' . $sort_by_status . '%');
+            });
+        }
+        
+        if(!is_null($start_date) && !is_null($last_date)) {
+            $payments = $payments->whereHas( 'companyDetails.subscription', function ($query) use ($start_date, $last_date) {
+                $query->where('subscription_start_date', '>=', $start_date)
+                ->where('subscription_end_date', '<=', $last_date);
+            });
+        }
+
+        $payments = $payments->orderBy('id', 'desc');
+        // Filter the payments based on the request
+        $payments = $payments->paginate($perPage);
+            
+
+        // Transform the paginated results using Fractal
+        $resource = new Collection($payments, new SubscriptionListTransformer);
+
+        // Add pagination information to the resource
+        $resource->setPaginator(new IlluminatePaginatorAdapter($payments));
+
+        // Create the data array using Fractal
+        $data = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($data);
+
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+        }
+        dd($exceptionDetails);
+        event(new ExceptionEvent($exceptionDetails));
+
+   
+
+
     }
 }
