@@ -88,7 +88,7 @@
                     <div class="ek_group">
                       <div class="ek_f_input">
                        <button id="btnSubmit" class="btn btn-login btnekomn card_f_btn payment_button">Renew/Upgrade</button>
-                       @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive())
+                       @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive() || $companyDetail->isSubscriptionAuth() || $companyDetail->isSubscriptionPending())
                        <button id="cancelSmartPay" class="btn btn-danger">Cancel Smart Pay</button>
                        @else
                        @if($companyDetail->subscription[0]->isPlanActive())
