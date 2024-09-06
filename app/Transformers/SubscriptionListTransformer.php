@@ -20,7 +20,8 @@ class SubscriptionListTransformer extends TransformerAbstract
         $status = !empty($CompanyPlanPayment->companyDetails->subscription) ? $CompanyPlanPayment->companyDetails->subscription->first()->status : 0;
         try{
         $data = [
-            'id' => $CompanyPlanPayment->id,
+            'id' => salt_encrypt($CompanyPlanPayment->id),
+            'email' => $CompanyPlanPayment->email,
             'name' => !empty($CompanyPlanPayment->companyDetails) ? $CompanyPlanPayment->companyDetails->first_name . ' ' . $CompanyPlanPayment->companyDetails->last_name : '',
             'business_name' => !empty($CompanyPlanPayment->companyDetails->business_name) ? $CompanyPlanPayment->companyDetails->business_name : 'Null',
             'company_serial_id' => !empty($CompanyPlanPayment->companyDetails) ? $CompanyPlanPayment->companyDetails->company_serial_id : '',

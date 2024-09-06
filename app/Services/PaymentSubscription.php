@@ -25,7 +25,7 @@ class PaymentSubscription
     public function fetchSubscription($subscriptionId)
     {
         $subscription = $this->razorpay->subscription->fetch($subscriptionId);
-        return response()->json($subscription);
+        return $subscription;
     }
 
     /**
@@ -37,7 +37,7 @@ class PaymentSubscription
     {
         $subscription = $this->razorpay->subscription->fetch($subscriptionId);
         $subscription->cancel(['cancel_at_cycle_end' => 0]); // Immediate cancellation
-        return response()->json(['status' => 'cancelled']);
+        return ['status' => 'cancelled'];
     }
 
     /**
@@ -45,18 +45,19 @@ class PaymentSubscription
      * @param $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function createNewSubscription($request, $total_count)
+    public function createNewSubscription($plan_id, $total_count)
     {
         $total_count = $total_count ? $total_count : 12;
         $subscriptionData = [
-            'plan_id' => $request->new_plan_id, // New plan ID
+            'plan_id' => $plan_id, // New plan ID
             'customer_notify' => 1,
-            'total_count' => $total_count, // Number of billing cycles
-            'start_at' => now()->addMinute()->timestamp, // Start time in Unix timestamp
+            'total_count' => $total_count * 10, // Number of billing cycles
+            // 'start_at' => now()->addMinutes(5)->timestamp, // Start time in Unix timestamp
+            'expire_by' => now()->addYears(10)->timestamp, // End time in Unix timestamp
         ];
 
         $newSubscription = $this->razorpay->subscription->create($subscriptionData);
-        return response()->json($newSubscription);
+        return $newSubscription;
     }
 
     /**
@@ -76,8 +77,8 @@ class PaymentSubscription
         $this->cancelSubscription($currentSubscriptionId);
 
         // Create new subscription
-        $newSubscription = $this->createNewSubscription($request, $total_count);
+        $newSubscription = $this->createNewSubscription($newPlanId, $total_count);
 
-        return response()->json($newSubscription);
+        return $newSubscription;
     }
 }

@@ -995,6 +995,7 @@ $(document).ready(function () {
                 } else {
                     var options = {
                         "key": "{{env('RAZORPAY_KEY')}}",
+                        'subscription_id': response.data.order.subscription_id,
                         "amount": response.data.order.amount,
                         "currency": response.data.order.currency,
                         "name": "{{env('APP_NAME')}}",
@@ -1012,7 +1013,7 @@ $(document).ready(function () {
                         },
                         "theme": {
                             "color": "#FECA40"
-                        }
+                        },
                     };
 
                     var rzp1 = new Razorpay(options);

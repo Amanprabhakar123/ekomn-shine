@@ -21,6 +21,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Models\BuyerRegistrationTemp;
 use App\Models\CompanyPlanPermission;
+use App\Services\PaymentSubscription;
 use League\Fractal\Resource\Collection;
 use App\Transformers\SubscriptionListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -82,14 +83,27 @@ class PaymentController extends Controller
             $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
             if ($plan_details->is_trial_plan == 0) {
                 $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+                // create subscription for buyer
+                if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
+                    $subscription  = new PaymentSubscription();
+                    if($plan_details->duration == 30){
+                        $total_count = 12;
+                    }else{
+                        $total_count = 1;
+                    }
+                    $subscriptionData = $subscription->createNewSubscription($plan_details->razorpay_plan_id, $total_count);
+                }
                 $order = $api->order->create([
-                    'amount' => round($amount_with_gst) * 100, // Amount in paise
+                    'amount' => (int) ($amount_with_gst * 100), // Amount in paise
                     'currency' => $currency,
                     'receipt' => (string) $receiptId,
                     'notes' => [
                         'plan' => $plan_details->description,
-                    ],
+                    ]
                 ]);
+                if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
+                    $order['subscription_id'] = $subscriptionData['id'];
+                }
                 CompanyPlanPayment::create([
                     'transaction_id' => $order->id,
                     'purchase_id' => Str::uuid(),
@@ -184,25 +198,45 @@ class PaymentController extends Controller
     {
         // Store request all value in logs
         \Log::info('Request data: '.json_encode($request->all()));
-        $paymentId = $request->input('razorpay_payment_id');
-        $orderId = $request->input('razorpay_order_id');
-        $signature = $request->input('razorpay_signature');
+        if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
+            $paymentId = $request->input('razorpay_payment_id');
+            $signature = $request->input('razorpay_signature');
+            $subscription_id = $request->input('razorpay_subscription_id');
+        }else{
+            $paymentId = $request->input('razorpay_payment_id');
+            $signature = $request->input('razorpay_signature');
+            $orderId = $request->input('razorpay_order_id');
+        }
 
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-        $attributes = [
-            'razorpay_order_id' => $orderId,
-            'razorpay_payment_id' => $paymentId,
-            'razorpay_signature' => $signature,
-        ];
+        
         try {
-            $api->utility->verifyPaymentSignature($attributes);
+            if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
+                 // Update Subscription status
+                $subscription = $api->subscription->fetch($subscription_id);
+                // Verify the payment
+                $payment = $api->payment->fetch($paymentId);
+                $orderId = $payment->order_id;
+                $subscriptionData = ['razorpay_subscription_id' => $subscription_id, 'razorpay_plan_id' => $subscription->plan_id];
+
+            }else{
+                $attributes = [
+                    'razorpay_order_id' => $orderId,
+                    'razorpay_payment_id' => $paymentId,
+                    'razorpay_signature' => $signature,
+                ];
+                $api->utility->verifyPaymentSignature($attributes);
+                $subscriptionData = null;
+            }
+           
+            // Update the payment status
             $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
             $payment->razorpay_payment_id = $paymentId;
             $payment->razorpay_signature = $signature;
             $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_SUCCESS;
             $payment->save();
 
-            return $this->storePaymentDetails($payment);
+            return $this->storePaymentDetails($payment, $subscriptionData);
         } catch (\Exception $e) {
 
             // Log the exception details and trigger an ExceptionEvent
@@ -235,7 +269,7 @@ class PaymentController extends Controller
      * @param  \Illuminate\Http\Request  $request  The HTTP request object.
      * @return \Illuminate\Http\JsonResponse The JSON response.
      */
-    private function storePaymentDetails($payment)
+    private function storePaymentDetails($payment, $subscriptionData = null)
     {
         try {
             // Delete receipt information because that is used for the next receipt id
@@ -266,6 +300,14 @@ class PaymentController extends Controller
                 'pan_no' => $user->pan,
                 'designation' => $user->designation,
             ]);
+            if(env('RAZORPAY_PAY_SUBSCRIPTION') == true){
+                if(!is_null($subscriptionData)) {
+                    $company_detail->razorpay_subscription_id = $subscriptionData['razorpay_subscription_id'];
+                    $company_detail->razorpay_plan_id = $subscriptionData['razorpay_plan_id'];
+                    $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
+                }
+            }
+           
             $payment->company_id = $company_detail->id;
             $payment->save();
 
@@ -278,7 +320,7 @@ class PaymentController extends Controller
                 'company_id' => $company_detail->id,
                 'plan_id' => $payment->plan_id,
                 'subscription_start_date' => Carbon::now(),
-                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration)->subDay(),
+                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
                 'status' => CompanyPlan::STATUS_ACTIVE,
             ]);
 
@@ -401,7 +443,7 @@ class PaymentController extends Controller
 
         if (!is_null($sort_by_status)) {
             $payments = $payments->whereHas('companyDetails.subscription', function ($query) use ($sort_by_status) {
-                $query->where('status', 'like', '%' . $sort_by_status . '%');
+                $query->where('status', $sort_by_status);
             });
         }
         
@@ -435,11 +477,6 @@ class PaymentController extends Controller
                 'file' => $e->getFile(),
             ];
         }
-        dd($exceptionDetails);
         event(new ExceptionEvent($exceptionDetails));
-
-   
-
-
     }
 }

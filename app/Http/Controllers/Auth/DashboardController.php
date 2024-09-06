@@ -548,6 +548,7 @@ class DashboardController extends Controller
             } else {
                 $users = $users->role([ROLE_BUYER, ROLE_SUPPLIER]);
             }
+            $users = $users->orderBy('id', 'desc');
             $users = $users->paginate($perPage);
 
             // Transform the paginated results using Fractal

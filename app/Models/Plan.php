@@ -22,6 +22,7 @@ class Plan extends Model
         'features',
         'gst',
         'hsn',
+        'razorpay_plan_id',
         'status',
     ];
 

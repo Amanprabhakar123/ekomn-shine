@@ -95,6 +95,7 @@ class CompanyDetail extends Model
     const SUBSCRIPTION_STATUS_PENDING = 2;
     const SUBSCRIPTION_STATUS_CANCELLED = 3;
     const SUBSCRIPTION_STATUS_EXPIRED = 4;
+    const SUBSCRIPTION_STATUS_CREATED = 5;
 
     /**
      * Get the options for logging changes to the model.
@@ -304,8 +305,10 @@ class CompanyDetail extends Model
                 return 'Cancelled';
             case self::SUBSCRIPTION_STATUS_EXPIRED:
                 return 'Expired';
+            case self::SUBSCRIPTION_STATUS_CREATED:
+                return 'Created';
             default:
-                return '';
+                return 'Unknown';
         }
     }
 
@@ -396,6 +399,14 @@ class CompanyDetail extends Model
     public function isSubscriptionExpired()
     {
         return $this->subscription_status == self::SUBSCRIPTION_STATUS_EXPIRED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionCreated()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_CREATED;
     }
     
 }

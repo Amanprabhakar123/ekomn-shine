@@ -684,6 +684,9 @@ class ReturnOrderController extends Controller
             }
 
             $returnShipment->status = $request->status;
+            if($request->status == ReturnShipment::STATUS_DELIVERED){
+                $returnShipment->delivered_date = now();
+            }
             $returnShipment->save();
 
             return response()->json(['data' => [
