@@ -515,6 +515,8 @@ class PaymentController extends Controller
                 $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_CANCELLED;
             }elseif($subscription['status'] == 'expired'){
                 $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_EXPIRED;
+            }elseif($subscription['status'] == 'authenticated'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_AUTH;
             }
             $company_detail->save();
             return response()->json(['data' => [
@@ -602,17 +604,27 @@ class PaymentController extends Controller
      */
     public function activeSubscription(Request $request)
     {
-         // Store request all value in logs
-        \Log::info('Request data: '.json_encode($request->all()));
-        $paymentId = $request->input('razorpay_payment_id');
-        $signature = $request->input('razorpay_signature');
-        $subscription_id = $request->input('razorpay_subscription_id');
-
+        $data = $request->all();
+        $subscription_id = $data['payload']['subscription']['entity']['id'];
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-
         // Update Subscription status
         $subscription = $api->subscription->fetch($subscription_id);
-
-        \Log::info('Subscription data: '.json_encode($subscription));
+        if($subscription->status == 'authenticated'){
+            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_AUTH;
+            $company_detail->save();
+        }elseif($subscription->status == 'active'){
+            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
+            $company_detail->save();
+        }elseif($subscription->status == 'completed'){
+            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_COMPLETED;
+            $company_detail->save();
+        }elseif($subscription->status == 'pending'){
+            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_PENDING;
+            $company_detail->save();
+        }
     }
 }

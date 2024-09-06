@@ -97,6 +97,7 @@ class CompanyDetail extends Model
     const SUBSCRIPTION_STATUS_EXPIRED = 4;
     const SUBSCRIPTION_STATUS_CREATED = 5;
     const SUBSCRIPTION_STATUS_COMPLETED = 6; 
+    const SUBSCRIPTION_STATUS_AUTH = 7;
 
     /**
      * Get the options for logging changes to the model.
@@ -310,6 +311,8 @@ class CompanyDetail extends Model
                 return 'Created';
             case self::SUBSCRIPTION_STATUS_COMPLETED:
                 return 'Completed';
+            case self::SUBSCRIPTION_STATUS_AUTH:
+                return 'Authorized';
             default:
                 return 'Unknown';
         }
@@ -418,6 +421,14 @@ class CompanyDetail extends Model
     public function isSubscriptionCompleted()
     {
         return $this->subscription_status == self::SUBSCRIPTION_STATUS_COMPLETED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionAuth()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_AUTH;
     }
 
     /**

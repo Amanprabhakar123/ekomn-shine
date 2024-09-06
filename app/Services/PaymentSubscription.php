@@ -101,8 +101,9 @@ class PaymentSubscription
             $subscription = $this->razorpay->subscription->fetch($subscriptionId)->resume(['resume_at' => 'now']);  
         }elseif($status == CompanyDetail::SUBSCRIPTION_STATUS_IN_ACTIVE && $subscription->status == 'active'){
             $subscription = $this->razorpay->subscription->fetch($subscriptionId)->pause(['pause_at' => 'now']);  
-        }elseif($subscription->status == 'completed'){
-            return ['status' => 'completed'];
+        }
+        else{
+            return ['status' => $subscription->status];
         }
         return $subscription;
     }
