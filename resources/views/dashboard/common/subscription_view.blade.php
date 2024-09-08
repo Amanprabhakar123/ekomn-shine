@@ -6,7 +6,7 @@
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Subscription View</h3>
-                <button class="btn btnekomn_dark stripbtn" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-pdf me-2"></i>Download Invoice</button>
+                <button class="btn btnekomn_dark stripbtn" onclick="downloadInvoice('{{salt_encrypt($companyDetail->id)}}')"><i class="fas fa-file-pdf me-2"></i>Download Invoice</button>
             </div>
             <div class="row mt-3">
                 <div class="col-12">
@@ -750,6 +750,38 @@ $('#btnRenewal').click(function() {
     //         window.open(response.data.payment_link, '_blank');
     //     }
     // });
-});
+  });
+     // download the invoice pdf
+     function downloadInvoice(subscription_id) {
+            fetch('{{ route('subscription.invoice') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(subscription_id)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'Invoice_' + Date.now() + '.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error downloading products:', error);
+                });
+
+
+        }
+
 </script>
 @endsection

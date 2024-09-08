@@ -15,12 +15,12 @@ class EkomnDetails extends Seeder
         $ekomnDetails = [
             [
                 'ekomn_name' => 'Ekomn',
-                'address' => 'Ekomn Address',
-                'pincode' => '123456',
-                'city' => 'Ekomn City',
-                'state' => 'Ekomn State',
-                'contact' => '1234567890',
-                'email' => 'ekomn@gmail.com',
+                'address' => 'Ocus Quantum, Ocus Quantum Internal Rd, Sector 51,',
+                'pincode' => '122003',
+                'city' => 'Gurugram',
+                'state' => 'Haryana',
+                'contact' => '+91 9810164845',
+                'email' => 'info@ekomn.com',
                 'gst' => '1234567890',
             ],
         ];

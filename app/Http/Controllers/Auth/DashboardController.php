@@ -24,8 +24,10 @@ use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Models\CompanyPlan;
 use App\Models\ProductVariationMedia;
+use App\Services\PaymentSubscription;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
+use Directory;
 use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -766,6 +768,48 @@ class DashboardController extends Controller
                     ],
                 ], __('statusCode.statusCode422'));
             }
+        }
+
+        public function subscriptionInvoice(Request $request){
+            try{
+                $subscriptionId = salt_decrypt($request->all()[0]);
+                $orderService = new PaymentSubscription;
+                $fileName = $orderService->subscriptionInvoice($subscriptionId);
+                $originalFullPath = storage_path('app/public/' . $fileName);
+                $file = file_get_contents($originalFullPath);
+
+                return response($file, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                ]);
+
+                // delete the file after sending the response
+                unlink($originalFullPath);
+
+                // delete the directroy if it is empty
+                $directory = dirname($originalFullPath);
+                if (is_dir($directory) && count(scandir($directory)) == 2) {
+                    rmdir($directory);
+                }
+
+            }catch(\Exception $e){
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $e->getMessage(),
+                    ],
+                ], __('statusCode.statusCode422'));
+            }
+            dd($exceptionDetails);
+            new ExceptionEvent($exceptionDetails);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $e->getMessage(),
+                ],
+            ], __('statusCode.statusCode422'));
         }
 
 

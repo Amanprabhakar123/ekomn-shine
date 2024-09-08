@@ -28,6 +28,7 @@ use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -205,6 +206,7 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::post('change-subscription-status', [PaymentController::class, 'changeSubscriptionStatus'])->name('change.subscription.status');
         Route::post('enable-subscription', [PaymentController::class, 'enableSubscription'])->name('enable.subscription');
         Route::post('renew-payment', [PaymentController::class, 'renewPayment'])->name('renew.payment');
+        Route::post('/subscription-invoice', [DashboardController::class, 'subscriptionInvoice'])->name('subscription.invoice');
     });
 });
 

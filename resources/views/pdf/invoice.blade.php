@@ -165,7 +165,7 @@
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{number_format($other_charges_gst, 2)}}</td>
             </tr>
             <tr>
-              <td colspan="8" height="30"></td>
+              <td colspan="9" height="30"></td>
             </tr>
             <tr>
               <th style="font-size: 14px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;width: 250px;">Total</th>
@@ -177,8 +177,9 @@
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 8px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10">{{number_format(($total_gst_amount+$produc_gst+$shiping_gst_amount), 2)}}</td>
               <th style="font-size: 14px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{ $total_amount }}</th>
             </tr>
+            <td colspan="9" height="50"></td>
             <tr>
-              <td colspan="8" style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;text-align: left;border-bottom: 1px solid #ddd;">
+              <td colspan="9" style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;text-align: left;border-bottom: 1px solid #ddd;">
                 <strong>Amount in Words:</strong> {{convertNumberToWords($total_amount)}} only
               </td>
             </tr>

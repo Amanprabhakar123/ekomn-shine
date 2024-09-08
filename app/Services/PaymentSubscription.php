@@ -3,8 +3,13 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use App\Models\Plan;
 use Razorpay\Api\Api;
+use App\Models\CompanyPlan;
+use App\Models\EkomnDetails;
 use App\Models\CompanyDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentSubscription
 {
@@ -106,5 +111,96 @@ class PaymentSubscription
             return ['status' => $subscription->status];
         }
         return $subscription;
+    }
+
+    /**
+     * subscription invoice
+     * 
+     * @param $subscriptionId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function subscriptionInvoice($subscriptionId)
+    {
+        $userId = auth()->user()->id;
+        $companyDetail = CompanyDetail::where('id', $subscriptionId)->with([
+            'subscription' => function ($query) {
+                $query->where('status', CompanyPlan::STATUS_ACTIVE)
+                      ->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest subscription with status 1
+            },
+            'address',
+            'subscription.plan',
+            'planSubscription',
+            'companyPlanPayment' => function ($query) {
+                $query->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest payment
+            },
+        ])->whereHas('subscription', function ($query) {
+            $query->where('status', 1); // Make sure the company has at least one active subscription
+        })
+        ->where('user_id', $userId)
+        ->first();
+
+        $ekomn = EkomnDetails::get();
+        // dd($companyDetail);
+        $plans = Plan::get();
+
+            // Get the logo image from the storage
+            $logo = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/logo_b.png'));
+            // Get the rupee image from the storage
+            $rupee = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/icon/rupee.png'));
+            // Prepare data for the PDF
+
+           
+
+            $data = [
+                'ekomn' => $ekomn[0]->ekomn_name,
+                'ekomn_address' => $ekomn[0]->address,
+                'ekomn_pincode' => $ekomn[0]->pincode,
+                'ekomn_city' => $ekomn[0]->city,
+                'ekomn_state' => $ekomn[0]->state,
+                'ekomn_gst' => $ekomn[0]->gst,
+                'first_name' => $companyDetail->first_name,
+                'last_name' => $companyDetail->last_name,
+                'gst_no' => $companyDetail->gst_no,
+                'address' => $companyDetail->address[0]->address_line1,
+                'city' => $companyDetail->address[0]->city,
+                'state' => $companyDetail->address[0]->state,
+                'pincode' => $companyDetail->address[0]->pincode,
+                'plane_name' => $companyDetail->subscription[0]->plan->name,
+                'hsn' =>$companyDetail->subscription[0]->plan->hsn,
+                'gst' =>$companyDetail->subscription[0]->plan->gst,
+                'price' =>$companyDetail->subscription[0]->plan->price,
+                'receipt_id' => $companyDetail->companyPlanPayment->receipt_id,
+                'date' => $companyDetail->companyPlanPayment,
+                'subscription_start_date' => $companyDetail->subscription[0]->subscription_start_date->toDateString(),
+                'subscription_end_date' => $companyDetail->subscription[0]->subscription_end_date->toDateString(),
+                'amount_with_gst' => $companyDetail->companyPlanPayment->amount_with_gst,
+                'logo' => $logo,
+                'rupee' => $rupee,
+            ];
+            // dd($data);
+            // Generate the PDF
+            $pdf = PDF::loadView('pdf.subscription', $data);
+                 // Set the PDF coordinates
+                    $pdf->setOptions([
+                        'dpi' => 110,
+                        'isHtml5ParserEnabled' => true,
+                        'isRemoteEnabled' => true,
+                        'isPhpEnabled' => true,
+                        'isJavascriptEnabled' => true,
+                        'isHtmlImagesEnabled' => true,
+                    ]);
+
+                    $fileName = 'invoice_subscription.pdf';
+                    $pdf->render();
+                    // Save the PDF to the storage
+
+                    Storage::disk('public')->put('subscription/'.$companyDetail->subscription[0]->subscription_id.'/'.$fileName, $pdf->output());
+                    return 'subscription/'.$companyDetail->subscription[0]->subscription_id.'/'.$fileName;
+
+                    // Storage::disk('public')->put('order/'.$invoice->invoice_number.'/'.$fileName, $pdf->output());
+                    // return 'order/'.$invoice->invoice_number.'/'.$fileName;
+
     }
 }
