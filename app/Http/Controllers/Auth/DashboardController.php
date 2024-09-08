@@ -641,13 +641,25 @@ class DashboardController extends Controller
         }
         
         $userId = auth()->user()->id;
-        $companyDetail = CompanyDetail::with('subscription.plan', 'planSubscription', 'companyPlanPayment')
-            ->whereHas('subscription', function ($query) {
-                $query->orderBy('id', 'desc')->limit(1);
-            })
-        ->where('user_id', $userId)->first();
-        // dd($companyDetail);
-        return view('dashboard.common.subscription_view', compact('companyDetail'));
+        $companyDetail = CompanyDetail::with([
+            'subscription' => function ($query) {
+                $query->where('status', CompanyPlan::STATUS_ACTIVE)
+                      ->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest subscription with status 1
+            },
+            'subscription.plan',
+            'planSubscription',
+            'companyPlanPayment' => function ($query) {
+                $query->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest payment
+            },
+        ])->whereHas('subscription', function ($query) {
+            $query->where('status', 1); // Make sure the company has at least one active subscription
+        })
+        ->where('user_id', $userId)
+        ->first();
+        $plans = Plan::get();
+        return view('dashboard.common.subscription_view', compact('companyDetail', 'plans'));
     }
 
     /**

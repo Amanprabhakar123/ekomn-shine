@@ -1000,7 +1000,7 @@ $(document).ready(function () {
                         "currency": response.data.order.currency,
                         "name": "{{env('APP_NAME')}}",
                         "description": "Ecomn Buyer Subscription Transaction",
-                        "image": "{{asset('assets/images/Logo.svg')}}",
+                        "image": "{{asset('assets/images/logo.png')}}",
                         "order_id": response.data.order.id,
                         "callback_url": "{{route('payment.success')}}",
                         "prefill": {

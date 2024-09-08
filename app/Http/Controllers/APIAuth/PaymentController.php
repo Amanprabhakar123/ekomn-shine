@@ -13,6 +13,7 @@ use League\Fractal\Manager;
 use Illuminate\Http\Request;
 use App\Models\CompanyDetail;
 use App\Events\ExceptionEvent;
+use App\Models\BuyerInventory;
 use App\Models\CompanyPlanPayment;
 use App\Notifications\VerifyEmail;
 use App\Traits\ReceiptIdGenerator;
@@ -23,6 +24,7 @@ use App\Models\BuyerRegistrationTemp;
 use App\Models\CompanyPlanPermission;
 use App\Services\PaymentSubscription;
 use League\Fractal\Resource\Collection;
+use Elastic\Elasticsearch\Endpoints\Cat;
 use App\Transformers\SubscriptionListTransformer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -246,6 +248,13 @@ class PaymentController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
+
+            // Update the payment status
+            $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
+            $payment->razorpay_payment_id = $paymentId;
+            $payment->razorpay_signature = $signature;
+            $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_FAILED;
+            $payment->save();
 
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
@@ -604,27 +613,324 @@ class PaymentController extends Controller
      */
     public function activeSubscription(Request $request)
     {
+        try{
         $data = $request->all();
         $subscription_id = $data['payload']['subscription']['entity']['id'];
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
         // Update Subscription status
         $subscription = $api->subscription->fetch($subscription_id);
+        $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+        if(empty($company_detail)){
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.subscriptionStatusFailed'),
+            ]], __('statusCode.statusCode422'));
+        }
         if($subscription->status == 'authenticated'){
-            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
             $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_AUTH;
             $company_detail->save();
         }elseif($subscription->status == 'active'){
-            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
             $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
             $company_detail->save();
         }elseif($subscription->status == 'completed'){
-            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
             $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_COMPLETED;
             $company_detail->save();
         }elseif($subscription->status == 'pending'){
-            $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
             $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_PENDING;
             $company_detail->save();
         }
+        return response()->json(['data' => [
+            'statusCode' => __('statusCode.statusCode200'),
+            'status' => __('statusCode.status200'),
+            'message' => __('auth.subscriptionStatusChanged'),
+        ]], __('statusCode.statusCode200'));
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.subscriptionStatusFailed'),
+            ]], __('statusCode.statusCode422'));
+        }
+    }
+
+    /**
+     * get the value payement information.
+     * 
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse The JSON response.
+     */
+    public function renewPayment(Request $request){
+        try{
+            $company_id = salt_decrypt($request->input('company_id'));
+            $last_plan = salt_decrypt($request->input('last_plan'));
+            $new_plan = salt_decrypt($request->input('plan'));
+            $is_downgrade = $request->input('is_downgrade', false);
+
+            // check plan is downgrade or upgrade
+            if($is_downgrade){
+                $isPlanStatus = $this->planDowngradeUpgrade($company_id, $last_plan, $new_plan, false);
+            }else{
+                $isPlanStatus = false;
+            }
+            if($isPlanStatus){
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => __('auth.downgradePlan'),
+                ]], __('statusCode.statusCode200'));
+            }
+            $receiptId = $this->getNextReceiptId(rand(1, 9999999999999));
+            $currency = $request->input('currency', 'INR');
+            $plan_details = Plan::where('id', $new_plan)->where('status', Plan::STATUS_ACTIVE)->first();
+            $company_detail = CompanyDetail::find($company_id);
+            $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
+            if ($plan_details->is_trial_plan == 0) {
+                $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+                $order = $api->order->create([
+                    'amount' => (int) ($amount_with_gst * 100), // Amount in paise
+                    'currency' => $currency,
+                    'receipt' => (string) $receiptId,
+                    'notes' => [
+                        'plan' => $plan_details->description,
+                    ]
+                ]);
+                CompanyPlanPayment::create([
+                    'transaction_id' => $order->id,
+                    'purchase_id' => Str::uuid(),
+                    'plan_id' => $plan_details->id,
+                    'company_id' => $company_detail->id,
+                    'amount' => $plan_details->price,
+                    'amount_with_gst' => $amount_with_gst,
+                    'gst_percent' => $plan_details->gst,
+                    'currency' => $currency,
+                    'receipt_id' => $receiptId,
+                    'is_trial_plan' => $plan_details->is_trial_plan,
+                    'payment_status' => CompanyPlanPayment::PAYMENT_STATUS_PENDING,
+                    'email' => $company_detail->email,
+                    'mobile' => $company_detail ->mobile_no,
+                    'buyer_id' => $company_detail->user_id, // this is the buyer temp id or user_id
+                    'json_response' => json_encode($order->toArray()),
+                ]);
+
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'is_trial_plan' => $plan_details->is_trial_plan,
+                    'message' => __('auth.paymentOrder'),
+                    'order' => $order->toArray(),
+                ]], __('statusCode.statusCode200'));
+            }
+        }catch(\Exception $e){
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ];
+            event(new ExceptionEvent($exceptionDetails));
+        }
+    }
+
+    /**
+     * Handle the successful payment request.
+     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request object.
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse The JSON response or redirect response.
+     *
+     * @throws \Exception If an error occurs during the payment process.
+     *
+     * @OA\Post(
+     *     path="/api/renewal-payment-success/callback",
+     *     summary="Handle successful payment",
+     *     description="Handle the successful payment request and perform necessary actions.",
+     *     tags={"Payment"},
+     *
+     *     @OA\RequestBody(
+     *         required=true,
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/PaymentSuccessRequest")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment success",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/SuccessResponse")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=422,
+     *         description="Payment failed",
+     *
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
+    public function renewalPaymentSuccess(Request $request)
+    {
+        // Store request all value in logs
+        \Log::info('Request data: '.json_encode($request->all()));
+        $paymentId = $request->input('razorpay_payment_id');
+        $signature = $request->input('razorpay_signature');
+        $orderId = $request->input('razorpay_order_id');
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        
+        try {
+            $attributes = [
+                'razorpay_order_id' => $orderId,
+                'razorpay_payment_id' => $paymentId,
+                'razorpay_signature' => $signature,
+            ];
+            $api->utility->verifyPaymentSignature($attributes);
+            // Update the payment status
+            $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
+            $payment->razorpay_payment_id = $paymentId;
+            $payment->razorpay_signature = $signature;
+            $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_SUCCESS;
+            $payment->save();
+
+            $company_detail = CompanyDetail::find($payment->company_id);
+            // In active last plan
+            $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
+            $last_plan->status = CompanyPlan::STATUS_INACTIVE;
+            $last_plan->save();
+
+            // get new plan details
+            $plan_details = Plan::where('id', $payment->plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
+            // Create new plan for the company
+            CompanyPlan::create([
+                'company_id' => $company_detail->id,
+                'plan_id' => $payment->plan_id,
+                'subscription_start_date' => Carbon::now(),
+                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
+                'status' => CompanyPlan::STATUS_ACTIVE,
+            ]);
+
+            $is_downgrade = $this->planDowngradeUpgrade($company_detail->id, $last_plan->plan_id, $payment->plan_id, true);
+            if($is_downgrade['status']){
+                $current_inventory_count = $is_downgrade['current_inventory_count'];
+                $last_inventory_count = $is_downgrade['last_inventory_count'];
+
+                // which inventory count is bigger
+                if($last_inventory_count < $current_inventory_count){
+                    $inventory_count = $last_inventory_count;
+                }else{
+                    $inventory_count = $current_inventory_count;
+                }
+                \Log::info('Inventory count: '.$inventory_count);
+                // Update the company plan permission
+                CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                    'company_id' => $company_detail->id,
+                    'inventory_count' => $inventory_count,
+                    'download_count' => 0,
+                ]);
+        
+            // Step 1: Retrieve the IDs of all records except the first 100
+            $idsToDelete = BuyerInventory::where('company_id', $company_detail->id)
+            ->orderBy('id', 'asc')  // Order by ascending to get the first records first
+            ->limit($current_inventory_count)            // Skip the first 100 records
+            ->pluck('id');          // Get the IDs of the remaining records
+
+            if($idsToDelete->isNotEmpty()){
+                // Step 2: Delete the records with the retrieved IDs
+                BuyerInventory::whereNotIn('id', $idsToDelete)->delete();
+            }
+            }else{
+                CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                    'company_id' => $company_detail->id,
+                    'download_count' => 0,
+                ]);
+            }
+
+            return redirect()->route('subscription.view');
+
+        } catch (\Exception $e) {
+
+            // Log the exception details and trigger an ExceptionEvent
+            // Prepare exception details
+            $exceptionDetails = [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+
+            // Update the payment status
+            $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
+            $payment->razorpay_payment_id = $paymentId;
+            $payment->razorpay_signature = $signature;
+            $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_FAILED;
+            $payment->save();
+
+            // Trigger the event
+            event(new ExceptionEvent($exceptionDetails));
+
+            \Log::info('Request data: '.$e->getMessage().'---- '.$e->getLine());
+
+            if (config('app.front_end_tech') == false) {
+                return redirect()->route('payment.failed');
+            }
+
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode422'),
+                'status' => __('statusCode.status422'),
+                'message' => __('auth.paymentFailed'),
+            ]], __('statusCode.statusCode422'));
+        }
+    }
+    
+    /**
+     * check the plan is downgrade or upgrade.
+     * 
+     * @param  int  $company_id  The company id.
+     * @param  int  $last_plan  The last plan id.
+     * @param  int  $new_plan  The new plan id.
+     * @return bool The JSON response.
+     */
+    public function planDowngradeUpgrade($company_id, $last_plan, $new_plan, $respose = false){
+        $last_plan_details = Plan::find($last_plan);
+        $last_features = json_decode($last_plan_details->features, true);
+        $last_download_count = $last_features['download_count'];
+        $last_inventory_count = $last_features['inventory_count'];
+
+        $new_plan_details = Plan::find($new_plan);
+        $features = json_decode($new_plan_details->features, true);
+        $current_download_count = $features['download_count'];
+        $current_inventory_count = $features['inventory_count'];
+        $permission = CompanyPlanPermission::where('company_id', $company_id)->get();
+        if($permission->isNotEmpty()){
+            $permission = $permission->first();
+            $inventory_count = $permission->inventory_count;
+        }else{
+            $inventory_count = 0;
+        }
+
+        if(($current_download_count < $last_download_count) && ($current_inventory_count < $last_inventory_count)){
+            if($respose){
+              \Log::info('Current used inventory count: '.$inventory_count);
+               return ['status' => true,
+                'last_download_count' => $last_download_count,
+                'last_inventory_count' => $inventory_count,
+                'current_download_count' => $current_download_count,
+                'current_inventory_count' => $current_inventory_count
+               ];
+            }
+           return true;
+        }
+        if($respose){
+            return [
+            'status' => false,
+             'last_download_count' => $last_download_count,
+             'last_inventory_count' => $inventory_count,
+             'current_download_count' => $current_download_count,
+             'current_inventory_count' => $current_inventory_count
+            ];
+         }
+        return false;
     }
 }

@@ -151,4 +151,5 @@ return [
     'subscriptionCancelled' => 'Subscription cancelled successfully.',
     'subscriptionStatusFailed' => 'Subscription status change failed.',
     'planNotEligible' => 'Trial plan not eligible for subscription.',
+    'downgradePlan' => 'You are downgrading your plan. In this case, your download/inventory count will be updated as per the new plan and the last added inventory will be removed automatically. Alternatively, you can update it manually.',
 ];
