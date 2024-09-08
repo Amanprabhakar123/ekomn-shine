@@ -121,7 +121,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Single Piece / Dropship Rate:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" value="{{(int)$variations->dropship_rate}}" name="dropship_rate" id="dropship_rate" required data-toggle="tooltip" data-placement="top" title="Enter per piece rate in INR"/>
+                      <input type="text" class="form-control" placeholder="Enter Dropship Rate" value="{{$variations->dropship_rate}}" name="dropship_rate" id="dropship_rate" required data-toggle="tooltip" data-placement="top" title="Enter per piece rate in INR"/>
                       <div id="dropship_rateErr" class="invalid-feedback"></div>
                     </div>
                   </div>
@@ -130,7 +130,7 @@
                   <div class="ek_group">
                     <label class="eklabel req"><span>Potential MRP:<span class="req_star">*</span></span></label>
                     <div class="ek_f_input">
-                      <input type="text" class="form-control" placeholder="Enter Potential MRP" value="{{(int)$variations->potential_mrp}}" name="potential_mrp" id="potential_mrp" required data-toggle="tooltip" data-placement="top" title="Enter maximum potential rate this product is sold on various online marketplaces"/>
+                      <input type="text" class="form-control" placeholder="Enter Potential MRP" value="{{$variations->potential_mrp}}" name="potential_mrp" id="potential_mrp" required data-toggle="tooltip" data-placement="top" title="Enter maximum potential rate this product is sold on various online marketplaces"/>
                       <div id="potential_mrpErr" class="invalid-feedback"></div>
                     </div>
                   </div>

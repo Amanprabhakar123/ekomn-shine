@@ -1,112 +1,112 @@
 @extends('web.layout.app')
 @section('content')
-    <div class="ekcontent">
-        <section class="ek-section">
-            <div class="topSection_w_cat">
-                <div class="productFilters">
-                    <div class="filterCards ekom_card" id="productFilters">
-                        <div class="categoryListAll fscborder">
-                            <h4 class="m-0 fs-18 bold">Categories</h4>
-                            <ul id="itemListCategory">
+<div class="ekcontent">
+    <section class="ek-section">
+        <div class="topSection_w_cat">
+            <div class="productFilters">
+                <div class="filterCards ekom_card" id="productFilters">
+                    <div class="categoryListAll fscborder">
+                        <h4 class="m-0 fs-18 bold">Categories</h4>
+                        <ul id="itemListCategory">
 
-                            </ul>
+                        </ul>
+                    </div>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="newArrivals" id="newArrivals" value="1"
+                            onclick="filterWithCheckbox('newArrivals',this.checked)">
+                        <span class="checkbox-text">
+                            <i class="fas fa-info-circle me-2"></i>New Arrivals
+                        </span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="productWithVideos" name="productWithVideos"
+                            onclick="filterWithCheckbox('productWithVideos',this.checked)">
+                        <span class="checkbox-text">
+                            <i class="far fa-play-circle me-2"></i>Product with Videos
+                        </span>
+                    </label>
+                    <div class="mt15">
+                        <label>Product Near By</label>
+                        <div class="inputwithOk">
+                            <input type="text" class="form-control" placeholder="Enter Pin Code">
+                            <button class="inputokbtn">Ok</button>
                         </div>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="newArrivals" id="newArrivals" value="1"
-                                onclick="filterWithCheckbox('newArrivals',this.checked)">
-                            <span class="checkbox-text">
-                                <i class="fas fa-info-circle me-2"></i>New Arrivals
-                            </span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="productWithVideos" name="productWithVideos"
-                                onclick="filterWithCheckbox('productWithVideos',this.checked)">
-                            <span class="checkbox-text">
-                                <i class="far fa-play-circle me-2"></i>Product with Videos
-                            </span>
-                        </label>
-                        <div class="mt15">
-                            <label>Product Near By</label>
-                            <div class="inputwithOk">
-                                <input type="text" class="form-control" placeholder="Enter Pin Code">
-                                <button class="inputokbtn">Ok</button>
-                            </div>
+                    </div>
+                    <div class="mt15">
+                        <label>Minimum Stock</label>
+                        <div class="inputwithOk">
+                            <input type="text" class="form-control" placeholder="Eg. 100" id="minimumStk"
+                                name="minimumStk" value="">
+                            <button class="inputokbtn" type="button" id="minimumStock">Ok</button>
                         </div>
-                        <div class="mt15">
-                            <label>Minimum Stock</label>
-                            <div class="inputwithOk">
-                                <input type="text" class="form-control" placeholder="Eg. 100" id="minimumStk"
-                                    name="minimumStk" value="">
-                                <button class="inputokbtn" type="button" id="minimumStock">Ok</button>
-                            </div>
-                        </div>
-                        <div class="mt15">
-                            <label>Price (<i class="fas fa-rupee-sign fs-13"></i>)</label>
-                            <div class="inputwithOk minmax">
-                                <span class="sepminmax">-</span>
-                                <input type="text" class="form-control" placeholder="Min" name="min" id="min"
-                                    value="">
-                                <input type="text" class="form-control" placeholder="Max" name="max" id="max"
-                                    value="">
-                                <button type="button" class="inputokbtn" id="priceRange">Ok</button>
-                            </div>
+                    </div>
+                    <div class="mt15">
+                        <label>Price (<i class="fas fa-rupee-sign fs-13"></i>)</label>
+                        <div class="inputwithOk minmax">
+                            <span class="sepminmax">-</span>
+                            <input type="text" class="form-control" placeholder="Min" name="min" id="min"
+                                value="">
+                            <input type="text" class="form-control" placeholder="Max" name="max" id="max"
+                                value="">
+                            <button type="button" class="inputokbtn" id="priceRange">Ok</button>
                         </div>
                     </div>
                 </div>
-                <div class="productListing">
+            </div>
+            <div class="productListing">
                 <div class="sub_banner" id="dynamicBanner">
                     <!-- load dynamic banner here -->
                 </div>
-                    <div class="pt-1">
-                        <ol class="ekbreadcrumb">
-                            <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
-                            <li class="ekbreadcrumb-item active" aria-current="page"><span class="me-2">All
-                                    Products</span>(<span id='totalProduct'></span> <span>Results</span>)</li>
-                        </ol>
-                        <div class="h_filterbox">
-                            <div class="checkboxdiv">
-                                <label class="checkbox-item checkico">
-                                    <input type="checkbox" id="selectAllCheckbox">
-                                    <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
-                                </label>
-                            </div>
-                            @if(auth()->check())
-                            <button type="button" class="btn filterbtn" onclick="addToInventory('Inventory')"><i
-                                    class="fas fa-plus fs-12 me-2"></i>Add to
-                                Inventory List</button>
-                            <button type="button" class="btn filterbtn" onclick="addToInventory('Download')"><i
-                                    class="fas fa-download fs-13 me-2"></i>Download</button>
-                            @else
-                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn"><i
-                                    class="fas fa-plus fs-12 me-2"></i>Add to
-                                Inventory List</a>
-                            <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn" ><i
-                                    class="fas fa-download fs-13 me-2"></i>Download</a>
-                            @endif
-                            <select class="filterSelect ms-auto" id ="product-sorting">
-                                <option value="0">Sort By Relevance</option>
-                                <option value="{{SORTING_STOCK_HIGH_TO_LOW}}">Stock - High to Low</option>
-                                <option value="{{SORTING_STOCK_LOW_TO_HIGH}}">Stock - Low to High</option>
-                                <option value="{{SORTING_PRICE_HIGH_TO_LOW}}">Price - High to Low</option>
-                                <option value="{{SORTING_PRICE_LOW_TO_HIGH}}">Price - Low to High</option>
-                                <option value="{{SORTING_REGULAR_AVAILABLE}}">Regular Available</option>
-                                <option value="{{SORTING_TILL_STOCK_LAST}}">Till Stock Last</option>
-                            </select>
+                <div class="pt-1">
+                    <ol class="ekbreadcrumb">
+                        <li class="ekbreadcrumb-item"><a href="#">Products</a></li>
+                        <li class="ekbreadcrumb-item active" aria-current="page"><span class="me-2">All
+                                Products</span>(<span id='totalProduct'></span> <span>Results</span>)</li>
+                    </ol>
+                    <div class="h_filterbox">
+                        <div class="checkboxdiv">
+                            <label class="checkbox-item checkico">
+                                <input type="checkbox" id="selectAllCheckbox">
+                                <span class="checkbox-text"><span class="_checkicon"></span> Select All</span>
+                            </label>
                         </div>
-                    </div>
-                    <div class="container-fluid pad_l_r">
-                        <div class="row gx-3 allproductbox" id="allproductbox">
-
-
-                        </div>
+                        @if(auth()->check())
+                        <button type="button" class="btn filterbtn" onclick="addToInventory('Inventory')"><i
+                                class="fas fa-plus fs-12 me-2"></i>Add to
+                            Inventory List</button>
+                        <button type="button" class="btn filterbtn" onclick="addToInventory('Download')"><i
+                                class="fas fa-download fs-13 me-2"></i>Download</button>
+                        @else
+                        <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn"><i
+                                class="fas fa-plus fs-12 me-2"></i>Add to
+                            Inventory List</a>
+                        <a href="{{route('buyer.login')}}" type="button" class="btn filterbtn"><i
+                                class="fas fa-download fs-13 me-2"></i>Download</a>
+                        @endif
+                        <select class="filterSelect ms-auto" id="product-sorting">
+                            <option value="0">Sort By Relevance</option>
+                            <option value="{{SORTING_STOCK_HIGH_TO_LOW}}">Stock - High to Low</option>
+                            <option value="{{SORTING_STOCK_LOW_TO_HIGH}}">Stock - Low to High</option>
+                            <option value="{{SORTING_PRICE_HIGH_TO_LOW}}">Price - High to Low</option>
+                            <option value="{{SORTING_PRICE_LOW_TO_HIGH}}">Price - Low to High</option>
+                            <option value="{{SORTING_REGULAR_AVAILABLE}}">Regular Available</option>
+                            <option value="{{SORTING_TILL_STOCK_LAST}}">Till Stock Last</option>
+                        </select>
                     </div>
                 </div>
+                <div class="container-fluid pad_l_r">
+                    <div class="row gx-3 allproductbox" id="allproductbox">
 
+
+                    </div>
+                </div>
             </div>
 
-        </section>
+        </div>
 
-    </div>
+    </section>
+
+</div>
 @endsection
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -199,82 +199,82 @@
 
 
 
-         // Fetch categories and populate the menu
-         $.ajax({
-                url: '{{ route('categories.list') }}', // Endpoint for fetching categories
-                type: 'GET', // HTTP method
-                dataType: 'json', // Expected data type
-                success: function(res) {
-                    // jQuery object for the category menu
-                    const $menu = $("#itemListCategory");
-                    const $mobileMenu = $("#mob_cat_list");
+        // Fetch categories and populate the menu
+        $.ajax({
+            url: '{{ route('categories.list') }}', // Endpoint for fetching categories
+            type: 'GET', // HTTP method
+            dataType: 'json', // Expected data type
+            success: function(res) {
+                // jQuery object for the category menu
+                const $menu = $("#itemListCategory");
+                const $mobileMenu = $("#mob_cat_list");
 
-                    const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
+                const url = "{{ route('product.category', ['slug' => 'SLUG']) }}";
 
-                    if (res.data.statusCode == 200) {
-                        const data = res.data.data;
+                if (res.data.statusCode == 200) {
+                    const data = res.data.data;
 
-                        // Clear existing content
-                        $menu.empty();
-                        $mobileMenu.empty();
+                    // Clear existing content
+                    $menu.empty();
+                    $mobileMenu.empty();
 
-                        // Populate menu with categories
-                        $.each(data, function(index, category) {
-                            const active = slug == category.parent_slug ? 'active' : '';
-                            const mainCategoryHtml = `
+                    // Populate menu with categories
+                    $.each(data, function(index, category) {
+                        const active = slug == category.parent_slug ? 'active' : '';
+                        const mainCategoryHtml = `
                             <li class="nav-link ${active}">
                                 <a href="${url.replace('SLUG', category.parent_slug)}">${category.parent_name}</a>
                             </li>`;
-                            $menu.append(mainCategoryHtml);
-                            // Begin HTML structure for mobile menu
-                            var mobileCategory = '<li class="nav-item">';
-                            mobileCategory += `<a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#${category.parent_slug}"
+                        $menu.append(mainCategoryHtml);
+                        // Begin HTML structure for mobile menu
+                        var mobileCategory = '<li class="nav-item">';
+                        mobileCategory += `<a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#${category.parent_slug}"
                                                     data-bs-parent="#mob_cat_list" id="components">
                                                     <span class="nav-link-text">${category.parent_name}</span>
                                                     <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
                                                     </a>`;
 
-                            // Loop through sub-parent categories and build HTML for each
-                            $.each(category.sub_parents, function(index, subParent) {
-                                // Begin HTML structure for sub-parent category
-                                var mobilesubParentHtml =
-                                    `<ul class="sidenav-second-level collapse" id="${category.parent_slug}" data-bs-parent="#mob_cat_list">`;
+                        // Loop through sub-parent categories and build HTML for each
+                        $.each(category.sub_parents, function(index, subParent) {
+                            // Begin HTML structure for sub-parent category
+                            var mobilesubParentHtml =
+                                `<ul class="sidenav-second-level collapse" id="${category.parent_slug}" data-bs-parent="#mob_cat_list">`;
 
-                                // Loop through child categories of the sub-parent
-                                $.each(subParent.children, function(index, child) {
-                                    // Add child category links dynamically using its slug and name
-                                    mobilesubParentHtml +=
-                                        '<li><a class="nav-link" href="' + url
-                                        .replace('SLUG', child.child_slug) +
-                                        '">' + child.child_name + '</a></li>';
-                                });
-
-                                // Close the sub-parent's child category list
-                                mobilesubParentHtml += '</ul>';
-
-                                // Append the sub-parent HTML to the main category structure
-                                mobileCategory += mobilesubParentHtml;
+                            // Loop through child categories of the sub-parent
+                            $.each(subParent.children, function(index, child) {
+                                // Add child category links dynamically using its slug and name
+                                mobilesubParentHtml +=
+                                    '<li><a class="nav-link" href="' + url
+                                    .replace('SLUG', child.child_slug) +
+                                    '">' + child.child_name + '</a></li>';
                             });
 
-                            // Append the completed category structure to the mobile menu
-                            $mobileMenu.append(mobileCategory);
+                            // Close the sub-parent's child category list
+                            mobilesubParentHtml += '</ul>';
 
-
+                            // Append the sub-parent HTML to the main category structure
+                            mobileCategory += mobilesubParentHtml;
                         });
-                    }
-                },
-                fail: function() {
-                    console.log("Error fetching categories");
+
+                        // Append the completed category structure to the mobile menu
+                        $mobileMenu.append(mobileCategory);
+
+
+                    });
                 }
-            });
+            },
+            fail: function() {
+                console.log("Error fetching categories");
+            }
+        });
     });
 
 
     // Function to fetch filtered data
     function fetchData() {
         // API URL for fetching products
-        let apiUrl = `search/${query}?&page=${page}&query_type=`+query_type+'&';
-        
+        let apiUrl = `search/${query}?&page=${page}&query_type=` + query_type + '&';
+
         // Append filters to the API URL
         if (newArrived) apiUrl += `new_arrived=${newArrived}&`;
         if (productWithVideos) apiUrl += `productWithVideos=${productWithVideos}&`;
@@ -299,17 +299,17 @@
 
                         var text = '';
                         if (product.is_login == true) {
-                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">Add to Inventory
                                                     List</button>
                                                 <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
                                             </div>`;
-                                text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center webhide">
                                     <button class="btn btnround cardaddinventry" onclick="addToInventory('Inventory', '${product.id}')">+ Inventory List</button>
                                     <button class="btn dow_inve" onclick="addToInventory('Download', '${product.id}')"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></button>
                                 </div>`;
-                            } else {
-                                text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
+                        } else {
+                            text = ` <div class="product_foot d-flex justify-content-between align-items-center hideMob">
                                                 <a href="${product.login_url}" class="btn btnround cardaddinventry" >Add to Inventory
                                                     List</a>
                                                 <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
@@ -318,7 +318,7 @@
                                 <a href="${product.login_url}" class="btn btnround cardaddinventry">+ Inventory List</a>
                                 <a href="${product.login_url}" class="btn dow_inve"><img src="{{ asset('assets/images/icon/download.png') }}" alt="download-product"></a>
                             </div>`;
-                            }
+                        }
                         html += ` <div class="col-6 col-md-4 col-lg-3 mb16">
                                     <div class="ekom_card">
                                         <div class="product_card">
@@ -361,7 +361,7 @@
             });
     }
 
-   // Function to check if the user has scrolled to the bottom of the page
+    // Function to check if the user has scrolled to the bottom of the page
     function isScrolledToBottom() {
         return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight || document.body.scrollHeight);
     }
@@ -405,7 +405,7 @@
             product_id.variation_id.push($(this).attr('id'));
         });
 
-        if(id){
+        if (id) {
             product_id.variation_id.push(id);
         }
 
@@ -428,8 +428,29 @@
                 }
             });
             return; // Exit the function early if no products are selected
-        }
+        } else if (product_id.variation_id.length > 5) {
+            Swal.fire({
+                title: "Do you want to continue?",
+                text: "Product Download/Inventory count is defined by Subscription plans. Please use Select all feature carefully as this may exhaust your allowed limit.",
+                showCancelButton: true,
+                confirmButtonText: `Continue`,
+                confirmButtonColor: '#feca40',
+                cancelButtonColor: '#dc3545',
+                icon: "warning",
 
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    APITrigger(action, product_id);
+                }
+
+            });
+            return;
+        } else {
+            APITrigger(action, product_id);
+        }
+    }
+
+    function APITrigger(action, product_id) {
         // If action is 'Inventory', send a POST request to add products to the inventory
         if (action == 'Inventory') {
             ApiRequest('store/product/inventory', 'POST', {
@@ -490,83 +511,85 @@
                 });
         }
         // If action is 'Download', download the selected products as a ZIP file
-        else if (action == 'Download') { // Corrected the syntax here
+        else if (action == 'Download') {
             fetch('{{ route('product.inventory.export') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(product_id)
-                })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(product_id)
+                    })
                 .then(response => {
                     if (response.status === 403) {
-                            return response.json().then(data => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Forbidden',
-                                    text: data.data.message || 'You do not have permission to perform this action.',
-                                    didOpen: () => {
-                                        const title = Swal.getTitle();
-                                        title.style.fontSize = '25px';
-                                        // Apply inline CSS to the content
-                                        const content = Swal.getHtmlContainer();
-                                        // Apply inline CSS to the confirm button
-                                        const confirmButton = Swal.getConfirmButton();
-                                        confirmButton.style.backgroundColor = '#feca40';
-                                        confirmButton.style.color = 'white';
-                                    }
-                                });
-
-                                throw new Error('Forbidden');
+                        return response.json().then(data => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Forbidden',
+                                text: data.data.message || 'You do not have permission to perform this action.',
+                                didOpen: () => {
+                                    const title = Swal.getTitle();
+                                    title.style.fontSize = '25px';
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
                             });
-                        }else if(response.status === 422){
-                            return response.json().then(data => {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: data.data.message || 'Something went wrong. Please try again later.',
-                                    didOpen: () => {
-                                        const title = Swal.getTitle();
-                                        title.style.fontSize = '25px';
-                                        // Apply inline CSS to the content
-                                        const content = Swal.getHtmlContainer();
-                                        // Apply inline CSS to the confirm button
-                                        const confirmButton = Swal.getConfirmButton();
-                                        confirmButton.style.backgroundColor = '#feca40';
-                                        confirmButton.style.color = 'white';
-                                    }
-                                });
 
-                                throw new Error('Error');
+                            throw new Error('Forbidden');
+                        });
+                    } else if (response.status === 422) {
+                        return response.json().then(data => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.data.message || 'Something went wrong. Please try again later.',
+                                didOpen: () => {
+                                    const title = Swal.getTitle();
+                                    title.style.fontSize = '25px';
+                                    // Apply inline CSS to the content
+                                    const content = Swal.getHtmlContainer();
+                                    // Apply inline CSS to the confirm button
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
                             });
-                        }
+
+                            throw new Error('Error');
+                        });
+                    }
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.blob(); // Convert response to a Blob
+                    return response.blob();
                 })
                 .then(blob => {
-                    const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                    const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = 'products_' + Date.now() + '.zip'; // Set download file name
+                    a.download = 'products_' + Date.now() + '.zip';
                     document.body.appendChild(a);
-                    a.click(); // Programmatically click the link to trigger download
-                    window.URL.revokeObjectURL(url); // Revoke the URL after download
+                    a.click();
+                    window.URL.revokeObjectURL(url);
                 })
                 .catch(error => {
-                    console.error('Error downloading products:', error); // Log any errors
+                    console.error('Error downloading products:', error);
                 });
         }
     }
 
+
+
     // onchange event for sorting
     $('#product-sorting').on('change', function() {
-            productSorting = $(this).val();
-            page = 1;
-            html = '';
-            fetchData();
-        });
+        productSorting = $(this).val();
+        page = 1;
+        html = '';
+        fetchData();
+    });
 </script>
 @endsection

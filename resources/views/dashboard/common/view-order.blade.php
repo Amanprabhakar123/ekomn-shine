@@ -215,7 +215,7 @@
                                                 <td>{{$orderItem->product->sku}}</td>
                                                 <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->per_item_price}}
                                                 </td>
                                                 <td class="text-right">{{$orderItem->gst_percentage}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>
@@ -560,7 +560,7 @@
                                                 <td>{{$orderItem->product->sku}}</td>
                                                 <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->per_item_price}}
                                                 </td>
                                                 <td class="text-right">{{$orderItem->gst_percentage}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>
@@ -909,7 +909,7 @@
                                                 <td>{{$orderItem->product->sku}}</td>
                                                 <td class="text-center">{{$orderItem->product->product->hsn}}</td>
                                                 <td class="text-center">{{$orderItem->quantity}}</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_exc_gst}}
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->per_item_price}}
                                                 </td>
                                                 <td class="text-right">{{$orderItem->gst_percentage}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst}}</td>

@@ -44,7 +44,7 @@ class ProductCartListTransformer extends TransformerAbstract
             $gst = (float) $product_variation->product->gst_percentage; // Assuming GST is in $cartList->gst_percentage
             $priceBeforeTaxPerPiece = $cartList->getPriceBasedOnQuantity($product_variation->tier_rate, $cartList->quantity); // Calculate price before tax
             $priceBeforeTaxWIthQantity = (float) $priceBeforeTaxPerPiece * $cartList->quantity; // Calculate price before tax and format to 2 decimal places
-            $gstAmount = (float) number_format((($priceBeforeTaxWIthQantity * $gst) / 100), 2); // Calculate GST amount
+            $gstAmount = (float) (($priceBeforeTaxWIthQantity * $gst) / 100); // Calculate GST amount
             $priceWithGst = $priceBeforeTaxWIthQantity + $gstAmount; // Calculate total price including GST
 
             // find the zone of the buyer
