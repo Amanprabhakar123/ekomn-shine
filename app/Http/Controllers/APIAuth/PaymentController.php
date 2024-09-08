@@ -843,9 +843,14 @@ class PaymentController extends Controller
                     'json_response' => json_encode($data),
                 ]);
                  // In active last plan
-                 $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
-                 $last_plan->status = CompanyPlan::STATUS_INACTIVE;
-                 $last_plan->save();
+                 $last_plan = CompanyPlan::where('company_id', $company_detail->id)
+                 //  ->where('status', CompanyPlan::STATUS_ACTIVE)
+                 ->orderBy('id', 'desc')
+                 ->first();
+                 if(!empty($last_plan)){
+                     $last_plan->status = CompanyPlan::STATUS_INACTIVE;
+                     $last_plan->save();
+                 }
 
                  // Create new plan for the company
                 CompanyPlan::create([
@@ -907,9 +912,14 @@ class PaymentController extends Controller
                 }
     
                 // In active last plan
-                $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
-                $last_plan->status = CompanyPlan::STATUS_INACTIVE;
-                $last_plan->save();
+                $last_plan = CompanyPlan::where('company_id', $company_detail->id)
+                // ->where('status', CompanyPlan::STATUS_ACTIVE)
+                ->orderBy('id', 'desc')
+                ->first();
+                if(!empty($last_plan)){
+                    $last_plan->status = CompanyPlan::STATUS_INACTIVE;
+                    $last_plan->save();
+                }
     
                 // get new plan details
                 $plan_details = Plan::where('id', $payment->plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
