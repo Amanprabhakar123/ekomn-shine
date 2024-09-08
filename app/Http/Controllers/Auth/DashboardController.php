@@ -770,6 +770,11 @@ class DashboardController extends Controller
             }
         }
 
+        /**
+         * This function is used download subscription invoice.
+         * @param Request $request
+         * @return void
+         */
         public function subscriptionInvoice(Request $request){
             try{
                 $subscriptionId = salt_decrypt($request->all()[0]);
@@ -801,7 +806,6 @@ class DashboardController extends Controller
                     ],
                 ], __('statusCode.statusCode422'));
             }
-            dd($exceptionDetails);
             new ExceptionEvent($exceptionDetails);
             return response()->json([
                 'data' => [

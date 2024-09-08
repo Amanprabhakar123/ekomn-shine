@@ -165,7 +165,7 @@
               <td style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: right;"><img src="{{$rupee}}" width="7" height="10"> {{number_format($other_charges_gst, 2)}}</td>
             </tr>
             <tr>
-              <td colspan="9" height="30"></td>
+              <td colspan="8" height="30"></td>
             </tr>
             <tr>
               <th style="font-size: 14px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 6px 2px;line-height: 16px;border-bottom: 1px solid #ddd;text-align: left;width: 250px;">Total</th>
@@ -185,7 +185,7 @@
             </tr>
             <tr>
                
-              <td colspan="8" style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 60px 2px 6px 2px;line-height: 18px;text-align: left; font-weight:bold;">
+              <td colspan="9" style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;padding: 60px 2px 6px 2px;line-height: 18px;text-align: left; font-weight:bold;">
                 For, {{$supplier_bussiens_name}} <br>
                 <img src="{{$signature}}" width="120" height="50" style="margin:10px 0px;"><br>
                 Authorized Signatory
