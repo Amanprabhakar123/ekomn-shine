@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\EkomnDetails;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class EkomnDetails extends Seeder
+class EkomnDetailsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -25,8 +27,11 @@ class EkomnDetails extends Seeder
             ],
         ];
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        EkomnDetails::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
         foreach ($ekomnDetails as $ekomnDetail) {
-            \App\Models\EkomnDetails::create($ekomnDetail);
+            EkomnDetails::create($ekomnDetail);
         }
     }
 }
