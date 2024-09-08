@@ -591,6 +591,47 @@
                         body: JSON.stringify(product_id)
                     })
                     .then(response => {
+                        if (response.status === 403) {
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Forbidden',
+                                    text: data.data.message || 'You do not have permission to perform this action.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Forbidden');
+                            });
+                        } else if (response.status === 422) {
+                            return response.json().then(data => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.data.message || 'Something went wrong. Please try again later.',
+                                    didOpen: () => {
+                                        const title = Swal.getTitle();
+                                        title.style.fontSize = '25px';
+                                        // Apply inline CSS to the content
+                                        const content = Swal.getHtmlContainer();
+                                        // Apply inline CSS to the confirm button
+                                        const confirmButton = Swal.getConfirmButton();
+                                        confirmButton.style.backgroundColor = '#feca40';
+                                        confirmButton.style.color = 'white';
+                                    }
+                                });
+
+                                throw new Error('Error');
+                            });
+                        }
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }

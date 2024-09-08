@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Pincode;
 use App\Models\Category;
 use App\Models\CanHandle;
+use App\Models\CompanyPlan;
 use League\Fractal\Manager;
 use App\Models\BusinessType;
 use App\Models\OrderAddress;
@@ -19,10 +20,10 @@ use App\Models\BuyerInventory;
 use App\Models\CourierDetails;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
+use App\Traits\SubscriptionTrait;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
-use App\Models\CompanyPlan;
 use App\Models\ProductVariationMedia;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
@@ -31,6 +32,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DashboardController extends Controller
 {
+    use SubscriptionTrait;
 
     protected $fractal;
 
@@ -209,13 +211,7 @@ class DashboardController extends Controller
             }
 
             //
-            $inventory_count = BuyerInventory::join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
-                ->where('buyer_inventories.buyer_id', auth()->user()->id)
-                ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
-                ->groupBy('product_variations.product_id')
-                ->select('product_variations.product_id')
-                ->get()->count();
-
+            $inventory_count = $this->getMyInventoryCount();
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
@@ -643,8 +639,7 @@ class DashboardController extends Controller
         $userId = auth()->user()->id;
         $companyDetail = CompanyDetail::with([
             'subscription' => function ($query) {
-                $query->where('status', CompanyPlan::STATUS_ACTIVE)
-                      ->orderBy('id', 'desc')
+                $query->orderBy('id', 'desc')
                       ->limit(1);  // Fetch the latest subscription with status 1
             },
             'subscription.plan',
@@ -653,9 +648,7 @@ class DashboardController extends Controller
                 $query->orderBy('id', 'desc')
                       ->limit(1);  // Fetch the latest payment
             },
-        ])->whereHas('subscription', function ($query) {
-            $query->where('status', 1); // Make sure the company has at least one active subscription
-        })
+        ])
         ->where('user_id', $userId)
         ->first();
         $plans = Plan::get();

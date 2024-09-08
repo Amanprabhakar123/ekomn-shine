@@ -152,4 +152,13 @@ return [
     'subscriptionStatusFailed' => 'Subscription status change failed.',
     'planNotEligible' => 'Trial plan not eligible for subscription.',
     'downgradePlan' => 'You are downgrading your plan. In this case, your download/inventory count will be updated as per the new plan and the last added inventory will be removed automatically. Alternatively, you can update it manually.',
+    'downloadCountExceeded' => 'Download count exceeded. You can download only :count products.',
+    'downloadSuccess' => 'Download success.',
+    'planNotEligible' => 'Plan not eligible or expired for download.',
+    'planNotEligibleInventory' => 'The plan is either not eligible or has expired for adding inventory.',
+    'InventoryCountExceeded' => 'Inventory count exceeded. You can add only :count products.',
+    'InventorySuccess' => 'Inventory added successfully.',
+    'planNotActive' => 'Plan is not active or expired. Please subscribe to a plan.',
+    'resellerProgramNotActive' => 'Reseller program is not active. Please upgrade your plan.',
+
 ];

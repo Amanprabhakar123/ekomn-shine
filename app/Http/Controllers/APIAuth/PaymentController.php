@@ -1019,7 +1019,6 @@ class PaymentController extends Controller
 
         if(($current_download_count < $last_download_count) && ($current_inventory_count < $last_inventory_count)){
             if($respose){
-              \Log::info('Current used inventory count: '.$inventory_count);
                return ['status' => true,
                 'last_download_count' => $last_download_count,
                 'last_inventory_count' => $inventory_count,
