@@ -691,6 +691,26 @@ class PaymentController extends Controller
             $plan_details = Plan::where('id', $new_plan)->where('status', Plan::STATUS_ACTIVE)->first();
             $company_detail = CompanyDetail::find($company_id);
             $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
+
+            $subscriptionData = [];
+            // check current subscription status
+            if($company_detail->subscription_status == CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE){
+                // check current subscription razorpay_plan_id
+                if($company_detail->razorpay_plan_id != $plan_details->razorpay_plan_id){
+                    $razorpay_subscription_id = $company_detail->razorpay_subscription_id;
+                    $subscription = new PaymentSubscription();
+                    if($plan_details->duration == 30){
+                        $total_count = 12;
+                    }else{
+                        $total_count = 1;
+                    }
+                    $subscriptionData = $subscription->changeSubscription($razorpay_subscription_id, $plan_details->razorpay_plan_id, $total_count);
+                    $company_detail->razorpay_subscription_id = $subscriptionData['id'];
+                    $company_detail->razorpay_plan_id = $subscriptionData['plan_id'];
+                    $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_CREATED;
+                    $company_detail->save();
+                }    
+            }
             if ($plan_details->is_trial_plan == 0) {
                 $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
                 $order = $api->order->create([
@@ -701,6 +721,11 @@ class PaymentController extends Controller
                         'plan' => $plan_details->description,
                     ]
                 ]);
+
+                if(!empty($subscriptionData)){
+                    $order['subscription_id'] = $subscriptionData['id'];
+                }
+
                 CompanyPlanPayment::create([
                     'transaction_id' => $order->id,
                     'purchase_id' => Str::uuid(),
@@ -837,16 +862,31 @@ class PaymentController extends Controller
                 ]], __('statusCode.statusCode200'));
     
             }else{
-                $paymentId = $request->input('razorpay_payment_id');
-                $signature = $request->input('razorpay_signature');
-                $orderId = $request->input('razorpay_order_id');
                 $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-                $attributes = [
-                    'razorpay_order_id' => $orderId,
-                    'razorpay_payment_id' => $paymentId,
-                    'razorpay_signature' => $signature,
-                ];
-                $api->utility->verifyPaymentSignature($attributes);
+                if(isset($data['razorpay_subscription_id'])){
+                    $paymentId = $request->input('razorpay_payment_id');
+                    $signature = $request->input('razorpay_signature');
+                    $subscription_id = $request->input('razorpay_subscription_id');
+                     // Update Subscription status
+                    $subscription = $api->subscription->fetch($subscription_id);
+                    // Verify the payment
+                    $payment = $api->payment->fetch($paymentId);
+                    $orderId = $payment->order_id;
+                    $subscriptionData = ['razorpay_subscription_id' => $subscription_id, 'razorpay_plan_id' => $subscription->plan_id];
+                }else{
+                    $paymentId = $request->input('razorpay_payment_id');
+                    $signature = $request->input('razorpay_signature');
+                    $orderId = $request->input('razorpay_order_id');
+                    $attributes = [
+                        'razorpay_order_id' => $orderId,
+                        'razorpay_payment_id' => $paymentId,
+                        'razorpay_signature' => $signature,
+                    ];
+                    $api->utility->verifyPaymentSignature($attributes);
+                    $subscriptionData = null;
+                }
+               
+               
                 // Update the payment status
                 $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
                 $payment->razorpay_payment_id = $paymentId;
@@ -854,6 +894,13 @@ class PaymentController extends Controller
                 $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_SUCCESS;
                 $payment->save();
                 $company_detail = CompanyDetail::find($payment->company_id);
+
+                if(!is_null($subscriptionData)){
+                    $company_detail->razorpay_subscription_id = $subscriptionData['razorpay_subscription_id'];
+                    $company_detail->razorpay_plan_id = $subscriptionData['razorpay_plan_id'];
+                    $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
+                    $company_detail->save();
+                }
     
                 // In active last plan
                 $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();

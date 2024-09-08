@@ -690,9 +690,9 @@ $('#btnRenewal').click(function() {
                         "order_id": response.data.order.id,
                         "callback_url": "{{route('renewal.payment.success')}}",
                         "prefill": {
-                            "name": $('#first_name').val() + ' ' + $('#last_name').val(),
-                            "email": $("#email").val(),
-                            "contact": $('#mobile').val()
+                            "name": '{{$companyDetail->first_name}} {{$companyDetail->last_name}}',
+                            "email": '{{$companyDetail->email}}',
+                            "contact": '{{$companyDetail->mobile_no}}'
                         },
                         "notes": {
                             "address": "Gurugram, Haryana India"
