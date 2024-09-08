@@ -800,7 +800,7 @@ class PaymentController extends Controller
     public function renewalPaymentSuccess(Request $request)
     {
         // Store request all value in logs
-        \Log::info('Request data: '.json_encode($request->all()));
+        // \Log::info('Request data: '.json_encode($request->all()));
         try {
             $data = $request->all();
             if(isset($data['event']) && $data['event'] == 'subscription.charged'){
@@ -811,8 +811,15 @@ class PaymentController extends Controller
                 $paymentId = $paymentData['id'];
                 $signature = $paymentData['description'];
                 $plan_id = $subscription['plan_id'];
-                $plan_details = Plan::where('razorpay_plan_id', $plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
                 $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+                if(empty($company_detail)){
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.subscriptionStatusFailed'),
+                    ]], __('statusCode.statusCode422'));
+                }
+                $plan_details = Plan::where('razorpay_plan_id', $plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
                 $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
                 $company_detail->save();
                 $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
@@ -854,7 +861,6 @@ class PaymentController extends Controller
                     'company_id' => $company_detail->id,
                     'download_count' => 0,
                 ]);
-                \Log::info('Subscription Renewal Payment Success');
                 return response()->json(['data' => [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
@@ -885,8 +891,6 @@ class PaymentController extends Controller
                     $api->utility->verifyPaymentSignature($attributes);
                     $subscriptionData = null;
                 }
-               
-               
                 // Update the payment status
                 $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
                 $payment->razorpay_payment_id = $paymentId;
@@ -974,8 +978,6 @@ class PaymentController extends Controller
     
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
-    
-            \Log::info('Request data: '.$e->getMessage().'---- '.$e->getLine());
     
             if (config('app.front_end_tech') == false) {
                 return redirect()->route('payment.failed');
