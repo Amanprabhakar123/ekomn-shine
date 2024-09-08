@@ -43,6 +43,10 @@ class PaymentSubscription
     public function cancelSubscription($subscriptionId)
     {
         $subscription = $this->razorpay->subscription->fetch($subscriptionId);
+        // check if subscription is already cancelled
+        if($subscription->status == 'cancelled'){
+            return ['status' => 'cancelled'];
+        }
         $subscription->cancel(['cancel_at_cycle_end' => 0]); // Immediate cancellation
         return ['status' => 'cancelled'];
     }
@@ -75,11 +79,8 @@ class PaymentSubscription
      * @param $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function changeSubscription($request, $total_count)
+    public function changeSubscription($currentSubscriptionId, $newPlanId,  $total_count)
     {
-        $currentSubscriptionId = $request->current_subscription_id;
-        $newPlanId = $request->new_plan_id;
-
         // Fetch current subscription
         $currentSubscription = $this->fetchSubscription($currentSubscriptionId);
 

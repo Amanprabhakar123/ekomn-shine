@@ -12,7 +12,9 @@ use App\Models\BuyerInventory;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
 use App\Models\ChannelProductMap;
+use App\Traits\SubscriptionTrait;
 use App\Http\Controllers\Controller;
+use App\Models\CompanyPlanPermission;
 use App\Models\ProductVariationMedia;
 use App\Services\UserActivityService;
 use League\Fractal\Resource\Collection;
@@ -22,6 +24,8 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class BuyerInventoryController extends Controller
 {
+    use SubscriptionTrait;
+    
     protected $fractal;
 
     protected $BulkDataTransformer;
@@ -173,6 +177,14 @@ class BuyerInventoryController extends Controller
             $encryptedProductIds = $request->product_id['variation_id'];
             $productIds = [];
             $existingProductIds = [];
+            
+            // add plan permission for inventory count
+            $variation_ids = array_map('salt_decrypt', $encryptedProductIds);
+            $count = $this->getInventoryCount($variation_ids);
+            $status = $this->isBuyerAddedInventoryCount(auth()->user()->companyDetails->id, $count);
+            if($status['data']['statusCode'] == __('statusCode.statusCode422')){
+                return response()->json(['data' => $status['data']], __('statusCode.statusCode200'));
+            }
 
             foreach ($encryptedProductIds as $encryptedProductId) {
                 $productId = salt_decrypt($encryptedProductId);
@@ -274,6 +286,10 @@ class BuyerInventoryController extends Controller
             // Find the product variation
             if (auth()->user()->hasRole(User::ROLE_BUYER)) {
                 BuyerInventory::where(['id' => $id])->delete();
+                // Update Inventory Count Company Plan Permission
+                $company_id = auth()->user()->companyDetails->id;
+                $inventory_count = $this->getMyInventoryCount();
+                CompanyPlanPermission::where('company_id', $company_id)->update(['inventory_count' => $inventory_count]);
                 $response['data'] = [
                     'statusCode' => __('statusCode.statusCode200'),
                     'status' => __('statusCode.status200'),
@@ -336,6 +352,16 @@ class BuyerInventoryController extends Controller
             $decryptedVariationIds = [];
             foreach ($request->variation_id as $variationId) {
                 $decryptedVariationIds[] = salt_decrypt($variationId);
+            }
+
+            if ( auth()->user()->hasRole(User::ROLE_BUYER)) {
+                $count = count(array_unique($decryptedVariationIds));
+                $company_id = auth()->user()->companyDetails->id;
+                $status = $this->isBuyerDownloadCount($company_id, $count);
+                if ($status['data']['statusCode'] == __('statusCode.statusCode422')) {
+                    return response()->json(['data' => $status['data']], __('statusCode.statusCode422'));
+                }
+
             }
 
             // Find the product variations
