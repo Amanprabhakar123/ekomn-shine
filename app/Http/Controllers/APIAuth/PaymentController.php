@@ -776,82 +776,131 @@ class PaymentController extends Controller
     {
         // Store request all value in logs
         \Log::info('Request data: '.json_encode($request->all()));
-        $paymentId = $request->input('razorpay_payment_id');
-        $signature = $request->input('razorpay_signature');
-        $orderId = $request->input('razorpay_order_id');
-        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
-        
         try {
-            $attributes = [
-                'razorpay_order_id' => $orderId,
-                'razorpay_payment_id' => $paymentId,
-                'razorpay_signature' => $signature,
-            ];
-            $api->utility->verifyPaymentSignature($attributes);
-            // Update the payment status
-            $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
-            $payment->razorpay_payment_id = $paymentId;
-            $payment->razorpay_signature = $signature;
-            $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_SUCCESS;
-            $payment->save();
-
-            $company_detail = CompanyDetail::find($payment->company_id);
-            // In active last plan
-            $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
-            $last_plan->status = CompanyPlan::STATUS_INACTIVE;
-            $last_plan->save();
-
-            // get new plan details
-            $plan_details = Plan::where('id', $payment->plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
-            // Create new plan for the company
-            CompanyPlan::create([
-                'company_id' => $company_detail->id,
-                'plan_id' => $payment->plan_id,
-                'subscription_start_date' => Carbon::now(),
-                'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
-                'status' => CompanyPlan::STATUS_ACTIVE,
-            ]);
-
-            $is_downgrade = $this->planDowngradeUpgrade($company_detail->id, $last_plan->plan_id, $payment->plan_id, true);
-            if($is_downgrade['status']){
-                $current_inventory_count = $is_downgrade['current_inventory_count'];
-                $last_inventory_count = $is_downgrade['last_inventory_count'];
-
-                // which inventory count is bigger
-                if($last_inventory_count < $current_inventory_count){
-                    $inventory_count = $last_inventory_count;
-                }else{
-                    $inventory_count = $current_inventory_count;
-                }
-                \Log::info('Inventory count: '.$inventory_count);
-                // Update the company plan permission
-                CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+            $data = $request->all();
+            if(isset($data['event']) && $data['event'] == 'subscription.charged'){
+                $subscription = $data['payload']['subscription']['entity'];
+                $subscription_id = $subscription['id'];
+                $paymentData = $data['payload']['payment']['entity'];
+                $orderId = $paymentData['order_id'];
+                $paymentId = $paymentData['id'];
+                $signature = $paymentData['description'];
+                $plan_id = $subscription['plan_id'];
+                $plan_details = Plan::where('razorpay_plan_id', $plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
+                $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_ACTIVE;
+                $company_detail->save();
+                $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
+                $receiptId = $this->getNextReceiptId(rand(1, 9999999999999));
+                $currency = $request->input('currency', 'INR');
+                CompanyPlanPayment::create([
+                    'transaction_id' => $orderId,
+                    'purchase_id' => Str::uuid(),
+                    'plan_id' => $plan_details->id,
                     'company_id' => $company_detail->id,
-                    'inventory_count' => $inventory_count,
+                    'amount' => $plan_details->price,
+                    'amount_with_gst' => $amount_with_gst,
+                    'gst_percent' => $plan_details->gst,
+                    'currency' => $currency,
+                    'receipt_id' => $receiptId,
+                    'is_trial_plan' => $plan_details->is_trial_plan,
+                    'payment_status' => CompanyPlanPayment::PAYMENT_STATUS_SUCCESS,
+                    'email' => $company_detail->email,
+                    'mobile' => $company_detail ->mobile_no,
+                    'buyer_id' => $company_detail->user_id, // this is the buyer temp id or user_id 
+                    'json_response' => json_encode($data),
+                ]);
+                 // In active last plan
+                 $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
+                 $last_plan->status = CompanyPlan::STATUS_INACTIVE;
+                 $last_plan->save();
+    
+                 // update the download count
+                 CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                    'company_id' => $company_detail->id,
                     'download_count' => 0,
                 ]);
-        
-            // Step 1: Retrieve the IDs of all records except the first 100
-            $idsToDelete = BuyerInventory::where('company_id', $company_detail->id)
-            ->orderBy('id', 'asc')  // Order by ascending to get the first records first
-            ->limit($current_inventory_count)            // Skip the first 100 records
-            ->pluck('id');          // Get the IDs of the remaining records
-
-            if($idsToDelete->isNotEmpty()){
-                // Step 2: Delete the records with the retrieved IDs
-                BuyerInventory::whereNotIn('id', $idsToDelete)->delete();
-            }
+                \Log::info('Subscription Renewal Payment Success');
+                return response()->json(['data' => [
+                    'statusCode' => __('statusCode.statusCode200'),
+                    'status' => __('statusCode.status200'),
+                    'message' => __('auth.paymentSuccess'),
+                ]], __('statusCode.statusCode200'));
+    
             }else{
-                CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                $paymentId = $request->input('razorpay_payment_id');
+                $signature = $request->input('razorpay_signature');
+                $orderId = $request->input('razorpay_order_id');
+                $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+                $attributes = [
+                    'razorpay_order_id' => $orderId,
+                    'razorpay_payment_id' => $paymentId,
+                    'razorpay_signature' => $signature,
+                ];
+                $api->utility->verifyPaymentSignature($attributes);
+                // Update the payment status
+                $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
+                $payment->razorpay_payment_id = $paymentId;
+                $payment->razorpay_signature = $signature;
+                $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_SUCCESS;
+                $payment->save();
+                $company_detail = CompanyDetail::find($payment->company_id);
+    
+                // In active last plan
+                $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
+                $last_plan->status = CompanyPlan::STATUS_INACTIVE;
+                $last_plan->save();
+    
+                // get new plan details
+                $plan_details = Plan::where('id', $payment->plan_id)->where('status', Plan::STATUS_ACTIVE)->first();
+                // Create new plan for the company
+                CompanyPlan::create([
                     'company_id' => $company_detail->id,
-                    'download_count' => 0,
+                    'plan_id' => $payment->plan_id,
+                    'subscription_start_date' => Carbon::now(),
+                    'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
+                    'status' => CompanyPlan::STATUS_ACTIVE,
                 ]);
+    
+                $is_downgrade = $this->planDowngradeUpgrade($company_detail->id, $last_plan->plan_id, $payment->plan_id, true);
+                    if($is_downgrade['status']){
+                        $current_inventory_count = $is_downgrade['current_inventory_count'];
+                        $last_inventory_count = $is_downgrade['last_inventory_count'];
+    
+                        // which inventory count is bigger
+                        if($last_inventory_count < $current_inventory_count){
+                            $inventory_count = $last_inventory_count;
+                        }else{
+                            $inventory_count = $current_inventory_count;
+                        }
+                        // Update the company plan permission
+                        CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                            'company_id' => $company_detail->id,
+                            'inventory_count' => $inventory_count,
+                            'download_count' => 0,
+                        ]);
+                
+                        // Step 1: Retrieve the IDs of all records except the first 100
+                        $idsToDelete = BuyerInventory::where('company_id', $company_detail->id)
+                        ->orderBy('id', 'asc')  // Order by ascending to get the first records first
+                        ->limit($current_inventory_count)            // Skip the first 100 records
+                        ->pluck('id');          // Get the IDs of the remaining records
+    
+                        if($idsToDelete->isNotEmpty()){
+                            // Step 2: Delete the records with the retrieved IDs
+                            BuyerInventory::whereNotIn('id', $idsToDelete)->delete();
+                        }
+                    }else{
+                        CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
+                            'company_id' => $company_detail->id,
+                            'download_count' => 0,
+                        ]);
+                    }
+                return redirect()->route('subscription.view');
             }
-
-            return redirect()->route('subscription.view');
-
+    
         } catch (\Exception $e) {
-
+    
             // Log the exception details and trigger an ExceptionEvent
             // Prepare exception details
             $exceptionDetails = [
@@ -859,23 +908,23 @@ class PaymentController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
+    
             // Update the payment status
             $payment = CompanyPlanPayment::where('transaction_id', $orderId)->first();
             $payment->razorpay_payment_id = $paymentId;
             $payment->razorpay_signature = $signature;
             $payment->payment_status = CompanyPlanPayment::PAYMENT_STATUS_FAILED;
             $payment->save();
-
+    
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
-
+    
             \Log::info('Request data: '.$e->getMessage().'---- '.$e->getLine());
-
+    
             if (config('app.front_end_tech') == false) {
                 return redirect()->route('payment.failed');
             }
-
+    
             return response()->json(['data' => [
                 'statusCode' => __('statusCode.statusCode422'),
                 'status' => __('statusCode.status422'),
