@@ -814,6 +814,15 @@ class PaymentController extends Controller
                  $last_plan = CompanyPlan::where('company_id', $company_detail->id)->where('status', CompanyPlan::STATUS_ACTIVE)->first();
                  $last_plan->status = CompanyPlan::STATUS_INACTIVE;
                  $last_plan->save();
+
+                 // Create new plan for the company
+                CompanyPlan::create([
+                    'company_id' => $company_detail->id,
+                    'plan_id' => $plan_details->id,
+                    'subscription_start_date' => Carbon::now(),
+                    'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
+                    'status' => CompanyPlan::STATUS_ACTIVE,
+                ]);
     
                  // update the download count
                  CompanyPlanPermission::updateOrCreate(['company_id' => $company_detail->id],[
