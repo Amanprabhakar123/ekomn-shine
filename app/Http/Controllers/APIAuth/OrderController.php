@@ -1011,7 +1011,6 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            dd($exceptionDetails);
             event(new ExceptionEvent($exceptionDetails));
               // Return error response for failed invoice download
               return response()->json([
@@ -1202,8 +1201,8 @@ class OrderController extends Controller
                             $order->store_order ?? '',
                             $title,
                             $order->full_name,
-                            '+91-xxx-xxx-xxxx',
                             'support@ekomn.com',
+                            '+91-xxx-xxx-xxxx',
                             $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
                             $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
                             $quantity,

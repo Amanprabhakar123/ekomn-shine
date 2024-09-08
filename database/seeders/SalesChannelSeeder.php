@@ -38,8 +38,33 @@ class SalesChannelSeeder extends Seeder
             'name' => 'Own Store',
             'is_active' => true,
             ],
+            [
+            'name' => 'Myntra',
+            'is_active' => true,
+            ],
+            [
+                'name' => 'Ajio',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Nykaa',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Snapdeal',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Pepperfry',
+                'is_active' => true,
+            ]
+            
         ];
 
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        SalesChannel::truncate();
+
         SalesChannel::insert($salesChanelData);
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
     }
 }

@@ -418,7 +418,7 @@ class BuyerInventoryController extends Controller
                         $variation->title,
                         $variation->description,
                         implode(', ', $productKeywords->pluck('keyword')->toArray()),
-                        implode(', ', $productFeatures->pluck('feature_name')->toArray()),
+                        implode(', ', $productFeatures->pluck('value')->toArray()),
                         $variation->sku,
                         $product->model,
                         $product->hsn,

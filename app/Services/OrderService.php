@@ -1029,7 +1029,7 @@ class OrderService
         }
 
         // Get the logo image from the storage
-        $logo = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/Logo.svg'));
+        $logo = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/logo_b.png'));
         // Get the rupee image from the storage
         $rupee = 'data:image/png;base64,' . base64_encode(file_get_contents('assets/images/icon/rupee.png'));
         // Prepare data for the PDF
