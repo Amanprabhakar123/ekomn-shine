@@ -161,7 +161,7 @@ class PaymentSubscription
                 'hsn' =>$companyDetail->subscription[0]->plan->hsn,
                 'gst' =>$companyDetail->subscription[0]->plan->gst,
                 'price' =>$companyDetail->subscription[0]->plan->price,
-                'receipt_id' => $companyDetail->companyPlanPayment->receipt_id,
+                'receipt_id' => 'INV-'.str_pad($companyDetail->companyPlanPayment->receipt_id, 8, '0', STR_PAD_LEFT),
                 'date' => $companyDetail->companyPlanPayment,
                 'subscription_start_date' => $companyDetail->subscription[0]->subscription_start_date->toDateString(),
                 'subscription_end_date' => $companyDetail->subscription[0]->subscription_end_date->toDateString(),
