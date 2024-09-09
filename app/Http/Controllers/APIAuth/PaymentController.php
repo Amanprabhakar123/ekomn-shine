@@ -327,6 +327,7 @@ class PaymentController extends Controller
             // Register Company Subscription Details
             $company_detail->subscription()->create([
                 'company_id' => $company_detail->id,
+                'company_plan_paymnet_id' => $payment->id,
                 'plan_id' => $payment->plan_id,
                 'subscription_start_date' => Carbon::now(),
                 'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
@@ -428,20 +429,14 @@ class PaymentController extends Controller
         } else {
             // Handle the case where the value is not provided
             $decrypted_value = null;
-        }
-
-        
-        // $payments = CompanyPlanPayment::with('companyDetails.subscription', 'companyDetails.planSubscription', 'plan',)
-        // ->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
-
-        $payments = CompanyPlanPayment::with([
-            'companyDetails.subscription' => function ($query) {
-            $query->orderBy('id', 'desc')->limit(1); // Fetch the latest subscription with status 1
-            },
+        } $payments = CompanyPlanPayment::with([
+            'companyPlans',
             'companyDetails',
             'companyDetails.planSubscription',
             'plan',
-        ])->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
+        ])
+        ->whereHas('companyPlans')
+        ->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
         if (!empty($serchTerm)) {
             $payments = $payments->whereHas('companyDetails', function ($query) use ($serchTerm) {
                 $query->where('business_name', 'like', '%' . $serchTerm . '%')
@@ -459,19 +454,20 @@ class PaymentController extends Controller
         }
 
         if (!is_null($sort_by_status)) {
-            $payments = $payments->whereHas('companyDetails.subscription', function ($query) use ($sort_by_status) {
+            $payments = $payments->whereHas('companyPlans', function ($query) use ($sort_by_status) {
                 $query->where('status', $sort_by_status);
             });
         }
         
         if(!is_null($start_date) && !is_null($last_date)) {
-            $payments = $payments->whereHas( 'companyDetails.subscription', function ($query) use ($start_date, $last_date) {
+            $payments = $payments->whereHas( 'companyPlans', function ($query) use ($start_date, $last_date) {
                 $query->where('subscription_start_date', '>=', $start_date)
                 ->where('subscription_end_date', '<=', $last_date);
             });
         }
 
         $payments = $payments->orderBy('id', 'desc');
+
         // Filter the payments based on the request
         $payments = $payments->paginate($perPage);
             
@@ -483,7 +479,7 @@ class PaymentController extends Controller
 
         // Create the data array using Fractal
         $data = $this->fractal->createData($resource)->toArray();
-        // dd($data);
+        
         return response()->json($data);
 
         }catch(\Exception $e){
@@ -832,7 +828,7 @@ class PaymentController extends Controller
                 $amount_with_gst = $plan_details->price + ($plan_details->price * $plan_details->gst / 100);
                 $receiptId = $this->getNextReceiptId(rand(1, 9999999999999));
                 $currency = $request->input('currency', 'INR');
-                CompanyPlanPayment::create([
+                $company_payment = CompanyPlanPayment::create([
                     'transaction_id' => $orderId,
                     'purchase_id' => Str::uuid(),
                     'plan_id' => $plan_details->id,
@@ -862,6 +858,7 @@ class PaymentController extends Controller
                  // Create new plan for the company
                 CompanyPlan::create([
                     'company_id' => $company_detail->id,
+                    'company_plan_paymnet_id' => $company_payment->id,
                     'plan_id' => $plan_details->id,
                     'subscription_start_date' => Carbon::now(),
                     'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),
@@ -933,6 +930,7 @@ class PaymentController extends Controller
                 // Create new plan for the company
                 CompanyPlan::create([
                     'company_id' => $company_detail->id,
+                    'company_plan_paymnet_id' => $payment->id,
                     'plan_id' => $payment->plan_id,
                     'subscription_start_date' => Carbon::now(),
                     'subscription_end_date' => Carbon::now()->addDays($plan_details->duration),

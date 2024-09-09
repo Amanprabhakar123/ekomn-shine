@@ -17,6 +17,7 @@ class CompanyPlan extends Model
      */
     protected $fillable = [
         'company_id',
+        'company_plan_paymnet_id',
         'plan_id',
         'subscription_start_date',
         'subscription_end_date',

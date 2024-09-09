@@ -82,14 +82,38 @@
                       </div>
                     </div>
                   </div>
+                  @else
+                  <div class="col-sm-12 col-md-4 mt-3">
+                    <div class="ek_group">
+                      <label class="eklabel req">
+                        <span class="autodebitStatus fw-bold fs-6">Smart Pay:</span>
+                      </label>
+                      <div class="ek_f_input">
+                      <div class="switch-container">
+                            <label class="switch mt-2">
+                             
+                                <input type="checkbox" id="autodebitToggle" disabled>
+                                <span class="slider"></span>
+                            </label>
+                           <strong>AutoDebit: </strong> <span id="autodebitStatus"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   @endif
 
                   <div class="col-sm-12 col-md-4 mt-3">
                     <div class="ek_group">
                       <div class="ek_f_input">
                        <button id="btnRenewal" class="btn btn-login btnekomn card_f_btn payment_button">Renew/Upgrade</button>
+                      
                        @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive() || $companyDetail->isSubscriptionAuth() || $companyDetail->isSubscriptionPending())
+                       @if(!is_null($companyDetail->razorpay_subscription_id))
                        <button id="cancelSmartPay" class="btn btn-danger">Cancel Smart Pay</button>
+                       @else
+                       <button id="enableSmartPay" class="btn btn-success" disabled>Enable Smart Pay</button>
+                       @endif
+
                        @else
                        @if($companyDetail->subscription[0]->isPlanActive())
                        <button id="enableSmartPay" class="btn btn-success" >Enable Smart Pay</button>
@@ -466,11 +490,22 @@
     
     @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive())
     if (checkbox.checked) {
-        statusText.textContent = "{{$companyDetail->subscriptionStatus()}}";
-        statusText.style.color = "green";
+      @if(!is_null($companyDetail->razorpay_subscription_id))
+      statusText.textContent = "{{$companyDetail->subscriptionStatus()}}";
+      statusText.style.color = "green";
+      @else
+      statusText.textContent = "In Active";
+      statusText.style.color = "red";
+      @endif
+      
     } else {
-        statusText.textContent = "{{$companyDetail->subscriptionStatus()}}";
+      @if(!is_null($companyDetail->razorpay_subscription_id))
+      statusText.textContent = "{{$companyDetail->subscriptionStatus()}}";
+      statusText.style.color = "red";
+      @else
+        statusText.textContent = "In Active";
         statusText.style.color = "red";
+      @endif
     }
     @else
         checkbox.disabled = true;
@@ -741,15 +776,6 @@ $('#btnRenewal').click(function() {
             console.error("API Request Error:", error);
         });
     }
-    // ApiRequest("renewal-subscription", 'POST', {
-    //     company_id: company_id,
-    //     plan_id: "{{salt_encrypt($companyDetail->subscription[0]->plan_id)}}",
-    //     subscription_end_date: "{{$companyDetail->subscription[0]->subscription_end_date->toDateString()}}"
-    // }).then(response => {
-    //     if (response.data.statusCode == 200) {
-    //         window.open(response.data.payment_link, '_blank');
-    //     }
-    // });
   });
      // download the invoice pdf
      function downloadInvoice(subscription_id) {

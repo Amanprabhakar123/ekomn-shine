@@ -190,6 +190,7 @@
                                             $total_order_cost = 0;
                                             $shipping_cost = 0;
                                             $shiping_gst_amount = 0;
+                                            $shipping_exlusive_gst = 0;
                                             $other_charges_gst = 0;
                                             $other_charges_gst_amount = 0;
                                             ?>
@@ -198,9 +199,9 @@
                                             @php
                                             $shipping_charges += $orderItem->shipping_charges;
                                             $shipping_gst_percent = $orderItem->shipping_gst_percent;
-                                            
-                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
-                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
+                                            $shipping_exlusive_gst = ($shipping_charges / (1 + ($shipping_gst_percent / 100)));
+                                            $shiping_gst_amount = $shipping_charges - $shipping_exlusive_gst;
+                                            $shipping_cost = $shipping_charges;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
                                             $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
@@ -230,7 +231,7 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="4" class="text-left">Shipping Cost</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_exlusive_gst}}</td>
                                                 <td class="text-right">{{$shipping_gst_percent}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
@@ -293,7 +294,7 @@
                                             <div class="ek_group">
                                                 <label class="eklabel align-items-start bold">Comment:</label>
                                                 <div class="ek_f_input">
-                                                    <textarea rows="3" name="comment" id="comment" class="form-control resizer_none" placeholder="Type here..."></textarea>
+                                                    <textarea rows="3" name="comment" id="feedback-comment" class="form-control resizer_none" placeholder="Type here..."></textarea>
                                                 </div>
                                             </div>
                                         
@@ -535,6 +536,7 @@
                                             $total_order_cost = 0;
                                             $shipping_cost = 0;
                                             $shiping_gst_amount = 0;
+                                            $shipping_exlusive_gst = 0;
                                             $other_charges_gst = 0;
                                             $other_charges_gst_amount = 0;
                                             ?>
@@ -543,9 +545,9 @@
                                             @php
                                             $shipping_charges += $orderItem->shipping_charges;
                                             $shipping_gst_percent = $orderItem->shipping_gst_percent;
-                                            
-                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
-                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
+                                            $shipping_exlusive_gst = ($shipping_charges / (1 + ($shipping_gst_percent / 100)));
+                                            $shiping_gst_amount = $shipping_charges - $shipping_exlusive_gst;
+                                            $shipping_cost = $shipping_charges;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
                                             $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
@@ -575,7 +577,7 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="4" class="text-left">Shipping Cost</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_exlusive_gst}}</td>
                                                 <td class="text-right">{{$shipping_gst_percent}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
@@ -884,6 +886,7 @@
                                             $total_order_cost = 0;
                                             $shipping_cost = 0;
                                             $shiping_gst_amount = 0;
+                                            $shipping_exlusive_gst = 0;
                                             $other_charges_gst = 0;
                                             $other_charges_gst_amount = 0;
                                             ?>
@@ -892,9 +895,9 @@
                                             @php
                                             $shipping_charges += $orderItem->shipping_charges;
                                             $shipping_gst_percent = $orderItem->shipping_gst_percent;
-                                            
-                                            $shiping_gst_amount = ($shipping_charges * $shipping_gst_percent / 100);
-                                            $shipping_cost = $shipping_charges + $shiping_gst_amount;
+                                            $shipping_exlusive_gst = ($shipping_charges / (1 + ($shipping_gst_percent / 100)));
+                                            $shiping_gst_amount = $shipping_charges - $shipping_exlusive_gst;
+                                            $shipping_cost = $shipping_charges;
                                             $gst += $orderItem->total_price_inc_gst - $orderItem->total_price_exc_gst;
                                             $other_charges += $orderItem->packing_charges + $orderItem->labour_charges + $orderItem->processing_charges + $orderItem->payment_gateway_charges;
                                             $other_charges_gst = ($orderItem->packaging_gst_percent + $orderItem->labour_gst_percent + $orderItem->processing_gst_percent + $orderItem->payment_gateway_gst_percent)/4;
@@ -924,7 +927,7 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="4" class="text-left">Shipping Cost</td>
-                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_charges}}</td>
+                                                <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_exlusive_gst}}</td>
                                                 <td class="text-right">{{$shipping_gst_percent}} %</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{number_format($shiping_gst_amount, 2)}}</td>
                                                 <td class="text-right"><i class="fas fa-rupee-sign fs-12 me-1"></i>{{$shipping_cost}}</td>
@@ -1373,7 +1376,7 @@ $(document).ready(function() {
                 e.preventDefault();
                 
                 let rating = $('#ratingInput').val();
-                let comment = $('#comment').val();
+                let comment = $('#feedback-comment').val();
                 let order_id = $('#orderID').val();
 
                 formData.append('rating', rating);

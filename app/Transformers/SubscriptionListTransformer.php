@@ -17,7 +17,7 @@ class SubscriptionListTransformer extends TransformerAbstract
      */
     public function transform(CompanyPlanPayment $CompanyPlanPayment): array
     {
-        $status = !empty($CompanyPlanPayment->companyDetails->subscription) ? $CompanyPlanPayment->companyDetails->subscription->first()->status : 0;
+        $status = !empty($CompanyPlanPayment->companyPlans) ? $CompanyPlanPayment->companyPlans->status : 0;
         try{
         $data = [
             'id' => salt_encrypt($CompanyPlanPayment->id),
@@ -29,8 +29,8 @@ class SubscriptionListTransformer extends TransformerAbstract
             'plan_name' => $CompanyPlanPayment->plan->name,
             'amount' => $CompanyPlanPayment->amount,
             'amount_with_gst' => isset($CompanyPlanPayment->amount_with_gst) ? $CompanyPlanPayment->amount_with_gst : $CompanyPlanPayment->amount,
-            'subscription_start_date' => !empty($CompanyPlanPayment->companyDetails->subscription) ? $CompanyPlanPayment->companyDetails->subscription->first()->subscription_start_date->toDateString() : '',
-            'subscription_end_date' => !empty($CompanyPlanPayment->companyDetails->subscription) ? $CompanyPlanPayment->companyDetails->subscription->first()->subscription_end_date->toDateString() : '',
+            'subscription_start_date' => !empty($CompanyPlanPayment->companyPlans) ? $CompanyPlanPayment->companyPlans->subscription_start_date->toDateString() : '',
+            'subscription_end_date' => !empty($CompanyPlanPayment->companyPlans) ? $CompanyPlanPayment->companyPlans->subscription_end_date->toDateString() : '',
             'inventory_count' => isset($CompanyPlanPayment->companyDetails->planSubscription->inventory_count) ? $CompanyPlanPayment->companyDetails->planSubscription->inventory_count : 0,
             'download_count' => isset($CompanyPlanPayment->companyDetails->planSubscription->download_count) ? $CompanyPlanPayment->companyDetails->planSubscription->download_count : 0,
             'status' =>  getCompanyPlanStatus($status),
