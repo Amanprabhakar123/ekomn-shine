@@ -431,9 +431,17 @@ class PaymentController extends Controller
         }
 
         
-        $payments = CompanyPlanPayment::with('companyDetails.subscription', 'companyDetails.planSubscription', 'plan')
-        ->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
+        // $payments = CompanyPlanPayment::with('companyDetails.subscription', 'companyDetails.planSubscription', 'plan',)
+        // ->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
 
+        $payments = CompanyPlanPayment::with([
+            'companyDetails.subscription' => function ($query) {
+            $query->orderBy('id', 'desc')->limit(1); // Fetch the latest subscription with status 1
+            },
+            'companyDetails',
+            'companyDetails.planSubscription',
+            'plan',
+        ])->where('payment_status', CompanyPlanPayment::PAYMENT_STATUS_SUCCESS);
         if (!empty($serchTerm)) {
             $payments = $payments->whereHas('companyDetails', function ($query) use ($serchTerm) {
                 $query->where('business_name', 'like', '%' . $serchTerm . '%')
@@ -467,7 +475,6 @@ class PaymentController extends Controller
         // Filter the payments based on the request
         $payments = $payments->paginate($perPage);
             
-
         // Transform the paginated results using Fractal
         $resource = new Collection($payments, new SubscriptionListTransformer);
 
@@ -476,7 +483,7 @@ class PaymentController extends Controller
 
         // Create the data array using Fractal
         $data = $this->fractal->createData($resource)->toArray();
-
+        // dd($data);
         return response()->json($data);
 
         }catch(\Exception $e){
