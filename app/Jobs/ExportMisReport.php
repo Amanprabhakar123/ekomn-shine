@@ -335,14 +335,15 @@ class ExportMisReport implements ShouldQueue
             } elseif ($this->type === 'total_active_buyer') {
                 $fileName = 'MIS_TOTAL_ACTIVE_BUYER.csv';
                 $csvHeaders = ['Full Name', 'Email', 'Mobile', 'Plan Type', 'Plan Amount', 'Total amount Paid', 'Plan Name', 'Transaction ID', 'Subscription Start Date', 'Subscription End Date', 'Status'];
-                CompanyPlanPayment::with(['companyDetails', 'plan'])
+                CompanyPlanPayment::with(['companyDetails', 'plan', 'companyPlans'])
+                ->whereHas('companyPlans')
                     ->chunk(100, function ($companyPlans) use (&$csvData) {
                         foreach ($companyPlans as $com) {
                             if (! empty($com->companyDetails)) {
                                 $full_name = isset($com->companyDetails->first_name) ? $com->companyDetails->first_name.' '.$com->companyDetails->last_name : '';
-                                $subscription_start_date = isset($com->companyDetails->subscription[0]['subscription_start_date']) ? $com->companyDetails->subscription[0]['subscription_start_date'] : '';
-                                $subscription_end_date = isset($com->companyDetails->subscription[0]['subscription_end_date']) ? $com->companyDetails->subscription[0]['subscription_end_date'] : '';
-                                $status = $com->companyDetails->subscription[0]['status'] ?? '';
+                                $subscription_start_date = isset($com->companyPlans->subscription_start_date) ? $com->companyPlans->subscription_start_date : '';
+                                $subscription_end_date = isset($com->companyPlans->subscription_end_date) ? $com->companyPlans->subscription_end_date : '';
+                                $status = $com->companyPlans->status ?? '';
                                 $csvData[] = [
                                     $full_name,
                                     $com->email,
