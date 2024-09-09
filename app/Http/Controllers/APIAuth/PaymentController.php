@@ -20,6 +20,7 @@ use App\Traits\ReceiptIdGenerator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
+use App\Services\ExportFileServices;
 use App\Models\BuyerRegistrationTemp;
 use App\Models\CompanyPlanPermission;
 use App\Services\PaymentSubscription;
@@ -422,14 +423,13 @@ class PaymentController extends Controller
         $sort_by_plan_name = $request->input('sort_by_plan_name', null);
         $start_date = $request->input('start_date', null);
         $last_date = $request->input('last_date', null);
-
+        $exportCsv = $request->input('export_csv', false);
+        
         if (!empty($sort_by_plan_name)) {
             // Assuming you have a way to detect if the value is encrypted
             $plan_id = salt_decrypt($sort_by_plan_name);
-        } else {
-            // Handle the case where the value is not provided
-            $decrypted_value = null;
-        } $payments = CompanyPlanPayment::with([
+        }
+         $payments = CompanyPlanPayment::with([
             'companyPlans',
             'companyDetails',
             'companyDetails.planSubscription',
@@ -459,28 +459,47 @@ class PaymentController extends Controller
             });
         }
         
-        if(!is_null($start_date) && !is_null($last_date)) {
-            $payments = $payments->whereHas( 'companyPlans', function ($query) use ($start_date, $last_date) {
-                $query->where('subscription_start_date', '>=', $start_date)
-                ->where('subscription_end_date', '<=', $last_date);
+        if(!is_null($start_date) || !is_null($last_date)) {
+            $payments = $payments->whereHas('companyPlans', function ($query) use ($start_date, $last_date) {
+                if (!is_null($start_date)) {
+                    $query->where('subscription_start_date', '>=', $start_date);
+                }
+                if (!is_null($last_date)) {
+                    $query->where('subscription_end_date', '<=', $last_date);
+                }
             });
         }
+        
 
         $payments = $payments->orderBy('id', 'desc');
+        if(!$exportCsv){
+            // Filter the payments based on the request
+            $payments = $payments->paginate($perPage);
+             // Transform the paginated results using Fractal
+            $resource = new Collection($payments, new SubscriptionListTransformer($exportCsv));
 
-        // Filter the payments based on the request
-        $payments = $payments->paginate($perPage);
+            // Add pagination information to the resource
+            $resource->setPaginator(new IlluminatePaginatorAdapter($payments));
+
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
             
-        // Transform the paginated results using Fractal
-        $resource = new Collection($payments, new SubscriptionListTransformer);
+            return response()->json($data);
 
-        // Add pagination information to the resource
-        $resource->setPaginator(new IlluminatePaginatorAdapter($payments));
-
-        // Create the data array using Fractal
-        $data = $this->fractal->createData($resource)->toArray();
+        }else{
+            $payments = $payments->get();
+            $resource = new Collection($payments, new SubscriptionListTransformer($exportCsv));
+            // Create the data array using Fractal
+            $data = $this->fractal->createData($resource)->toArray();
+            // Export CSV
+            $this->exportCsv($data);
+            return response()->json(['data' => [
+                'statusCode' => __('statusCode.statusCode200'),
+                'status' => __('statusCode.status200'),
+                'message' => __('auth.csvExported'),
+            ]], __('statusCode.statusCode200'));
+        }
         
-        return response()->json($data);
 
         }catch(\Exception $e){
             $exceptionDetails = [
@@ -490,6 +509,25 @@ class PaymentController extends Controller
             ];
         }
         event(new ExceptionEvent($exceptionDetails));
+    }
+
+    /**
+     * change staus subscription.
+     * 
+     * @param $data
+     * @return boolean
+     */
+    protected function exportCsv($data){
+        try{
+            $email = auth()->user()->email;
+            $csvHeaders = ['Full Name', 'Compnay Name', 'User ID', 'Type', 'Plan Name', 'Plan Price', 'Paid Amount', 'Start Date', 'End Date', 'Inventory Count', 'Download Count', 'Status'];
+            // Use ExportServices to generate and send the CSV file via email
+            $exportFileService = new ExportFileServices;
+            $exportFileService->sendCSVByEmail($csvHeaders, $data['data'], 'subscription_list.csv', $email, 'Subscription list');
+            return true;
+        }catch(\Exception $e){
+            throw $e;
+        }
     }
 
     /**

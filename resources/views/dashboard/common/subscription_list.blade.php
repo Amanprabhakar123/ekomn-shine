@@ -10,7 +10,7 @@
                 <h3 class="cardtitle">Subscription List</h3>
             
          
-        <button class="btn btnekomn_dark stripbtn" onclick="collectCheckedIdsForCsv()"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+        <button class="btn btnekomn_dark stripbtn" id="exportCsv"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
       </div>
             <div class="filterStrip">
             <ul class="ekfilterList">
@@ -19,13 +19,28 @@
                     <input type="text" class="form-control searchicon" id="searchQuery" placeholder="Search" title="Search with business name, email, mobile">
                 </li>
                 <li>
-                <div class="calanderWithName">
+                <!-- <div class="calanderWithName">
                     <div class="calUplabel dateRange_c">
                         <span class="calLabel">Date Range</span>
                         <input type="text" name="daterange" />
                     </div>
-                </div>
-            </li>
+                </div> -->
+                <div class="calanderWithName">
+                    <div class="calUplabel">
+                        <span class="calLabel">Start Date</span>
+                        <input type="text" name="startdate">
+                    </div>
+                 </div>
+                </li>
+                <li>
+                <div class="calanderWithName">
+                    <div class="calUplabel">
+                        <span class="calLabel">End Date</span>
+                        <input type="text" name="enddate">
+                    </div>
+                 </div>
+                </li>
+                
                 <li>
                     <div class="dropdown" id="sort_by_plan_name">
                         <button class="btn dropdown-toggle filterSelectBox" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="opacity-50 me-2">Plan</span><strong class="dropdownValue">All</strong></button>
@@ -113,60 +128,37 @@
         let currentPage = 1;
         let rows = parseInt(rowsPerPage.value, 10);
         let totalRows = 0;
+        let exportCsv = false;
 
         $(function() {
             const today = moment().format('YYYY-MM-DD');
-            const endDate = moment().add(30, 'days').format('YYYY-MM-DD');
-            $('input[name="daterange"]').daterangepicker({
+            $('input[name="startdate"]').daterangepicker({
+                singleDatePicker: true, 
                 autoApply: true,
                 opens: 'left',
                 startDate: today,
-                endDate: endDate,
                 locale: {
                     format: 'YYYY-MM-DD' // Ensures the date format is consistent
                 }
-            }, function(start, end, label) {
-                // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            }, function(start) {
                 start_date = start.format('YYYY-MM-DD');
-                last_date = end.format('YYYY-MM-DD');
                 fetchData();
             });
 
-            //
-            // $('input[name="date"]').daterangepicker({
-            //     singleDatePicker: true,    // Enables single date picker
-            //     autoApply: true,
-            //     opens: 'left',
-            //     startDate: today,
-            //     locale: {
-            //         format: 'YYYY-MM-DD'   // Ensures the date format is consistent
-            //     }
-            // },
-            // function(selectedDate) {
-            //     statement_date = selectedDate.format('YYYY-MM-DD');
-            //     fetchData();
-            // });
-
-            // const nextThursday = moment().day(4).format('YYYY-MM-DD');
-            // $('input[name="date"]').daterangepicker({
-            //     singleDatePicker: true,    // Enables single date picker
-            //     autoApply: true,
-            //     opens: 'left',
-            //     startDate: nextThursday,
-            //     locale: {
-            //         format: 'YYYY-MM-DD'   // Ensures the date format is consistent
-            //     },
-            //     isInvalidDate: function(date) {
-            //         // Check if the date is not a Thursday
-            //         return date.day() !== 4;
-            //     }
-            // },
-            // function(selectedDate) {
-            //     statement_date = selectedDate.format('YYYY-MM-DD');
-            //     fetchData();
-            // });
+            $('input[name="enddate"]').daterangepicker({
+                singleDatePicker: true, 
+                autoApply: true,
+                opens: 'left',
+                startDate: today,
+                locale: {
+                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                }
+            }, function(lastdate) {
+                last_date = lastdate.format('YYYY-MM-DD');
+                fetchData();
+            });
         });
-
+        
         // Event listener for the search input field
         const searchQuery = document.getElementById("searchQuery");
         searchQuery.addEventListener("keydown", (e) => {
@@ -180,10 +172,16 @@
             fetchData();
         });
 
+        // Event listener for the export CSV button
+        const exportCsvButton = document.getElementById("exportCsv");
+        exportCsvButton.addEventListener("click", () => {
+            exportCsv = true;
+            fetchData();
+        });
         let selectedValues = {
             sortByStatus: "",
             sort_by_gst: "",
-            sort_by_plan_name: ""
+            sort_by_plan_name: "",
         };
         function handleDropdownSelection(dropdown, key) {
                 const dropdownItems = dropdown.querySelectorAll('.dropdown-item');
@@ -202,38 +200,14 @@
         const sort_by_status = document.getElementById('sort_by_status');
         handleDropdownSelection(sort_by_status, 'sortByStatus');
 
-        // const sort_by_gst = document.getElementById('sort_by_gst');
-        // handleDropdownSelection(sort_by_gst, 'sort_by_gst');
-
         const sort_by_plan_name = document.getElementById('sort_by_plan_name');
         handleDropdownSelection(sort_by_plan_name, 'sort_by_plan_name');
 
-        // let sortField = ""; // Set the sort field here (e.g. "sku", "stock", "selling_price")
-        // let sortOrder = ""; // Set the sort order here (e.g. "asc", "desc")
-        // const h_sorting = document.querySelectorAll(".h_sorting");
-        // h_sorting.forEach(element => {
-        //     element.addEventListener("click", () => {
-        //     const sortFieldElement = element;
-        //     sortField = sortFieldElement.getAttribute("data-sort-field");
-        //     sortOrder = (sortOrder === "asc") ? "desc" : "asc";
-        //     fetchData();
-        //     h_sorting.forEach(el => {
-        //         el.classList.remove("active");
-        //         el.classList.remove("asc");
-        //         el.classList.remove("desc");
-        //     });
-        //     element.classList.add("active");
-        //     element.classList.add(sortOrder);
-        //     });
-        // });
         // Function to fetch data from the server
+        
         function fetchData() {
             // Make an API request to fetch inventory data
             let apiUrl = `get-payment-info?per_page=${rows}&page=${currentPage}`;
-
-            // if (sortField && sortOrder) {
-            //     apiUrl += `&sort=${sortField}&order=${sortOrder}`;
-            // }
 
             if (searchQuery) {
             apiUrl += `&query=${searchQuery.value}`;
@@ -243,28 +217,41 @@
             apiUrl += `&sort_by_status=${selectedValues.sortByStatus}`; 
             }
 
-            // if (selectedValues.sort_by_gst) {
-            // apiUrl += `&sort_by_gst=${selectedValues.sort_by_gst}`;
-            // }
-
             if (selectedValues.sort_by_plan_name) {
             apiUrl += `&sort_by_plan_name=${selectedValues.sort_by_plan_name}`;
             }
 
-            if(start_date && last_date) {
+            if(start_date || last_date) {
                 apiUrl += `&start_date=${start_date}&last_date=${last_date}`;
             }
 
-            // if(statement_date){
-            //     apiUrl += `&statement_date=${statement_date}`;
-            // }
+            if (exportCsv) {
+            apiUrl += `&export_csv=${exportCsv}`;
+            }
 
             ApiRequest(apiUrl, 'GET')
             .then(response => {
                 const data = (response.data);
                 if(data.length === 0) {
                 dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
-                }else{
+                }else if(data.statusCode == 200){
+                    exportCsv = false;
+                    Swal.fire({
+                                title: "Success!",
+                                text: response.data.message,
+                                icon: "success",
+                                didOpen: () => {
+                                    const titleElement = Swal.getTitle();
+                                    titleElement.style.color = 'green';
+                                    titleElement.style.fontSize = '20px';
+
+                                    const confirmButton = Swal.getConfirmButton();
+                                    confirmButton.style.backgroundColor = '#feca40';
+                                    confirmButton.style.color = 'white';
+                                }
+                            });
+                }
+                else{
                 response = (response.meta.pagination);
                 totalRows = response.total;
                 updatePagination();

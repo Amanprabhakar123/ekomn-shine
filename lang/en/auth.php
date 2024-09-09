@@ -160,5 +160,6 @@ return [
     'InventorySuccess' => 'Inventory added successfully.',
     'planNotActive' => 'Plan is not active or expired. Please subscribe to a plan.',
     'resellerProgramNotActive' => 'Reseller program is not active. Please upgrade your plan.',
+    'csvExported' => 'CSV exported successfully.',
 
 ];
