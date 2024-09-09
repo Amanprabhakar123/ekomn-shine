@@ -111,7 +111,7 @@
                        @if(!is_null($companyDetail->razorpay_subscription_id))
                        <button id="cancelSmartPay" class="btn btn-danger">Cancel Smart Pay</button>
                        @else
-                       <button id="enableSmartPay" class="btn btn-success" disabled>Enable Smart Pay</button>
+                       <button id="enableSmartPay" class="btn btn-success">Enable Smart Pay</button>
                        @endif
 
                        @else
