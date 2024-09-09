@@ -39,9 +39,11 @@ class WelcomeEmail extends Mailable
      */
     public function content(): Content
     {
+        $link = User::unsubscribeTokens($this->user);
         $content = new Content(view: 'email.welcome');
         $role = $this->user->hasRole(User::ROLE_SUPPLIER) ? User::ROLE_SUPPLIER : User::ROLE_BUYER;
-        $content->with(['role' => $role, 'user' => $this->user]);
+        $content->with(['role' => $role, 'user' => $this->user, 'link' => $link]);
+
 
     return $content;
     }

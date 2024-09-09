@@ -852,6 +852,15 @@ class PaymentController extends Controller
                 $paymentId = $paymentData['id'];
                 $signature = $paymentData['description'];
                 $plan_id = $subscription['plan_id'];
+                // check current payment already exist because subscription charge multiple time if user paid manually
+                $companyPlanPayment = CompanyPlanPayment::where('transaction_id', $orderId)->first();  
+                if(!empty($companyPlanPayment)){
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.paymentSuccess'),
+                    ]], __('statusCode.statusCode200'));
+                }
                 $company_detail = CompanyDetail::where('razorpay_subscription_id', $subscription_id)->first();
                 if(empty($company_detail)){
                     return response()->json(['data' => [
