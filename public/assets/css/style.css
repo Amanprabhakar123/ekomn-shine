@@ -4124,7 +4124,7 @@ header,footer{position: relative;z-index: 1000;}
   }
 
 .collapse-group-1,.collapse-group-2 {display: none;}
-.collapse-toggle {cursor: pointer;}
+.collapse-toggle {cursor: pointer; color: #ffb20d;}
 
 .imagecontainer{
   position: relative;

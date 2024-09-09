@@ -33,7 +33,9 @@ class CompanyPlanPayment extends Model
         'email',
         'mobile',
         'buyer_id', // buyer_id is the user_id of the buyer temp table or buyer table
-        'amount',
+        'amount', // excluding GST
+        'amount_with_gst',
+        'gst_percent',
         'payment_status',
         'razorpay_payment_id',
         'razorpay_signature',
@@ -90,7 +92,7 @@ class CompanyPlanPayment extends Model
      */
     public function companyPlans()
     {
-        return $this->belongsTo(CompanyPlan::class);
+        return $this->hasOne(CompanyPlan::class , 'company_plan_paymnet_id', 'id');
     }
 
     /**

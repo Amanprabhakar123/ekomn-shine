@@ -1,13 +1,14 @@
 <?php
 
-use App\Models\AddToCart;
+use App\Models\User;
 use App\Models\Category;
+use App\Models\AddToCart;
+use App\Models\CompanyPlan;
 use App\Models\CompanyDetail;
 use App\Models\ProductInventory;
 use App\Models\ProductVariation;
-use App\Models\ProductVariationMedia;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use App\Models\ProductVariationMedia;
 use Illuminate\Support\Facades\Storage;
 
 // User roles define for entire application
@@ -38,6 +39,10 @@ const PERMISSION_MIS_SETTING_INVENTORY = User::PERMISSION_MIS_SETTING_INVENTORY;
 const PERMISSION_CATEGORY_MANAGEMENT = User::PERMISSION_CATEGORY_MANAGEMENT;
 const PERMISSION_USER_LIST = User::PERMISSION_USER_LIST;
 const PERMISSION_ADMIN_LIST = User::PERMISSION_ADMIN_LIST;
+const PERMISSION_SUBSCRIPTION_LIST = User::PERMISSION_SUBSCRIPTION_LIST;
+const PERMISSION_SUBSCRIPTION_VIEW = User::PERMISSION_SUBSCRIPTION_VIEW;
+const PERMISSION_PLAN_LIST = User::PERMISSION_PLAN_LIST;
+const PERMISSION_PLAN_EDIT = User::PERMISSION_PLAN_EDIT;
 
 // return order permission
 const PERMISSION_CREATE_RETURN_ORDER = User::PERMISSION_CREATE_RETURN_ORDER;
@@ -67,10 +72,10 @@ const SORTING_PRICE_LOW_TO_HIGH = 4;
 const SORTING_REGULAR_AVAILABLE = 5;
 const SORTING_TILL_STOCK_LAST = 6;
 
-const PAN_VERIFIED = 1;
-const PAN_NOT_VERIFIED = 0;
-const GST_VERIFIED = 1;
-const GST_NOT_VERIFIED = 0;
+const PAN_VERIFIED = CompanyDetail::PAN_VERIFIED;
+const PAN_NOT_VERIFIED = CompanyDetail::PAN_NOT_VERIFIED;
+const GST_VERIFIED = CompanyDetail::GST_VERIFIED;
+const GST_NOT_VERIFIED = CompanyDetail::GST_NOT_VERIFIED;
 
 
 /**
@@ -708,4 +713,43 @@ function convertNumberToWords($number)
 function getCartItemCount($buyerId)
 {
     return AddToCart::where('buyer_id', $buyerId)->count();
+}
+
+/**
+ * get the yearly discount percent
+ *
+ * @param [type] $monthly_price
+ * @param [type] $yearly_price
+ * @return void
+ */
+function getYearlyDiscountPercent($monthly_price, $yearly_price){
+    return round((($monthly_price * 12 - $yearly_price) / ($monthly_price * 12)) * 100);
+}
+
+/**
+ * get the yearly price
+ *
+ * @param [type] $monthly_price
+ * @return void
+ */
+function yearlyPrice($monthly_price){
+    return number_format(($monthly_price * 12), 2, '.', '');
+}
+
+/**
+ * get the active plan status
+ *
+ * @param [type] $status
+ * @return void
+ */
+function getCompanyPlanStatus($status)
+{
+    switch ($status) {
+        case CompanyPlan::STATUS_ACTIVE:
+            return 'Active';
+        case CompanyPlan::STATUS_INACTIVE:
+            return 'Inactive';
+        default:
+            return 'Unknown';
+    }
 }

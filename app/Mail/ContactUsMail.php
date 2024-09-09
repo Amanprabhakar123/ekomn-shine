@@ -38,7 +38,7 @@ class ContactUsMail extends Mailable
     public function content(): Content
     {
         $content = new Content(view: 'email.contact_email');
-        $content->with([ 'data' => $this->]);
+        $content->with([ 'data' => $this->data]);
         return $content;
     }
 

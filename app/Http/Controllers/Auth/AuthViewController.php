@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 /**
  * The AuthViewController class handles the authentication related views.
@@ -36,7 +37,8 @@ class AuthViewController extends Controller
             'is_active' => true,
             'depth' => 0
         ])->get();
-        return view('auth.layout.app', ['product' => $product]);
+        $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get()->toArray();
+        return view('auth.layout.app', ['product' => $product, 'plans' => $plans]);
     }
 
     /**

@@ -240,7 +240,6 @@
             ApiRequest(apiUrl, 'GET')
             .then(response => {
                 const data = (response.data);
-                console.log(data);
                 if(data.length === 0) {
                 dataContainer.innerHTML = `<tr><td colspan="10" class="text-center">No data found</td></tr>`;
                 }else{

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use Carbon\Carbon;
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\ContactUs;
 use Razorpay\Api\Product;
@@ -844,7 +845,8 @@ class WebController extends Controller
 
     public function subscription()
     {
-        return view('web.subscription');
+        $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get()->toArray();
+        return view('web.subscription', compact('plans'));
     }
 
     public function integration()
@@ -984,4 +986,6 @@ class WebController extends Controller
             ], __('statusCode.statusCode500'));
         }
     }
+
+ 
 }

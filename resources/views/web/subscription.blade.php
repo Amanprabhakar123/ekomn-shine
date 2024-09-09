@@ -29,72 +29,72 @@
                   </div>
                 </div>
                 <div class="feature-value">
-                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt('1')}}"
+                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="free" autocomplete="off" value="{{salt_encrypt($plans[0]['id'])}}"
                   data-monthly-value="{{salt_encrypt('1')}}" data-yearly-value="{{salt_encrypt('1')}}" />
-                  <label class="plan_details" for="free">
-                    <h2 style="font-size: 15px;">Free Trial-14 days</h2>
+                  <label class="plan_details" for="{{$plans[0]['name']}}">
+                    <h2 style="font-size: 15px;">{{$plans[0]['name']}}</h2>
                     <div class="price_p">
-                      <div class="price" data-monthly="INR 00.00" data-yearly="INR 00.00">INR 00.00</div>
+                      <div class="price" data-monthly="INR {{$plans[0]['price']}}" data-yearly="INR {{$plans[0]['price']}}">INR {{$plans[0]['price']}}</div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Start Free Trial</button>
                   </label>
                 </div>
                 <div class="feature-value">
-                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Essential" autocomplete="off" value="{{salt_encrypt('2')}}"
-                  data-monthly-value="{{salt_encrypt('2')}}" data-yearly-value="{{salt_encrypt('3')}}"/>
+                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Essential" autocomplete="off" value="{{salt_encrypt($plans[1]['id'])}}"
+                  data-monthly-value="{{salt_encrypt($plans[1]['id'])}}" data-yearly-value="{{salt_encrypt($plans[2]['id'])}}"/>
                   <label class="plan_details " for="Essential">
-                    <h2>Essential</h2>
+                    <h2>{{$plans[1]['name']}}</h2>
                     <div class="price_p">
-                      <div class="price" data-monthly="INR 1999.00" data-yearly="INR 22309.00">INR 1999.00</div>
+                      <div class="price" data-monthly="INR {{$plans[1]['price']}}" data-yearly="INR {{$plans[2]['price']}}">INR {{$plans[1]['price']}}</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>23988.00</del>
-                        <small class="ms-1 bold text-success">7% Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{yearlyPrice($plans[1]['price'])}}</del>
+                        <small class="ms-1 bold text-success">{{getYearlyDiscountPercent($plans[1]['price'], $plans[2]['price'])}}% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
                 </div>
                 <div class="feature-value">
-                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Booster" autocomplete="off"  value="{{salt_encrypt('4')}}"
-                  data-monthly-value="{{salt_encrypt('4')}}" data-yearly-value="{{salt_encrypt('5')}}"/>
+                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Booster" autocomplete="off"  value="{{salt_encrypt($plans[3]['id'])}}"
+                  data-monthly-value="{{salt_encrypt($plans[3]['id'])}}" data-yearly-value="{{salt_encrypt($plans[4]['id'])}}"/>
                   <label class="plan_details bestplan active" for="Booster">
                     <span class="bestplanText">Most Popular</span>
-                    <h2>Booster</h2>
+                    <h2>{{$plans[3]['name']}}</h2>
                     <div class="price_p">
-                      <div class="price" data-monthly="INR 2999.00" data-yearly="INR 33469.00">INR 2999.00</div>
+                      <div class="price" data-monthly="INR {{$plans[3]['price']}}" data-yearly="{{$plans[4]['price']}}">{{$plans[3]['price']}}</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>35988.00</del>
-                        <small class="ms-1 bold text-success">7% Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{yearlyPrice($plans[3]['price'])}}</del>
+                        <small class="ms-1 bold text-success">{{getYearlyDiscountPercent($plans[3]['price'], $plans[4]['price'])}}% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
                 </div>
                 <div class="feature-value">
-                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Trade" autocomplete="off" value="{{salt_encrypt('6')}}"
-                  data-monthly-value="{{salt_encrypt('6')}}" data-yearly-value="{{salt_encrypt('7')}}"/>
+                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Trade" autocomplete="off" value="{{salt_encrypt( $plans[5]['id'] )}}"
+                  data-monthly-value="{{salt_encrypt($plans[5]['id'])}}" data-yearly-value="{{salt_encrypt($plans[6]['id'])}}"/>
                   <label class="plan_details" for="Trade">
-                    <h2>Trade Hub</h2>
+                    <h2>{{$plans[5]['name']}}</h2>
                     <div class="price_p">
-                      <div class="price" data-monthly="INR 7999.00" data-yearly="INR 89269.00">INR 7999.00</div>
+                      <div class="price" data-monthly="INR {{$plans[5]['price']}}" data-yearly="INR {{$plans[6]['price']}}">INR {{$plans[5]['price']}}</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>95988.00</del>
-                        <small class="ms-1 bold text-success">7% Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{yearlyPrice($plans[5]['price'])}}</del>
+                        <small class="ms-1 bold text-success">{{getYearlyDiscountPercent($plans[5]['price'], $plans[6]['price'])}}% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>
                   </label>
                 </div>
                 <div class="feature-value">
-                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Enterprise" autocomplete="off" value="{{salt_encrypt('8')}}"
-                  data-monthly-value="{{salt_encrypt('8')}}" data-yearly-value="{{salt_encrypt('9')}}"/>
+                  <input type="radio" class="btn-check selectplanbtn" name="options-base" id="Enterprise" autocomplete="off" value="{{salt_encrypt( $plans[7]['id'])}}"
+                  data-monthly-value="{{salt_encrypt( $plans[7]['id'])}}" data-yearly-value="{{salt_encrypt( $plans[8]['id'])}}"/>
                   <label class="plan_details" for="Enterprise">
-                    <h2>Enterprise</h2>
+                    <h2>{{$plans[7]['name']}}</h2>
                     <div class="price_p">
-                      <div class="price" data-monthly="INR 11999.00" data-yearly="INR 133909.00">INR 11999.00</div>
+                      <div class="price" data-monthly="INR {{$plans[7]['price']}}" data-yearly="INR {{$plans[8]['price']}}">INR {{$plans[7]['price']}}</div>
                       <div class="offeramount">
-                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>143988.00</del>
-                        <small class="ms-1 bold text-success">7% Off</small>
+                        <del class="ms-1"><i class="fas fa-rupee-sign fs-13 me-1"></i>{{yearlyPrice($plans[7]['price'])}}</del>
+                        <small class="ms-1 bold text-success">{{getYearlyDiscountPercent($plans[7]['price'], $plans[8]['price'])}}% Off</small>
                       </div>
                     </div>
                     <button class="btn subscribebtn btnekomn">Subscribe</button>

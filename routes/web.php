@@ -28,6 +28,7 @@ use App\Http\Controllers\APIAuth\BuyerRegistrationController;
 use App\Http\Controllers\MsiSettingAdmin\MisSettingController;
 use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +118,11 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('admin-list', [AdminController::class, 'index'])->name('admin.list');
     Route::get('admin-add', [AdminController::class, 'addAdmin'])->name('admin.add');
     Route::get('admin-edit/{id}', [AdminController::class, 'editAdmin'])->name('admin.edit');
+    Route::get('subscription-list', [DashboardController::class, 'subscriptionList'])->name('subscription.list');
+    Route::get('subscription-view', [DashboardController::class, 'subscriptionView'])->name('subscription.view');
+    Route::get('admin-plan-view', [DashboardController::class, 'plansView'])->name('admin.plan.view');
+    Route::get('edit-plan/{id}', [DashboardController::class, 'planEdit'])->name('edit.plan');
+    
 
 });
 
@@ -195,6 +201,12 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
         Route::get('admin-list-get', [AdminController::class, 'adminList'])->name('admin.list.get');
         Route::post('update-admin-active', [AdminController::class, 'updateUserActive'])->name('update.admin.active');
         Route::post('update-admin-list', [AdminController::class, 'updateAdminList'])->name('update.admin.list');
+        Route::post('update-plan', [DashboardController::class, 'planUpdate'])->name('update.plan');
+        Route::get('get-payment-info', [PaymentController::class, 'getPaymentInfo'])->name('get.payment.info');
+        Route::post('change-subscription-status', [PaymentController::class, 'changeSubscriptionStatus'])->name('change.subscription.status');
+        Route::post('enable-subscription', [PaymentController::class, 'enableSubscription'])->name('enable.subscription');
+        Route::post('renew-payment', [PaymentController::class, 'renewPayment'])->name('renew.payment');
+        Route::post('/subscription-invoice', [DashboardController::class, 'subscriptionInvoice'])->name('subscription.invoice');
     });
 });
 
@@ -238,6 +250,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('create-payment', [PaymentController::class, 'createPayment'])->name('create.payment');
     Route::post('payment-success/callback', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
     Route::post('order/payment-success/callback', [OrderController::class, 'orderPaymentSuccess'])->name('order.payment.success');
+    Route::post('renewal-payment-success/callback', [PaymentController::class, 'renewalPaymentSuccess'])->name('renewal.payment.success');
+    Route::post('active-subscription', [PaymentController::class, 'activeSubscription'])->name('active.subscription');
     Route::post('contact-us-post', [WebController::class, 'contactUsPost'])->name('contact.us.post');
 });
 

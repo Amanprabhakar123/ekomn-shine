@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(ReturnOrderSeeder::class);
         // $this->call(UserListPermissionSeeder::class);
         $this->call(PermissionSeeder::class);
+        $this->call(PermissionSubscriptionSeeder::class);
 
 
 

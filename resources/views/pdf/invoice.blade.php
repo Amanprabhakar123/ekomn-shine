@@ -22,7 +22,7 @@
               <h3 style="font-size: 14px; color: #131A22; font-family: 'Open Sans', sans-serif;margin: 0px 0px 2px 0px">Shipping Address</h3>
               <p style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;margin: 0; line-height: 18px;">
               {{ $full_name }} <br>
-                {{ $shipping_address }}<br>
+              {{ $billing_address }}<br>
                 {{ $mobile_number }}
               </p>
             </td>
@@ -46,7 +46,7 @@
               <h3 style="font-size: 14px; color: #131A22; font-family: 'Open Sans', sans-serif;margin: 0px 0px 2px 0px">Billing Address</h3>
               <p style="font-size: 13px; color: #424242; font-family: 'Open Sans', sans-serif;margin: 0; line-height: 18px;">
               {{ $full_name }}<br>
-              {{ $billing_address }}<br>
+              {{ $shipping_address }}<br>
               {{ $mobile_number }}
               </p>
             </td>

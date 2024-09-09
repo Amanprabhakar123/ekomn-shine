@@ -402,10 +402,13 @@
         }
         // Function to add products to inventory or download them as a ZIP file
         function addToInventory(action, id = '') {
+            
             // Object to store selected product variation IDs
             let product_id = {
                 variation_id: [],
             };
+
+         
 
             // Iterate over each checked checkbox to collect product variation IDs
             $(".form-check-input:checked").each(function() {
@@ -415,7 +418,6 @@
             if (id) {
                 product_id.variation_id.push(id);
             }
-
             // If no products are selected, show a warning using Swal
             if (product_id.variation_id.length == 0) {
                 Swal.fire({
@@ -435,8 +437,30 @@
                     }
                 });
                 return; // Exit the function early if no products are selected
+            }else if(product_id.variation_id.length > 5){
+                    Swal.fire({
+                        title: "Do you want to continue?",
+                        text: "Product Download/Inventory count is defined by Subscription plans. Please use Select all feature carefully as this may exhaust your allowed limit",
+                        showCancelButton: true,
+                        confirmButtonText: `Continue`,
+                        confirmButtonColor: '#feca40',
+                        cancelButtonColor: '#dc3545',
+                        icon: "warning",
+                       
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            APITrigger(action, product_id);
+                        }
+                    
+                    });
+                return;
+            }else{
+                APITrigger(action, product_id);
             }
 
+        }
+
+        function APITrigger(action, product_id) {
             // If action is 'Inventory', send a POST request to add products to the inventory
             if (action == 'Inventory') {
                 ApiRequest('store/product/inventory', 'POST', {
@@ -566,7 +590,6 @@
                         console.error('Error downloading products:', error);
                     });
             }
-
         }
 
         // banner api call

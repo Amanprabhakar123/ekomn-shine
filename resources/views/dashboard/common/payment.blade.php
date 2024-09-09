@@ -307,7 +307,6 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
                 apiUrl += `&statement_date=${statement_date}`;
             }
 
-
             ApiRequest(apiUrl, 'GET')
                 .then(response => {
                     const data = (response.data);

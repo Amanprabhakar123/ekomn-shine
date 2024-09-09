@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Pincode;
 use App\Models\Category;
 use App\Models\CanHandle;
+use App\Models\CompanyPlan;
 use League\Fractal\Manager;
 use App\Models\BusinessType;
 use App\Models\OrderAddress;
@@ -18,17 +20,21 @@ use App\Models\BuyerInventory;
 use App\Models\CourierDetails;
 use App\Models\ProductVariation;
 use App\Services\CompanyService;
+use App\Traits\SubscriptionTrait;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddressDetail;
 use App\Models\ProductVariationMedia;
+use App\Services\PaymentSubscription;
 use League\Fractal\Resource\Collection;
 use App\Transformers\UserListTransformer;
-use Faker\Provider\ar_EG\Company;
+use Directory;
+use Illuminate\Support\Facades\Validator;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DashboardController extends Controller
 {
+    use SubscriptionTrait;
 
     protected $fractal;
 
@@ -207,13 +213,7 @@ class DashboardController extends Controller
             }
 
             //
-            $inventory_count = BuyerInventory::join('product_variations', 'buyer_inventories.product_id', '=', 'product_variations.id')
-                ->where('buyer_inventories.buyer_id', auth()->user()->id)
-                ->whereNot('product_variations.status', ProductVariation::STATUS_DRAFT)
-                ->groupBy('product_variations.product_id')
-                ->select('product_variations.product_id')
-                ->get()->count();
-
+            $inventory_count = $this->getMyInventoryCount();
             return view('dashboard.buyer.inventory', compact('selectData', 'inventory_count'));
         } elseif ((auth()->user()->hasRole(User::ROLE_ADMIN) || auth()->user()->hasRole(User::ROLE_SUB_ADMIN)) && auth()->user()->hasPermissionTo(User::PERMISSION_LIST_PRODUCT)) {
             return view('dashboard.admin.inventory');
@@ -311,7 +311,7 @@ class DashboardController extends Controller
                 ->first();
             $image = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_IMAGE);
             $video = $variations->media->where('media_type', ProductVariationMedia::MEDIA_TYPE_VIDEO)->first();
-
+                    
             return view('dashboard.common.edit_inventory', compact('variations', 'image', 'video'));
         }
         abort('403', 'Unauthorized action.');
@@ -547,6 +547,7 @@ class DashboardController extends Controller
             } else {
                 $users = $users->role([ROLE_BUYER, ROLE_SUPPLIER]);
             }
+            $users = $users->orderBy('id', 'desc');
             $users = $users->paginate($perPage);
 
             // Transform the paginated results using Fractal
@@ -611,4 +612,202 @@ class DashboardController extends Controller
             ], __('statusCode.statusCode422'));
         }
     }
+
+    /**
+     * This subscription view 
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionList()
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_LIST)) {
+            abort('403');
+        }
+        $plans = Plan::get();
+        return view('dashboard.common.subscription_list', compact('plans'));
+    }
+
+    /**
+     * This function is used to get the list of all subscriptions.
+     * @param Request $request
+     * @return void
+     */
+    public function subscriptionView(Request $request)
+    {
+        if (! auth()->user()->hasPermissionTo(User::PERMISSION_SUBSCRIPTION_VIEW)) {
+            abort('403');
+        }
+        
+        $userId = auth()->user()->id;
+        $companyDetail = CompanyDetail::with([
+            'subscription' => function ($query) {
+                $query->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest subscription with status 1
+            },
+            'subscription.plan',
+            'planSubscription',
+            'companyPlanPayment' => function ($query) {
+                $query->orderBy('id', 'desc')
+                      ->limit(1);  // Fetch the latest payment
+            },
+        ])
+        ->where('user_id', $userId)
+        ->first();
+        $plans = Plan::get();
+        return view('dashboard.common.subscription_view', compact('companyDetail', 'plans'));
+    }
+
+    /**
+     * admin plans view
+     * @param Request $request
+     * @return void
+     * 
+     * public function plans()
+     */ 
+     public function plansView()
+     {
+        if(!auth()->user()->hasPermissionTo(PERMISSION_PLAN_LIST)){
+            abort('403');
+        }
+        $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get();
+        return view('dashboard.admin.admin_plan', compact('plans'));
+     }
+
+        /**
+         * This function is edit the plan view
+         * @param Request $request
+         * @return void
+         */
+        public function planEdit($id){
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PLAN_EDIT)) {
+                abort('403');
+            }
+            $plan = Plan::find(salt_decrypt($id));
+            return view('dashboard.admin.edit_plans', compact('plan'));
+        }
+
+        /**
+         * This plan view update
+         * @param Request $request
+         * @return void
+         */
+        public function planUpdate(Request $request)
+        {
+            if (! auth()->user()->hasPermissionTo(User::PERMISSION_PLAN_EDIT)) {
+                abort('403');
+            }
+            try {
+                $validator = Validator::make($request->all(), [
+                    'name' => 'required',
+                    'description' => 'required',
+                    'price' => 'required',
+                    'gst' => 'required',
+                    'hsn' => 'required',
+                    'razorpay_plan_id' => 'required',
+                    'duration' => 'required',
+                    'inventory_count' => 'required',
+                    'download_count' => 'required',
+                    'price_and_stock' => 'required',
+                    'seller_program' => 'required',
+                    'shine_program' => 'required',
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json([
+                        'data' => [
+                            'statusCode' => __('statusCode.statusCode422'),
+                            'status' => __('statusCode.status422'),
+                            'message' => $validator->errors(),
+                        ],
+                    ], __('statusCode.statusCode422'));
+                }
+
+                $plan = Plan::find(salt_decrypt($request->id));
+                $plan->name = $request->name;
+                $plan->description = $request->description;
+                $plan->price = $request->price;
+                $plan->gst = $request->gst;
+                $plan->hsn = $request->hsn;
+                $plan->razorpay_plan_id = $request->razorpay_plan_id;
+                $plan->duration = $request->duration;
+                $features = [
+                    'inventory_count' => (int) $request->inventory_count,
+                    'download_count' => (int) $request->download_count,
+                    'price_and_stock' => (boolean) $request->price_and_stock,
+                    'seller_program' => (boolean) $request->seller_program,
+                    'shine_program' => (boolean) $request->shine_program,
+                ];
+                $plan->features = json_encode($features);
+                $plan->save();
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode200'),
+                        'status' => __('statusCode.status200'),
+                        'message' => __('auth.updatedPlan'),
+                    ],
+                ], __('statusCode.statusCode200'));
+            } catch (\Exception $e) {
+                $exceptionDetails = [
+                    'message' => $e->getMessage(),
+                    'line' => $e->getLine(),
+                    'file' => $e->getFile(),
+                ];
+                event(new ExceptionEvent($exceptionDetails));
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $e->getMessage(),
+                    ],
+                ], __('statusCode.statusCode422'));
+            }
+        }
+
+        /**
+         * This function is used download subscription invoice.
+         * @param Request $request
+         * @return void
+         */
+        public function subscriptionInvoice(Request $request){
+            try{
+                $subscriptionId = salt_decrypt($request->all()[0]);
+                $orderService = new PaymentSubscription;
+                $fileName = $orderService->subscriptionInvoice($subscriptionId);
+                $originalFullPath = storage_path('app/public/' . $fileName);
+                $file = file_get_contents($originalFullPath);
+
+                return response($file, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                ]);
+
+                // delete the file after sending the response
+                unlink($originalFullPath);
+
+                // delete the directroy if it is empty
+                $directory = dirname($originalFullPath);
+                if (is_dir($directory) && count(scandir($directory)) == 2) {
+                    rmdir($directory);
+                }
+
+            }catch(\Exception $e){
+                return response()->json([
+                    'data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => $e->getMessage(),
+                    ],
+                ], __('statusCode.statusCode422'));
+            }
+            new ExceptionEvent($exceptionDetails);
+            return response()->json([
+                'data' => [
+                    'statusCode' => __('statusCode.statusCode422'),
+                    'status' => __('statusCode.status422'),
+                    'message' => $e->getMessage(),
+                ],
+            ], __('statusCode.statusCode422'));
+        }
+
+
 }

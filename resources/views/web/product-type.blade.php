@@ -428,8 +428,28 @@
                     }
                 });
                 return; // Exit the function early if no products are selected
+            }else if(product_id.variation_id.length > 5){
+                    Swal.fire({
+                        title: "Do you want to continue?",
+                        text: "Product Download/Inventory count is defined by Subscription plans. Please use Select all feature carefully as this may exhaust your allowed limit",
+                        showCancelButton: true,
+                        confirmButtonText: `Continue`,
+                        confirmButtonColor: '#feca40',
+                        cancelButtonColor: '#dc3545',
+                        icon: "warning",
+                       
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            APITrigger(action, product_id);
+                        }
+                    
+                    });
+                return;
+            }else{
+                APITrigger(action, product_id);
             }
 
+            function APITrigger(action, product_id) {
             // If action is 'Inventory', send a POST request to add products to the inventory
             if (action == 'Inventory') {
                 ApiRequest('store/product/inventory', 'POST', {
@@ -490,7 +510,7 @@
                     });
             }
             // If action is 'Download', download the selected products as a ZIP file
-            else if (action == 'Download') { // Corrected the syntax here
+            else if (action == 'Download') {
                 fetch('{{ route('product.inventory.export') }}', {
                         method: 'POST',
                         headers: {
@@ -543,22 +563,23 @@
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
-                        return response.blob(); // Convert response to a Blob
+                        return response.blob();
                     })
                     .then(blob => {
-                        const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                        const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.style.display = 'none';
                         a.href = url;
-                        a.download = 'products_' + Date.now() + '.zip'; // Set download file name
+                        a.download = 'products_' + Date.now() + '.zip';
                         document.body.appendChild(a);
-                        a.click(); // Programmatically click the link to trigger download
-                        window.URL.revokeObjectURL(url); // Revoke the URL after download
+                        a.click();
+                        window.URL.revokeObjectURL(url);
                     })
                     .catch(error => {
-                        console.error('Error downloading products:', error); // Log any errors
+                        console.error('Error downloading products:', error);
                     });
             }
+        }
         }
 
         // onchange event for sorting

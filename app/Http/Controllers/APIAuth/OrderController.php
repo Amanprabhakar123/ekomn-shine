@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Shipment;
 use App\Models\AddToCart;
+use App\Models\CompanyPlan;
 use App\Models\ShipmentAwb;
 use League\Fractal\Manager;
 use App\Models\OrderPayment;
@@ -80,6 +81,16 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
+            // check plan is active or inactive
+            $company_plan = CompanyPlan::with('plan')->where('company_id', auth()->user()->CompanyDetails->id)
+                ->where('status', CompanyPlan::STATUS_ACTIVE)->orderBy('id', 'desc')->first();
+            if (empty($company_plan)) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.planNotActive'),
+                    ]], __('statusCode.statusCode200'));
+            }
             $cart = [];
             // Loop through the product IDs and quantities
             foreach ($request->product_id as $key => $product_id) {
@@ -191,6 +202,16 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
+            // check plan is active or inactive
+            $company_plan = CompanyPlan::with('plan')->where('company_id', auth()->user()->CompanyDetails->id)
+                ->where('status', CompanyPlan::STATUS_ACTIVE)->orderBy('id', 'desc')->first();
+            if (empty($company_plan)) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode422'),
+                        'status' => __('statusCode.status422'),
+                        'message' => __('auth.planNotActive'),
+                    ]], __('statusCode.statusCode200'));
+            }
             // Retrieve the SKU from the request
             $sku = $request->input('sku');
             $user = auth()->user();
@@ -365,6 +386,17 @@ class OrderController extends Controller
                 ]], __('statusCode.statusCode200'));
             }
 
+             // check plan is active or inactive
+             $company_plan = CompanyPlan::with('plan')->where('company_id', auth()->user()->CompanyDetails->id)
+             ->where('status', CompanyPlan::STATUS_ACTIVE)->orderBy('id', 'desc')->first();
+                if (empty($company_plan)) {
+                        return response()->json(['data' => [
+                            'statusCode' => __('statusCode.statusCode422'),
+                            'status' => __('statusCode.status422'),
+                            'message' => __('auth.planNotActive'),
+                        ]], __('statusCode.statusCode200'));
+                }
+            
             // add condition for check the product is available in cart or not
             $cart = AddToCart::where('id', salt_decrypt($request->cart_id))->first();
             if (empty($cart)) {
@@ -607,6 +639,16 @@ class OrderController extends Controller
                     'message' => __('auth.unauthorizedAction'),
                 ]], __('statusCode.statusCode200'));
             }
+             // check plan is active or inactive
+             $company_plan = CompanyPlan::with('plan')->where('company_id', auth()->user()->CompanyDetails->id)
+             ->where('status', CompanyPlan::STATUS_ACTIVE)->orderBy('id', 'desc')->first();
+            if (empty($company_plan)) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode201'),
+                        'status' => __('statusCode.status201'),
+                        'message' => __('auth.planNotActive'),
+                    ]], __('statusCode.statusCode200'));
+            }
             if ($request->input('order_id')) {
                 $order_id = salt_decrypt($request->input('order_id'));
                 $order = Order::find($order_id);
@@ -661,6 +703,19 @@ class OrderController extends Controller
 
                 return errorResponse($errorMessage.'-'.$field);
             }
+
+            // Check Order Type is Reseller with Plan Permission
+            if ($request->order_type == Order::ORDER_TYPE_RESELL) {
+                $feature = json_decode($company_plan->plan->features, true);
+                $reseller_program = $feature['reseller_program'];
+                if($reseller_program == false) {
+                    return response()->json(['data' => [
+                        'statusCode' => __('statusCode.statusCode201'),
+                        'status' => __('statusCode.status201'),
+                        'message' => __('auth.resellerProgramNotActive'),
+                    ]], __('statusCode.statusCode200'));
+                }
+            }
             // Fetch the Cart Data
             $productCartList = AddToCart::where('buyer_id', auth()->user()->id)->with('product')->get();
             // Check if the SKU exists
@@ -690,7 +745,6 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-
             // Trigger the event
             event(new ExceptionEvent($exceptionDetails));
 
@@ -1011,7 +1065,6 @@ class OrderController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            dd($exceptionDetails);
             event(new ExceptionEvent($exceptionDetails));
               // Return error response for failed invoice download
               return response()->json([
@@ -1202,8 +1255,8 @@ class OrderController extends Controller
                             $order->store_order ?? '',
                             $title,
                             $order->full_name,
-                            '+91-xxx-xxx-xxxx',
                             'support@ekomn.com',
+                            '+91-xxx-xxx-xxxx',
                             $order->pickupAddress->street.' '.$order->pickupAddress->city.' '.$order->pickupAddress->state.' - '.$order->pickupAddress->postal_code,
                             $order->billingAddress->street.' '.$order->billingAddress->city.' '.$order->billingAddress->state.' - '.$order->billingAddress->postal_code,
                             $quantity,

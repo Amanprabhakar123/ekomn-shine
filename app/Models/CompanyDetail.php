@@ -2,11 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
+use App\Models\Import;
+use App\Models\CompanyPlan;
+use App\Models\BuyerInventory;
+use App\Models\ProductFeature;
+use App\Models\ProductKeyword;
+use App\Models\CompanyCanHandle;
+use App\Models\CompanyOperation;
+use App\Models\ProductInventory;
+use App\Models\ProductVariation;
+use App\Models\UserLoginHistory;
 use Spatie\Activitylog\LogOptions;
+use App\Models\CompanyBusinessType;
+use App\Models\CompanySalesChannel;
+use App\Models\CompanyAddressDetail;
+use App\Models\CompanyPlanPermission;
+use App\Models\CompanyProductCategory;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CompanyDetail extends Model
 {
@@ -52,6 +68,9 @@ class CompanyDetail extends Model
         'gst_no_file_path',
         'pan_verified',
         'gst_verified',
+        'razorpay_subscription_id',
+        'razorpay_plan_id',
+        'subscription_status',
         'language_i_can_read',
         'language_i_can_understand',
         'alternate_business_contact',
@@ -63,6 +82,22 @@ class CompanyDetail extends Model
         'signature_image_file_path',
         'bank_account_verified',
     ];
+
+    // Pan and GST verification status
+    const PAN_VERIFIED = 1;
+    const PAN_NOT_VERIFIED = 0;
+    const GST_VERIFIED = 1;
+    const GST_NOT_VERIFIED = 0;
+
+    // Subscription status
+    const SUBSCRIPTION_STATUS_IN_ACTIVE = 0;
+    const SUBSCRIPTION_STATUS_ACTIVE = 1;
+    const SUBSCRIPTION_STATUS_PENDING = 2;
+    const SUBSCRIPTION_STATUS_CANCELLED = 3;
+    const SUBSCRIPTION_STATUS_EXPIRED = 4;
+    const SUBSCRIPTION_STATUS_CREATED = 5;
+    const SUBSCRIPTION_STATUS_COMPLETED = 6; 
+    const SUBSCRIPTION_STATUS_AUTH = 7;
 
     /**
      * Get the options for logging changes to the model.
@@ -86,6 +121,9 @@ class CompanyDetail extends Model
                 'gst_no_file_path',
                 'pan_verified',
                 'gst_verified',
+                'razorpay_subscription_id',
+                'razorpay_plan_id',
+                'subscription_status',
                 'language_i_can_read',
                 'language_i_can_understand',
                 'alternate_business_contact',
@@ -228,6 +266,14 @@ class CompanyDetail extends Model
     }
 
     /**
+     * Get the company that owns the company plan subscription detail.
+     */
+    public function planSubscription(){
+        return $this->hasOne(CompanyPlanPermission::class, 'company_id', 'id');
+    }
+
+
+    /**
      * Get the full name of the user.
      */
     public function getFullName(): string
@@ -244,4 +290,153 @@ class CompanyDetail extends Model
     {
         return $this->hasMany(UserLoginHistory::class, 'user_id', 'user_id')->latest();
     }
+
+    /**
+     * Get the subscription status.
+     */
+    public function subscriptionStatus()
+    {
+        switch ($this->subscription_status) {
+            case self::SUBSCRIPTION_STATUS_IN_ACTIVE:
+                return 'Paused';
+            case self::SUBSCRIPTION_STATUS_ACTIVE:
+                return 'Active';
+            case self::SUBSCRIPTION_STATUS_PENDING:
+                return 'Pending';
+            case self::SUBSCRIPTION_STATUS_CANCELLED:
+                return 'Cancelled';
+            case self::SUBSCRIPTION_STATUS_EXPIRED:
+                return 'Expired';
+            case self::SUBSCRIPTION_STATUS_CREATED:
+                return 'Created';
+            case self::SUBSCRIPTION_STATUS_COMPLETED:
+                return 'Completed';
+            case self::SUBSCRIPTION_STATUS_AUTH:
+                return 'Authorized';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    /**
+     * Get the pan verification status.
+     */
+    public function panVerificationStatus()
+    {
+        return $this->pan_verified ? 'Verified' : 'Not Verified';
+    }
+
+    /**
+     * Get the gst verification status.
+     */
+    public function gstVerificationStatus()
+    {
+        return $this->gst_verified ? 'Verified' : 'Not Verified';
+    }
+    
+    /**
+     * Get the pan verification status.
+     */
+    public function isPanVerified()
+    {
+        return $this->pan_verified == self::PAN_VERIFIED;
+    }
+
+    /**
+     * Get the GST verification status.
+     */
+    public function isGstVerified()
+    {
+        return $this->gst_verified == self::GST_VERIFIED;
+    }
+
+    /**
+     * Get the pan verification status.
+     */
+    public function isPanNotVerified()
+    {
+        return $this->pan_verified == self::PAN_NOT_VERIFIED;
+    }
+
+    /**
+     * Get the GST verification status.
+     */
+    public function isGstNotVerified()
+    {
+        return $this->gst_verified == self::GST_NOT_VERIFIED;
+    }
+
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionInActive()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_IN_ACTIVE;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionActive()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_ACTIVE;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionPending()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_PENDING;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionCancelled()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_CANCELLED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionExpired()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_EXPIRED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionCreated()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_CREATED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionCompleted()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_COMPLETED;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionAuth()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_AUTH;
+    }
+
+    /**
+     * Get the companyPlan tabel data.
+     */
+    public function companyPlanPayment()
+    {
+        return $this->hasOne(CompanyPlanPayment::class, 'company_id', 'id');
+    }
+    
 }

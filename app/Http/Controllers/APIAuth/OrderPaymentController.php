@@ -323,13 +323,14 @@ class OrderPaymentController extends Controller
             }
 
             $orderList = Order::with(['orderItemsCharges', 'orderItemsCharges.product', 'orderRefunds', 'supplierPayments'])
-            ->whereIn('id', $order_id_list)->get();
+            ->whereIn('id', $order_id_list)->orderBy('id', 'desc')->get();
 
             // Add pagination information to the resource
             $resource = new Collection($orderList, new OrderPaymentTransformer);
 
             // Create the data array using Fractal
             $transformedData = $this->fractal->createData($resource)->toArray();
+            
             
             if($transformedData['data']){
                 foreach($transformedData['data'] as $order){
@@ -342,10 +343,10 @@ class OrderPaymentController extends Controller
                         $order['order_date'],
                         $order['product_cost_exc_gst'],
                         $order['discount'],
-                        $order['shipping_charges'],
-                        $order['packing_charges'],
-                        $order['labour_charges'],
-                        $order['payment_gateway_charges'],
+                        $order['shipping_charges_gst_exc_amount'],
+                        $order['packing_charges_gst_exc_amount'],
+                        $order['labour_charges_gst_exc_amount'],
+                        $order['payment_gateway_charges_gst_exc_amount'],
                         $order['total_gst_amount'],
                         $order['order_total'],
                         $order['status'],

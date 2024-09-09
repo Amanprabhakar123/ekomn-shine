@@ -5,7 +5,7 @@
         <div class="loginForm">
                 <div class="loginForm t_u_s">
                     <div class="brand-logo d-flex justify-content-center">
-                        <a href="#"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" /></a>
+                        <a href="{{route('home')}}"><img src="{{asset('assets/images/Logo.svg')}}" alt="Logo" /></a>
                     </div>
                     <div class="thankYou">
                         <div class="thankYoubox">

@@ -282,6 +282,16 @@ class ReturnOrderController extends Controller
                 $returnOrder = $returnOrder->where('dispute', $sort_by_dispute)->orderBy('id', 'desc');
             }
 
+            if (auth()->user()->hasRole(User::ROLE_SUPPLIER)) {
+                $returnOrder = $returnOrder->whereHas('order', function ($query) {
+                    $query->where('supplier_id', auth()->user()->id);
+                });
+            }elseif (auth()->user()->hasRole(User::ROLE_BUYER)) {
+                $returnOrder = $returnOrder->whereHas('order', function ($query) {
+                    $query->where('buyer_id', auth()->user()->id);
+                });
+            }
+
             if ($sort == 'quantity') {
                 $returnOrder->join('orders', 'orders.id', '=', 'return_orders.order_id');
                 $returnOrder->join('order_item_and_charges', 'orders.id', '=', 'order_item_and_charges.order_id');
@@ -684,6 +694,9 @@ class ReturnOrderController extends Controller
             }
 
             $returnShipment->status = $request->status;
+            if($request->status == ReturnShipment::STATUS_DELIVERED){
+                $returnShipment->delivered_date = now();
+            }
             $returnShipment->save();
 
             return response()->json(['data' => [
