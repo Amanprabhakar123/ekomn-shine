@@ -230,20 +230,20 @@
                       <div class="feature-row">
                         <span class="tooltiptext">Allowed limit of total selected products that can be added to Inventory</span>
                         <div class="feature">My Inventory List Limit</div>
-                        <div class="feature-value">100</div>
-                        <div class="feature-value">500</div>
-                        <div class="feature-value">1000</div>
-                        <div class="feature-value">2000</div>
+                        <div class="feature-value">{{$plans[1]['inventory_count']}}</div>
+                        <div class="feature-value">{{$plans[3]['inventory_count']}}</div>
+                        <div class="feature-value">{{$plans[5]['inventory_count']}}</div>
+                        <div class="feature-value">{{$plans[7]['inventory_count']}}</div>
                       </div>
                     </div>
                     <div class="tooltips">
                     <span class="tooltiptext">Allowed limit of product content download that you are allowed to do in a month</span>
                       <div class="feature-row">
                         <div class="feature">Monthly Products Download Count</div>
-                        <div class="feature-value">100</div>
-                        <div class="feature-value">500</div>
-                        <div class="feature-value">1000</div>
-                        <div class="feature-value">2000</div>
+                        <div class="feature-value">{{$plans[1]['download_count']}}</div>
+                        <div class="feature-value">{{$plans[3]['download_count']}}</div>
+                        <div class="feature-value">{{$plans[5]['download_count']}}</div>
+                        <div class="feature-value">{{$plans[7]['download_count']}}</div>
                       </div>
                     </div>
                     <div class="tooltips">
@@ -256,6 +256,16 @@
                       <div class="feature-value"><i class="fas fa-check text-success"></i></div>
                     </div>
                   </div>
+                  <div class="tooltips">
+                    <span class="tooltiptext">Price & Stock Monitor</span>
+                  <div class="feature-row">
+                    <div class="feature">Review historic price and stock for selected products</div>
+                    <div class="feature-value"><i class="{{$plans[1]['price_and_stock'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                    <div class="feature-value"><i class="{{$plans[3]['price_and_stock'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                    <div class="feature-value"><i class="{{$plans[5]['price_and_stock'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                    <div class="feature-value"><i class="{{$plans[7]['price_and_stock'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                  </div>
+                </div>
                   <div class="tooltips">
                     <span class="tooltiptext">Important product related notifications</span>
                     <div class="feature-row">
@@ -311,18 +321,18 @@
                     <div class="feature-row">
                       <span class="tooltiptext">Access to Pan India bulk reseller program</span>
                       <div class="feature">ReSeller Program</div>
-                      <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                      <div class="feature-value"><i class="{{$plans[1]['reseller_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[3]['reseller_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[5]['reseller_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[7]['reseller_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
                     </div>
                   </div>
                     <div class="feature-row">
                       <div class="feature">Shine Program</div>
-                      <div class="feature-value"><i class="fas fa-times text-danger"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
-                      <div class="feature-value"><i class="fas fa-check text-success"></i></div>
+                      <div class="feature-value"><i class="{{$plans[1]['shine_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[3]['shine_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[5]['shine_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
+                      <div class="feature-value"><i class="{{$plans[7]['shine_program'] ? 'fas fa-check text-success' : 'fas fa-times text-danger'}}"></i></div>
                     </div>
                     <div class="tooltips">
                     <div class="feature-row">
