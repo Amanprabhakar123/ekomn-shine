@@ -846,6 +846,12 @@ class WebController extends Controller
     public function subscription()
     {
         $plans = Plan::where('status', Plan::STATUS_ACTIVE)->get()->toArray();
+        foreach ($plans as $key => $plan) {
+            $feature = json_decode($plan['features'], true);
+            foreach ($feature as $key2 => $value) {
+                $plans[$key][$key2] = $value;
+            }
+        }
         return view('web.subscription', compact('plans'));
     }
 

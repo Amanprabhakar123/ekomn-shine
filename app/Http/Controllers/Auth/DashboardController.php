@@ -654,6 +654,12 @@ class DashboardController extends Controller
         ->where('user_id', $userId)
         ->first();
         $plans = Plan::get();
+        foreach ($plans as $key => $plan) {
+            $feature = json_decode($plan['features'], true);
+            foreach ($feature as $key2 => $value) {
+                $plans[$key][$key2] = $value;
+            }
+        }
         return view('dashboard.common.subscription_view', compact('companyDetail', 'plans'));
     }
 
@@ -708,7 +714,7 @@ class DashboardController extends Controller
                     'inventory_count' => 'required',
                     'download_count' => 'required',
                     'price_and_stock' => 'required',
-                    'seller_program' => 'required',
+                    'reseller_program' => 'required',
                     'shine_program' => 'required',
                 ]);
 
@@ -734,7 +740,7 @@ class DashboardController extends Controller
                     'inventory_count' => (int) $request->inventory_count,
                     'download_count' => (int) $request->download_count,
                     'price_and_stock' => (boolean) $request->price_and_stock,
-                    'seller_program' => (boolean) $request->seller_program,
+                    'reseller_program' => (boolean) $request->seller_program,
                     'shine_program' => (boolean) $request->shine_program,
                 ];
                 $plan->features = json_encode($features);
