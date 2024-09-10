@@ -444,7 +444,7 @@ class PaymentController extends Controller
                     ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $serchTerm . '%')
                     ->orWhere('first_name', 'like', '%' . $serchTerm . '%')
                     ->orWhere('last_name', 'like', '%' . $serchTerm . '%');
-            });
+            })->orWhere('transaction_id', 'like', '%' . $serchTerm . '%');
         }
 
         if (!empty($plan_id)) {
