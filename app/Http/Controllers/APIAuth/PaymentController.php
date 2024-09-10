@@ -464,9 +464,11 @@ class PaymentController extends Controller
         if(!is_null($start_date) || !is_null($last_date)) {
             $payments = $payments->whereHas('companyPlans', function ($query) use ($start_date, $last_date) {
                 if (!is_null($start_date)) {
+                    $start_date = Carbon::parse($start_date)->format('Y-m-d');
                     $query->where('subscription_start_date', '>=', $start_date);
                 }
                 if (!is_null($last_date)) {
+                    $last_date = Carbon::parse($last_date)->format('Y-m-d');
                     $query->where('subscription_end_date', '<=', $last_date);
                 }
             });

@@ -5,7 +5,7 @@
     <div class="ek_content">
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
-                <h3 class="cardtitle">Update Plans</h3>
+                <h3 class="cardtitle">Edit Plans</h3>
             </div>
             <section class="sectionspace mt-5">
                 

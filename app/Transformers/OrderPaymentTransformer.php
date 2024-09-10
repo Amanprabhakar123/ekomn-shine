@@ -108,7 +108,7 @@ class OrderPaymentTransformer extends TransformerAbstract
                 'id' => salt_encrypt($order->id),
                 'order_no' => $order->order_number,
                 'store_order' => !is_null($order->store_order) ? $order->store_order : '' ,
-                'order_date' => $order->order_date->toDateString(),
+                'order_date' => $order->order_date->format('d-m-Y'),
                 'product_cost_exc_gst' => $product_cost_exc_gst,
                 'product_cost_inc_gst' => $product_cost_inc_gst,
                 'discount' => $order->discount,

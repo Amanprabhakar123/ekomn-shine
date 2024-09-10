@@ -172,20 +172,20 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
         let order_date = order_last_date = statement_date = '';
 
         $(function() {
-            const today = moment().format('YYYY-MM-DD');
-            const thirtyDaysAgo = moment().subtract(30, 'days').format('YYYY-MM-DD');
+            const today = moment().format('DD-MM-YYYY');
+            const thirtyDaysAgo = moment().subtract(30, 'days').format('DD-MM-YYYY');
             $('input[name="daterange"]').daterangepicker({
                 autoApply: true,
                 opens: 'left',
                 startDate: thirtyDaysAgo,
                 endDate: today,
                 locale: {
-                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                    format: 'DD-MM-YYYY' // Ensures the date format is consistent
                 }
             }, function(start, end, label) {
-                // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                order_date = start.format('YYYY-MM-DD');
-                order_last_date = end.format('YYYY-MM-DD');
+                // console.log("A new date selection was made: " + start.format('DD-MM-YYYY') + ' to ' + end.format('DD-MM-YYYY'));
+                order_date = start.format('DD-MM-YYYY');
+                order_last_date = end.format('DD-MM-YYYY');
                 fetchData();
             });
 
@@ -196,22 +196,22 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
             //     opens: 'left',
             //     startDate: today,
             //     locale: {
-            //         format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+            //         format: 'DD-MM-YYYY'   // Ensures the date format is consistent
             //     }
             // },
             // function(selectedDate) {
-            //     statement_date = selectedDate.format('YYYY-MM-DD');
+            //     statement_date = selectedDate.format('DD-MM-YYYY');
             //     fetchData();
             // });
 
-            const nextThursday = moment().day(4).format('YYYY-MM-DD');
+            const nextThursday = moment().day(4).format('DD-MM-YYYY');
             $('input[name="date"]').daterangepicker({
                 singleDatePicker: true,    // Enables single date picker
                 autoApply: true,
                 opens: 'left',
                 startDate: nextThursday,
                 locale: {
-                    format: 'YYYY-MM-DD'   // Ensures the date format is consistent
+                    format: 'DD-MM-YYYY'   // Ensures the date format is consistent
                 },
                 isInvalidDate: function(date) {
                     // Check if the date is not a Thursday
@@ -219,7 +219,7 @@ document.querySelectorAll('.calUplabel').forEach(function(element) {
                 }
             },
             function(selectedDate) {
-                statement_date = selectedDate.format('YYYY-MM-DD');
+                statement_date = selectedDate.format('DD-MM-YYYY');
                 fetchData();
             });
         });

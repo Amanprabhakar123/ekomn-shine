@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EkomnDetails;
 use League\Fractal\Resource\Collection;
 use App\Transformers\OrderPaymentTransformer;
+use Carbon\Carbon;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class OrderPaymentController extends Controller
@@ -205,6 +206,8 @@ class OrderPaymentController extends Controller
             
             if(is_null($statement_date)){
                 $orderList = $orderList->where(function ($qu) use ($order_date, $order_last_date) {
+                    $order_date = Carbon::parse($order_date)->format('Y-m-d');
+                    $order_last_date = Carbon::parse($order_last_date)->format('Y-m-d');
                     $qu->where('order_date', '>=', $order_date)
                     ->where('order_date', '<=', $order_last_date);
                 });
