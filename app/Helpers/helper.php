@@ -767,11 +767,21 @@ function getMonthlyStartDates($dynamic_start, $dynamic_end, $day_of_month) {
 
     // Loop through each month from the start date to the end date
     while ($start_date <= $end_date) {
+        // Check if the current month has the specified day
+        $month_days = $start_date->format('t'); // 't' returns the number of days in the current month
+
+        if ($day_of_month > $month_days) {
+            // If the day is greater than the number of days in the month, set it to the last day of the month
+            $start_date->setDate($start_date->format('Y'), $start_date->format('m'), $month_days);
+        } else {
+            // Otherwise, set it to the specified day of the month
+            $start_date->setDate($start_date->format('Y'), $start_date->format('m'), $day_of_month);
+        }
         // Add the start date for the current month to the array
         $month_starts[] = $start_date->format('Y-m-d');
 
-        // Move to the next month and set the day to the provided day_of_month
-        $start_date->modify('first day of next month')->setDate($start_date->format('Y'), $start_date->format('m'), $day_of_month);
+        // Move to the first day of the next month
+        $start_date->modify('first day of next month');
     }
 
     // Return the calculated month start dates
