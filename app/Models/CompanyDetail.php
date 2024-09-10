@@ -92,12 +92,13 @@ class CompanyDetail extends Model
     // Subscription status
     const SUBSCRIPTION_STATUS_IN_ACTIVE = 0;
     const SUBSCRIPTION_STATUS_ACTIVE = 1;
-    const SUBSCRIPTION_STATUS_PENDING = 2;
+    const SUBSCRIPTION_STATUS_PENDING = 2; // WHEN subscription is try to charge payment and failed
     const SUBSCRIPTION_STATUS_CANCELLED = 3;
     const SUBSCRIPTION_STATUS_EXPIRED = 4;
     const SUBSCRIPTION_STATUS_CREATED = 5;
     const SUBSCRIPTION_STATUS_COMPLETED = 6; 
     const SUBSCRIPTION_STATUS_AUTH = 7;
+    const SUBSCRIPTION_STATUS_HALTED = 8; // WHEN subscription is try to charge payment more then 4 times
 
     /**
      * Get the options for logging changes to the model.
@@ -313,6 +314,8 @@ class CompanyDetail extends Model
                 return 'Completed';
             case self::SUBSCRIPTION_STATUS_AUTH:
                 return 'Authorized';
+            case self::SUBSCRIPTION_STATUS_HALTED:
+                return 'Halted';
             default:
                 return 'Unknown';
         }
@@ -429,6 +432,14 @@ class CompanyDetail extends Model
     public function isSubscriptionAuth()
     {
         return $this->subscription_status == self::SUBSCRIPTION_STATUS_AUTH;
+    }
+
+    /**
+     * Get the subscription status.
+     */
+    public function isSubscriptionHalted()
+    {
+        return $this->subscription_status == self::SUBSCRIPTION_STATUS_HALTED;
     }
 
     /**
