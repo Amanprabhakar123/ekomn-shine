@@ -569,6 +569,10 @@ class PaymentController extends Controller
                 $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_EXPIRED;
             }elseif($subscription['status'] == 'authenticated'){
                 $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_AUTH;
+            }elseif($subscription['status'] == 'pending'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_PENDING;
+            }elseif($subscription['status'] == 'halted'){
+                $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_HALTED;
             }
             $company_detail->save();
             return response()->json(['data' => [
