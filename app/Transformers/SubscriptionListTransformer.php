@@ -37,6 +37,7 @@ class SubscriptionListTransformer extends TransformerAbstract
                 'subscription_end_date' => !empty($CompanyPlanPayment->companyPlans) ? $CompanyPlanPayment->companyPlans->subscription_end_date->toDateString() : '',
                 'inventory_count' => isset($CompanyPlanPayment->companyDetails->planSubscription->inventory_count) ? $CompanyPlanPayment->companyDetails->planSubscription->inventory_count : 0,
                 'download_count' => isset($CompanyPlanPayment->companyDetails->planSubscription->download_count) ? $CompanyPlanPayment->companyDetails->planSubscription->download_count : 0,
+                'transaction_id' => $CompanyPlanPayment->transaction_id,
                 'status' =>  getCompanyPlanStatus($status),
                 
             ];

@@ -81,6 +81,7 @@
                             <th data-sort-field="status">End Date</th>
                             <th data-sort-field="status">Inventory Count</th>
                             <th data-sort-field="status">Download Count</th>
+                            <th>Transaction Id</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -427,6 +428,12 @@
                 <td>
                   <div class="productTitle_t">
                    ${item.download_count}
+
+                </div>
+             </td>
+              <td>
+                  <div class="productTitle_t">
+                   ${item.transaction_id}
 
                 </div>
              </td>
