@@ -179,12 +179,16 @@
             }
 
             if ($('#duration').val() == '') {
-                $('#duration').addClass('is-invalid');
-                $('#durationErr').html('Please enter duration');
-                isValid = false;
+              $('#duration').addClass('is-invalid');
+              $('#durationErr').html('Please enter duration');
+              isValid = false;
+            } else if ($('#duration').val() != '30' && $('#duration').val() != '90' && $('#duration').val() != '365'  && $('#duration').val() != '14') {
+              $('#duration').addClass('is-invalid');
+              $('#durationErr').html('Invalid duration value. Allowed values are 30, 90, and 365');
+              isValid = false;
             } else {
-                $('#duration').removeClass('is-invalid');
-                $('#durationErr').html('');
+              $('#duration').removeClass('is-invalid');
+              $('#durationErr').html('');
             }
 
             @foreach(json_decode($plan->features,  true) as $key => $value)

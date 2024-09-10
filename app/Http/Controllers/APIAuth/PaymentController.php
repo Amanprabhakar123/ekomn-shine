@@ -91,6 +91,8 @@ class PaymentController extends Controller
                     $subscription  = new PaymentSubscription();
                     if($plan_details->duration == 30){
                         $total_count = 12;
+                    }elseif($plan_details->duration == 90){
+                        $total_count = 4;
                     }else{
                         $total_count = 1;
                     }
@@ -613,6 +615,8 @@ class PaymentController extends Controller
         $subscription = new PaymentSubscription();
         if($plan_details->duration == 30){
             $total_count = 12;
+        }elseif($plan_details->duration == 90){
+            $total_count = 4;
         }else{
             $total_count = 1;
         }
@@ -745,6 +749,8 @@ class PaymentController extends Controller
                     $subscription = new PaymentSubscription();
                     if($plan_details->duration == 30){
                         $total_count = 12;
+                    }elseif($plan_details->duration == 90){
+                        $total_count = 4;
                     }else{
                         $total_count = 1;
                     }
