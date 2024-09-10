@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\AddToCart;
@@ -752,4 +753,27 @@ function getCompanyPlanStatus($status)
         default:
             return 'Unknown';
     }
+}
+
+
+// Function to calculate the start date of each month based on dynamic input
+function getMonthlyStartDates($dynamic_start, $dynamic_end, $day_of_month) {
+    // Convert input dates to DateTime objects
+    $start_date = Carbon::parse($dynamic_start);
+    $end_date = Carbon::parse($dynamic_end);
+
+    // Create an empty array to store month start dates
+    $month_starts = [];
+
+    // Loop through each month from the start date to the end date
+    while ($start_date <= $end_date) {
+        // Add the start date for the current month to the array
+        $month_starts[] = $start_date->format('Y-m-d');
+
+        // Move to the next month and set the day to the provided day_of_month
+        $start_date->modify('first day of next month')->setDate($start_date->format('Y'), $start_date->format('m'), $day_of_month);
+    }
+
+    // Return the calculated month start dates
+    return $month_starts;
 }

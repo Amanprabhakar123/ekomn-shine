@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:process-supplier-payment-statement')->everyMinute()->withoutOverlapping();
         $schedule->command('app:process-return-order-payment')->everyMinute()->withoutOverlapping();
         $schedule->command('app:inactive-expired-subscription')->dailyAt('00:10')->withoutOverlapping();
+        $schedule->command('app:yearly-plan-download-count-every-month')->dailyAt('00:30')->withoutOverlapping();
     }
 
     /**
