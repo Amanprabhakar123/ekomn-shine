@@ -132,17 +132,17 @@
         let exportCsv = false;
 
         $(function() {
-            const today = moment().format('YYYY-MM-DD');
+            const today = moment().format('DD-MM-YYYY');
             $('input[name="startdate"]').daterangepicker({
                 singleDatePicker: true, 
                 autoApply: true,
                 opens: 'left',
                 startDate: today,
                 locale: {
-                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                    format: 'DD-MM-YYYY' // Ensures the date format is consistent
                 }
             }, function(start) {
-                start_date = start.format('YYYY-MM-DD');
+                start_date = start.format('DD-MM-YYYY');
                 fetchData();
             });
 
@@ -152,10 +152,10 @@
                 opens: 'left',
                 startDate: today,
                 locale: {
-                    format: 'YYYY-MM-DD' // Ensures the date format is consistent
+                    format: 'DD-MM-YYYY' // Ensures the date format is consistent
                 }
             }, function(lastdate) {
-                last_date = lastdate.format('YYYY-MM-DD');
+                last_date = lastdate.format('DD-MM-YYYY');
                 fetchData();
             });
         });
