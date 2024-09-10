@@ -107,7 +107,7 @@
                       <div class="ek_f_input">
                        <button id="btnRenewal" class="btn btn-login btnekomn card_f_btn payment_button">Renew/Upgrade</button>
                       
-                       @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive() || $companyDetail->isSubscriptionAuth() || $companyDetail->isSubscriptionPending())
+                       @if($companyDetail->isSubscriptionActive() || $companyDetail->isSubscriptionInActive() || $companyDetail->isSubscriptionAuth() || $companyDetail->isSubscriptionPending() || $companyDetail->isSubscriptionHalted())
                        @if(!is_null($companyDetail->razorpay_subscription_id))
                        <button id="cancelSmartPay" class="btn btn-danger">Cancel Smart Pay</button>
                        @else

@@ -680,6 +680,9 @@ class PaymentController extends Controller
         }elseif($subscription->status == 'pending'){
             $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_PENDING;
             $company_detail->save();
+        }elseif($subscription->status == 'halted'){
+            $company_detail->subscription_status = CompanyDetail::SUBSCRIPTION_STATUS_HALTED;
+            $company_detail->save();
         }
         return response()->json(['data' => [
             'statusCode' => __('statusCode.statusCode200'),
