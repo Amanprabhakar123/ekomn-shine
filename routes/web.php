@@ -30,6 +30,11 @@ use App\Http\Controllers\APIAuth\SupplierRegistraionController;
 use App\Http\Controllers\MsiSettingAdmin\CategoryManagmentController;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
+use App\Http\Controllers\Shine\ShineController;
+use App\Http\Controllers\Shine\MyShineController;
+use App\Http\Controllers\Shine\ShineCreditController;
+use App\Http\Controllers\Shine\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -122,8 +127,22 @@ Route::middleware(['auth', 'api', 'emailverified'])->group(function () {
     Route::get('subscription-view', [DashboardController::class, 'subscriptionView'])->name('subscription.view');
     Route::get('admin-plan-view', [DashboardController::class, 'plansView'])->name('admin.plan.view');
     Route::get('edit-plan/{id}', [DashboardController::class, 'planEdit'])->name('edit.plan');
-    
-
+    //Shine
+    Route::get('myShine', [MyShineController::class, 'my_shine'])->name('my-shine');
+    Route::get('newShine', [MyShineController::class, 'new_shine'])->name('new-shine');
+    Route::get('Shine', [ShineController::class, 'shine'])->name('shine');
+    Route::post('/shine-products', [MyShineController::class, 'addShine'])->name('shine.store');
+    Route::get('/fetch-shine-products', [ShineController::class, 'fetchShineProducts'])->name('fetch.shine.products');
+    Route::get('/shine-batch-details/{batch_id}', [ShineController::class, 'showBatchDetails'])->name('shine.product.details');
+    // shine module routes
+    Route::get('assignedShine/Status_{id}', [MyShineController::class, 'complete_shine'])->name('complete-shine');
+    Route::get('myShine/Status-{id}', [MyShineController::class, 'shine_status'])->name('shine-status');
+    Route::get('/download-shine-order-invoice/{id}', [MyShineController::class, 'download_shine_order_invoice'])->name('download_shine_order_invoice.download');
+    Route::get('/download-shine-screenshots/{id}', [MyShineController::class, 'download_shine_screenshots'])->name('download_shine_screenshots.download');
+    Route::put('/shine-product-reviews1/{productId}', [MyShineController::class, 'update_product_review1']);
+    Route::put('/shine-product-reviews2/{productId}', [MyShineController::class, 'update_product_review2']);
+    Route::put('/shine-product-reviews3/{productId}', [MyShineController::class, 'update_product_review3']);
+    Route::put('/shine-product-reviews4/{productId}', [MyShineController::class, 'update_product_review4']);
 });
 
 // If we need blade file data and update directory in blade that time we will use this route

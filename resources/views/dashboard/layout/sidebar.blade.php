@@ -257,6 +257,33 @@
                     </ul>
                 </li>
             @endif
+            @if (auth()->user()->hasPermissionTo(PERMISSION_SHINE) || auth()->user()->hasPermissionTo(PERMISSION_MY_SHINE))
+            <li class="nav-item">
+              <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#Shine"
+                data-bs-parent="#dashboard_ekomn" id="components">
+                <i class="fas fa-star menuIcon"></i>
+                @if (auth()->user()->hasPermissionTo(PERMISSION_MY_SHINE))
+                <span class="nav-link-text">Shine Program</span>
+                @endif
+                <span class="menu_arrowIcon"><i class="fas fa-angle-right"></i></span>
+              </a>
+              <ul class="sidenav-second-level collapse" id="Shine" data-bs-parent="#dashboard_ekomn">
+                @if (auth()->user()->hasPermissionTo(PERMISSION_SHINE))
+                <li>
+                  <a class="nav-link" href="{{route('shine')}}">Shine</a>
+                </li>
+                @endif
+                @if (auth()->user()->hasPermissionTo(PERMISSION_MY_SHINE) && !auth()->user()->hasRole(ROLE_ADMIN))
+                <li>
+                  <a class="nav-link" href="{{route('my-shine')}}">My Shine</a>
+                </li>
+                <li>
+                  <a class="nav-link" href="{{route('new-shine')}}" id="newshine-link">New Shine</a>
+                </li>
+                @endif
+              </ul>
+            </li>
+            @endif
             @if (auth()->user()->hasPermissionTo(PERMISSION_SUBSCRIPTION_LIST) || auth()->user()->hasPermissionTo(PERMISSION_SUBSCRIPTION_VIEW))
             <li class="nav-item">
                     <a class="nav-link collapsed nav-link-arrow" data-bs-toggle="collapse" href="#subscription"

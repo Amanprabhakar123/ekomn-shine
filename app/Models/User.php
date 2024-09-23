@@ -76,6 +76,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     const PERMISSION_PLAN_LIST = 'plan_list';
     const PERMISSION_PLAN_EDIT = 'plan_edit';
 
+    // define permission for Shine
+    const PERMISSION_SHINE = 'shine';
+    const PERMISSION_MY_SHINE = 'my_shine';
+
     // define permission for sub admin
     const SUB_ADMIN_PERMISSION_LIST = [
         self::PERMISSION_ADD_PRODUCT,
@@ -105,6 +109,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         self::PERMISSION_SUBSCRIPTION_LIST,
         self::PERMISSION_PLAN_LIST,
         self::PERMISSION_PLAN_EDIT,
+        self::PERMISSION_SHINE,
     ];
 
     // define status user active and inactive

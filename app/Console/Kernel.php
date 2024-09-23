@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\AssignShineProducts;
 
 class Kernel extends ConsoleKernel
 {
@@ -21,6 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:process-return-order-payment')->everyMinute()->withoutOverlapping();
         $schedule->command('app:inactive-expired-subscription')->dailyAt('00:10')->withoutOverlapping();
         $schedule->command('app:yearly-plan-download-count-every-month')->dailyAt('00:30')->withoutOverlapping();
+        $schedule->command('shine:assign-products')->everyMinute()->withoutOverlapping();
     }
 
     /**

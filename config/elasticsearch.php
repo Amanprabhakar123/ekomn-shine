@@ -1,6 +1,6 @@
 <?php
 return [
     'hosts' => [
-        env('ELASTICSEARCH_HOST', 'localhost:9200'),
+        env('ELASTICSEARCH_HOST', 'localhost:8081'),
     ],
 ];

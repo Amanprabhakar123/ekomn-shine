@@ -58,6 +58,8 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => PERMISSION_EDIT_RETURN_ORDER]);
         Permission::create(['name' => PERMISSION_USER_LIST]);
         Permission::create(['name' => PERMISSION_ADMIN_LIST]);
+        Permission::create(['name' => PERMISSION_SHINE]);
+        Permission::create(['name' => PERMISSION_MY_SHINE]);
 
 
         // assign permissions Buyer
@@ -71,6 +73,7 @@ class PermissionSeeder extends Seeder
         $role_buyer->givePermissionTo(PERMISSION_CREATE_RETURN_ORDER);
         $role_buyer->givePermissionTo(PERMISSION_VIEW_RETURN_ORDER);
         $role_buyer->givePermissionTo(PERMISSION_LIST_RETURN_ORDER);
+        $role_buyer->givePermissionTo(PERMISSION_MY_SHINE);
 
         // assign permissions Supplier
         $role_supplier = Role::findByName(ROLE_SUPPLIER);

@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CompanySupplierSeeder::class);
         $this->call(CompanyBuyerSeeder::class);
         $this->call(ChargesTableSeeder::class);
-        $this->call(ImportWorldSqlSeeder::class);
+        // $this->call(ImportWorldSqlSeeder::class);
         $this->call(PincodeSeeder::class);
         $this->call(CourierList::class);
         // $this->call(AddCourierPermisssion::class);
