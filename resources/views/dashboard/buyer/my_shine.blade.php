@@ -14,18 +14,16 @@ My Shine
               <label for="fname">
                 <h6>Shine Credit :</h6>
               </label>
-              <a href="#" class="btn btnekomn btn-sm">₹ 2000</a>
+              {{-- <a href="#" class="btn btnekomn btn-sm">₹ 2000</a>
               <a href="#" id="" style="margin-left: 10px;" class="btn btnekomn btn-sm bold">Read me</a>
-              {{-- <a href="#" id="openModal" class="btn btnekomn btn-sm bold">+ New Shine</a> --}}
+              <a href="#" id="openModal" class="btn btnekomn btn-sm bold">+ New Shine</a> --}}
             </div>
+            <div class="showTotalBox _productID" style="margin-top: 10px;">
+              <div>Shine Credit: ₹ 2000</div>
+            </div>
+            <a href="#" id="openModal" style="margin-top: 10px;" class="btn btnekomn btn-sm bold">+ Add New Shine</a>
           </div>
-        </div>
-        <div class="cardhead paymentcardhead">
-          <h3 class="cardtitle">My Shine</h3>
-          <div class="showTotalBox _productID">
-            <div>Shine Credit: ₹ 2000</strong></div>
-          </div>
-        </div>
+        </div>    
         <div>
           <ul class="nav nav-underline ekom_tab" role="tablist">
             <li class="nav-item" role="presentation">
