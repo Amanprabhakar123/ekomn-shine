@@ -20,6 +20,11 @@ use App\Jobs\AssignShineJob;
 
 class MyShineController extends Controller
 {
+    /**
+     * This function is used to Show Shine Product.
+     * @param Request $request
+     * @return void
+     */
     public function my_shine()
     {
         $user = auth()->user();
@@ -31,6 +36,11 @@ class MyShineController extends Controller
         }
     }
 
+    /**
+     * This function is used to Assign Shine.
+     * @param Request $request
+     * @return void
+     */
     public function assignProductsToAssigner(Request $request, $assignerId)
     {
         $productIds = $request->input('product_ids');
@@ -49,6 +59,11 @@ class MyShineController extends Controller
     }
 
 
+    /**
+     * This function is used to Show New Shine.
+     * @param Request $request
+     * @return void
+     */
     public function new_shine()
     {
         if (auth()->user()->hasRole(User::ROLE_BUYER)) {
@@ -56,6 +71,11 @@ class MyShineController extends Controller
         }
     }
 
+    /**
+     * This function is used to View Complete Shine.
+     * @param Request $request
+     * @return void
+     */
     public function complete_shine($id)
     {
         $user = auth()->user();
@@ -66,6 +86,11 @@ class MyShineController extends Controller
         }
     }
 
+    /**
+     * This function is used to view the status.
+     * @param Request $request
+     * @return void
+     */
     public function shine_status($id)
     {
         $user = auth()->user();
@@ -76,6 +101,11 @@ class MyShineController extends Controller
         }
     }
 
+    /**
+     * This function is used to New request.
+     * @param Request $request
+     * @return void
+     */
     public function addShine(Request $request) {
         $shineProducts = [];
         $shineProductReviews = [];
@@ -153,6 +183,11 @@ class MyShineController extends Controller
         }
     }
     
+    /**
+     * This function is used to Update the assigned shine.
+     * @param Request $request
+     * @return void
+     */
     public function update_product_review1(Request $request, $productId)
     {
         $request->validate([
@@ -179,6 +214,11 @@ class MyShineController extends Controller
         return response()->json(['success' => 'Product review updated successfully.']);
     }
 
+    /**
+     * This function is used to Download shine invoice.
+     * @param Request $request
+     * @return void
+     */
     public function download_shine_order_invoice($id)
     {
         $productReview = ShineProductReview::where('shine_product_id', $id)->firstOrFail();
@@ -196,6 +236,11 @@ class MyShineController extends Controller
         }
     }
 
+    /**
+     * This function is used to Download screenshots.
+     * @param Request $request
+     * @return void
+     */
     public function download_shine_screenshots($id)
     {
         $productReview = ShineProductReview::where('shine_product_id', $id)->firstOrFail();

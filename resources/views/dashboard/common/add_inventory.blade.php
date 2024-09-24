@@ -43,7 +43,6 @@
                   <div class="tooltips">
                   <span class="tooltiptext">Add a product Name/Title containing all relevant keywords and key features of the product</span>
                   <input type="text" class="form-control" placeholder="Product Name & Title" name="product_name" id="product_name" required/>
-                
                 </div>
                   <div id="product_nameErr" class="invalid-feedback"></div>
                 </div>

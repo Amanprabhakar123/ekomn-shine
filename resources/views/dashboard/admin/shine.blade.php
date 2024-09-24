@@ -9,7 +9,7 @@ Shine
         <div class="card ekcard pa shadow-sm">
             <div class="cardhead">
                 <h3 class="cardtitle">Shine</h3>
-                <a class="btn btnekomn btn-sm" href="#"><i class="fas fa-plus fs-12 me-1"></i> New Request</a>
+                <a href="#" id="openModal" class="btn btnekomn btn-sm">+ Add New Request</a>
             </div>
             <div class="tableTop pt-3">
               <input type="text" class="form-control w_300_f searchicon"
@@ -168,5 +168,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
-
+<script>
+    document.getElementById('openModal').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = "{{ route('newshine') }}";
+    });
+</script>
 @endsection

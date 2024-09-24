@@ -272,6 +272,9 @@
                 <li>
                   <a class="nav-link" href="{{route('shine')}}">Shine</a>
                 </li>
+                <li>
+                  <a class="nav-link" href="{{route('newshine')}}">New Shine</a>
+                </li>
                 @endif
                 @if (auth()->user()->hasPermissionTo(PERMISSION_MY_SHINE) && !auth()->user()->hasRole(ROLE_ADMIN))
                 <li>
