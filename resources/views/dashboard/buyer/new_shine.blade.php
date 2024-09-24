@@ -10,8 +10,13 @@ New Shine
         <div class="cardhead" style="text-align: right;">
           <h3 class="cardtitle">New Shine</h3>
           <div class="showTotalBox _productID">
-            <div>Batch Value: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>2000</strong></div>
-            <div>Target Value: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>1000-2000</strong></div>
+            <div>Batch Value: 
+              <i class="fas fa-rupee-sign fs-13 me-1"></i>
+              <strong><span class="batch_amount text-white"></span></strong>
+            </div>
+            <div>Target Value: 
+              <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>1000-2000</strong>
+            </div>
           </div>
         </div>
         <div>
@@ -1237,7 +1242,7 @@ New Shine
           }
       });
       console.log(`Total Amount: ${totalAmount}`); // Log the total amount
-      $('.btn.btnekomn.btn-sm.amount').text(`₹ ${totalAmount.toFixed(2)}`);
+      $('.batch_amount').text(`${totalAmount.toFixed(2)}`);
       return totalAmount;
     }
   // Bind the update function to input events on the amount fields
