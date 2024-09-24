@@ -9,21 +9,9 @@ New Shine
       <div class="card ekcard pa shadow-sm">
         <div class="cardhead" style="text-align: right;">
           <h3 class="cardtitle">New Shine</h3>
-          <div>
-            <div>
-              {{-- <label for="fname">
-                <h6>Shine Credit :</h6>
-              </label>
-              <a href="#" class="btn btnekomn btn-sm">₹ 2000</a> --}}
-              <label for="fname">
-                <h6>Batch Value :</h6>
-              </label>
-              <a href="#" class="btn btnekomn btn-sm amount">₹ </a>
-              <label for="fname">
-                <h6>Target Value :</h6>
-              </label>
-              <a href="#" class="btn btnekomn btn-sm">₹ 1000-2000</a>
-            </div>
+          <div class="showTotalBox _productID">
+            <div>Batch Value: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>2000</strong></div>
+            <div>Target Value: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>1000-2000</strong></div>
           </div>
         </div>
         <div>

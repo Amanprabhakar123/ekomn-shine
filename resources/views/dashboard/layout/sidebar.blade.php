@@ -253,7 +253,7 @@
                             <li>
                                 <a class="nav-link" href="{{ route('courier.list') }}">Courier List</a>
                             </li>
-                            @endif
+                        @endif
                     </ul>
                 </li>
             @endif
@@ -278,7 +278,7 @@
                   <a class="nav-link" href="{{route('my-shine')}}">My Shine</a>
                 </li>
                 <li>
-                  <a class="nav-link" href="{{route('new-shine')}}" id="newshine-link">New Shine</a>
+                  <a class="nav-link" href="#" id="newshine-link">New Shine</a>
                 </li>
                 @endif
               </ul>

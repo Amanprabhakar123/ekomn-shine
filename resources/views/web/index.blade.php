@@ -116,112 +116,76 @@
                 </div>
             </div>
         </section>
-        <section class="adv-section">
+        <!-- ekomn-advantage -->
+        <section class="py-3 bg-white">
             <div class="container">
-                <div class="row align-items-center ">
-                    <div class="col-sm-12 col-md-6">
-                        <div class="advantage">
-                            <img src="{{ asset('assets/images/icon/advantageText.svg') }}" alt="">
-                            <p class="fs-20 mt30">We literally give wings to your eCommerce enterprise!
-                                More than 10K products across leading categories.</p>
-                            <div class="d-flex mt40 pt-4 mbspace">
-                                <a href="{{route('buyer.register')}}" class="btn btnekomn_dark  py-2 w_300_f btnround">Register Now</a>
+                <div class="row">
+                    <div class="col-lg-4 mt-3">
+
+                        <div class="ekomn_img_main_container">
+                            <div class="ekom_main_img m-auto">
+                                <img src="{{ asset('assets/images/icon/eKomn-advantage-02.svg') }}" alt="">
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="ekomn-conta-text">
+                            <div class=" text-center">
+                                <span class="fs-17">We literally give wings to your eCommerce enterprise! <br>
+                                    More than 10K products across leading categories.</span>
+                            </div>
+                            <div class="btn_advantage">
+                                <button class="btn btnekomn_dark  py-2 px-5 btnround">Register Now</button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="advantagecontent">
-                            <div class="advstep">
-                                <div class="advstephead">
-                                    <div class="advhimg">
-                                        <img src="{{ asset('assets/images/icon/adv_1.svg') }}" alt="">
-                                    </div>
-                                    <h3 class="fs-24 m-0">Growth Tools</h3>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-xl-4 mt-3" data-aos="zoom-in" data-aos-duration="1000">
+                        <div class="">
+                            <div class=" ekomn_advan_card ekomn_advan_card1">
+                                <div class="ekomn_card_img">
+                                    <img src="{{ asset('assets/images/icon/adv_2.svg') }}" alt="">
                                 </div>
-                                <ul class="checkpoint ms-3">
-                                    <li class="fs-18">Connect your store and put your Online business on auto mode</li>
-                                    <li class="fs-18">Expand your business on multiple platforms and channels</li>
-                                    <li class="fs-18">We equip you with all tools and business trainings to succeed</li>
-                                </ul>
+                                <div class="ekomn_card_conte  pt-3">
+                                    <h4 class="fw-bold text-center">Product Sourcing</h4>
+                                    <ul class="checkpoint">
+                                        <li class="fs-18">Find, Select & Sell profitably</li>
+                                        <li class="fs-18">Access to Samples, Dropship, Bulk Orders & Resell programs</li>
+                                        <li class="fs-18">Community Sourcing, A program for mutual support and success</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="advstep">
-                                <div class="advstephead">
-                                    <div class="advhimg">
-                                        <img src="{{ asset('assets/images/icon/adv_2.svg') }}" alt="">
-                                    </div>
-                                    <h3 class="fs-24 m-0">Product Sourcing</h3>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 mt-3" data-aos="zoom-in" data-aos-duration="1000">
+                        <div class="">
+                            <div class="ekomn_advan_card ekomn_advan_card2">
+                                <div class="ekomn_card_img">
+                                    <img src="{{ asset('assets/images/icon/adv_1.svg') }}" alt="">
                                 </div>
-                                <ul class="checkpoint ms-3">
-                                    <li class="fs-18">Find, Select & Sell profitably</li>
-                                    <li class="fs-18">Access to Samples, Dropship, Bulk Orders & Resell programs</li>
-                                    <li class="fs-18">Community Sourcing, A program for mutual support and success</li>
-                                </ul>
+                                <div class="ekomn_card_conte  pt-3">
+                                    <h4 class="fw-bold text-center">Growth Tools</h4>
+                                    <ul class="checkpoint">
+                                        <li class="fs-18">Connect your store and put your Online business on auto mode</li>
+                                        <li class="fs-18">Expand your business on multiple platforms and channels</li>
+                                        <li class="fs-18">We equip you with all tools and business trainings to succeed</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="advstep">
-                                <div class="advstephead">
-                                    <div class="advhimg">
-                                        <img src="{{ asset('assets/images/icon/adv_3.svg') }}" alt="">
-                                    </div>
-                                    <h3 class="fs-24 m-0">Services</h3>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 mt-3" data-aos="zoom-in" data-aos-duration="1000">
+                        <div class="">
+                            <div class="ekomn_advan_card ekomn_advan_card3">
+                                <div class="ekomn_card_img">
+                                    <img src="{{ asset('assets/images/icon/adv_3.svg') }}" alt="">
                                 </div>
-                                <ul class="checkpoint ms-3">
+                                <div class="ekomn_card_conte  pt-3 checkpoint">
+                                    <h4 class="fw-bold text-center">Services</h4>
                                     <li class="fs-18">Innovative business solutions designed for Online Sellers</li>
                                     <li class="fs-18">Avail expert help at a click of a button</li>
                                     <li class="fs-18">Prompt support and dedicated account executives</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="commit-section">
-            <div class="container">
-                <div class="row align-items-center ">
-                    <div class="col-sm-12 col-md-6">
-                        <div class="advantage">
-                            <img src="{{ asset('assets/images/icon/commit.svg') }}" alt="">
-                            <p class="fs-20 mt30">Committed to create and support over 1 mm thriving
-                                online enterprises in India by 2027.</p>
-                            <div class="d-flex mt40 pt-4 mbspace">
-                                <a href="{{route('buyer.login')}}" class="btn btnekomn py-2 w_300_f btnround">Let's Join hands. Risk Free!!</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6">
-                        <div class="advantagecontent">
-                            <div class="advstep">
-                                <div class="commstephead">
-                                    <div class="advhimg mb10">
-                                        <img src="{{ asset('assets/images/icon/commit_1.svg') }}" alt="">
-                                    </div>
-                                    <p class="fs-20 text-center m-0">Ever growing catalog of Innovative
-                                        and winning products</p>
-                                </div>
-                            </div>
-                            <div class="advstep">
-                                <div class="commstephead">
-                                    <div class="advhimg mb10">
-                                        <img src="{{ asset('assets/images/icon/commit_2.svg') }}" alt="">
-                                    </div>
-                                    <p class="fs-20 text-center m-0">Competitive wholesale prices &
-                                        Assured product quality</p>
-                                </div>
-                            </div>
-                            <div class="advstep">
-                                <div class="commstephead">
-                                    <div class="advhimg mb10">
-                                        <img src="{{ asset('assets/images/icon/commit_3.svg') }}" alt="">
-                                    </div>
-                                    <p class="fs-20 text-center m-0">Prompt support and help</p>
-                                </div>
-                            </div>
-                            <div class="advstep">
-                                <div class="commstephead">
-                                    <div class="advhimg mb10">
-                                        <img src="{{ asset('assets/images/icon/commit_4.svg') }}" alt="">
-                                    </div>
-                                    <p class="fs-20 text-center m-0">Business Trainings & Services</p>
                                 </div>
                             </div>
                         </div>
@@ -229,6 +193,65 @@
                 </div>
             </div>
         </section>
+        <!-- ekomn-advantage -->
+        <!-- ekomn-comint -->
+        <section class="" style="padding: 50px 0;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4 mt-3" data-aos="zoom-in" data-aos-duration="1000">
+                        <div class="rounded ekom_card_size ps-lg-3">
+                            <div class="ekomn-section-content">
+                                <div class="ekomn-comit-img col-4"><img src="{{ asset('assets/images/icon/commit_1.svg') }}"
+                                alt=""></div>
+                                <div class="ekomn-comit-text col-8">Ever growing catalog of Innovative and winning
+                                    products</div>
+                            </div>
+                        </div>
+                        <!-- 2 -->
+                        <div class="rounded mt-4 ekom_card_size ps-lg-3">
+                            <div class="ekomn-section-content">
+                                <div class="ekomn-comit-img col-4">
+                                    <img src="{{ asset('assets/images/icon/commit_2.svg') }}" alt="">
+                                </div>
+                                <div class="ekomn-comit-text col-8">Competitive wholesale prices & Assured product quality</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 mt-4 ps-3 pe-3" data-aos="zoom-in" data-aos-duration="1500">
+                        <div class="ekomn-main-img-container">
+                            <div class="ekomn-main-img">
+                                <img src="{{ asset('assets/images/icon/eKomn-commitment-02.svg') }}" alt="">
+                                <p>Committed to create and support over 1 mm thriving online enterprises in India by
+                                    2027.</p>
+                                <div class="d-flex justify-content-center mt40  mbspace">
+                                    <button class="btn btnekomn py-2 px-4 btnround">Let's Join hands. Risk
+                                        Free!!</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 mt-4" data-aos="zoom-in" data-aos-duration="1000">
+                        <div class="rounded ekom_card_sizes pe-lg-3">
+                            <div class="ekomn-section-content">
+                                <div class="ekomn-comit-img col-4"><img src="{{ asset('assets/images/icon/commit_3.svg') }}"
+                                        alt=""></div>
+                                <div class="ekomn-comit-text col-8">Prompt support and help</div>
+                            </div>
+                        </div>
+                        <!-- 2 -->
+                        <div class="rounded mt-4 ekom_card_sizes pe-lg-3">
+                            <div class="ekomn-section-content">
+                                <div class="ekomn-comit-img col-4"><img src="{{ asset('assets/images/icon/commit_4.svg') }}"
+                                        alt=""></div>
+                                <div class="ekomn-comit-text col-8">Business Trainings & Services</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <!-- ekomn-comint -->
         <section class="process_sec">
             <div class="process_sec_h text-center">
                 <h2 class="sec_main_h mb-2">What Our Clients Say About Us</h2>

@@ -4365,9 +4365,6 @@ textarea.resizer_none{resize:none!important;}
 
 
 /* end */
-
-
-
 .custom-confirm-btn {
   background-color: #FFB20C !important; /* Custom color */
   color: white !important;              /* Text color */
@@ -4382,4 +4379,133 @@ textarea.resizer_none{resize:none!important;}
 
 .swal2-title-red {
   color: red !important; /* Ensure the title is red */
+}
+
+
+.ekomn-section-content{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 21px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 10px;
+  background: white;
+  /* gap: 9px; */
+  transition: all .3s ease;
+}
+.ekomn-section-content:hover{
+  transform: translateY(-10px);
+}
+
+.ekomn-section-content .ekomn-comit-text{
+  font-size: 18px;
+}
+
+
+.ekomn-main-img{
+  width: 350px;
+  display: block;
+  margin: auto;
+}
+
+.ekomn-main-img p{
+  font-size: 20px;
+  margin-top: 25px;
+}
+
+.ekomn_img_main_container{
+  width: 100%;
+}
+
+.ekom_main_img{
+  width: 300px;
+}
+
+.ekom_main_img img{
+  width: 100%;
+}
+
+.ekomn_advan_card{
+  padding: 15px 20px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 10px;
+  max-height: auto;
+  transition: all .3s ease;
+}
+
+.ekomn_advan_card1:hover{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  transform: translateY(10px);
+}
+.ekomn_advan_card2:hover{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  transform: translateY(-10px);
+}
+.ekomn_advan_card3:hover{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  transform: translateY(10px);
+}
+
+.ekomn_card_img{
+  width: 100px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  padding: 20px; 
+  border-radius: 50%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.ekomn_card_img img{
+  width: 100%;
+}
+
+.ekomn_card_img:hover{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.ekomn-conta-text{
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: end;
+  padding-bottom: 4px;
+}
+
+@media (max-width:500px) {
+  .ekom_main_img{
+    width: 100%;
+  }
+
+  .ekomn-main-img{
+    width: 100%;
+  }
+
+  .ekomn-conta-text{
+    flex-direction: column;
+    padding-top: 25px;
+    align-items: center;
+  }
+
+  .ekomn-conta-text .btn_advantage{
+    padding-top: 15px;
+  }
+}
+/* Add new Shine button CCS */
+
+.ekomn_Shine_btn{
+  position: absolute;
+  right: 24px;
+  top: 60px;
+}
+
+@media (max-width:500px) {
+
+  /* create-cart */
+  .ekomn_Shine_btn{
+    right: 17px ;
+    top: 114px;
+  }
 }

@@ -19,9 +19,9 @@ My Shine
               <a href="#" id="openModal" class="btn btnekomn btn-sm bold">+ New Shine</a> --}}
             </div>
             <div class="showTotalBox _productID" style="margin-top: 10px;">
-              <div>Shine Credit: ₹ 2000</div>
+              <div>Shine Credit: <strong><i class="fas fa-rupee-sign fs-13 me-1"></i>2000</strong></div>
             </div>
-            <a href="#" id="openModal" style="margin-top: 10px;" class="btn btnekomn btn-sm bold">+ Add New Shine</a>
+            {{-- <a href="#" id="openModal" style="margin-top: 10px;" class="btn btnekomn btn-sm">+ Add New Shine</a> --}}
           </div>
         </div>    
         <div>
@@ -34,11 +34,8 @@ My Shine
               <a class="nav-link" id="live-shine-tab" data-bs-toggle="tab" data-bs-target="#live-shine" role="tab"
                 aria-controls="live-shine" aria-selected="false">Assigned Shine</a>
             </li>
-            {{-- <li class="nav-item" role="presentation">
-              <a class="nav-link" id="assigned-tab" data-bs-toggle="tab" data-bs-target="#assigned" role="tab"
-                aria-controls="assigned" aria-selected="false">Assigned Shine Live</a>
-            </li> --}}
           </ul>
+          <div class="ekomn_Shine_btn"><a href="#" id="openModal" class="btn btnekomn btn-sm">+ Add New Shine</a></div>
           <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="shine" role="tabpanel" aria-labelledby="shine-tab" tabindex="0">
               <div class="o_bannerimg">
@@ -673,7 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script> 
 
 <script>
-document.getElementById('openModal').addEventListener('click', async function(event) {
+  document.getElementById('openModal').addEventListener('click', async function(event) {
     event.preventDefault(); // Prevent the default link behavior
 
     const { value: accept } = await Swal.fire({
@@ -729,11 +726,11 @@ document.getElementById('openModal').addEventListener('click', async function(ev
         window.location.href = "{{ route('new-shine') }}";
       });
     }
-});
+  });
 
-// Attach the same function to both elements
-document.getElementById('newrequest').addEventListener('click', showTermsAndConditions);
-document.getElementById('newshine-link').addEventListener('click', showTermsAndConditions);
-  </script>
+  // Attach the same function to both elements
+  document.getElementById('newrequest').addEventListener('click', showTermsAndConditions);
+  document.getElementById('newshine-link').addEventListener('click', showTermsAndConditions);
+</script>
 
 @endsection
