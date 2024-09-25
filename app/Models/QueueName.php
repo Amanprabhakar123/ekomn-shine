@@ -14,4 +14,6 @@ class QueueName extends Model
     const PaymentBulkUpload = 'payment_bulk_upload';
 
     const ExportMisReport = 'export_mis_report';
+
+    const AssignShineJob = 'assign_shine_job';
 }
